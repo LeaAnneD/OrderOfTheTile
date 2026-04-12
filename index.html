@@ -168,10 +168,23 @@
 .section-card-desc { font-family: var(--body); font-size: 15px; color: var(--dusk); line-height: 1.6; }
 
 /* PULL QUOTE */
-.pull-quote { background: var(--cloud); padding: 80px 56px; }
-.pull-quote-inner { max-width: 660px; margin: 0 auto; border-left: 2px solid var(--lilac); padding-left: 32px; }
-.pull-quote-text { font-family: var(--serif); font-size: clamp(20px, 2.6vw, 28px); font-style: italic; color: var(--ink); line-height: 1.55; margin-bottom: 18px; }
-.pull-quote-attr { font-family: var(--body); font-size: 13px; color: var(--dusk); letter-spacing: 0.06em; }
+.pull-quote { background: var(--cloud); padding: 0; }
+.pull-quote-ornament {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; padding: 56px 0 0;
+}
+.pull-quote-ornament-line { width: 72px; height: 0.5px; background: var(--lilac); }
+.pull-quote-ornament img { width: 40px; height: 40px; opacity: 0.7; }
+.pull-quote-body { padding: 48px 56px 56px; }
+.pull-quote-inner { max-width: 660px; margin: 0 auto; text-align: center; }
+.pull-quote-text { font-family: var(--serif); font-size: clamp(22px, 2.8vw, 32px); font-style: italic; color: var(--ink); line-height: 1.55; margin-bottom: 20px; }
+.pull-quote-attr { font-family: var(--body); font-size: 13px; color: var(--dusk); letter-spacing: 0.1em; text-transform: uppercase; }
+.pull-quote-bottom-ornament {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; padding: 0 0 56px;
+}
+.pull-quote-bottom-ornament .ornament-line { width: 60px; height: 0.5px; background: var(--lilac); }
+.pull-quote-bottom-ornament .ornament-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lilac); }
 
 /* SUBSCRIBE */
 .subscribe { background: var(--ivory); padding: 110px 56px; text-align: center; }
@@ -300,9 +313,21 @@
 
 <!-- PULL QUOTE -->
 <div class="pull-quote">
-  <div class="pull-quote-inner">
-    <p class="pull-quote-text">"Every discard tells a story. The question is whether you are listening."</p>
-    <p class="pull-quote-attr">Prim &mdash; The Order of the Tile</p>
+  <div class="pull-quote-ornament">
+    <div class="pull-quote-ornament-line"></div>
+    <img src="images/seal.png" alt="" />
+    <div class="pull-quote-ornament-line"></div>
+  </div>
+  <div class="pull-quote-body">
+    <div class="pull-quote-inner">
+      <p class="pull-quote-text">&ldquo;Every discard tells a story. The question is whether you are listening.&rdquo;</p>
+      <p class="pull-quote-attr">Prim &mdash; The Order of the Tile</p>
+    </div>
+  </div>
+  <div class="pull-quote-bottom-ornament">
+    <div class="ornament-line"></div>
+    <div class="ornament-dot"></div><div class="ornament-dot"></div><div class="ornament-dot"></div>
+    <div class="ornament-line"></div>
   </div>
 </div>
 
