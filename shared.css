@@ -37,7 +37,7 @@ nav {
   border-bottom: 0.5px solid var(--lilac);
   height: 74px;
   display: flex; align-items: center;
-  padding: 0 56px;
+  padding: 0 16px;
   justify-content: space-between;
 }
 
@@ -115,7 +115,7 @@ nav {
 
 /* MOBILE NAV */
 @media (max-width: 1280px) {
-  nav { padding: 0 24px; }
+  nav { padding: 0 16px; }
 
   .nav-hamburger { display: block; }
 
