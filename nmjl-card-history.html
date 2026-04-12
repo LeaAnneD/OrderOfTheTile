@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card History Archive — The Order of the Tile</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+
+    /* PAGE HERO */
+    .page-hero {
+      padding: 130px 56px 64px;
+      max-width: 1100px;
+      margin: 0 auto;
+      border-bottom: 0.5px solid var(--lilac);
+    }
+
+    .page-hero-eyebrow {
+      font-family: var(--body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dusk);
+      margin-bottom: 18px;
+    }
+
+    .page-hero-headline {
+      font-family: var(--serif);
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 500;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+
+    .page-hero-headline em {
+      font-style: italic;
+      color: var(--orchid);
+    }
+
+    .page-hero-sub {
+      font-family: var(--body);
+      font-size: 18px;
+      color: var(--dusk);
+      line-height: 1.75;
+      max-width: 560px;
+    }
+
+    /* MAIN CONTENT */
+    .main-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 56px;
+    }
+
+    /* RESEARCH NOTE */
+    .research-note {
+      background: var(--ivory);
+      border-left: 3px solid var(--lilac);
+      padding: 20px 24px;
+      margin: 40px 0;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .research-note strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .research-note em {
+      font-style: italic;
+      color: var(--dusk);
+    }
+
+    /* ERA NAVIGATION */
+    .era-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 40px 0;
+      justify-content: center;
+    }
+
+    .tab-btn {
+      font-family: var(--serif);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border: 1px solid var(--lilac);
+      background: transparent;
+      color: var(--dusk);
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 4px;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--orchid);
+      color: var(--orchid);
+    }
+
+    .tab-btn.active {
+      background: var(--orchid);
+      color: white;
+      border-color: var(--orchid);
+    }
+
+    /* YEAR BLOCKS */
+    .year-block {
+      margin: 32px 0;
+      background: white;
+      border: 0.5px solid var(--lilac);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .year-header {
+      background: var(--ivory);
+      border-bottom: 0.5px solid var(--lilac);
+      padding: 24px;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .year-header:hover {
+      background: #FAF8F3;
+    }
+
+    .year-header-left {
+      flex: 1;
+    }
+
+    .year-label {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--orchid);
+      margin-bottom: 12px;
+    }
+
+    .year-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meta-pill {
+      font-family: var(--body);
+      font-size: 12px;
+      color: var(--dusk);
+      background: var(--cloud);
+      padding: 4px 10px;
+      border-radius: 3px;
+      border: 0.5px solid var(--lilac);
+    }
+
+    .meta-pill.highlight {
+      background: var(--melon);
+      color: var(--ink);
+      border-color: var(--melon);
+      font-weight: 600;
+    }
+
+    .year-toggle {
+      font-size: 20px;
+      color: var(--orchid);
+      transition: transform 0.3s;
+      margin-top: 2px;
+    }
+
+    .year-block.open .year-toggle {
+      transform: rotate(180deg);
+    }
+
+    .year-body {
+      display: none;
+      padding: 24px;
+      background: white;
+    }
+
+    .year-block.open .year-body {
+      display: block;
+    }
+
+    /* MILESTONE BANNER */
+    .milestone {
+      background: var(--melon);
+      color: var(--ink);
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      border-radius: 2px;
+      font-family: var(--serif);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* HISTORICAL NOTE */
+    .hist-note {
+      font-style: italic;
+      color: var(--dusk);
+      background: var(--ivory);
+      border-left: 3px solid var(--lilac);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-family: var(--body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dusk);
+      margin: 20px 0 12px;
+      display: block;
+    }
+
+    /* HAND ROWS */
+    .hand-list {
+      border: 0.5px solid var(--lilac);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .hand-row {
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 12px 14px;
+      border-bottom: 0.5px solid var(--lilac);
+      font-size: 14px;
+    }
+
+    .hand-row:last-child {
+      border-bottom: none;
+    }
+
+    .hand-row:nth-child(even) {
+      background: var(--cloud);
+    }
+
+    .hand-num {
+      font-family: var(--body);
+      font-size: 13px;
+      color: var(--dusk);
+      font-weight: 600;
+    }
+
+    .hand-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hand-notation {
+      font-family: var(--body);
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .hand-note {
+      font-family: var(--body);
+      font-size: 12px;
+      color: var(--dusk);
+      font-style: italic;
+    }
+
+    .hand-badges {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-end;
+    }
+
+    .hand-badge {
+      font-family: var(--body);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-c {
+      background: var(--orchid);
+      color: white;
+    }
+
+    .badge-pts {
+      background: var(--butter);
+      color: var(--ink);
+    }
+
+    /* SOURCE NOTE */
+    .source-note {
+      font-family: var(--body);
+      font-size: 12px;
+      color: var(--dusk);
+      font-style: italic;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 0.5px solid var(--lilac);
+    }
+
+    /* EDUCATIONAL BLOCKS */
+    .edu-block {
+      border: 0.5px solid var(--lilac);
+      border-radius: 2px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .edu-what {
+      padding: 16px;
+      background: var(--ivory);
+      border-bottom: 0.5px solid var(--lilac);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .edu-rules {
+      padding: 16px;
+      background: white;
+      border-bottom: 0.5px solid var(--lilac);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .edu-rules ul {
+      margin: 8px 0 0 24px;
+      list-style: none;
+    }
+
+    .edu-rules li {
+      margin-bottom: 6px;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .edu-rules li:before {
+      content: '◆';
+      position: absolute;
+      left: 0;
+      color: var(--lilac);
+    }
+
+    .edu-sample {
+      padding: 16px;
+      background: var(--cloud);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .sample-tiles-container {
+      background: white;
+      border: 0.5px solid var(--lilac);
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 2px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .tile-group-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--lilac);
+      opacity: 0.3;
+      margin: 0 4px;
+    }
+
+    .sample-explain {
+      display: block;
+      font-style: italic;
+      font-size: 13px;
+      color: var(--dusk);
+      margin-top: 8px;
+    }
+
+    /* SVG TILES */
+    .tile {
+      display: inline-block;
+      margin: 0 2px;
+    }
+
+    svg.tile-svg {
+      filter: drop-shadow(0 1px 2px rgba(26, 20, 18, 0.1));
+    }
+
+    /* FOOTER */
+    .archive-footer-note {
+      text-align: center;
+      font-family: var(--body);
+      font-size: 12px;
+      color: var(--dusk);
+      font-style: italic;
+      margin: 40px 0 20px;
+      padding: 16px 0;
+      border-top: 0.5px solid var(--lilac);
+      border-bottom: 0.5px solid var(--lilac);
+    }
+
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .page-hero {
+        padding: 100px 24px 48px;
+      }
+
+      .main-container {
+        padding: 0 24px;
+      }
+
+      .year-header {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .year-toggle {
+        align-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav></nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="page-hero-eyebrow">RESEARCH ARCHIVE</div>
+  <h1 class="page-hero-headline">The Card Has a <em>History.</em></h1>
+  <p class="page-hero-sub">A reference archive of the National Mah Jongg League annual card, from the founding in 1937 to today. Every year tells a story about the game we love.</p>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-container">
+
+  <!-- RESEARCH NOTE -->
+  <div class="research-note">
+    <strong>Important Research Note:</strong> The NMJL treats its annual card as proprietary. NMJL has <em>never</em> officially published an archive of historical hands. This document contains: (1) <strong>complete, verified hand-level data for 2025–2026</strong> sourced from public breakdowns by the American Mah Jongg Association; (2) <strong>partial documented hands for 2022–2024</strong> from community analyses; and (3) <strong>structural/historical notes for 1937–2021</strong> based on documented evolution. For vintage cards (1940–2025), reproduction cards are available commercially from <em>MahjForAll.org</em>.
+  </div>
+
+  <!-- ERA NAVIGATION -->
+  <div class="era-nav">
+    <button class="tab-btn active" onclick="filterEra('all')">All Eras</button>
+    <button class="tab-btn" onclick="filterEra('founding')">1937–1949</button>
+    <button class="tab-btn" onclick="filterEra('midcentury')">1950–1979</button>
+    <button class="tab-btn" onclick="filterEra('modern')">1980–2014</button>
+    <button class="tab-btn" onclick="filterEra('recent')">2015–2021</button>
+    <button class="tab-btn" onclick="filterEra('current')">2022–2026</button>
+  </div>
+
+  <!-- FOUNDING ERA: 1937–1949 -->
+  <div class="era-section" data-era="founding">
+    <h2 class="section-label">The Founding Era · 1937–1949</h2>
+
+    <!-- 1937 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">1937</div>
+          <div class="year-meta">
+            <span class="meta-pill highlight">FOUNDING YEAR</span>
+            <span class="meta-pill">No Jokers</span>
+            <span class="meta-pill">~6 Flowers</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="milestone">✦ The First Card — NMJL Founded in New York City</div>
+        <div class="hist-note">
+          The National Mah Jongg League was founded in 1937 by a group of Jewish women in New York City who wanted to standardize the game. The first card established the framework that continues today: a laminated sheet of winning hands grouped into categories, updated annually. Early cards had <strong>no Jokers</strong> and far fewer flowers than modern cards. The exact hands are not publicly documented, but they featured simpler pung/kong structures across suits without the year-hand system introduced later.
+        </div>
+        <span class="section-label">Structural Notes</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">No Joker tiles used</div>
+              <div class="hand-note">Jokers were not part of the original American Mah Jongg game</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">~6 Flower tiles</div>
+              <div class="hand-note">Far fewer flowers than the current 8; varied in early years</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">No Year Hands</div>
+              <div class="hand-note">Year hands were not introduced until 1954</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Sections: Like Numbers, Consecutive Runs, Winds & Dragons</div>
+              <div class="hand-note">Core structure established from the beginning</div>
+            </div>
+          </div>
+        </div>
+        <div class="source-note">Source: NMJL official history; Jewish Museum Milwaukee; MahjForAll archival notes</div>
+      </div>
+    </div>
+
+    <!-- 1940–1949 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">1940–1949</div>
+          <div class="year-meta">
+            <span class="meta-pill">0–4 Jokers</span>
+            <span class="meta-pill">6–12 Flowers</span>
+            <span class="meta-pill">WWII Era</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          Cards from this decade show gradual evolution of the tile set. Joker tiles were introduced progressively — early 1940s cards used 0–2 Jokers; by the late 1940s some cards included up to 4. The number of Flower tiles varied between 6 and 12. MahjForAll has reproduced all individual year cards (1940–1949) based on original sources. Exact hand compositions differ year to year; complete hand lists for these years require purchasing the reproduction cards.
+        </div>
+        <span class="section-label">Known Structural Evolution</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">1940: Cards available, reproduced by MahjForAll</div>
+              <div class="hand-note">Earliest widely archived card year</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Jokers introduced incrementally (0→4 across the decade)</div>
+              <div class="hand-note">Changed strategy significantly — joker use in pungs/kongs became possible</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Pung-Kong hands dominate; Singles & Pairs not yet a formal section</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">No Year Hands (introduced 1954)</div>
+            </div>
+          </div>
+        </div>
+        <div class="source-note">Source: MahjForAll vintage reproduction archive (1940–1949 individual cards available for purchase)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MID-CENTURY ERA: 1950–1979 -->
+  <div class="era-section" data-era="midcentury">
+    <h2 class="section-label">Mid-Century Era · 1950–1979</h2>
+
+    <!-- 1950–1953 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">1950–1953</div>
+          <div class="year-meta">
+            <span class="meta-pill">4–6 Jokers</span>
+            <span class="meta-pill">No Year Hands Yet</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          The early 1950s continued refining the card format. The number of Jokers stabilized toward 6–8. Flowers expanded. MahjForAll reproduces all years 1950–1953 individually. Exact hand lists require the reproduction cards.
+        </div>
+        <div class="source-note">Source: MahjForAll archive</div>
+      </div>
+    </div>
+
+    <!-- 1954 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">1954</div>
+          <div class="year-meta">
+            <span class="meta-pill highlight">YEAR HANDS DEBUT</span>
+            <span class="meta-pill">Referenced Prior Year</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="milestone">✦ Year Hands Introduced — But Referenced the Previous Year Until 1961</div>
+        <div class="hist-note">
+          1954 is the first year the NMJL card included "Year Hands" — hands built around the digits of the current year. However, the year referenced on the card did not align with the actual play year until 1961. So a card used in 1954 might reference 1953. This quirk is well-documented by NMJL historians and MahjForAll.
+        </div>
+        <span class="section-label">Year Hands (debut)</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Year digits used to build pungs, kongs, pairs</div>
+              <div class="hand-note">Soap (White Dragon) represents 0. Referenced prior year until 1961 alignment.</div>
+            </div>
+          </div>
+        </div>
+        <div class="source-note">Source: MahjForAll product notes; NMJL history documentation</div>
+      </div>
+    </div>
+
+    <!-- 1955–1960 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">1955–1960</div>
+          <div class="year-meta">
+            <span class="meta-pill">Year Hands (misaligned)</span>
+            <span class="meta-pill">6–8 Jokers</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          Cards through 1960 continued with Year Hands referencing the prior calendar year. The 1960 card did not include a standard Year Hand because the year contains a zero and zero tiles (Soap as zero) were not standardized until 1980. Some cards from this era used creative workarounds or historical themes for year-like sections.
+        </div>
+        <div class="source-note">Source: MahjForAll archival notes; individual reproduction cards available</div>
+      </div>
+    </div>
+
+    <!-- 1961 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">1961</div>
+          <div class="year-meta">
+            <span class="meta-pill highlight">YEAR ALIGNMENT</span>
+            <span class="meta-pill">8 Jokers Standard</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="milestone">✦ Year Hands Finally Aligned with Actual Calendar Year</div>
+        <div class="hist-note">
+          1961 marks the year when the Year section of the card finally matched the actual year being played. This alignment has been maintained ever since (except for years containing zero digits, handled by Soap tiles). The 8-Joker set also became standardized around this era.
+        </div>
+        <div class="source-note">Source: MahjForAll archival notes</div>
+      </div>
+    </div>
+
+    <!-- 1962–1979 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">1962–1979</div>
+          <div class="year-meta">
+            <span class="meta-pill">8 Jokers</span>
+            <span class="meta-pill">8 Flowers</span>
+            <span class="meta-pill">No Zero Tiles</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          Through the 1960s and 70s, the modern NMJL card structure solidified. Eight Jokers and eight Flowers became standard. The major outstanding issue: years containing a zero digit (1960, 1970) had no clear tile representation for "0" — that wouldn't be solved until 1980. Cards from 1970 either skipped Year Hands or used alternative number arrangements. MahjForAll reproduces all years in this range.
+        </div>
+        <span class="section-label">Standard Sections (1960s–70s)</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Year Hands (digits of current year)</div>
+              <div class="hand-note">Zero years (1960, 1970) handled without Soap/zero tile — workarounds used</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Like Numbers</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Consecutive Runs</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Winds & Dragons</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Singles & Pairs (formalized by this era)</div>
+            </div>
+          </div>
+        </div>
+        <div class="source-note">Source: MahjForAll archive; community documentation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODERN ERA: 1980–2014 -->
+  <div class="era-section" data-era="modern">
+    <h2 class="section-label">Modern Era · 1980–2014</h2>
+
+    <!-- 1980 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">1980</div>
+          <div class="year-meta">
+            <span class="meta-pill highlight">ZERO TILE DEBUT</span>
+            <span class="meta-pill">Soap = 0</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="milestone">✦ White Dragon (Soap) Officially Adopted as Zero — First Zero-Year Card</div>
+        <div class="hist-note">
+          1980 introduced the Soap tile (White Dragon) as the standard stand-in for zero on Year Hands. This solved the longstanding problem of years containing "0" and became a permanent rule. The 1980 card was the first to use this convention, which remains in use today (2020, 2026, etc.).
+        </div>
+        <div class="source-note">Source: MahjForAll "Did You Know?" archival notes</div>
+      </div>
+    </div>
+
+    <!-- 1981–1998 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">1981–1998</div>
+          <div class="year-meta">
+            <span class="meta-pill">8 Jokers</span>
+            <span class="meta-pill">8 Flowers</span>
+            <span class="meta-pill">Soap = Zero Standard</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          These years represent the classic NMJL card format in its mature state. The structure of sections was well-established. Exact hand compositions changed annually. MahjForAll reproduces all individual years through this period. The community began growing significantly during the 1990s, and card analysis culture (comparing year-to-year changes) started informally.
+          <br><br>
+          Note: The 2025 card analysis referenced a specific CR/7 hand that "originally appeared on a NMJL card back in the 90s" — confirming that some hands recur across decades.
+        </div>
+        <div class="source-note">Source: MahjForAll archive; ILoveMahj 2025 analysis (citing 1990s hands)</div>
+      </div>
+    </div>
+
+    <!-- 1999 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">1999</div>
+          <div class="year-meta">
+            <span class="meta-pill highlight">FIRST ALT CARD</span>
+            <span class="meta-pill">Alternative Card Debuts</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="milestone">✦ First Known Alternative Card Released (non-NMJL)</div>
+        <div class="hist-note">
+          1999 saw the first known alternative American Mah Jongg card published by a third party. These alternative cards use the NMJL framework (three suits, jokers, Charleston, flowers, 14-tile structure) but introduce new hands and rules. Gladys Grad's Siamese/Tournament card is the most prominent alternative, notable for creative hands not typically seen on the NMJL card. Several independent publishers now offer alternatives.
+        </div>
+        <div class="source-note">Source: Mahj Life, "American Mah Jongg Article 162"</div>
+      </div>
+    </div>
+
+    <!-- 2000–2014 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">2000–2014</div>
+          <div class="year-meta">
+            <span class="meta-pill">8 Jokers · 8 Flowers</span>
+            <span class="meta-pill">Community Growth</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          The 2000s brought rapid growth in American Mah Jongg. Annual card analysis started appearing online. The NMJL grew from a few thousand members to hundreds of thousands. The card format remained consistent but hands evolved annually. The year section continued using Soap for zeros (2000, 2001, 2002, 2010 cards all required zero representations). Addition and multiplication hands were introduced during this era as a section novelty. MahjForAll reproduces all years 2000–2025.
+        </div>
+        <span class="section-label">Standard Modern Sections (2000s–2010s)</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Year (with Soap as zero)</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">2-4-6-8</div>
+              <div class="hand-note">Evens section — introduced as named section in modern era</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Any Like Numbers</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Quints</div>
+              <div class="hand-note">5-of-a-kind hands requiring at least 1 Joker</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Consecutive Run</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">1-3-5-7-9 (Odds)</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Winds & Dragons</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">3-6-9</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Singles & Pairs</div>
+              <div class="hand-note">No jokers allowed; highest point values on card</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Addition/Math Hands (appeared periodically)</div>
+              <div class="hand-note">e.g., 2+4=6, creative math-based combinations</div>
+            </div>
+          </div>
+        </div>
+        <div class="source-note">Source: Community analysis; MahjForAll archive; Mahj Life documentation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT ERA: 2015–2021 -->
+  <div class="era-section" data-era="recent">
+    <h2 class="section-label">Recent Era · 2015–2021</h2>
+
+    <!-- 2015–2021 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">2015–2021</div>
+          <div class="year-meta">
+            <span class="meta-pill">8 Jokers · 8 Flowers</span>
+            <span class="meta-pill">350,000+ members</span>
+            <span class="meta-pill">Online Analysis Era</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          This period saw the emergence of sophisticated annual card analysis from sites like ILoveMahj, The Mahjong Line, and others. Community hand tracking became formalized. Cards from 2015 onward were analyzed for hand counts, tile demand, difficulty ratings, and cross-year comparisons. The NMJL reached 350,000+ members.
+          <br><br>
+          Key structural data (from Bam Good Time's 11-year analysis of 2015–2025 cards): total printed hands ranged from approximately 66 to 73 per year; concealed hands comprised roughly 14–16% of printed hands; point values ranged 25–75 (35-point hands were removed sometime in this period and not restored).
+        </div>
+        <span class="section-label">Structural Range (2015–2021)</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Printed hands per year: ~66–73</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Concealed hand %: ~14–16%</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Point range: 25–75 (35-pt hands removed)</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">9 standard sections per card</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Addition/Multiplication hands appear periodically</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Quints section present most years</div>
+            </div>
+          </div>
+        </div>
+        <div class="source-note">Source: Bam Good Time 11-year card pattern analysis; community documentation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURRENT ERA: 2022–2026 -->
+  <div class="era-section" data-era="current">
+    <h2 class="section-label">Current Era · 2022–2026 · Fully Documented</h2>
+
+    <!-- 2022 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">2022</div>
+          <div class="year-meta">
+            <span class="meta-pill">~66 Hands</span>
+            <span class="meta-pill">3 Twos in Year</span>
+            <span class="meta-pill">Joker Rule Note Added</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          The 2022 card had an unusual year composition: three 2s and two 2s (for "2022"), creating high demand for 2-tiles. The NMJL added a note directly on the front of the card: "JOKERS MAY NOT BE USED IN A 2022 GROUPING" to clarify that the four-digit year grouping uses singles, not a kong. Approximately 66 printed hands (fewer than most recent years). The card prompted significant community confusion around the year hand joker rule, which carried forward into 2023 (the note was eventually removed in 2023 as causing more confusion than it solved).
+        </div>
+        <span class="section-label">2022 Section</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">1</span>
+            <div class="hand-content">
+              <div class="hand-notation">2022 grouping — four singles (2, 0, 2, 2)</div>
+              <div class="hand-note">No jokers in year grouping; Soap=0</div>
+            </div>
+            <div class="hand-badges"><span class="hand-badge badge-c">C</span></div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">2</span>
+            <div class="hand-content">
+              <div class="hand-notation">Large year-based hands involving 2s and Soaps</div>
+              <div class="hand-note">Three 2s created high tile demand this year</div>
+            </div>
+          </div>
+        </div>
+        <span class="section-label">Singles & Pairs (documented)</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">5</span>
+            <div class="hand-content">
+              <div class="hand-notation">11 22 33 44 55 66 77 (seven consecutive pairs, 1 suit)</div>
+              <div class="hand-note">SP/5 — concealed, high value</div>
+            </div>
+            <div class="hand-badges"><span class="hand-badge badge-c">C</span></div>
+          </div>
+        </div>
+        <div class="source-note">Source: Tom Sloper FAQ 2022; Modern Mahjong; ILoveMahj 2023</div>
+      </div>
+    </div>
+
+    <!-- 2023 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">2023</div>
+          <div class="year-meta">
+            <span class="meta-pill">70 Hands</span>
+            <span class="meta-pill">756 Permutations</span>
+            <span class="meta-pill">Addition Hands Return</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          70 printed hands representing 756 possible permutations across the card. The 2023 card was described by analysts as "more conventional" than the unusual 2022 card. Addition Hands returned as a section, and the controversial joker note was removed. Eight hands carried over from previous years, confirming the practice of recycling strong hands across decades.
+        </div>
+        <span class="section-label">Key Stats</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">70 printed hands</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">756 total permutations</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">13 concealed hands</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">8 non-concealed 30-pt hands</div>
+            </div>
+          </div>
+        </div>
+        <div class="source-note">Source: ILoveMahj 2023; The Mahjong Line 2023; Tom Sloper FAQ 2023; St. Louis Jewish Light</div>
+      </div>
+    </div>
+
+    <!-- 2024 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">2024</div>
+          <div class="year-meta">
+            <span class="meta-pill">73 Hands</span>
+            <span class="meta-pill">1,683 Permutations</span>
+            <span class="meta-pill">Q/2 Monster Hand</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          The 2024 card was described by community analysts as "exciting, creative and unique." 73 printed hands with 1,683 total permutations across the card. Addition and Multiplication hands both returned. The standout feature: a legendary "monster" Quints/2 hand that alone accounts for 864 permutations — a testament to the extraordinary complexity of that single hand configuration. This is one of the most heavily featured hands in recent NMJL history.
+        </div>
+        <span class="section-label">Key Stats</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">73 printed hands</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">1,683 total permutations</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">6 non-concealed 30-pt hands</div>
+            </div>
+          </div>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Q/2 hand accounts for 864 permutations alone</div>
+            </div>
+          </div>
+        </div>
+        <div class="source-note">Source: ILoveMahj 2024; The Mahjong Line 2024; Southern Sparrow</div>
+      </div>
+    </div>
+
+    <!-- 2025 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">2025</div>
+          <div class="year-meta">
+            <span class="meta-pill">71 Hands</span>
+            <span class="meta-pill">1,002 Permutations</span>
+            <span class="meta-pill">No Quints Section</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          The 2025 card contains 71 printed hands representing 1,002 permutations. Approximately 10 hands are concealed. Nine sections appear on the card (No Quints section this year). Educational material follows to help players understand the structure and rules of each section, complete with SVG tile sample solutions.
+        </div>
+
+        <!-- 2025 YEAR SECTION -->
+        <span class="section-label">2025 Year &amp; W&D Section</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Year Hands use the digits of 2025 to build pungs (3-of-a-kind), kongs (4-of-a-kind), or pairs. Soap (White Dragon) represents 0. The unique arrangement of the year digits creates a specific pattern. Winds & Dragons hands use only winds (N, E, S, W), dragons (Red, Green, White/Soap), and flowers as combinations.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>The year grouping often uses singles or small melds built from 2-0-2-5 digits</li>
+              <li>Soap tile (White Dragon) always represents zero on year hands</li>
+              <li>Winds are N, E, S, W; Dragons are R (Red), G (Green), 0/Soap (White)</li>
+              <li>Flowers are suitless and can pair with any hand</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2025-year"></div>
+            <span class="sample-explain">The singles spell 2025 (Soap=0). The pung uses the first year digit in one suit; the kong uses the second year digit in a different suit. Three suits total.</span>
+          </div>
+        </div>
+
+        <!-- 2025 EVENS SECTION -->
+        <span class="section-label">2025 Evens (2-4-6-8)</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> All numbered tiles in the hand are even numbers (2, 4, 6, 8) across the three suits. Flowers and dragons are typically included. Jokers can be used freely.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>All numbered tiles must be even: 2, 4, 6, or 8 only</li>
+              <li>No 1, 3, 5, 7, or 9 numbered tiles allowed</li>
+              <li>Flowers, winds, and dragons can be used without restriction</li>
+              <li>Jokers substitute for any tile in the hand</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2025-evens"></div>
+            <span class="sample-explain">Two Flowers (suitless), a kong of 6-Bam, pairs of 2-Bam and 4-Crak, and a kong of 8-Crak. Two suits.</span>
+          </div>
+        </div>
+
+        <!-- 2025 ANY LIKE NUMBERS SECTION -->
+        <span class="section-label">2025 Any Like Numbers</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Three or four melds (groups) where each group consists of the same number in different suits. For example, three pungs of 7 (one 7-Bam, one 7-Crak, one 7-Dot) plus a pair. The number can be any 1–9.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Pick any number from 1–9</li>
+              <li>Use that number across different suits in pungs, kongs, or pairs</li>
+              <li>Typically three suit-groups (all the same number, each in a different suit)</li>
+              <li>Flowers and dragons appear as additional melds or pairs</li>
+              <li>Jokers can substitute within the number-melds</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2025-any-like"></div>
+            <span class="sample-explain">All three suit-pungs use 7. Green Dragons (any dragon is valid). Two Flowers.</span>
+          </div>
+        </div>
+
+        <!-- 2025 QUINT-STYLE SECTION -->
+        <span class="section-label">2025 Quint-Style (Embedded Example)</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Quint hands are 5-of-a-kind melds (requiring exactly one Joker per quint). These appear as a structural variant rather than a full section. Hands may feature one or more quints combined with pairs and smaller melds.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>A quint = 4 tiles of the same number + 1 Joker (must be used this way)</li>
+              <li>Each quint requires exactly one Joker</li>
+              <li>Quints can appear in different suits or combined with winds/dragons</li>
+              <li>Remaining melds follow standard pung-kong-pair rules</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2025-quint"></div>
+            <span class="sample-explain">Consecutive run of 4-5-6 in Dots. The quint of 6 uses one Joker.</span>
+          </div>
+        </div>
+
+        <!-- 2025 CONSECUTIVE RUN SECTION -->
+        <span class="section-label">2025 Consecutive Run</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> A sequence of consecutive numbers (like 1-2-3-4-5 or 3-4-5-6-7) all in the same suit, grouped into melds. The entire run can span one or multiple melds and suits.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Numbers must be consecutive: 1-2-3-4-5, 2-3-4-5-6, etc.</li>
+              <li>The run can be split across multiple melds (e.g., a pair of 1, then pung of 2-3-4)</li>
+              <li>Flowers are typically included as a separate pair</li>
+              <li>Jokers can substitute within the run</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2025-consec"></div>
+            <span class="sample-explain">Three Flowers, then two full five-number runs in different suits. No jokers anywhere — pure wall hand.</span>
+          </div>
+        </div>
+
+        <!-- 2025 ODDS SECTION -->
+        <span class="section-label">2025 Odds (1-3-5-7-9)</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> All numbered tiles must be odd (1, 3, 5, 7, 9) across the three suits. Flowers and dragons are included. Jokers can be used freely.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>All numbered tiles must be odd: 1, 3, 5, 7, or 9 only</li>
+              <li>No even numbers (2, 4, 6, 8) allowed</li>
+              <li>Flowers, winds, and dragons can be used without restriction</li>
+              <li>Jokers substitute for any tile</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2025-odds"></div>
+            <span class="sample-explain">Alternating pungs and kongs of odd numbers. Three suits required. No flowers on this one.</span>
+          </div>
+        </div>
+
+        <!-- 2025 WINDS & DRAGONS SECTION -->
+        <span class="section-label">2025 Winds & Dragons</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Hands composed only of winds (N, E, S, W), dragons (Red, Green, White/Soap), and flowers. No numbered tiles at all.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Only winds (N, E, S, W), dragons (R/Red, G/Green, 0/Soap), and flowers</li>
+              <li>No numbered tiles from any suit</li>
+              <li>Jokers can be used to complete pungs, kongs, or pairs</li>
+              <li>Flowers are typically a pair or small grouping</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2025-wd"></div>
+            <span class="sample-explain">Four wind pairs + two dragon pungs. All concealed. No jokers in pairs.</span>
+          </div>
+        </div>
+
+        <!-- 2025 3-6-9 SECTION -->
+        <span class="section-label">2025 3-6-9</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Hands using only tiles numbered 3, 6, or 9 (plus flowers and dragons). The number set creates a restricted palette of exactly 9 numeric tiles across all suits.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Numbered tiles are limited to 3, 6, and 9 only</li>
+              <li>These numbers appear across all three suits (Bam, Crak, Dot)</li>
+              <li>Flowers and dragons can be used freely</li>
+              <li>Jokers substitute within the 3-6-9 palette</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2025-369"></div>
+            <span class="sample-explain">Flowers + pung of 3 + kong of 6 + kong of 9. Two suits.</span>
+          </div>
+        </div>
+
+        <!-- 2025 SINGLES & PAIRS SECTION -->
+        <span class="section-label">2025 Singles & Pairs</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Hands where all 14 tiles are either single tiles (appearing once) or pairs (two identical tiles). No pungs, kongs, or melds — and crucially, <strong>no Jokers allowed</strong>. These are typically the highest-point hands on the card.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>All 14 tiles must be singles or pairs only</li>
+              <li><strong>NO Jokers permitted</strong> in this section</li>
+              <li>Maximum of one pair at a time (since 14 tiles = 7 pairs, or mix of singles and pairs totaling 14)</li>
+              <li>Flowers can appear as part of the singles or as a pair</li>
+              <li>Typically worth 25–75 points (highest-value hands)</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2025-sp"></div>
+            <span class="sample-explain">Eight pairs — four evens in Bam, four evens in Crak. All concealed, no jokers.</span>
+          </div>
+        </div>
+
+        <!-- 2025 BIG HAND SECTION -->
+        <span class="section-label">2025 Big Hand (Special)</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> A unique special hand built around the year digits and flowers. This is a showcase hand that demonstrates the beauty of the year pattern combined with flowers and a specific structure.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Year digits form the core of the hand (2-0-2-5 in 2025)</li>
+              <li>Flowers are often featured prominently</li>
+              <li>The pattern must use all tiles as singles or in small melds</li>
+              <li>No Jokers typically allowed, demonstrating "pure" play</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2025-big"></div>
+            <span class="sample-explain">Two Flowers + three repetitions of the 2025 digit singles, one per suit. All 16 tiles are singles or the Flower pair — no jokers anywhere.</span>
+          </div>
+        </div>
+
+        <div class="source-note">Source: American Mah Jongg Association public breakdowns; ILoveMahj 2025; Modern Mahjong; community analysis</div>
+      </div>
+    </div>
+
+    <!-- 2026 -->
+    <div class="year-block" onclick="toggleYear(this)">
+      <div class="year-header">
+        <div class="year-header-left">
+          <div class="year-label">2026</div>
+          <div class="year-meta">
+            <span class="meta-pill">69 Hands</span>
+            <span class="meta-pill">1,458 Permutations</span>
+            <span class="meta-pill">Quints Return</span>
+          </div>
+        </div>
+        <span class="year-toggle">▼</span>
+      </div>
+      <div class="year-body">
+        <div class="hist-note">
+          The 2026 card features 69 printed hands representing 1,458 permutations. Quints section returns after a year's absence. The card is characterized by heavy Flower content (including a sextet of Flowers — 6-of-a-kind), a pung-kong dominant structure, and year digits split across multiple suits. Approximately 11 hands are concealed. Ten sections appear on the card.
+        </div>
+
+        <!-- 2026 YEAR SECTION -->
+        <span class="section-label">2026 Year Section</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Year Hands in 2026 use the digits 2-0-2-6 (where Soap = 0). The distinctive feature of 2026: an extremely heavy Flower presence, including a potential sextet (6 Flowers). Year digits are distributed across different suits, creating multiple melds.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Year digits form the core (2-0-2-6); Soap represents 0</li>
+              <li>Flowers appear in unusual quantities (up to 6 in a single hand)</li>
+              <li>Year digits may be split across two or three suits</li>
+              <li>Winds & Dragons can combine with year digits</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2026-year"></div>
+            <span class="sample-explain">Six Flowers (a sextet!) plus year digits 2-0-2-6 split across two suits. This illustrates the heavy flower + year digit structure.</span>
+          </div>
+        </div>
+
+        <!-- 2026 EVENS SECTION -->
+        <span class="section-label">2026 Evens (2-4-6-8)</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> All numbered tiles are even (2, 4, 6, 8). Flowers and dragons are included. The 2026 card emphasizes pungs and kongs over pairs in this section.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Only even numbers: 2, 4, 6, 8</li>
+              <li>Flowers and dragons add to the hand</li>
+              <li>Jokers can be used freely</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2026-evens"></div>
+            <span class="sample-explain">Three Flowers + kong of 2-Bam + kong of 4-Crak + pung of 6-Dot. Three suits, heavy pung-kong structure.</span>
+          </div>
+        </div>
+
+        <!-- 2026 ANY LIKE NUMBERS SECTION -->
+        <span class="section-label">2026 Any Like Numbers</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Three or four melds (same number across different suits). 2026 features multiple Flowers plus the like-number structure.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Same number across different suits</li>
+              <li>Flowers and dragons can be part of the hand</li>
+              <li>Jokers substitute within the number-melds</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2026-any-like"></div>
+            <span class="sample-explain">Four Flowers + kong of 5-Bam + pung of 5-Crak + pung of 5-Dot. Same number throughout.</span>
+          </div>
+        </div>
+
+        <!-- 2026 QUINTS SECTION -->
+        <span class="section-label">2026 Quints (Returned)</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Quints return for 2026! These are 5-of-a-kind melds (4 tiles + 1 Joker). Quints hands are highly prized for their complexity.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Quint = 4 identical tiles + 1 Joker (must be exact)</li>
+              <li>Each quint requires one Joker</li>
+              <li>Can appear in different suits or with winds/dragons</li>
+              <li>Remaining melds are standard pungs, kongs, pairs</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2026-quint"></div>
+            <span class="sample-explain">Two Flowers + quint of 3-Bam (using 1 Joker) + quint of 3-Crak (using 1 Joker) + pair of 3-Dot. Quints section returns for 2026.</span>
+          </div>
+        </div>
+
+        <!-- 2026 CONSECUTIVE RUN SECTION -->
+        <span class="section-label">2026 Consecutive Run</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Consecutive numbers (like 1-2-3-4-5) split into melds. 2026 features all three suits represented in the run, plus wind/dragon elements.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+              <ul>
+              <li>Numbers are consecutive</li>
+              <li>Can span multiple melds and suits</li>
+              <li>Flowers are typically a separate pair</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2026-consec"></div>
+            <span class="sample-explain">Two Flowers + run of 1-2-3 in all three suits + pung of Red Dragons. Compact, colorful hand.</span>
+          </div>
+        </div>
+
+        <!-- 2026 ODDS SECTION -->
+        <span class="section-label">2026 Odds (1-3-5-7-9)</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> All numbered tiles are odd (1, 3, 5, 7, 9). The 2026 card emphasizes kongs and pungs in this section.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Only odd numbers: 1, 3, 5, 7, 9</li>
+              <li>Flowers and dragons can be used freely</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2026-odds"></div>
+            <span class="sample-explain">Kong of 1-Bam + pung of 3-Crak + pung of 5-Dot + kong of 7-Bam. Three suits, pung-kong structure.</span>
+          </div>
+        </div>
+
+        <!-- 2026 WINDS & DRAGONS SECTION -->
+        <span class="section-label">2026 Winds & Dragons</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Hands composed only of winds, dragons, and flowers. No numbered tiles. 2026 features a simple classic pattern.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Only winds, dragons, and flowers</li>
+              <li>No numbered tiles</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2026-wd"></div>
+            <span class="sample-explain">Four wind pungs + pair of Red Dragons. Classic W&D structure.</span>
+          </div>
+        </div>
+
+        <!-- 2026 3-6-9 SECTION -->
+        <span class="section-label">2026 3-6-9</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> Only tiles numbered 3, 6, or 9. The 2026 card continues the pung-kong emphasis.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>Numbers limited to 3, 6, 9 only</li>
+              <li>Across all three suits</li>
+              <li>Flowers and dragons included</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2026-369"></div>
+            <span class="sample-explain">Three Flowers + kong of 3 + pung of 6 + kong of 9. Three suits.</span>
+          </div>
+        </div>
+
+        <!-- 2026 SINGLES & PAIRS SECTION -->
+        <span class="section-label">2026 Singles & Pairs</span>
+        <div class="edu-block">
+          <div class="edu-what">
+            <strong>What this section is:</strong> All 14 tiles are singles or pairs, with no Jokers allowed. The 2026 card uses year digits in this section, combined with flowers and other elements.
+          </div>
+          <div class="edu-rules">
+            <strong>Key rules:</strong>
+            <ul>
+              <li>14 tiles: all singles or pairs</li>
+              <li>NO Jokers</li>
+              <li>Year digits or other special combinations</li>
+            </ul>
+          </div>
+          <div class="edu-sample">
+            <strong>Sample solution:</strong>
+            <div class="sample-tiles-container" id="sample-2026-sp"></div>
+            <span class="sample-explain">Year digits 2-0-2-6 in three suits (12 singles) + pair of Flowers. All concealed, no jokers.</span>
+          </div>
+        </div>
+
+        <div class="source-note">Source: American Mah Jongg Association public breakdowns; community analysis; ILoveMahj 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPENDIX: MILESTONES -->
+  <div style="margin-top: 60px;">
+    <h2 class="section-label">Appendix: Key Milestones & Rules Evolution</h2>
+    <div class="hand-list">
+      <div class="hand-row">
+        <span class="hand-num">1937</span>
+        <div class="hand-content">
+          <div class="hand-notation">NMJL Founding — The First Card</div>
+          <div class="hand-note">No Jokers, ~6 Flowers. Simple pung/kong structure.</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">1940</span>
+        <div class="hand-content">
+          <div class="hand-notation">Joker Introduction Begins</div>
+          <div class="hand-note">Progressive adoption of Joker tiles throughout the 1940s (0–4 per card).</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">1954</span>
+        <div class="hand-content">
+          <div class="hand-notation">Year Hands Debut</div>
+          <div class="hand-note">First card to include hands built around current-year digits (though misaligned through 1960).</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">1961</span>
+        <div class="hand-content">
+          <div class="hand-notation">Year Hands Alignment</div>
+          <div class="hand-note">Year sections now match the actual calendar year being played.</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">1980</span>
+        <div class="hand-content">
+          <div class="hand-notation">Soap Tile Adopted as Zero</div>
+          <div class="hand-note">White Dragon (Soap) becomes the standard representation for 0 on year hands. Solves zero-digit-year problem.</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">1999</span>
+        <div class="hand-content">
+          <div class="hand-notation">First Alternative Card</div>
+          <div class="hand-note">Gladys Grad's Siamese/Tournament card introduces non-NMJL options.</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">2000s</span>
+        <div class="hand-content">
+          <div class="hand-notation">Online Analysis Era Begins</div>
+          <div class="hand-note">Community-driven card analysis; NMJL membership grows to 350,000+.</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">2020</span>
+        <div class="hand-content">
+          <div class="hand-notation">Pandemic & Digital Growth</div>
+          <div class="hand-note">Online play accelerates; card analysis tools proliferate. Detailed permutation counting becomes standard.</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">2022</span>
+        <div class="hand-content">
+          <div class="hand-notation">NMJL Adds Joker Rule Clarification</div>
+          <div class="hand-note">"JOKERS MAY NOT BE USED IN A 2022 GROUPING" note added to address unusual year composition confusion.</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">2023</span>
+        <div class="hand-content">
+          <div class="hand-notation">Joker Note Removed; Addition Hands Return</div>
+          <div class="hand-note">Clarification note removed (caused more confusion than it solved). Math hands reappear.</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">2024</span>
+        <div class="hand-content">
+          <div class="hand-notation">Q/2 Monster Hand (1,683-Permutation Card)</div>
+          <div class="hand-note">One single Quints/2 hand accounts for 864 permutations. "Exciting, creative, unique" year.</div>
+        </div>
+      </div>
+      <div class="hand-row">
+        <span class="hand-num">2025</span>
+        <div class="hand-content">
+          <div class="hand-notation">Quints Section Removed</div>
+          <div class="hand-note">No dedicated Quints section; Quint-style hands embedded. 71 hands, 1,002 permutations.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER NOTE -->
+  <div class="archive-footer-note">
+    NMJL Card History Archive · Order of the Tile Research · Data compiled from public community analysis, American Mah Jongg Association rulebook, and MahjForAll archival notes · NMJL does not publish official hand archives · Last updated April 2026
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer></footer>
+
+<!-- SVG TILE RENDERER -->
+<script src="shared.js"></script>
+<script>
+  // Tile rendering function
+  function renderSVGTile(notation) {
+    const w = 34, h = 46;
+    const suits = {
+      B: { name: 'Bam', color: '#2D5A27', light: '#e8f0e6' },
+      C: { name: 'Crak', color: '#8B2252', light: '#f5e6ec' },
+      D: { name: 'Dot', color: '#2B4570', light: '#e6ecf3' }
+    };
+    const specials = {
+      N:  { label: 'N', sub: 'wind', bg: '#1A1412', fg: '#F5F0E8', border: '#1A1412' },
+      E:  { label: 'E', sub: 'wind', bg: '#1A1412', fg: '#F5F0E8', border: '#1A1412' },
+      S:  { label: 'S', sub: 'wind', bg: '#1A1412', fg: '#F5F0E8', border: '#1A1412' },
+      W:  { label: 'W', sub: 'wind', bg: '#1A1412', fg: '#F5F0E8', border: '#1A1412' },
+      R:  { label: 'R', sub: 'dragon', bg: '#F5F0E8', fg: '#8B2252', border: '#8B2252' },
+      G:  { label: 'G', sub: 'dragon', bg: '#F5F0E8', fg: '#2D5A27', border: '#2D5A27' },
+      '0': { label: '0', sub: 'soap', bg: '#FFFFFF', fg: '#C9B8C4', border: '#C9B8C4' },
+      F:  { label: 'F', sub: 'flower', bg: '#f5eef7', fg: '#9B72A0', border: '#9B72A0' },
+      J:  { label: 'J', sub: 'joker', bg: '#fff5ee', fg: '#D48B4E', border: '#F2A97A' }
+    };
+
+    // Determine tile type
+    let num = null, suit = null, spec = null;
+    if (notation.length === 2 && '123456789'.includes(notation[0]) && 'BCD'.includes(notation[1])) {
+      num = notation[0]; suit = notation[1];
+    } else {
+      spec = specials[notation];
+    }
+
+    let svg = `<svg class="tile-svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="display:inline-block;margin:0 1.5px;vertical-align:middle;">`;
+    // Shadow
+    svg += `<rect x="1" y="2" width="${w-2}" height="${h-2}" rx="3" fill="rgba(26,20,18,0.08)"/>`;
+
+    if (num && suit) {
+      const s = suits[suit];
+      // Tile body
+      svg += `<rect x="0.5" y="0.5" width="${w-1}" height="${h-3}" rx="3" fill="#FFFDF9" stroke="${s.color}" stroke-width="0.75"/>`;
+      // Suit color strip at top
+      svg += `<rect x="0.5" y="0.5" width="${w-1}" height="4" rx="3" fill="${s.color}"/>`;
+      svg += `<rect x="0.5" y="3" width="${w-1}" height="2" fill="${s.color}"/>`;
+      // Number
+      svg += `<text x="${w/2}" y="26" text-anchor="middle" font-size="16" font-weight="700" fill="${s.color}" font-family="'Playfair Display',serif">${num}</text>`;
+      // Suit letter
+      svg += `<text x="${w/2}" y="38" text-anchor="middle" font-size="8" font-weight="600" fill="${s.color}" font-family="'Crimson Text',serif" opacity="0.7">${suit === 'B' ? 'BAM' : suit === 'C' ? 'CRAK' : 'DOT'}</text>`;
+    } else if (spec) {
+      // Special tile body
+      svg += `<rect x="0.5" y="0.5" width="${w-1}" height="${h-3}" rx="3" fill="${spec.bg}" stroke="${spec.border}" stroke-width="0.75"/>`;
+      if (spec.sub === 'wind') {
+        // Dark background for winds
+        svg += `<text x="${w/2}" y="27" text-anchor="middle" font-size="16" font-weight="700" fill="${spec.fg}" font-family="'Playfair Display',serif">${spec.label}</text>`;
+        svg += `<text x="${w/2}" y="38" text-anchor="middle" font-size="7" fill="rgba(245,240,232,0.5)" font-family="'Crimson Text',serif">WIND</text>`;
+      } else if (spec.sub === 'soap') {
+        // Soap / zero — subtle circle
+        svg += `<circle cx="${w/2}" cy="20" r="8" fill="none" stroke="${spec.fg}" stroke-width="1" opacity="0.5"/>`;
+        svg += `<text x="${w/2}" y="38" text-anchor="middle" font-size="7" fill="${spec.fg}" font-family="'Crimson Text',serif" opacity="0.6">SOAP</text>`;
+      } else if (spec.sub === 'flower') {
+        // Flower with petal shape
+        svg += `<text x="${w/2}" y="24" text-anchor="middle" font-size="14" fill="${spec.fg}">✿</text>`;
+        svg += `<text x="${w/2}" y="38" text-anchor="middle" font-size="7" font-weight="600" fill="${spec.fg}" font-family="'Crimson Text',serif" opacity="0.7">FLWR</text>`;
+      } else if (spec.sub === 'joker') {
+        // Joker — star
+        svg += `<text x="${w/2}" y="24" text-anchor="middle" font-size="14" fill="${spec.fg}">★</text>`;
+        svg += `<text x="${w/2}" y="38" text-anchor="middle" font-size="7" font-weight="700" fill="${spec.fg}" font-family="'Crimson Text',serif">JOKER</text>`;
+      } else if (spec.sub === 'dragon') {
+        svg += `<text x="${w/2}" y="27" text-anchor="middle" font-size="16" font-weight="700" fill="${spec.fg}" font-family="'Playfair Display',serif">${spec.label}</text>`;
+        svg += `<text x="${w/2}" y="38" text-anchor="middle" font-size="7" fill="${spec.fg}" font-family="'Crimson Text',serif" opacity="0.6">DRGN</text>`;
+      }
+    } else {
+      // Unknown
+      svg += `<rect x="0.5" y="0.5" width="${w-1}" height="${h-3}" rx="3" fill="#FFFDF9" stroke="#ccc" stroke-width="0.75"/>`;
+      svg += `<text x="${w/2}" y="26" text-anchor="middle" font-size="12" fill="#999" font-family="'Crimson Text',serif">?</text>`;
+    }
+
+    svg += `</svg>`;
+    return svg;
+  }
+
+  function renderTiles(notationString) {
+    const tiles = notationString.split(' ');
+    let html = '';
+
+    for (let i = 0; i < tiles.length; i++) {
+      if (tiles[i] === '|') {
+        html += `<div class="tile-group-divider"></div>`;
+      } else {
+        html += renderSVGTile(tiles[i]);
+      }
+    }
+
+    return html;
+  }
+
+  // Initialize tile samples
+  document.getElementById('sample-2025-year').innerHTML = renderTiles('2B 0 2D 5C | 2B 2B 2B | 5D 5D 5D 5D');
+  document.getElementById('sample-2025-evens').innerHTML = renderTiles('F F | 6B 6B 6B 6B | 2B 2B | 4C 4C | 8C 8C 8C 8C');
+  document.getElementById('sample-2025-any-like').innerHTML = renderTiles('F F | 7B 7B 7B | 7C 7C 7C | 7D 7D 7D | G G G');
+  document.getElementById('sample-2025-quint').innerHTML = renderTiles('F F | 4D 4D 4D | 5D 5D 5D 5D | 6D 6D 6D 6D J');
+  document.getElementById('sample-2025-consec').innerHTML = renderTiles('F F F | 3C 4C 5C 6C 7C | 3B 4B 5B 6B 7B');
+  document.getElementById('sample-2025-odds').innerHTML = renderTiles('1B 1B 1B | 3B 3B 3B | 5C 5C 5C 5C | 7D 7D 7D 7D');
+  document.getElementById('sample-2025-wd').innerHTML = renderTiles('N N | E E | W W | S S | R R R | G G G');
+  document.getElementById('sample-2025-369').innerHTML = renderTiles('F F | 3B 3B 3B | 6B 6B 6B 6B | 9C 9C 9C 9C');
+  document.getElementById('sample-2025-sp').innerHTML = renderTiles('2B 2B | 4B 4B | 6B 6B | 8B 8B | 2C 2C | 4C 4C | 6C 6C | 8C 8C');
+  document.getElementById('sample-2025-big').innerHTML = renderTiles('F F | 2B 0 2B 5B | 2C 0 2C 5C | 2D 0 2D 5D');
+
+  document.getElementById('sample-2026-year').innerHTML = renderTiles('F F F F F F | 2D 0 2D 6D | 2C 0 2C 6C');
+  document.getElementById('sample-2026-evens').innerHTML = renderTiles('F F F | 2B 2B 2B 2B | 4C 4C 4C 4C | 6D 6D 6D');
+  document.getElementById('sample-2026-any-like').innerHTML = renderTiles('F F F F | 5B 5B 5B 5B | 5C 5C 5C | 5D 5D 5D');
+  document.getElementById('sample-2026-quint').innerHTML = renderTiles('F F | 3B 3B 3B 3B J | 3C 3C 3C 3C J | 3D 3D');
+  document.getElementById('sample-2026-consec').innerHTML = renderTiles('F F | 1B 2B 3B | 1C 2C 3C | 1D 2D 3D | R R R');
+  document.getElementById('sample-2026-odds').innerHTML = renderTiles('1B 1B 1B 1B | 3C 3C 3C | 5D 5D 5D | 7B 7B 7B 7B');
+  document.getElementById('sample-2026-wd').innerHTML = renderTiles('N N N | E E E | S S S | W W W | R R');
+  document.getElementById('sample-2026-369').innerHTML = renderTiles('F F F | 3B 3B 3B 3B | 6C 6C 6C | 9D 9D 9D 9D');
+  document.getElementById('sample-2026-sp').innerHTML = renderTiles('2B 0 2B 6B | 2C 0 2C 6C | 2D 0 2D 6D | F F');
+
+  // Toggle functionality
+  function toggleYear(header) {
+    const block = header.closest('.year-block');
+    block.classList.toggle('open');
+  }
+
+  // Filter functionality
+  function filterEra(era) {
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    const sections = document.querySelectorAll('.era-section');
+    sections.forEach(sec => {
+      if (era === 'all' || sec.getAttribute('data-era') === era) {
+        sec.style.display = 'block';
+      } else {
+        sec.style.display = 'none';
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

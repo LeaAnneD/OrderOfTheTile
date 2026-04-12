@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community — The Order of the Tile</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.section-label { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk); margin-bottom: 20px; }
+
+.page-hero { padding: 130px 56px 64px; max-width: 1100px; margin: 0 auto; border-bottom: 0.5px solid var(--lilac); }
+.page-hero-eyebrow { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk); margin-bottom: 18px; }
+.page-hero-headline { font-family: var(--serif); font-size: clamp(36px, 5vw, 60px); font-weight: 500; line-height: 1.1; color: var(--ink); margin-bottom: 20px; }
+.page-hero-headline em { font-style: italic; color: var(--orchid); }
+.page-hero-sub { font-family: var(--body); font-size: 18px; color: var(--dusk); line-height: 1.75; max-width: 560px; }
+
+/* VOICES */
+.voices-section { max-width: 1100px; margin: 0 auto; padding: 64px 56px; }
+.voices-section h2 { font-family: var(--serif); font-size: 28px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+.voices-intro { font-family: var(--body); font-size: 17px; color: var(--dusk); margin-bottom: 40px; max-width: 540px; }
+.voices-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px; }
+
+.voice-card { background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 6px; padding: 28px; transition: border-color 0.2s; }
+.voice-card:hover { border-color: var(--orchid); }
+.voice-initial { width: 48px; height: 48px; border-radius: 50%; background: var(--ivory); border: 0.5px solid var(--lilac); display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 18px; font-weight: 500; color: var(--orchid); margin-bottom: 16px; }
+.voice-name { font-family: var(--serif); font-size: 18px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.voice-location { font-family: var(--body); font-size: 13px; color: var(--dusk); margin-bottom: 12px; font-style: italic; }
+.voice-desc { font-family: var(--body); font-size: 15px; color: var(--dusk); line-height: 1.6; margin-bottom: 16px; }
+.voice-link { font-family: var(--body); font-size: 13px; color: var(--melon); border-bottom: 0.5px solid var(--melon); padding-bottom: 1px; text-decoration: none; }
+
+/* EVENTS */
+.events-section { background: var(--ivory); padding: 64px 56px; }
+.events-inner { max-width: 1100px; margin: 0 auto; }
+.events-inner h2 { font-family: var(--serif); font-size: 28px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+.events-intro { font-family: var(--body); font-size: 17px; color: var(--dusk); margin-bottom: 40px; max-width: 540px; }
+.events-list { display: flex; flex-direction: column; gap: 16px; }
+.event-row { background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 6px; padding: 24px 28px; display: grid; grid-template-columns: 80px 1fr auto; gap: 24px; align-items: center; transition: border-color 0.2s; }
+.event-row:hover { border-color: var(--orchid); }
+.event-date-block { text-align: center; }
+.event-month { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dusk); }
+.event-day { font-family: var(--serif); font-size: 32px; font-weight: 500; color: var(--ink); line-height: 1; }
+.event-name { font-family: var(--serif); font-size: 18px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.event-detail { font-family: var(--body); font-size: 14px; color: var(--dusk); }
+.event-status { font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 20px; white-space: nowrap; }
+.event-status.open { background: #eaf3de; color: #3B6D11; }
+.event-status.fast { background: var(--butter); color: #5a4020; }
+.event-status.sold { background: #fce8e8; color: #a32d2d; }
+
+/* TILE ENVY */
+.envy-section { max-width: 1100px; margin: 0 auto; padding: 64px 56px 80px; }
+.envy-section h2 { font-family: var(--serif); font-size: 28px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+.envy-intro { font-family: var(--body); font-size: 17px; color: var(--dusk); margin-bottom: 40px; max-width: 540px; }
+.envy-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
+.envy-card { background: var(--ivory); border: 0.5px solid var(--lilac); border-radius: 6px; padding: 20px; }
+.envy-brand { font-family: var(--serif); font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.envy-desc { font-family: var(--body); font-size: 13px; color: var(--dusk); line-height: 1.5; margin-bottom: 12px; }
+.envy-link { font-family: var(--body); font-size: 12px; color: var(--melon); border-bottom: 0.5px solid var(--melon); text-decoration: none; }
+
+.section-nav { border-bottom: 0.5px solid var(--lilac); background: var(--cloud); position: sticky; top: 64px; z-index: 50; }
+.section-nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 56px; display: flex; gap: 0; }
+.section-nav-link { font-family: var(--serif); font-size: 16px; color: var(--dusk); text-decoration: none; padding: 16px 28px 18px; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; display: inline-block; }
+.section-nav-link:hover { color: var(--ink); }
+.section-nav-link.active { color: var(--ink); border-bottom-color: var(--melon); }
+
+</style>
+</head>
+<body>
+
+<nav></nav>
+
+<div class="page-hero">
+  <p class="page-hero-eyebrow">The Table</p>
+  <h1 class="page-hero-headline">The people who<br><em>make this game.</em></h1>
+  <p class="page-hero-sub">The voices, teachers, makers, and organizers who keep American Mahjong alive and extraordinary. Prim has been watching them. She is pleased to make the introduction.</p>
+</div>
+
+<div class="section-nav">
+  <div class="section-nav-inner">
+    <a href="#voices" class="section-nav-link active">Voices Worth Knowing</a>
+    <a href="#events" class="section-nav-link">Set Your Rack</a>
+    <a href="#envy" class="section-nav-link">Tile Envy</a>
+  </div>
+</div>
+
+<div class="voices-section" id="voices">
+  <p class="section-label">Who's Talking</p>
+  <h2>Voices worth knowing.</h2>
+  <p class="voices-intro">Featured in The Order of the Tile. These are the people shaping American Mahjong right now.</p>
+  <div class="voices-grid">
+
+    <div class="voice-card">
+      <div class="voice-initial">M</div>
+      <div class="voice-name">Missy Mahjong</div>
+      <div class="voice-location">Nashville, TN</div>
+      <p class="voice-desc">Certified instructor and one of the most trusted voices in American Mahjong education. If you have watched a tutorial that actually made sense, there is a good chance Missy made it.</p>
+      <a href="https://missymahjong.com" target="_blank" rel="noopener" class="voice-link">missymahjong.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">MM</div>
+      <div class="voice-name">Modern Mahjong</div>
+      <div class="voice-location">Dara Collins & Donna Kassman</div>
+      <p class="voice-desc">Bringing a fresh editorial eye to the game. Their content sits at the intersection of strategy and style, which is exactly where Prim likes to live.</p>
+      <a href="https://modernmahjong.com" target="_blank" rel="noopener" class="voice-link">modernmahjong.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">ML</div>
+      <div class="voice-name">Mahj Life</div>
+      <div class="voice-location">Michele Frizzell</div>
+      <p class="voice-desc">Community building at its finest. Michele understands that the game is about more than the tiles, and her work reflects that understanding completely.</p>
+      <a href="https://mahjlife.com" target="_blank" rel="noopener" class="voice-link">mahjlife.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">OMM</div>
+      <div class="voice-name">Oh My Mahjong</div>
+      <div class="voice-location">205K Instagram followers</div>
+      <p class="voice-desc">The largest American Mahjong community on Instagram. Trend-forward, beautifully shot, and genuinely in love with the game.</p>
+      <a href="https://ohmymahjong.com" target="_blank" rel="noopener" class="voice-link">ohmymahjong.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">SS</div>
+      <div class="voice-name">Southern Sparrow</div>
+      <div class="voice-location">Chinoiserie & Premium Acrylic</div>
+      <p class="voice-desc">Where the aesthetic of the game meets genuine craft. Their sets are as beautiful as anything on the market, and they know it.</p>
+      <a href="https://southernsparrow.com" target="_blank" rel="noopener" class="voice-link">southernsparrow.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">BM</div>
+      <div class="voice-name">Bespoke Mahjong</div>
+      <div class="voice-location">Designer Collaborations</div>
+      <p class="voice-desc">Sets that belong in a museum. Bespoke Mahjong treats the tile as an art object, and every collaboration proves why that approach is correct.</p>
+      <a href="https://bespokemahjong.com" target="_blank" rel="noopener" class="voice-link">bespokemahjong.com &rarr;</a>
+    </div>
+
+  </div>
+</div>
+
+<div class="events-section" id="events">
+  <div class="events-inner">
+    <p class="section-label">Set Your Rack</p>
+    <h2>Where to be this season.</h2>
+    <p class="events-intro">Tournaments, retreats, and gatherings worth marking on your calendar. Status updated weekly in The Letters.</p>
+    <div class="events-list">
+
+      <div class="event-row">
+        <div class="event-date-block">
+          <div class="event-month">May</div>
+          <div class="event-day">3</div>
+        </div>
+        <div>
+          <div class="event-name">Mah Jongg Fever Spring Classic</div>
+          <div class="event-detail">Charlotte, NC &mdash; mahjonggfever.com</div>
+        </div>
+        <span class="event-status open">Open</span>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-block">
+          <div class="event-month">Jun</div>
+          <div class="event-day">14</div>
+        </div>
+        <div>
+          <div class="event-name">Destination Mah Jongg Summer Tournament</div>
+          <div class="event-detail">Las Vegas, NV &mdash; destinationmahjongg.com</div>
+        </div>
+        <span class="event-status fast">Selling Fast</span>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-block">
+          <div class="event-month">Jul</div>
+          <div class="event-day">22</div>
+        </div>
+        <div>
+          <div class="event-name">Crak Your Bags Mediterranean Cruise</div>
+          <div class="event-detail">Barcelona departure &mdash; crakyourbags.com</div>
+        </div>
+        <span class="event-status sold">Sold Out</span>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-block">
+          <div class="event-month">Sep</div>
+          <div class="event-day">6</div>
+        </div>
+        <div>
+          <div class="event-name">Oh My Mahjong Mahji Mentor Conference</div>
+          <div class="event-detail">Location TBA &mdash; Annual instructor conference</div>
+        </div>
+        <span class="event-status open">Open</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="envy-section" id="envy">
+  <p class="section-label">Tile Envy</p>
+  <h2>Beauty worth coveting.</h2>
+  <p class="envy-intro">Sets, mats, and accessories that earn their place at the table. Prim does not list things she does not believe in.</p>
+  <div class="envy-grid">
+    <div class="envy-card">
+      <div class="envy-brand">The Mahjong Line</div>
+      <p class="envy-desc">Custom artistic sets. Where the game becomes an object of beauty.</p>
+      <a href="https://themahjongline.com" target="_blank" rel="noopener" class="envy-link">themahjongline.com</a>
+    </div>
+    <div class="envy-card">
+      <div class="envy-brand">My Fair Mahjong</div>
+      <p class="envy-desc">Crystal collections and destination themes. For the player who wants their set to tell a story.</p>
+      <a href="https://myfairmahjong.com" target="_blank" rel="noopener" class="envy-link">myfairmahjong.com</a>
+    </div>
+    <div class="envy-card">
+      <div class="envy-brand">Mahjong Row & Co.</div>
+      <p class="envy-desc">Heirloom-grade sets built for the home as much as the game. Weight, sound, and tactile beauty.</p>
+      <a href="https://mahjongrowandco.com" target="_blank" rel="noopener" class="envy-link">mahjongrowandco.com</a>
+    </div>
+    <div class="envy-card">
+      <div class="envy-brand">Peace Love Mahjong</div>
+      <p class="envy-desc">Modern and affordable without apology. The right set for a player just beginning to build their collection.</p>
+      <a href="https://peacelovemahjong.com" target="_blank" rel="noopener" class="envy-link">peacelovemahjong.com</a>
+    </div>
+  </div>
+</div>
+
+<footer></footer>
+<script src="shared.js"></script>
+<script>
+const navLinks = document.querySelectorAll('.section-nav-link');
+const sections = ['voices','events','envy'].map(id => document.getElementById(id));
+window.addEventListener('scroll', () => {
+  let current = 'voices';
+  sections.forEach(section => {
+    if (section && window.scrollY >= section.offsetTop - 120) {
+      current = section.id;
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+});
+navLinks.forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) window.scrollTo({ top: target.offsetTop - 100, behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

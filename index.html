@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Order of the Tile</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 100px 56px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 40px;
+  direction: rtl;
+}
+.hero-left, .hero-right { direction: ltr; }
+.hero-left { z-index: 2; }
+.hero-eyebrow {
+  font-family: var(--body); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk);
+  margin-bottom: 22px;
+  opacity: 0; animation: fadeUp 0.8s ease 0.1s forwards;
+}
+.hero-headline {
+  font-family: var(--serif); font-size: clamp(40px, 5.5vw, 68px);
+  font-weight: 500; line-height: 1.1; color: var(--ink); margin-bottom: 28px;
+  opacity: 0; animation: fadeUp 0.8s ease 0.25s forwards;
+}
+.hero-headline em { font-style: italic; color: var(--orchid); }
+.hero-sub {
+  font-family: var(--body); font-size: 18px; color: var(--dusk);
+  line-height: 1.75; margin-bottom: 40px; max-width: 480px;
+  opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards;
+}
+.hero-sub em { font-style: italic; color: var(--ink); }
+.hero-actions {
+  display: flex; align-items: center; gap: 24px;
+  opacity: 0; animation: fadeUp 0.8s ease 0.55s forwards;
+}
+.btn-ghost {
+  font-family: var(--body); font-size: 15px; color: var(--dusk);
+  text-decoration: none; border-bottom: 0.5px solid var(--lilac);
+  padding-bottom: 2px; transition: color 0.2s, border-color 0.2s;
+}
+.btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
+
+/* ENVELOPE */
+.hero-right {
+  position: relative; display: flex; justify-content: center; align-items: center;
+  opacity: 0; animation: fadeInEnvelope 1.2s ease 0.5s forwards;
+}
+.envelope-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  transform: rotate(-5deg) translateY(10px);
+}
+.envelope-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: high-quality;
+  
+}
+.seal-accent {
+  position: absolute; bottom: -20px; right: -20px;
+  width: 90px; height: 90px;
+  animation: floatSeal 4s ease-in-out infinite;
+}
+
+@keyframes floatSeal {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-8px) rotate(-3deg); }
+}
+@keyframes fadeInEnvelope {
+  from { opacity: 0; transform: translateX(-30px) translateY(20px) rotate(-5deg); }
+  to { opacity: 1; transform: translateX(0) translateY(10px) rotate(-5deg); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ISSUE TICKER */
+.ticker {
+  background: var(--ivory); border-top: 0.5px solid var(--lilac);
+  border-bottom: 0.5px solid var(--lilac);
+  padding: 14px 56px; display: flex; align-items: center; gap: 32px;
+}
+.ticker-label {
+  font-family: var(--body); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--dusk);
+  white-space: nowrap;
+}
+.ticker-text {
+  font-family: var(--serif); font-size: 15px; font-style: italic; color: var(--ink);
+}
+.ticker-link {
+  font-family: var(--body); font-size: 14px; color: var(--melon);
+  text-decoration: none; white-space: nowrap; margin-left: auto;
+  border-bottom: 0.5px solid var(--melon);
+}
+
+/* SCROLL STORY */
+.scroll-story { background: var(--ink); color: var(--cloud); padding: 130px 0 100px; }
+.scroll-inner { max-width: 700px; margin: 0 auto; padding: 0 56px; }
+.story-kicker {
+  font-family: var(--body); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--lilac);
+  margin-bottom: 56px; display: flex; align-items: center; gap: 14px;
+}
+.story-kicker::after { content: ''; display: block; width: 56px; height: 0.5px; background: var(--lilac); }
+
+.story-para {
+  font-family: var(--serif); font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 400; line-height: 1.7;
+  color: rgba(248,246,242,0.28);
+  margin-bottom: 44px;
+  transition: color 0.5s ease, transform 0.5s ease;
+  transform: translateY(10px);
+}
+.story-para.lit { color: var(--cloud); transform: translateY(0); }
+.story-para em { font-style: italic; color: var(--melon); }
+.story-para strong { font-weight: 500; color: var(--butter); }
+
+.story-divider {
+  width: 40px; height: 0.5px; background: rgba(201,184,196,0.4);
+  margin: 48px 0;
+}
+
+.story-closer {
+  font-family: var(--serif); font-size: clamp(22px, 3vw, 32px);
+  font-style: italic; color: var(--cloud); line-height: 1.5;
+  padding-top: 48px; border-top: 0.5px solid rgba(201,184,196,0.3);
+  margin-top: 16px;
+}
+
+.seal-divider {
+  display: flex; align-items: center; justify-content: center;
+  gap: 20px; padding: 56px 0; background: var(--ink);
+}
+.seal-divider-line { width: 80px; height: 0.5px; background: rgba(201,184,196,0.3); }
+.seal-divider img { width: 48px; height: 48px; opacity: 0.85; }
+
+/* ORNAMENT on light bg */
+.ornament-light {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; padding: 60px 0; background: var(--ivory);
+}
+.ornament-line { width: 72px; height: 0.5px; background: var(--lilac); }
+.ornament-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--lilac); }
+
+/* WHAT IS PRIM */
+.what-is { background: var(--ivory); padding: 80px 56px 100px; }
+.what-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+.section-label { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk); margin-bottom: 20px; }
+.what-left h2 { font-family: var(--serif); font-size: clamp(30px, 3.5vw, 44px); font-weight: 500; line-height: 1.2; color: var(--ink); margin-bottom: 24px; }
+.what-left h2 em { font-style: italic; color: var(--orchid); }
+.what-left p { font-family: var(--body); font-size: 18px; color: var(--dusk); line-height: 1.75; margin-bottom: 32px; }
+.what-right { display: flex; flex-direction: column; gap: 16px; }
+.section-card { background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 6px; padding: 22px 26px; }
+.section-card-name { font-family: var(--serif); font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+.section-card-desc { font-family: var(--body); font-size: 15px; color: var(--dusk); line-height: 1.6; }
+
+/* PULL QUOTE */
+.pull-quote { background: var(--cloud); padding: 80px 56px; }
+.pull-quote-inner { max-width: 660px; margin: 0 auto; border-left: 2px solid var(--lilac); padding-left: 32px; }
+.pull-quote-text { font-family: var(--serif); font-size: clamp(20px, 2.6vw, 28px); font-style: italic; color: var(--ink); line-height: 1.55; margin-bottom: 18px; }
+.pull-quote-attr { font-family: var(--body); font-size: 13px; color: var(--dusk); letter-spacing: 0.06em; }
+
+/* SUBSCRIBE */
+.subscribe { background: var(--ivory); padding: 110px 56px; text-align: center; }
+.subscribe-inner { max-width: 540px; margin: 0 auto; }
+.subscribe h2 { font-family: var(--serif); font-size: clamp(28px, 3.5vw, 42px); font-weight: 500; color: var(--ink); line-height: 1.2; margin-bottom: 16px; }
+.subscribe p { font-family: var(--body); font-size: 18px; color: var(--dusk); margin-bottom: 36px; line-height: 1.65; }
+.subscribe-form { display: flex; gap: 10px; max-width: 420px; margin: 0 auto 14px; }
+.subscribe-form input { flex: 1; font-family: var(--body); font-size: 16px; padding: 13px 18px; border: 0.5px solid var(--lilac); border-radius: 6px; background: var(--cloud); color: var(--ink); outline: none; }
+.subscribe-form input::placeholder { color: var(--dusk); }
+.subscribe-form input:focus { border-color: var(--orchid); }
+.subscribe-form button { font-family: var(--serif); font-size: 15px; font-weight: 500; background: var(--melon); color: var(--ink); border: none; padding: 13px 24px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+.subscribe-form button:hover { opacity: 0.85; }
+.subscribe-fine { font-family: var(--body); font-size: 13px; color: var(--dusk); font-style: italic; }
+.subscribe-seal { width: 56px; height: 56px; margin: 0 auto 28px; opacity: 0.9; }
+
+.spotify-line { display: flex; align-items: center; gap: 8px; font-family: var(--body); font-size: 14px; font-style: italic; color: var(--dusk); margin-top: 12px; }
+.spotify-line a { color: var(--dusk); text-decoration: none; border-bottom: 0.5px solid var(--lilac); padding-bottom: 1px; transition: color 0.2s; }
+.spotify-line a:hover { color: var(--ink); }
+.spotify-line svg { flex-shrink: 0; color: #1DB954; }
+.listen-link { display: inline-flex; align-items: center; gap: 6px; font-family: var(--body); font-size: 13px; color: #1DB954; text-decoration: none; margin-left: 12px; border-bottom: 0.5px solid #1DB954; padding-bottom: 1px; }
+.listen-link svg { flex-shrink: 0; }
+
+</style>
+</head>
+<body>
+
+<nav></nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">A Newsletter of American Mahjong</p>
+    <h1 class="hero-headline"><em style="color:#9B72A0;">The table has been<br>waiting for you.</em></h1>
+    <p class="hero-sub">A weekly letter for anyone who has ever felt the weight of a tile in their hand and understood, without being told, <em></em><em style="color:#9B72A0;">exactly what it means.</em> Written by Prim. Every Thursday.</p>
+    <div class="hero-actions">
+      <a href="https://www.orderofthetile.com/" class="btn-primary">Join the Table</a>
+      <a href="#story" class="btn-ghost">Read the story</a>
+    </div>
+    <div class="spotify-line"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg><span>Also on Spotify, for those who prefer to hear it directly from me. &nbsp;<a href="https://open.spotify.com/show/0ndaZ0MXj2x03ToJkXMuIT?si=b50365bacf83417f" target="_blank">Listen on Spotify &rarr;</a></span></div>
+  </div>
+  <div class="hero-right">
+    <div class="envelope-wrap">
+      <img src="images/envelope.png" alt="The Order of the Tile" />
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <span class="ticker-label">Latest Letter</span>
+  <span class="ticker-text">The Table Remembers Everything &mdash; Letter No. 4</span>
+  <a href="the-letters.html" class="ticker-link">Read now &rarr;</a>
+</div>
+
+<!-- SCROLL STORY -->
+<section class="scroll-story" id="story">
+  <div class="scroll-inner">
+    <div class="story-kicker">The ceremony</div>
+
+    <p class="story-para" data-story>You felt it the first time someone slid tiles toward you across a table. You felt it the second time too, and the hundredth. That particular silence before the Charleston. The weight of a tile in your hand. The specific satisfaction of a rack that is, finally, exactly right.</p>
+
+    <p class="story-para" data-story>That is not a game. That is <strong>ceremony.</strong> And ceremony, once it gets into you, does not leave.</p>
+
+    <p class="story-para" data-story>This country has always known how to make its own rituals. The First People of this land knew it before anyone else did. They understood that marking a moment is how you tell it: this is real, this matters, <span style="color:#F5E6A3;">we matter,</span> and we are here together and that means something. We carried that understanding forward.</p>
+
+    <p class="story-para" data-story>We, the hodgepodge of people who came from every corner of the world and made this place home, the great American melting pot, we took that lesson and put it around a table with 152 tiles and a card that changes every April, and we made it entirely our own.</p>
+
+    <p class="story-para" data-story><em>American Mahjong is ours.</em></p>
+
+    <p class="story-para" data-story>Not the ceremony of crowns or cathedrals. The American kind, informal and intimate and completely serious underneath. Made in kitchens and living rooms and church basements and country clubs and card rooms and everywhere in between. A game that crossed an ocean and became something new on this soil. Something with its own language, its own rules of conduct, its own rites of passage.</p>
+
+    <p class="story-para" data-story>Someone is learning to rack their tiles quietly, the way a grandmother once showed a mother who is now showing them. They are not just learning a game. What feels at first like so many rules, so many expectations, so much to remember, becomes something else entirely at the table. The one watching knows exactly when that shift happens. They have been waiting for it. They do not say a word.</p>
+
+    <p class="story-para" data-story>Eight years old or eighty. First game or ten thousandth. The table does not ask your age. It asks only that you show up, pay attention, and <span style="color:#F5E6A3;">honor</span> what has been handed to you.</p>
+
+    <div class="story-closer">The tiles came from somewhere else.<br>The ceremony is ours.</div>
+  </div>
+
+  <div class="seal-divider">
+    <div class="seal-divider-line"></div>
+    <img src="images/seal.png" alt="The Order of the Tile seal" />
+    <div class="seal-divider-line"></div>
+  </div>
+</section>
+
+<!-- ORNAMENT -->
+<div class="ornament-light">
+  <div class="ornament-line"></div>
+  <div class="ornament-dot"></div><div class="ornament-dot"></div><div class="ornament-dot"></div>
+  <div class="ornament-line"></div>
+</div>
+
+<!-- WHAT IS PRIM -->
+<section class="what-is">
+  <div class="what-inner">
+    <div class="what-left">
+      <p class="section-label">Every Thursday</p>
+      <h2>Elegance, strategy,<br>and <em>no diplomacy.</em></h2>
+      <p>The Order of the Tile is written by Prim, who has been watching your discards and has opinions. She shares them with grace, wit, and absolute conviction. Never general advice. Never a hedge.</p>
+      <a href="the-letters.html" class="btn-primary">Read the Latest Letter</a>
+    </div>
+    <div class="what-right">
+      <div class="section-card">
+        <div class="section-card-name">Crak the Card</div>
+        <div class="section-card-desc">Strategy for the current NMJL card. Specific, actionable, and unapologetically opinionated. General advice is not permitted here.</div>
+      </div>
+      <div class="section-card">
+        <div class="section-card-name">The Draw</div>
+        <div class="section-card-desc">What the community is talking about this week. Not a news roundup. A gossip column about the game, told through Prim's editorial lens.</div>
+      </div>
+      <div class="section-card">
+        <div class="section-card-name">The Table Is Asking</div>
+        <div class="section-card-desc">One question from the community. Prim has a position. She gives it to you with grace, wit, and absolute conviction.</div>
+      </div>
+      <div class="section-card">
+        <div class="section-card-name">Tile Envy</div>
+        <div class="section-card-desc">Beautiful sets, mats, and accessories worth coveting. Written like a luxury magazine. Never a shopping catalog.</div>
+      </div>
+      <div class="section-card">
+        <div class="section-card-name">Who's Talking</div>
+        <div class="section-card-desc">A proper mini-feature on a voice, teacher, or brand making a difference in the American Mahjong community.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PULL QUOTE -->
+<div class="pull-quote">
+  <div class="pull-quote-inner">
+    <p class="pull-quote-text">"Every discard tells a story. The question is whether you are listening."</p>
+    <p class="pull-quote-attr">Prim &mdash; The Order of the Tile</p>
+  </div>
+</div>
+
+<!-- SUBSCRIBE -->
+<section class="subscribe" id="subscribe">
+  <div class="subscribe-inner">
+    <img class="subscribe-seal" src="images/seal.png" alt="seal" />
+    <p class="section-label">Join the Table</p>
+    <h2>Welcome to the world of<br>American&nbsp;Mahjong.</h2>
+    <p>Prim has been expecting you. New issues drop every Thursday. Free, always.</p>
+    <a href="https://www.orderofthetile.com/" class="btn-primary">Subscribe</a>
+    <p class="subscribe-fine" style="margin-top:14px;">No spam. No ceremony required. Unsubscribe anytime.</p>
+  </div>
+</section>
+
+<footer></footer>
+
+<script src="shared.js"></script>
+<script>
+const paras = document.querySelectorAll('[data-story]');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('lit');
+    else entry.target.classList.remove('lit');
+  });
+}, { threshold: 0.35, rootMargin: '0px 0px -8% 0px' });
+paras.forEach(p => observer.observe(p));
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Links — The Order of the Tile</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --cloud: #F8F6F2; --ivory: #F5F0E8; --ink: #1A1412; --dusk: #6B6560; --lilac: #C9B8C4; --melon: #F2A97A; --orchid: #9B72A0; --serif: 'Playfair Display SC', Georgia, serif; --body: 'Crimson Text', Georgia, serif; }
+body { background: var(--cloud); color: #3D3530; font-family: var(--body); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+.container { max-width: 480px; width: 100%; text-align: center; }
+.seal { width: 72px; height: 72px; margin: 0 auto 24px; display: block; }
+.wordmark { font-family: var(--serif); font-size: 22px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+.tagline { font-family: var(--body); font-size: 15px; font-style: italic; color: var(--dusk); margin-bottom: 40px; }
+.link-item { display: block; background: var(--ivory); border: 0.5px solid var(--lilac); border-radius: 6px; padding: 16px 24px; margin-bottom: 12px; text-decoration: none; color: var(--ink); font-family: var(--serif); font-size: 17px; font-weight: 500; transition: border-color 0.2s, box-shadow 0.2s; }
+.link-item:hover { border-color: var(--orchid); box-shadow: 0 4px 16px rgba(26,20,18,0.06); }
+.link-item span { display: block; font-family: var(--body); font-size: 13px; color: var(--dusk); margin-top: 3px; font-style: italic; font-weight: 400; }
+.divider { height: 0.5px; background: var(--lilac); margin: 24px 0; }
+.closing { font-family: var(--serif); font-size: 15px; font-style: italic; color: var(--orchid); margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <img class="seal" src="images/seal.png" alt="The Order of the Tile" />
+  <div class="wordmark">The Order of the Tile</div>
+  <div class="tagline">A Newsletter of American Mahjong</div>
+
+  <a href="index.html" class="link-item">The Website<span>theorderofthetile.com</span></a>
+  <a href="https://open.spotify.com/show/0ndaZ0MXj2x03ToJkXMuIT?si=b50365bacf83417f" target="_blank" class="link-item">Listen on Spotify<span>The Letters, read aloud by Prim. Every Thursday.</span></a>
+  <a href="https://www.instagram.com/orderofthetile/" target="_blank" class="link-item">Instagram<span>@orderofthetile</span></a>
+  <a href="https://www.facebook.com/profile.php?id=61578790151147" target="_blank" class="link-item">Facebook<span>The Order of the Tile</span></a>
+  <a href="https://www.tiktok.com/@oott_prim_proper" target="_blank" class="link-item">TikTok<span>@oott_prim_proper</span></a>
+
+  <div class="divider"></div>
+  <div class="closing">You are Prim's favorite fourth.</div>
+</div>
+</body>
+</html>
