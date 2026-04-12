@@ -33,26 +33,17 @@
 .tab-btn:hover { color: var(--ink); }
 .tab-btn.active { color: var(--ink); border-bottom-color: var(--melon); }
 
-/* PRODUCTS GRID */
+/* PRODUCTS SECTION */
 .products-section { max-width: 1100px; margin: 0 auto; padding: 56px 56px 80px; }
 .products-section h2 { font-family: var(--serif); font-size: 28px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
-.products-section .section-intro { font-family: var(--body); font-size: 17px; color: var(--dusk); margin-bottom: 40px; max-width: 560px; }
-.products-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px; margin-bottom: 64px; }
+.products-section .section-intro { font-family: var(--body); font-size: 17px; color: var(--dusk); margin-bottom: 20px; max-width: 560px; }
 
-.product-card { background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 6px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
-.product-card:hover { border-color: var(--orchid); box-shadow: 0 8px 24px rgba(26,20,18,0.06); }
-.product-thumb { height: 160px; background: var(--ivory); display: flex; align-items: center; justify-content: center; border-bottom: 0.5px solid var(--lilac); position: relative; overflow: hidden; }
-.product-thumb-text { font-family: var(--serif); font-size: 13px; font-style: italic; color: var(--dusk); text-align: center; padding: 16px; }
-.product-thumb-coming { font-family: var(--body); font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--lilac); position: absolute; top: 12px; right: 12px; }
-.product-body { padding: 20px 22px 22px; }
-.product-name { font-family: var(--serif); font-size: 17px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
-.product-desc { font-family: var(--body); font-size: 14px; color: var(--dusk); line-height: 1.55; margin-bottom: 16px; }
-.product-footer { display: flex; align-items: center; justify-content: space-between; }
-.product-price { font-family: var(--serif); font-size: 16px; font-weight: 500; color: var(--ink); }
-.product-price.free { color: var(--orchid); }
-.product-btn { font-family: var(--body); font-size: 13px; font-weight: 600; background: var(--melon); color: var(--ink); border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s; text-decoration: none; }
-.product-btn:hover { opacity: 0.82; }
-.product-btn.disabled { background: var(--ivory); color: var(--dusk); cursor: default; border: 0.5px solid var(--lilac); }
+.section-coming-soon {
+  font-family: var(--serif); font-size: 15px; font-style: italic;
+  color: var(--lilac); letter-spacing: 0.04em;
+  padding: 32px 0; margin-bottom: 56px;
+  border-bottom: 0.5px solid var(--lilac);
+}
 
 /* COMING SOON BANNER */
 .coming-banner { background: var(--ivory); border: 0.5px solid var(--lilac); border-radius: 6px; padding: 40px 48px; margin-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
@@ -77,122 +68,23 @@
   </div>
 </div>
 
-<div class="category-tabs">
-  <button class="tab-btn active" data-filter="all">All</button>
-  <button class="tab-btn" data-filter="free">Free Downloads</button>
-  <button class="tab-btn" data-filter="strategy">Strategy Guides</button>
-  <button class="tab-btn" data-filter="product">Products</button>
-</div>
 
 <div class="products-section">
 
   <p class="section-label">Free Downloads</p>
   <h2>Compliments of Prim.</h2>
   <p class="section-intro">These are yours. No ceremony required. Download, print, share with your table.</p>
-
-  <div class="products-grid">
-    <div class="product-card" data-tag="free">
-      <div class="product-thumb">
-        <p class="product-thumb-text">Quick Reference Card<br>2026 NMJL Season</p>
-        <span class="product-thumb-coming">Coming Soon</span>
-      </div>
-      <div class="product-body">
-        <span class="product-tag free">Free Download</span>
-        <div class="product-name">2026 Card Quick Reference</div>
-        <p class="product-desc">A printable one-page reference for the most-played hands of the 2026 NMJL card. Keep it at the table.</p>
-        <div class="product-footer">
-          <span class="product-price free">Free</span>
-          <span class="product-btn disabled">Coming Soon</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="product-card" data-tag="free">
-      <div class="product-thumb">
-        <p class="product-thumb-text">The Charleston<br>Decision Guide</p>
-        <span class="product-thumb-coming">Coming Soon</span>
-      </div>
-      <div class="product-body">
-        <span class="product-tag free">Free Download</span>
-        <div class="product-name">Charleston Decision Guide</div>
-        <p class="product-desc">What to pass, what to keep, and when to break the rules. A framework for the most consequential three passes of the game.</p>
-        <div class="product-footer">
-          <span class="product-price free">Free</span>
-          <span class="product-btn disabled">Coming Soon</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="product-card" data-tag="free">
-      <div class="product-thumb">
-        <p class="product-thumb-text">Beginner's Glossary<br>American Mahjong</p>
-        <span class="product-thumb-coming">Coming Soon</span>
-      </div>
-      <div class="product-body">
-        <span class="product-tag free">Free Download</span>
-        <div class="product-name">The Table Glossary</div>
-        <p class="product-desc">Every term, call, and rule explained in plain language. For the newcomer at their first table, or the player who was never formally taught.</p>
-        <div class="product-footer">
-          <span class="product-price free">Free</span>
-          <span class="product-btn disabled">Coming Soon</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="section-coming-soon">Coming soon</div>
 
   <p class="section-label">Strategy Guides</p>
   <h2>Go deeper.</h2>
   <p class="section-intro">For the player who wants more than the basics. Prim's strategy guides are specific, opinionated, and built around the current card.</p>
+  <div class="section-coming-soon">Coming soon</div>
 
-  <div class="products-grid">
-    <div class="product-card" data-tag="strategy">
-      <div class="product-thumb">
-        <p class="product-thumb-text">Advanced Strategy<br>2026 Season</p>
-        <span class="product-thumb-coming">Coming Soon</span>
-      </div>
-      <div class="product-body">
-        <span class="product-tag strategy">Strategy Guide</span>
-        <div class="product-name">The 2026 Season Deep Dive</div>
-        <p class="product-desc">Prim's full analysis of the 2026 NMJL card. Joker economy, pivot strategy, defensive play, and the hands worth building your game around.</p>
-        <div class="product-footer">
-          <span class="product-price">2</span>
-          <span class="product-btn disabled">Coming Soon</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="product-card" data-tag="strategy">
-      <div class="product-thumb">
-        <p class="product-thumb-text">Reading the Table<br>Defensive Play Guide</p>
-        <span class="product-thumb-coming">Coming Soon</span>
-      </div>
-      <div class="product-body">
-        <span class="product-tag strategy">Strategy Guide</span>
-        <div class="product-name">Reading the Table</div>
-        <p class="product-desc">How to read exposures, track discards, and play defensively without losing your own hand. The skill that separates good players from great ones.</p>
-        <div class="product-footer">
-          <span class="product-price">2</span>
-          <span class="product-btn disabled">Coming Soon</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="product-card" data-tag="product">
-      <div class="product-thumb">
-        <p class="product-thumb-text">Tournament<br>Preparation Guide</p>
-        <span class="product-thumb-coming">Coming Soon</span>
-      </div>
-      <div class="product-body">
-        <span class="product-tag product">Product</span>
-        <div class="product-name">Tournament Ready</div>
-        <p class="product-desc">Everything Prim knows about preparing for tournament play. Mindset, strategy adjustments, etiquette, and how to handle pressure at the table.</p>
-        <div class="product-footer">
-          <span class="product-price">5</span>
-          <span class="product-btn disabled">Coming Soon</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  <p class="section-label">Products</p>
+  <h2>For the table.</h2>
+  <p class="section-intro">Tools, resources, and things Prim believes every serious player deserves.</p>
+  <div class="section-coming-soon">Coming soon</div>
 
   <div class="coming-banner">
     <div class="coming-banner-text">
@@ -208,21 +100,5 @@
 
 <script src="shared.js"></script>
 
-<script>
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-    const filter = this.getAttribute('data-filter');
-    document.querySelectorAll('.product-card').forEach(card => {
-      if (filter === 'all' || card.getAttribute('data-tag') === filter) {
-        card.style.display = '';
-      } else {
-        card.style.display = 'none';
-      }
-    });
-  });
-});
-</script>
 </body>
 </html>
