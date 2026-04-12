@@ -14,7 +14,7 @@
 
   // ===== NAV =====
   var navHTML = ''
-    + '<a class="nav-wordmark" href="index.html">'
+    + '<a class="nav-wordmark" href="https://prim.orderofthetile.com/">'
     +   '<img src="images/seal.png" alt="seal" />The Order of the Tile'
     + '</a>'
     + '<button class="nav-hamburger" aria-label="Menu" aria-expanded="false">'
@@ -22,10 +22,10 @@
     + '</button>'
     + '<ul class="nav-links">'
     +   '<li><a href="https://www.orderofthetile.com/archive"' + activeClass('the-letters.html') + '>The Letters</a></li>'
-    +   '<li><a href="the-game.html"' + activeClass('the-game.html') + '>The Game</a></li>'
-    +   '<li><a href="community.html"' + activeClass('community.html') + '>Community</a></li>'
-    +   '<li><a href="about-prim.html"' + activeClass('about-prim.html') + '>About Prim</a></li>'
-    +   '<li><a href="nmjl-card-history.html"' + activeClass('nmjl-card-history.html') + '>Card History</a></li>'
+    +   '<li><a href="https://prim.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>The Game</a></li>'
+    +   '<li><a href="https://prim.orderofthetile.com/community.html"' + activeClass('community.html') + '>Community</a></li>'
+    +   '<li><a href="https://prim.orderofthetile.com/about-prim.html"' + activeClass('about-prim.html') + '>About Prim</a></li>'
+    +   '<li><a href="https://prim.orderofthetile.com/nmjl-card-history.html"' + activeClass('nmjl-card-history.html') + '>Card History</a></li>'
     +   '<li><a href="https://www.orderofthetile.com/" class="nav-cta">Join the Table</a></li>'
     + '</ul>';
 
