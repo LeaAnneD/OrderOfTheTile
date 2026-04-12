@@ -35,7 +35,7 @@ nav {
   background: rgba(248,246,242,0.96);
   backdrop-filter: blur(8px);
   border-bottom: 0.5px solid var(--lilac);
-  height: 64px;
+  height: 74px;
   display: flex; align-items: center;
   padding: 0 56px;
   justify-content: space-between;
@@ -122,7 +122,7 @@ nav {
   .nav-links {
     display: none;
     position: absolute;
-    top: 64px;
+    top: 74px;
     left: 0;
     right: 0;
     background: rgba(248,246,242,0.98);
