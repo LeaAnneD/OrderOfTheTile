@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events — The Order of the Tile</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="events.css">
+</head>
+<body>
+<div id="root"></div>
+
+<script src="events-data.js"></script>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="EventsPage.jsx"></script>
+
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+const TWEAKS = /*EDITMODE-BEGIN*/{
+  "showPast": false,
+  "marqueeSpeed": 77,
+  "dateOverride": ""
+}/*EDITMODE-END*/;
+
+function Nav(){
+  return (
+    <nav className="oott-nav">
+      <a className="nav-wordmark" href="/"><img src="assets/seal.png" alt="seal" /> The Order of the Tile</a>
+      <ul className="nav-links">
+        <li><a href="/letters">The Letters</a></li>
+        <li><a href="/game">The Game</a></li>
+        <li><a href="/events" className="active">Events</a></li>
+        <li><a href="/about">About Prim</a></li>
+        <li><a href="/subscribe" className="nav-cta">Join the Table</a></li>
+      </ul>
+    </nav>
+  );
+}
+
+function Footer(){
+  return (
+    <>
+      <div className="footer-fav">You are Prim's favorite fourth.</div>
+      <footer className="oott-footer">
+        <div className="footer-inner">
+          <div className="footer-brand">
+            <img className="footer-seal" src="assets/seal.png" alt="seal" />
+            <div>
+              <div className="footer-wordmark">Order of the Tile</div>
+              <div className="footer-tagline">A newsletter for those who know the game</div>
+            </div>
+          </div>
+          <div className="footer-legal">© 2026 · OrderOfTheTile.com</div>
+        </div>
+      </footer>
+    </>
+  );
+}
+
+function TweaksPanel({ tweaks, setTweaks }){
+  const [open, setOpen] = useState(false);
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      if (!e.data || !e.data.type) return;
+      if (e.data.type === '__activate_edit_mode') setOpen(true);
+      if (e.data.type === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+  if (!open) return null;
+  const set = (patch) => {
+    const next = { ...tweaks, ...patch };
+    setTweaks(next);
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: patch }, '*');
+  };
+  return (
+    <div className="tweaks-panel">
+      <div className="tweaks-title">Tweaks</div>
+      <label className="tweaks-row">
+        <input type="checkbox" checked={tweaks.showPast} onChange={e => set({ showPast: e.target.checked })} />
+        Show past events
+      </label>
+      <label className="tweaks-row">
+        Marquee speed · {tweaks.marqueeSpeed}s/loop
+        <input type="range" min="30" max="200" value={tweaks.marqueeSpeed} onChange={e => set({ marqueeSpeed: +e.target.value })} />
+      </label>
+      <label className="tweaks-row">
+        <span>Simulate date (YYYY-MM-DD)</span>
+        <input type="text" placeholder="2026-04-18" value={tweaks.dateOverride} onChange={e => set({ dateOverride: e.target.value })} />
+      </label>
+      <div className="tweaks-hint">Past events auto-hide the day after their end date.</div>
+    </div>
+  );
+}
+
+function App(){
+  const [tweaks, setTweaks] = useState(TWEAKS);
+  const now = useMemo(() => {
+    if (tweaks.dateOverride && /^\d{4}-\d{2}-\d{2}$/.test(tweaks.dateOverride)) {
+      const [y,m,d] = tweaks.dateOverride.split('-').map(Number);
+      return new Date(y, m-1, d);
+    }
+    return new Date();
+  }, [tweaks.dateOverride]);
+
+  const all = window.__OTT_EVENTS || [];
+  const upcoming = useMemo(
+    () => all.filter(e => tweaks.showPast || !window.ottIsPast(e, now)),
+    [all, tweaks.showPast, now]
+  );
+
+  const champ = upcoming.find(e => e.worldChampionship);
+  // Marquee shows the near-horizon (exclude championship so it doesn't appear twice;
+  // also exclude TBD/year-round from the scrolling row — put them in the month list.)
+  const marqueeEvents = upcoming.filter(e => !e.worldChampionship && e.startISO && !e.tbd).slice(0, 14);
+
+  return (
+    <>
+      <Nav />
+
+      {/* INTRO */}
+      <section className="events-hero">
+        <div className="events-hero-inner">
+          <p className="eyebrow">Set Your Rack · 2026–2027 Season</p>
+          <h1>Where to be this season.</h1>
+          <p className="lead">
+            The rooms, the resorts, the cruises, the one weekend in October
+            that matters more than the rest. Updated automatically — past events
+            quietly leave the table on their own.
+          </p>
+          <div className="events-hero-meta">
+            <span>{upcoming.length} upcoming</span>
+            <span className="dot">·</span>
+            <span>{upcoming.filter(e => e.goldenTicket).length} Golden Ticket qualifiers</span>
+            <span className="dot">·</span>
+            <span>As of {now.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' })}</span>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURED */}
+      {champ && <FeaturedEvent ev={champ} />}
+
+      {/* MARQUEE */}
+      <section className="events-carousel-wrap">
+        <div className="events-carousel-head">
+          <p className="eyebrow">The Horizon</p>
+          <h2>What's next at the table.</h2>
+          <p className="lead">
+            Hover to pause. The row drifts on its own, and tournaments already behind us don't come back around.
+          </p>
+        </div>
+        <EventsMarquee events={marqueeEvents} speed={tweaks.marqueeSpeed} />
+      </section>
+
+      {/* GOLDEN TICKET */}
+      <GoldenTicketExplainer />
+
+      {/* MONTH GROUPS */}
+      <section className="events-months-wrap">
+        <div className="events-months-head">
+          <p className="eyebrow">The Full Calendar</p>
+          <h2>Month by month.</h2>
+          <p className="lead">
+            Every event we know about — sanctioned, unsanctioned, cruise, charity, and the ones still whispering "TBD."
+          </p>
+        </div>
+        <div className="events-months-inner">
+          <MonthGroups events={upcoming} />
+        </div>
+      </section>
+
+      {/* PRIM'S NOTE */}
+      <PrimsNote />
+
+      <Footer />
+      <TweaksPanel tweaks={tweaks} setTweaks={setTweaks} />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
