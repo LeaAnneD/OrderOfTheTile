@@ -23,6 +23,7 @@
     + '<ul class="nav-links">'
     +   '<li><a href="https://www.orderofthetile.com/archive"' + activeClass('the-letters.html') + '>The Letters</a></li>'
     +   '<li><a href="https://prim.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>The Game</a></li>'
+    +   '<li><a href="https://prim.orderofthetile.com/events.html"' + activeClass('events.html') + '>Events</a></li>'
     +   '<li><a href="https://prim.orderofthetile.com/community.html"' + activeClass('community.html') + '>Community</a></li>'
     +   '<li><a href="https://prim.orderofthetile.com/about-prim.html"' + activeClass('about-prim.html') + '>About Prim</a></li>'
     +   '<li><a href="https://prim.orderofthetile.com/nmjl-card-history.html"' + activeClass('nmjl-card-history.html') + '>Card History</a></li>'
