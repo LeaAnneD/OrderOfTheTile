@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Card History Archive — The Order of the Tile</title>
   <link rel="stylesheet" href="shared.css">
-  <link rel="icon" type="image/png" href="images/seal.png">
   <style>
 
     /* PAGE HERO */
@@ -108,25 +107,41 @@
       border-color: var(--orchid);
     }
 
-    /* YEAR BLOCKS */
+    /* YEAR BLOCKS — stacked accordion */
     .year-block {
-      margin: 32px 0;
+      margin: 0;
       background: white;
       border: 0.5px solid var(--lilac);
-      border-radius: 2px;
+      border-radius: 0;
       overflow: hidden;
+    }
+    .year-block + .year-block {
+      border-top: none;
+    }
+    .era-section .year-block:first-of-type {
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+    }
+    .era-section .year-block:last-of-type {
+      border-bottom-left-radius: 2px;
+      border-bottom-right-radius: 2px;
     }
 
     .year-header {
       background: var(--ivory);
-      border-bottom: 0.5px solid var(--lilac);
-      padding: 24px;
+      padding: 16px 20px;
       cursor: pointer;
       user-select: none;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 20px;
+      transition: background 0.15s;
+    }
+
+    .year-block.open .year-header {
+      background: #FAF8F3;
+      border-bottom: 0.5px solid var(--lilac);
     }
 
     .year-header:hover {
@@ -139,10 +154,10 @@
 
     .year-label {
       font-family: var(--serif);
-      font-size: 28px;
+      font-size: 22px;
       font-weight: 600;
       color: var(--orchid);
-      margin-bottom: 12px;
+      margin-bottom: 6px;
     }
 
     .year-meta {
@@ -1115,232 +1130,42 @@
       </div>
       <div class="year-body">
         <div class="hist-note">
-          The 2025 card contains 71 printed hands representing 1,002 permutations. Approximately 10 hands are concealed. Nine sections appear on the card (No Quints section this year). Educational material follows to help players understand the structure and rules of each section, complete with SVG tile sample solutions.
+          The 2025 card contains 71 printed hands representing 1,002 permutations. Approximately 10 hands are concealed. Nine sections appear on the card, with no dedicated Quints section this year (quint-style hands appear as embedded variants within other sections).
         </div>
-
-        <!-- 2025 YEAR SECTION -->
-        <span class="section-label">2025 Year &amp; W&D Section</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Year Hands use the digits of 2025 to build pungs (3-of-a-kind), kongs (4-of-a-kind), or pairs. Soap (White Dragon) represents 0. The unique arrangement of the year digits creates a specific pattern. Winds & Dragons hands use only winds (N, E, S, W), dragons (Red, Green, White/Soap), and flowers as combinations.
+        <span class="section-label">Key Stats</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">71 printed hands</div>
+            </div>
           </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>The year grouping often uses singles or small melds built from 2-0-2-5 digits</li>
-              <li>Soap tile (White Dragon) always represents zero on year hands</li>
-              <li>Winds are N, E, S, W; Dragons are R (Red), G (Green), 0/Soap (White)</li>
-              <li>Flowers are suitless and can pair with any hand</li>
-            </ul>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">1,002 total permutations</div>
+            </div>
           </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2025-year"></div>
-            <span class="sample-explain">The singles spell 2025 (Soap=0). The pung uses the first year digit in one suit; the kong uses the second year digit in a different suit. Three suits total.</span>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">~10 concealed hands</div>
+            </div>
           </div>
-        </div>
-
-        <!-- 2025 EVENS SECTION -->
-        <span class="section-label">2025 Evens (2-4-6-8)</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> All numbered tiles in the hand are even numbers (2, 4, 6, 8) across the three suits. Flowers and dragons are typically included. Jokers can be used freely.
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Nine sections — no standalone Quints section</div>
+            </div>
           </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>All numbered tiles must be even: 2, 4, 6, or 8 only</li>
-              <li>No 1, 3, 5, 7, or 9 numbered tiles allowed</li>
-              <li>Flowers, winds, and dragons can be used without restriction</li>
-              <li>Jokers substitute for any tile in the hand</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2025-evens"></div>
-            <span class="sample-explain">Two Flowers (suitless), a kong of 6-Bam, pairs of 2-Bam and 4-Crak, and a kong of 8-Crak. Two suits.</span>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Structural note: Quint-style hands embedded within other sections rather than a dedicated Quints group</div>
+            </div>
           </div>
         </div>
-
-        <!-- 2025 ANY LIKE NUMBERS SECTION -->
-        <span class="section-label">2025 Any Like Numbers</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Three or four melds (groups) where each group consists of the same number in different suits. For example, three pungs of 7 (one 7-Bam, one 7-Crak, one 7-Dot) plus a pair. The number can be any 1–9.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Pick any number from 1–9</li>
-              <li>Use that number across different suits in pungs, kongs, or pairs</li>
-              <li>Typically three suit-groups (all the same number, each in a different suit)</li>
-              <li>Flowers and dragons appear as additional melds or pairs</li>
-              <li>Jokers can substitute within the number-melds</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2025-any-like"></div>
-            <span class="sample-explain">All three suit-pungs use 7. Green Dragons (any dragon is valid). Two Flowers.</span>
-          </div>
-        </div>
-
-        <!-- 2025 QUINT-STYLE SECTION -->
-        <span class="section-label">2025 Quint-Style (Embedded Example)</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Quint hands are 5-of-a-kind melds (requiring exactly one Joker per quint). These appear as a structural variant rather than a full section. Hands may feature one or more quints combined with pairs and smaller melds.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>A quint = 4 tiles of the same number + 1 Joker (must be used this way)</li>
-              <li>Each quint requires exactly one Joker</li>
-              <li>Quints can appear in different suits or combined with winds/dragons</li>
-              <li>Remaining melds follow standard pung-kong-pair rules</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2025-quint"></div>
-            <span class="sample-explain">Consecutive run of 4-5-6 in Dots. The quint of 6 uses one Joker.</span>
-          </div>
-        </div>
-
-        <!-- 2025 CONSECUTIVE RUN SECTION -->
-        <span class="section-label">2025 Consecutive Run</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> A sequence of consecutive numbers (like 1-2-3-4-5 or 3-4-5-6-7) all in the same suit, grouped into melds. The entire run can span one or multiple melds and suits.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Numbers must be consecutive: 1-2-3-4-5, 2-3-4-5-6, etc.</li>
-              <li>The run can be split across multiple melds (e.g., a pair of 1, then pung of 2-3-4)</li>
-              <li>Flowers are typically included as a separate pair</li>
-              <li>Jokers can substitute within the run</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2025-consec"></div>
-            <span class="sample-explain">Three Flowers, then two full five-number runs in different suits. No jokers anywhere — pure wall hand.</span>
-          </div>
-        </div>
-
-        <!-- 2025 ODDS SECTION -->
-        <span class="section-label">2025 Odds (1-3-5-7-9)</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> All numbered tiles must be odd (1, 3, 5, 7, 9) across the three suits. Flowers and dragons are included. Jokers can be used freely.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>All numbered tiles must be odd: 1, 3, 5, 7, or 9 only</li>
-              <li>No even numbers (2, 4, 6, 8) allowed</li>
-              <li>Flowers, winds, and dragons can be used without restriction</li>
-              <li>Jokers substitute for any tile</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2025-odds"></div>
-            <span class="sample-explain">Alternating pungs and kongs of odd numbers. Three suits required. No flowers on this one.</span>
-          </div>
-        </div>
-
-        <!-- 2025 WINDS & DRAGONS SECTION -->
-        <span class="section-label">2025 Winds & Dragons</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Hands composed only of winds (N, E, S, W), dragons (Red, Green, White/Soap), and flowers. No numbered tiles at all.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Only winds (N, E, S, W), dragons (R/Red, G/Green, 0/Soap), and flowers</li>
-              <li>No numbered tiles from any suit</li>
-              <li>Jokers can be used to complete pungs, kongs, or pairs</li>
-              <li>Flowers are typically a pair or small grouping</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2025-wd"></div>
-            <span class="sample-explain">Four wind pairs + two dragon pungs. All concealed. No jokers in pairs.</span>
-          </div>
-        </div>
-
-        <!-- 2025 3-6-9 SECTION -->
-        <span class="section-label">2025 3-6-9</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Hands using only tiles numbered 3, 6, or 9 (plus flowers and dragons). The number set creates a restricted palette of exactly 9 numeric tiles across all suits.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Numbered tiles are limited to 3, 6, and 9 only</li>
-              <li>These numbers appear across all three suits (Bam, Crak, Dot)</li>
-              <li>Flowers and dragons can be used freely</li>
-              <li>Jokers substitute within the 3-6-9 palette</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2025-369"></div>
-            <span class="sample-explain">Flowers + pung of 3 + kong of 6 + kong of 9. Two suits.</span>
-          </div>
-        </div>
-
-        <!-- 2025 SINGLES & PAIRS SECTION -->
-        <span class="section-label">2025 Singles & Pairs</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Hands where all 14 tiles are either single tiles (appearing once) or pairs (two identical tiles). No pungs, kongs, or melds — and crucially, <strong>no Jokers allowed</strong>. These are typically the highest-point hands on the card.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>All 14 tiles must be singles or pairs only</li>
-              <li><strong>NO Jokers permitted</strong> in this section</li>
-              <li>Maximum of one pair at a time (since 14 tiles = 7 pairs, or mix of singles and pairs totaling 14)</li>
-              <li>Flowers can appear as part of the singles or as a pair</li>
-              <li>Typically worth 25–75 points (highest-value hands)</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2025-sp"></div>
-            <span class="sample-explain">Eight pairs — four evens in Bam, four evens in Crak. All concealed, no jokers.</span>
-          </div>
-        </div>
-
-        <!-- 2025 BIG HAND SECTION -->
-        <span class="section-label">2025 Big Hand (Special)</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> A unique special hand built around the year digits and flowers. This is a showcase hand that demonstrates the beauty of the year pattern combined with flowers and a specific structure.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Year digits form the core of the hand (2-0-2-5 in 2025)</li>
-              <li>Flowers are often featured prominently</li>
-              <li>The pattern must use all tiles as singles or in small melds</li>
-              <li>No Jokers typically allowed, demonstrating "pure" play</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2025-big"></div>
-            <span class="sample-explain">Two Flowers + three repetitions of the 2025 digit singles, one per suit. All 16 tiles are singles or the Flower pair — no jokers anywhere.</span>
-          </div>
-        </div>
-
-        <div class="source-note">Source: American Mah Jongg Association public breakdowns; ILoveMahj 2025; Modern Mahjong; community analysis</div>
+        <div class="source-note">Source: Community analysis and public breakdowns. The Order of the Tile does not reproduce the NMJL card; consult your official NMJL card for exact hands.</div>
       </div>
     </div>
 
@@ -1359,199 +1184,42 @@
       </div>
       <div class="year-body">
         <div class="hist-note">
-          The 2026 card features 69 printed hands representing 1,458 permutations. Quints section returns after a year's absence. The card is characterized by heavy Flower content (including a sextet of Flowers — 6-of-a-kind), a pung-kong dominant structure, and year digits split across multiple suits. Approximately 11 hands are concealed. Ten sections appear on the card.
+          The 2026 card features 69 printed hands representing 1,458 permutations — a notable step up from 2025's 1,002. Quints return as a dedicated section after a year's absence. The card is characterized by unusually heavy Flower content, a pung-kong dominant structure, and year digits split across multiple suits. Approximately 11 hands are concealed. Ten sections appear on the card.
         </div>
-
-        <!-- 2026 YEAR SECTION -->
-        <span class="section-label">2026 Year Section</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Year Hands in 2026 use the digits 2-0-2-6 (where Soap = 0). The distinctive feature of 2026: an extremely heavy Flower presence, including a potential sextet (6 Flowers). Year digits are distributed across different suits, creating multiple melds.
+        <span class="section-label">Key Stats</span>
+        <div class="hand-list">
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">69 printed hands</div>
+            </div>
           </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Year digits form the core (2-0-2-6); Soap represents 0</li>
-              <li>Flowers appear in unusual quantities (up to 6 in a single hand)</li>
-              <li>Year digits may be split across two or three suits</li>
-              <li>Winds & Dragons can combine with year digits</li>
-            </ul>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">1,458 total permutations</div>
+            </div>
           </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2026-year"></div>
-            <span class="sample-explain">Six Flowers (a sextet!) plus year digits 2-0-2-6 split across two suits. This illustrates the heavy flower + year digit structure.</span>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">~11 concealed hands</div>
+            </div>
           </div>
-        </div>
-
-        <!-- 2026 EVENS SECTION -->
-        <span class="section-label">2026 Evens (2-4-6-8)</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> All numbered tiles are even (2, 4, 6, 8). Flowers and dragons are included. The 2026 card emphasizes pungs and kongs over pairs in this section.
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Ten sections, including the returning Quints section</div>
+            </div>
           </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Only even numbers: 2, 4, 6, 8</li>
-              <li>Flowers and dragons add to the hand</li>
-              <li>Jokers can be used freely</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2026-evens"></div>
-            <span class="sample-explain">Three Flowers + kong of 2-Bam + kong of 4-Crak + pung of 6-Dot. Three suits, heavy pung-kong structure.</span>
+          <div class="hand-row">
+            <span class="hand-num">—</span>
+            <div class="hand-content">
+              <div class="hand-notation">Structural features: heavy Flower content, pung-kong dominant, year digits distributed across suits</div>
+            </div>
           </div>
         </div>
-
-        <!-- 2026 ANY LIKE NUMBERS SECTION -->
-        <span class="section-label">2026 Any Like Numbers</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Three or four melds (same number across different suits). 2026 features multiple Flowers plus the like-number structure.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Same number across different suits</li>
-              <li>Flowers and dragons can be part of the hand</li>
-              <li>Jokers substitute within the number-melds</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2026-any-like"></div>
-            <span class="sample-explain">Four Flowers + kong of 5-Bam + pung of 5-Crak + pung of 5-Dot. Same number throughout.</span>
-          </div>
-        </div>
-
-        <!-- 2026 QUINTS SECTION -->
-        <span class="section-label">2026 Quints (Returned)</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Quints return for 2026! These are 5-of-a-kind melds (4 tiles + 1 Joker). Quints hands are highly prized for their complexity.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Quint = 4 identical tiles + 1 Joker (must be exact)</li>
-              <li>Each quint requires one Joker</li>
-              <li>Can appear in different suits or with winds/dragons</li>
-              <li>Remaining melds are standard pungs, kongs, pairs</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2026-quint"></div>
-            <span class="sample-explain">Two Flowers + quint of 3-Bam (using 1 Joker) + quint of 3-Crak (using 1 Joker) + pair of 3-Dot. Quints section returns for 2026.</span>
-          </div>
-        </div>
-
-        <!-- 2026 CONSECUTIVE RUN SECTION -->
-        <span class="section-label">2026 Consecutive Run</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Consecutive numbers (like 1-2-3-4-5) split into melds. 2026 features all three suits represented in the run, plus wind/dragon elements.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-              <ul>
-              <li>Numbers are consecutive</li>
-              <li>Can span multiple melds and suits</li>
-              <li>Flowers are typically a separate pair</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2026-consec"></div>
-            <span class="sample-explain">Two Flowers + run of 1-2-3 in all three suits + pung of Red Dragons. Compact, colorful hand.</span>
-          </div>
-        </div>
-
-        <!-- 2026 ODDS SECTION -->
-        <span class="section-label">2026 Odds (1-3-5-7-9)</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> All numbered tiles are odd (1, 3, 5, 7, 9). The 2026 card emphasizes kongs and pungs in this section.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Only odd numbers: 1, 3, 5, 7, 9</li>
-              <li>Flowers and dragons can be used freely</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2026-odds"></div>
-            <span class="sample-explain">Kong of 1-Bam + pung of 3-Crak + pung of 5-Dot + kong of 7-Bam. Three suits, pung-kong structure.</span>
-          </div>
-        </div>
-
-        <!-- 2026 WINDS & DRAGONS SECTION -->
-        <span class="section-label">2026 Winds & Dragons</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Hands composed only of winds, dragons, and flowers. No numbered tiles. 2026 features a simple classic pattern.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Only winds, dragons, and flowers</li>
-              <li>No numbered tiles</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2026-wd"></div>
-            <span class="sample-explain">Four wind pungs + pair of Red Dragons. Classic W&D structure.</span>
-          </div>
-        </div>
-
-        <!-- 2026 3-6-9 SECTION -->
-        <span class="section-label">2026 3-6-9</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> Only tiles numbered 3, 6, or 9. The 2026 card continues the pung-kong emphasis.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>Numbers limited to 3, 6, 9 only</li>
-              <li>Across all three suits</li>
-              <li>Flowers and dragons included</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2026-369"></div>
-            <span class="sample-explain">Three Flowers + kong of 3 + pung of 6 + kong of 9. Three suits.</span>
-          </div>
-        </div>
-
-        <!-- 2026 SINGLES & PAIRS SECTION -->
-        <span class="section-label">2026 Singles & Pairs</span>
-        <div class="edu-block">
-          <div class="edu-what">
-            <strong>What this section is:</strong> All 14 tiles are singles or pairs, with no Jokers allowed. The 2026 card uses year digits in this section, combined with flowers and other elements.
-          </div>
-          <div class="edu-rules">
-            <strong>Key rules:</strong>
-            <ul>
-              <li>14 tiles: all singles or pairs</li>
-              <li>NO Jokers</li>
-              <li>Year digits or other special combinations</li>
-            </ul>
-          </div>
-          <div class="edu-sample">
-            <strong>Sample solution:</strong>
-            <div class="sample-tiles-container" id="sample-2026-sp"></div>
-            <span class="sample-explain">Year digits 2-0-2-6 in three suits (12 singles) + pair of Flowers. All concealed, no jokers.</span>
-          </div>
-        </div>
-
-        <div class="source-note">Source: American Mah Jongg Association public breakdowns; community analysis; ILoveMahj 2026</div>
+        <div class="source-note">Source: Community analysis and public breakdowns. The Order of the Tile does not reproduce the NMJL card; consult your official NMJL card for exact hands.</div>
       </div>
     </div>
   </div>
@@ -1750,28 +1418,6 @@
 
     return html;
   }
-
-  // Initialize tile samples
-  document.getElementById('sample-2025-year').innerHTML = renderTiles('2B 0 2D 5C | 2B 2B 2B | 5D 5D 5D 5D');
-  document.getElementById('sample-2025-evens').innerHTML = renderTiles('F F | 6B 6B 6B 6B | 2B 2B | 4C 4C | 8C 8C 8C 8C');
-  document.getElementById('sample-2025-any-like').innerHTML = renderTiles('F F | 7B 7B 7B | 7C 7C 7C | 7D 7D 7D | G G G');
-  document.getElementById('sample-2025-quint').innerHTML = renderTiles('F F | 4D 4D 4D | 5D 5D 5D 5D | 6D 6D 6D 6D J');
-  document.getElementById('sample-2025-consec').innerHTML = renderTiles('F F F | 3C 4C 5C 6C 7C | 3B 4B 5B 6B 7B');
-  document.getElementById('sample-2025-odds').innerHTML = renderTiles('1B 1B 1B | 3B 3B 3B | 5C 5C 5C 5C | 7D 7D 7D 7D');
-  document.getElementById('sample-2025-wd').innerHTML = renderTiles('N N | E E | W W | S S | R R R | G G G');
-  document.getElementById('sample-2025-369').innerHTML = renderTiles('F F | 3B 3B 3B | 6B 6B 6B 6B | 9C 9C 9C 9C');
-  document.getElementById('sample-2025-sp').innerHTML = renderTiles('2B 2B | 4B 4B | 6B 6B | 8B 8B | 2C 2C | 4C 4C | 6C 6C | 8C 8C');
-  document.getElementById('sample-2025-big').innerHTML = renderTiles('F F | 2B 0 2B 5B | 2C 0 2C 5C | 2D 0 2D 5D');
-
-  document.getElementById('sample-2026-year').innerHTML = renderTiles('F F F F F F | 2D 0 2D 6D | 2C 0 2C 6C');
-  document.getElementById('sample-2026-evens').innerHTML = renderTiles('F F F | 2B 2B 2B 2B | 4C 4C 4C 4C | 6D 6D 6D');
-  document.getElementById('sample-2026-any-like').innerHTML = renderTiles('F F F F | 5B 5B 5B 5B | 5C 5C 5C | 5D 5D 5D');
-  document.getElementById('sample-2026-quint').innerHTML = renderTiles('F F | 3B 3B 3B 3B J | 3C 3C 3C 3C J | 3D 3D');
-  document.getElementById('sample-2026-consec').innerHTML = renderTiles('F F | 1B 2B 3B | 1C 2C 3C | 1D 2D 3D | R R R');
-  document.getElementById('sample-2026-odds').innerHTML = renderTiles('1B 1B 1B 1B | 3C 3C 3C | 5D 5D 5D | 7B 7B 7B 7B');
-  document.getElementById('sample-2026-wd').innerHTML = renderTiles('N N N | E E E | S S S | W W W | R R');
-  document.getElementById('sample-2026-369').innerHTML = renderTiles('F F F | 3B 3B 3B 3B | 6C 6C 6C | 9D 9D 9D 9D');
-  document.getElementById('sample-2026-sp').innerHTML = renderTiles('2B 0 2B 6B | 2C 0 2C 6C | 2D 0 2D 6D | F F');
 
   // Toggle functionality
   function toggleYear(header) {

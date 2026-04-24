@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Community — The Order of the Tile</title>
 <link rel="stylesheet" href="shared.css">
-  <link rel="icon" type="image/png" href="images/seal.png">
 <style>
 .section-label { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk); margin-bottom: 20px; }
 
@@ -63,6 +62,37 @@
 .section-nav-link:hover { color: var(--ink); }
 .section-nav-link.active { color: var(--ink); border-bottom-color: var(--melon); }
 
+/* TABLET */
+@media (max-width: 900px) {
+  .voices-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .envy-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+  .page-hero { padding: 104px 18px 40px; }
+  .page-hero-sub { font-size: 16px; }
+  .section-nav-inner { padding: 0 18px; overflow-x: auto; }
+  .section-nav-link { padding: 14px 16px 16px; font-size: 14px; white-space: nowrap; }
+  .voices-section, .envy-section { padding: 48px 18px; }
+  .events-section { padding: 48px 18px; }
+  .voices-grid { grid-template-columns: 1fr; gap: 16px; }
+  .envy-grid { grid-template-columns: 1fr; gap: 14px; }
+  .event-row {
+    grid-template-columns: 64px 1fr;
+    gap: 16px 18px;
+    padding: 20px 22px;
+    align-items: start;
+  }
+  .event-row .event-status {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 4px;
+  }
+  .event-name { font-size: 17px; }
+  .event-day { font-size: 28px; }
+}
+
 </style>
 </head>
 <body>
@@ -88,6 +118,14 @@
   <h2>Voices worth knowing.</h2>
   <p class="voices-intro">Featured in The Order of the Tile. These are the people shaping American Mahjong right now.</p>
   <div class="voices-grid">
+
+    <div class="voice-card">
+      <div class="voice-initial">MW</div>
+      <div class="voice-name">My Wife Plays Mah-Jong</div>
+      <div class="voice-location">Brent R. / 30K+ followers</div>
+      <p class="voice-desc">The partner who sits outside the game and somehow sees it more clearly than half the people playing it. Brent does not mock. He celebrates, and thirty thousand mahjong players have noticed.</p>
+      <a href="https://www.instagram.com/mywifeplaysmahjong/" target="_blank" rel="noopener" class="voice-link">@mywifeplaysmahjong &rarr;</a>
+    </div>
 
     <div class="voice-card">
       <div class="voice-initial">M</div>
@@ -129,14 +167,6 @@
       <a href="https://southernsparrow.com" target="_blank" rel="noopener" class="voice-link">southernsparrow.com &rarr;</a>
     </div>
 
-    <div class="voice-card">
-      <div class="voice-initial">BM</div>
-      <div class="voice-name">Bespoke Mahjong</div>
-      <div class="voice-location">Designer Collaborations</div>
-      <p class="voice-desc">Sets that belong in a museum. Bespoke Mahjong treats the tile as an art object, and every collaboration proves why that approach is correct.</p>
-      <a href="https://bespokemahjong.com" target="_blank" rel="noopener" class="voice-link">bespokemahjong.com &rarr;</a>
-    </div>
-
   </div>
 </div>
 
@@ -149,48 +179,60 @@
 
       <div class="event-row">
         <div class="event-date-block">
-          <div class="event-month">May</div>
-          <div class="event-day">3</div>
+          <div class="event-month">Apr</div>
+          <div class="event-day">17</div>
         </div>
         <div>
-          <div class="event-name">Mah Jongg Fever Spring Classic</div>
-          <div class="event-detail">Charlotte, NC &mdash; mahjonggfever.com</div>
+          <div class="event-name">Greenbrier Resort Mahjong Tournament</div>
+          <div class="event-detail">White Sulphur Springs, WV &mdash; greenbrier.com</div>
         </div>
         <span class="event-status open">Open</span>
       </div>
 
       <div class="event-row">
         <div class="event-date-block">
-          <div class="event-month">Jun</div>
-          <div class="event-day">14</div>
+          <div class="event-month">Apr</div>
+          <div class="event-day">23</div>
         </div>
         <div>
-          <div class="event-name">Destination Mah Jongg Summer Tournament</div>
-          <div class="event-detail">Las Vegas, NV &mdash; destinationmahjongg.com</div>
+          <div class="event-name">Destination Mah Jongg Cashiers Retreat</div>
+          <div class="event-detail">Cashiers, NC &mdash; destinationmahjongg.com</div>
         </div>
-        <span class="event-status fast">Selling Fast</span>
+        <span class="event-status open">Open</span>
       </div>
 
       <div class="event-row">
         <div class="event-date-block">
-          <div class="event-month">Jul</div>
-          <div class="event-day">22</div>
+          <div class="event-month">May</div>
+          <div class="event-day">15</div>
         </div>
         <div>
-          <div class="event-name">Crak Your Bags Mediterranean Cruise</div>
-          <div class="event-detail">Barcelona departure &mdash; crakyourbags.com</div>
+          <div class="event-name">Destination Mah Jongg Mediterranean Cruise</div>
+          <div class="event-detail">Celebrity Ascent &mdash; destinationmahjongg.com</div>
         </div>
-        <span class="event-status sold">Sold Out</span>
+        <span class="event-status open">Open</span>
       </div>
 
       <div class="event-row">
         <div class="event-date-block">
-          <div class="event-month">Sep</div>
-          <div class="event-day">6</div>
+          <div class="event-month">May</div>
+          <div class="event-day">17</div>
         </div>
         <div>
-          <div class="event-name">Oh My Mahjong Mahji Mentor Conference</div>
-          <div class="event-detail">Location TBA &mdash; Annual instructor conference</div>
+          <div class="event-name">Mah Jongg Fever Las Vegas</div>
+          <div class="event-detail">Planet Hollywood, Las Vegas &mdash; mahjonggfever.com</div>
+        </div>
+        <span class="event-status open">Open</span>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-block">
+          <div class="event-month">Oct</div>
+          <div class="event-day">TBA</div>
+        </div>
+        <div>
+          <div class="event-name">Mah Jongg World Championship</div>
+          <div class="event-detail">Paris Las Vegas &mdash; mahjonggfever.com</div>
         </div>
         <span class="event-status open">Open</span>
       </div>
@@ -205,6 +247,11 @@
   <p class="envy-intro">Sets, mats, and accessories that earn their place at the table. Prim does not list things she does not believe in.</p>
   <div class="envy-grid">
     <div class="envy-card">
+      <div class="envy-brand">Mahjong Row & Co.</div>
+      <p class="envy-desc">The Ash Burl set asks you to slow down. Pale tones and deep espresso accents that echo natural wood grain, with the restraint to whisper rather than shout.</p>
+      <a href="https://mahjongrowandco.com" target="_blank" rel="noopener" class="envy-link">mahjongrowandco.com</a>
+    </div>
+    <div class="envy-card">
       <div class="envy-brand">The Mahjong Line</div>
       <p class="envy-desc">Custom artistic sets. Where the game becomes an object of beauty.</p>
       <a href="https://themahjongline.com" target="_blank" rel="noopener" class="envy-link">themahjongline.com</a>
@@ -213,11 +260,6 @@
       <div class="envy-brand">My Fair Mahjong</div>
       <p class="envy-desc">Crystal collections and destination themes. For the player who wants their set to tell a story.</p>
       <a href="https://myfairmahjong.com" target="_blank" rel="noopener" class="envy-link">myfairmahjong.com</a>
-    </div>
-    <div class="envy-card">
-      <div class="envy-brand">Mahjong Row & Co.</div>
-      <p class="envy-desc">Heirloom-grade sets built for the home as much as the game. Weight, sound, and tactile beauty.</p>
-      <a href="https://mahjongrowandco.com" target="_blank" rel="noopener" class="envy-link">mahjongrowandco.com</a>
     </div>
     <div class="envy-card">
       <div class="envy-brand">Peace Love Mahjong</div>
