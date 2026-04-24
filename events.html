@@ -30,7 +30,9 @@
 .featured-meta-label { font-family: var(--body); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(245,230,163,0.6); margin-bottom: 6px; }
 .featured-meta-val { font-family: var(--serif); font-size: 16px; color: var(--cloud); }
 .featured-actions { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
-.featured-actions .btn-primary { background: var(--melon); color: var(--ink); }
+.featured-actions .btn-primary { background: var(--melon); color: var(--ink); display: inline-flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1.2; padding: 12px 26px; }
+.featured-actions .btn-primary .cta-top { font-family: var(--serif-sc); font-size: 15px; white-space: nowrap; }
+.featured-actions .btn-primary .cta-sub { font-family: var(--body); font-size: 12px; font-style: italic; opacity: 0.75; white-space: nowrap; }
 .featured-actions .btn-ghost { font-family: var(--body); font-size: 15px; color: var(--butter); border-bottom: 0.5px solid rgba(245,230,163,0.4); text-decoration: none; padding-bottom: 2px; transition: color 0.2s, border-color 0.2s; }
 .featured-actions .btn-ghost:hover { color: var(--cloud); border-color: var(--cloud); }
 
@@ -377,7 +379,10 @@
     document.getElementById('f-from').textContent = champ.price;
     var clink = urlOrNull(champ.url);
     var fa = document.getElementById('f-cta');
-    if (clink) { fa.href = clink; fa.textContent = 'Register · ' + hostname(champ.url) + ' →'; }
+    if (clink) {
+      fa.href = clink;
+      fa.innerHTML = '<span class="cta-top">Register &rarr;</span><span class="cta-sub">' + hostname(champ.url) + '</span>';
+    }
     else { fa.style.display = 'none'; }
   }
 
