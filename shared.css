@@ -55,39 +55,66 @@ nav {
 }
 .nav-wordmark img { width: 32px; height: 32px; object-fit: contain; }
 
+/* Hamburger is the primary nav pattern for every viewport. */
 .nav-links {
-  display: flex;
-  gap: 36px;
+  display: none;
+  position: absolute;
+  top: 74px;
+  right: 16px;
   list-style: none;
-  align-items: center;
+  flex-direction: column;
+  gap: 0;
+  min-width: 240px;
+  max-width: 280px;
+  padding: 8px 0;
+  background: rgba(248,246,242,0.98);
+  backdrop-filter: blur(10px);
+  border: 0.5px solid var(--lilac);
+  border-radius: 8px;
+  box-shadow: 0 14px 40px rgba(26,20,18,0.18);
 }
+.nav-links.open { display: flex; }
+.nav-links li { width: 100%; }
 .nav-links a {
+  display: block;
   font-family: var(--serif-sc);
-  font-size: 15px;
+  font-size: 14px;
   color: var(--dusk);
   text-decoration: none;
-  transition: color 0.2s;
+  padding: 10px 22px;
   white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+  border-bottom: none !important;
 }
-.nav-links a:hover { color: var(--ink); }
-.nav-links a.active { color: var(--ink); border-bottom: 0.5px solid var(--lilac); }
+.nav-links a:hover,
+.nav-links a.active {
+  background: var(--ivory);
+  color: var(--ink);
+}
+.nav-links li:last-child {
+  padding: 6px 16px 10px;
+  margin-top: 4px;
+  border-top: 0.5px solid var(--lilac);
+}
 
 .nav-cta {
   font-family: var(--serif-sc) !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
   font-weight: 400;
   background: var(--melon);
   color: var(--ink) !important;
-  padding: 9px 22px;
+  padding: 10px 18px;
   border-radius: 6px;
   border-bottom: none !important;
   transition: opacity 0.2s;
+  display: block;
+  text-align: center;
 }
 .nav-cta:hover { opacity: 0.85; }
 
-/* HAMBURGER BUTTON */
+/* HAMBURGER BUTTON — always visible */
 .nav-hamburger {
-  display: none;
+  display: block;
   background: none;
   border: none;
   cursor: pointer;
@@ -111,50 +138,6 @@ nav {
 }
 .nav-hamburger.open span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
-}
-
-/* MOBILE NAV */
-@media (max-width: 1280px) {
-  nav { padding: 0 16px; }
-
-  .nav-hamburger { display: block; }
-
-  .nav-links {
-    display: none;
-    position: absolute;
-    top: 74px;
-    left: 0;
-    right: 0;
-    background: rgba(248,246,242,0.98);
-    backdrop-filter: blur(8px);
-    flex-direction: column;
-    gap: 0;
-    padding: 8px 0;
-    border-bottom: 0.5px solid var(--lilac);
-    box-shadow: 0 8px 24px rgba(26,20,18,0.06);
-  }
-  .nav-links.open { display: flex; }
-
-  .nav-links li {
-    width: 100%;
-  }
-  .nav-links a {
-    display: block;
-    padding: 14px 28px;
-    font-size: 16px;
-    border-bottom: none !important;
-  }
-  .nav-links a:hover,
-  .nav-links a.active {
-    background: var(--ivory);
-  }
-  .nav-links li:last-child {
-    padding: 8px 28px 16px;
-  }
-  .nav-cta {
-    display: inline-block;
-    text-align: center;
-  }
 }
 
 /* ===== COMMON BUTTONS ===== */
