@@ -23,6 +23,7 @@
     +     '<svg class="nav-menu-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg>'
     +   '</button>'
     +   '<ul class="nav-links" id="primary-nav-list">'
+    +     '<li><a href="https://prim.orderofthetile.com/"' + activeClass('index.html') + '>The Story</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/archive"' + activeClass('the-letters.html') + '>The Letters</a></li>'
     +     '<li><a href="https://prim.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>The Game</a></li>'
     +     '<li><a href="https://prim.orderofthetile.com/events.html"' + activeClass('events.html') + '>Events</a></li>'
@@ -64,8 +65,13 @@
   var toggle = document.querySelector('.nav-menu-toggle');
   var navMenu = document.querySelector('.nav-menu');
   var navLinks = document.querySelector('.nav-links');
+  var hoverCloseTimer = null;
 
   function setOpen(open) {
+    if (hoverCloseTimer !== null) {
+      clearTimeout(hoverCloseTimer);
+      hoverCloseTimer = null;
+    }
     if (open) {
       navLinks.classList.add('open');
       toggle.setAttribute('aria-expanded', 'true');
@@ -76,12 +82,25 @@
   }
 
   if (toggle && navMenu && navLinks) {
-    // Tap/click toggle — read computed display so hover-open + click-to-close stays in sync
+    // Tap/click toggle
     toggle.addEventListener('click', function (e) {
       e.stopPropagation();
       var isVisible = window.getComputedStyle(navLinks).display !== 'none';
       setOpen(!isVisible);
     });
+
+    // Hover-to-open with 1-second close delay (mouse devices only)
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      navMenu.addEventListener('mouseenter', function () {
+        setOpen(true);
+      });
+      navMenu.addEventListener('mouseleave', function () {
+        if (hoverCloseTimer !== null) clearTimeout(hoverCloseTimer);
+        hoverCloseTimer = setTimeout(function () {
+          setOpen(false);
+        }, 1000);
+      });
+    }
 
     // Close when a link inside the menu is clicked
     navLinks.querySelectorAll('a').forEach(function (link) {

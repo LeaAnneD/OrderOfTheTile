@@ -78,7 +78,7 @@ nav {
 .nav-links a {
   display: block;
   font-family: var(--serif-sc);
-  font-size: 14px;
+  font-size: 16px;
   color: var(--dusk);
   text-decoration: none;
   padding: 10px 22px;
@@ -120,7 +120,7 @@ nav {
 
 .nav-menu-toggle {
   font-family: var(--serif-sc);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   letter-spacing: 0.05em;
   color: var(--ink);
@@ -145,13 +145,7 @@ nav {
   display: block;
 }
 
-/* Hover-to-open for mouse users only */
-@media (hover: hover) and (pointer: fine) {
-  .nav-menu:hover .nav-links { display: flex; }
-  .nav-menu:hover .nav-menu-chevron { transform: rotate(180deg); }
-}
-
-/* Tap/click open state (touch + keyboard) */
+/* Open state — set by JS for hover (with delayed close), tap, and keyboard */
 .nav-menu-toggle[aria-expanded="true"] .nav-menu-chevron {
   transform: rotate(180deg);
 }
