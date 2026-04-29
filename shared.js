@@ -17,18 +17,21 @@
     + '<a class="nav-wordmark" href="https://prim.orderofthetile.com/">'
     +   '<img src="images/seal.png" alt="seal" />The Order of the Tile'
     + '</a>'
-    + '<button class="nav-hamburger" aria-label="Menu" aria-expanded="false">'
-    +   '<span></span><span></span><span></span>'
-    + '</button>'
-    + '<ul class="nav-links">'
-    +   '<li><a href="https://www.orderofthetile.com/archive"' + activeClass('the-letters.html') + '>The Letters</a></li>'
-    +   '<li><a href="https://prim.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>The Game</a></li>'
-    +   '<li><a href="https://prim.orderofthetile.com/events.html"' + activeClass('events.html') + '>Events</a></li>'
-    +   '<li><a href="https://prim.orderofthetile.com/community.html"' + activeClass('community.html') + '>Community</a></li>'
-    +   '<li><a href="https://prim.orderofthetile.com/about-prim.html"' + activeClass('about-prim.html') + '>About Prim</a></li>'
-    +   '<li><a href="https://prim.orderofthetile.com/nmjl-card-history.html"' + activeClass('nmjl-card-history.html') + '>Card History</a></li>'
-    +   '<li><a href="https://www.orderofthetile.com/" class="nav-cta">Join the Table</a></li>'
-    + '</ul>';
+    + '<div class="nav-menu">'
+    +   '<button class="nav-menu-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="primary-nav-list">'
+    +     'MENU'
+    +     '<svg class="nav-menu-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg>'
+    +   '</button>'
+    +   '<ul class="nav-links" id="primary-nav-list">'
+    +     '<li><a href="https://www.orderofthetile.com/archive"' + activeClass('the-letters.html') + '>The Letters</a></li>'
+    +     '<li><a href="https://prim.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>The Game</a></li>'
+    +     '<li><a href="https://prim.orderofthetile.com/events.html"' + activeClass('events.html') + '>Events</a></li>'
+    +     '<li><a href="https://prim.orderofthetile.com/community.html"' + activeClass('community.html') + '>Community</a></li>'
+    +     '<li><a href="https://prim.orderofthetile.com/about-prim.html"' + activeClass('about-prim.html') + '>About Prim</a></li>'
+    +     '<li><a href="https://prim.orderofthetile.com/nmjl-card-history.html"' + activeClass('nmjl-card-history.html') + '>Card History</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/" class="nav-cta">Join the Table</a></li>'
+    +   '</ul>'
+    + '</div>';
 
   var navEl = document.querySelector('nav');
   if (navEl) {
@@ -57,33 +60,50 @@
     footerEl.innerHTML = footerHTML;
   }
 
-  // ===== HAMBURGER TOGGLE =====
-  var hamburger = document.querySelector('.nav-hamburger');
+  // ===== MENU TOGGLE =====
+  var toggle = document.querySelector('.nav-menu-toggle');
+  var navMenu = document.querySelector('.nav-menu');
   var navLinks = document.querySelector('.nav-links');
 
-  if (hamburger && navLinks) {
-    hamburger.addEventListener('click', function () {
-      var isOpen = navLinks.classList.toggle('open');
-      hamburger.classList.toggle('open');
-      hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  function setOpen(open) {
+    if (open) {
+      navLinks.classList.add('open');
+      toggle.setAttribute('aria-expanded', 'true');
+    } else {
+      navLinks.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  if (toggle && navMenu && navLinks) {
+    // Tap/click toggle — read computed display so hover-open + click-to-close stays in sync
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isVisible = window.getComputedStyle(navLinks).display !== 'none';
+      setOpen(!isVisible);
     });
 
-    // Close menu when a link is clicked
+    // Close when a link inside the menu is clicked
     navLinks.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', function () {
-        navLinks.classList.remove('open');
-        hamburger.classList.remove('open');
-        hamburger.setAttribute('aria-expanded', 'false');
-      });
+      link.addEventListener('click', function () { setOpen(false); });
     });
 
-    // Close menu on resize past breakpoint
-    window.addEventListener('resize', function () {
-      if (window.innerWidth > 1280) {
-        navLinks.classList.remove('open');
-        hamburger.classList.remove('open');
-        hamburger.setAttribute('aria-expanded', 'false');
+    // Click outside closes (catches taps on touch devices)
+    document.addEventListener('click', function (e) {
+      if (!navMenu.contains(e.target)) setOpen(false);
+    });
+
+    // Esc closes and returns focus to the toggle
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && navLinks.classList.contains('open')) {
+        setOpen(false);
+        toggle.focus();
       }
+    });
+
+    // Close on resize past breakpoint
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 1280) setOpen(false);
     });
   }
 })();
