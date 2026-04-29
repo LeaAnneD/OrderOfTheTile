@@ -55,12 +55,12 @@ nav {
 }
 .nav-wordmark img { width: 32px; height: 32px; object-fit: contain; }
 
-/* Hamburger is the primary nav pattern for every viewport. */
+/* Dropdown menu — anchored to .nav-menu wrapper. */
 .nav-links {
   display: none;
   position: absolute;
-  top: 74px;
-  right: 16px;
+  top: calc(100% + 8px);
+  right: 0;
   list-style: none;
   flex-direction: column;
   gap: 0;
@@ -92,7 +92,7 @@ nav {
   color: var(--ink);
 }
 .nav-links li:last-child {
-  padding: 6px 16px 10px;
+  padding: 6px 22px 10px;
   margin-top: 4px;
   border-top: 0.5px solid var(--lilac);
 }
@@ -108,36 +108,52 @@ nav {
   border-bottom: none !important;
   transition: opacity 0.2s;
   display: block;
-  text-align: center;
+  text-align: left;
 }
 .nav-cta:hover { opacity: 0.85; }
 
-/* HAMBURGER BUTTON — always visible */
-.nav-hamburger {
-  display: block;
+/* MENU WRAPPER + TOGGLE */
+.nav-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nav-menu-toggle {
+  font-family: var(--serif-sc);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--ink);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
-  flex-shrink: 0;
+  padding: 8px 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
 }
-.nav-hamburger span {
+.nav-menu-toggle:hover { opacity: 0.75; }
+.nav-menu-toggle:focus-visible {
+  outline: 1.5px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.nav-menu-chevron {
+  transition: transform 0.2s ease;
   display: block;
-  width: 22px;
-  height: 2px;
-  background: var(--ink);
-  margin: 5px 0;
-  border-radius: 1px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
 }
-.nav-hamburger.open span:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
+
+/* Hover-to-open for mouse users only */
+@media (hover: hover) and (pointer: fine) {
+  .nav-menu:hover .nav-links { display: flex; }
+  .nav-menu:hover .nav-menu-chevron { transform: rotate(180deg); }
 }
-.nav-hamburger.open span:nth-child(2) {
-  opacity: 0;
-}
-.nav-hamburger.open span:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
+
+/* Tap/click open state (touch + keyboard) */
+.nav-menu-toggle[aria-expanded="true"] .nav-menu-chevron {
+  transform: rotate(180deg);
 }
 
 /* ===== COMMON BUTTONS ===== */
