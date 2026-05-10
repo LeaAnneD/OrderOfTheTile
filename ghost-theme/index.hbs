@@ -1,0 +1,35 @@
+{{!< default}}
+
+<div class="page-hero">
+  <p class="page-hero-eyebrow">The Archive</p>
+  <h1 class="page-hero-headline">Every letter Prim<br>has ever <em>written.</em></h1>
+  <p class="page-hero-sub">{{#if @site.description}}{{@site.description}}{{else}}Weekly since the season began. Strategy, community, ceremony, and the occasional well-placed opinion. Nothing softened. Nothing repeated.{{/if}}</p>
+</div>
+
+<div class="letters-section">
+  <div class="letters-grid">
+    {{#foreach posts}}
+      <article class="letter-card{{#if featured}} featured{{/if}}">
+        <div class="letter-meta">
+          <span class="letter-number">{{date published_at format="MMMM D, YYYY"}}</span>
+          {{#if primary_tag}}<span class="letter-tag">{{primary_tag.name}}</span>{{/if}}
+        </div>
+        <h2 class="letter-title"><a href="{{url}}">{{title}}</a></h2>
+        {{#if custom_excerpt}}
+          <p class="letter-excerpt">{{custom_excerpt}}</p>
+        {{else}}
+          <p class="letter-excerpt">{{excerpt words="32"}}</p>
+        {{/if}}
+        <a href="{{url}}" class="letter-read">Read this letter &rarr;</a>
+      </article>
+    {{/foreach}}
+
+    {{#unless posts}}
+      <div class="coming-soon">
+        <p>The first letter is on its way. Prim is choosing her words.</p>
+      </div>
+    {{/unless}}
+  </div>
+
+  {{pagination}}
+</div>
