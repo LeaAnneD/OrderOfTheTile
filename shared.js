@@ -14,7 +14,7 @@
 
   // ===== NAV =====
   var navHTML = ''
-    + '<a class="nav-wordmark" href="https://prim.orderofthetile.com/">'
+    + '<a class="nav-wordmark" href="https://www.orderofthetile.com/">'
     +   '<img src="images/seal.png" alt="seal" />The Order of the Tile'
     + '</a>'
     + '<div class="nav-menu">'
@@ -23,14 +23,14 @@
     +     '<svg class="nav-menu-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg>'
     +   '</button>'
     +   '<ul class="nav-links" id="primary-nav-list">'
-    +     '<li><a href="https://prim.orderofthetile.com/"' + activeClass('index.html') + '>The Story</a></li>'
-    +     '<li><a href="https://www.orderofthetile.com/archive"' + activeClass('the-letters.html') + '>The Letters</a></li>'
-    +     '<li><a href="https://prim.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>The Game</a></li>'
-    +     '<li><a href="https://prim.orderofthetile.com/events.html"' + activeClass('events.html') + '>Events</a></li>'
-    +     '<li><a href="https://prim.orderofthetile.com/community.html"' + activeClass('community.html') + '>Community</a></li>'
-    +     '<li><a href="https://prim.orderofthetile.com/about-prim.html"' + activeClass('about-prim.html') + '>About Prim</a></li>'
-    +     '<li><a href="https://prim.orderofthetile.com/nmjl-card-history.html"' + activeClass('nmjl-card-history.html') + '>Card History</a></li>'
-    +     '<li><a href="https://www.orderofthetile.com/" class="nav-cta">Join the Table</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/"' + activeClass('index.html') + '>The Story</a></li>'
+    +     '<li><a href="https://newsletter.orderofthetile.com/"' + activeClass('the-letters.html') + '>The Letters</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>The Game</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/events.html"' + activeClass('events.html') + '>Events</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/community.html"' + activeClass('community.html') + '>Community</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/about-prim.html"' + activeClass('about-prim.html') + '>About Prim</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/nmjl-card-history.html"' + activeClass('nmjl-card-history.html') + '>Card History</a></li>'
+    +     '<li><a href="https://newsletter.orderofthetile.com/#/portal/signup" class="nav-cta">Join the Table</a></li>'
     +   '</ul>'
     + '</div>';
 

@@ -1,0 +1,284 @@
+<!--
+  ORDER OF THE TILE — Custom Nav for beehiiv
+
+  Paste this entire block into beehiiv's Code Injection area:
+  Settings > Advanced > Code Injection > Footer field
+
+  What it does:
+  1. Hides beehiiv's default nav bar
+  2. Injects your custom nav (matching your HTML site exactly)
+  3. 64px height, same fonts, same colors, same hamburger menu
+-->
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ===== HIDE BEEHIIV DEFAULT NAV ===== */
+header,
+nav:not(.oott-nav),
+[class*="navbar"],
+[class*="Navbar"],
+[class*="header-nav"],
+[class*="HeaderNav"],
+[class*="navigation"],
+[class*="Navigation"] {
+  display: none !important;
+}
+
+/* ===== OOTT CUSTOM NAV ===== */
+:root {
+  --oott-cloud: #F8F6F2;
+  --oott-ivory: #F5F0E8;
+  --oott-ink: #1A1412;
+  --oott-dusk: #6B6560;
+  --oott-lilac: #C9B8C4;
+  --oott-melon: #F2A97A;
+  --oott-orchid: #9B72A0;
+  --oott-serif-sc: 'Playfair Display SC', Georgia, serif;
+  --oott-serif: 'Playfair Display', Georgia, serif;
+  --oott-body: 'Crimson Text', Georgia, serif;
+}
+
+.oott-nav {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 99999 !important;
+  background: rgba(248,246,242,0.96) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-bottom: 0.5px solid var(--oott-lilac) !important;
+  height: 64px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 56px !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+}
+
+/* Push page content below fixed nav */
+body {
+  padding-top: 64px !important;
+}
+
+.oott-nav-wordmark {
+  font-family: var(--oott-serif-sc) !important;
+  font-size: 17px !important;
+  font-weight: 400 !important;
+  color: var(--oott-ink) !important;
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+.oott-nav-wordmark img {
+  width: 32px !important;
+  height: 32px !important;
+  object-fit: contain !important;
+}
+
+.oott-nav-links {
+  display: flex !important;
+  gap: 36px !important;
+  list-style: none !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.oott-nav-links li {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.oott-nav-links a {
+  font-family: var(--oott-serif-sc) !important;
+  font-size: 15px !important;
+  color: var(--oott-dusk) !important;
+  text-decoration: none !important;
+  transition: color 0.2s !important;
+  white-space: nowrap !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.oott-nav-links a:hover { color: var(--oott-ink) !important; }
+.oott-nav-links a.oott-active {
+  color: var(--oott-ink) !important;
+  border-bottom: 0.5px solid var(--oott-lilac) !important;
+}
+
+.oott-nav-cta {
+  font-family: var(--oott-serif-sc) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  background: var(--oott-melon) !important;
+  color: var(--oott-ink) !important;
+  padding: 9px 22px !important;
+  border-radius: 6px !important;
+  border-bottom: none !important;
+  transition: opacity 0.2s !important;
+}
+.oott-nav-cta:hover { opacity: 0.85 !important; }
+
+/* HAMBURGER */
+.oott-hamburger {
+  display: none !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 4px !important;
+  flex-shrink: 0 !important;
+}
+.oott-hamburger span {
+  display: block !important;
+  width: 22px !important;
+  height: 2px !important;
+  background: var(--oott-ink) !important;
+  margin: 5px 0 !important;
+  border-radius: 1px !important;
+  transition: transform 0.3s ease, opacity 0.3s ease !important;
+}
+.oott-hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg) !important;
+}
+.oott-hamburger.open span:nth-child(2) {
+  opacity: 0 !important;
+}
+.oott-hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg) !important;
+}
+
+/* MOBILE */
+@media (max-width: 1280px) {
+  .oott-nav {
+    padding: 0 24px !important;
+  }
+  .oott-hamburger {
+    display: block !important;
+  }
+  .oott-nav-links {
+    display: none !important;
+    position: absolute !important;
+    top: 64px !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: rgba(248,246,242,0.98) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    padding: 8px 0 !important;
+    border-bottom: 0.5px solid var(--oott-lilac) !important;
+    box-shadow: 0 8px 24px rgba(26,20,18,0.06) !important;
+  }
+  .oott-nav-links.open {
+    display: flex !important;
+  }
+  .oott-nav-links li {
+    width: 100% !important;
+  }
+  .oott-nav-links a {
+    display: block !important;
+    padding: 14px 28px !important;
+    font-size: 16px !important;
+    border-bottom: none !important;
+  }
+  .oott-nav-links a:hover,
+  .oott-nav-links a.oott-active {
+    background: var(--oott-ivory) !important;
+  }
+  .oott-nav-links li:last-child {
+    padding: 8px 28px 16px !important;
+  }
+  .oott-nav-cta {
+    display: inline-block !important;
+    text-align: center !important;
+  }
+}
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  // Wait for DOM to be ready
+  function init() {
+    // Don't inject twice
+    if (document.querySelector('.oott-nav')) return;
+
+    // Detect current page for active highlighting
+    var path = window.location.pathname;
+
+    function isActive(check) {
+      if (check === '/archive' && (path === '/archive' || path.startsWith('/archive'))) return ' oott-active';
+      if (check === '/' && path === '/') return ' oott-active';
+      return '';
+    }
+
+    // Build nav HTML
+    var nav = document.createElement('nav');
+    nav.className = 'oott-nav';
+    nav.innerHTML = ''
+      + '<a class="oott-nav-wordmark" href="https://prim.orderofthetile.com/">'
+      +   '<img src="https://prim.orderofthetile.com/images/seal.png" alt="seal" />The Order of the Tile'
+      + '</a>'
+      + '<button class="oott-hamburger" aria-label="Menu" aria-expanded="false">'
+      +   '<span></span><span></span><span></span>'
+      + '</button>'
+      + '<ul class="oott-nav-links">'
+      +   '<li><a href="https://www.orderofthetile.com/archive" class="' + isActive('/archive') + '">The Letters</a></li>'
+      +   '<li><a href="https://prim.orderofthetile.com/the-game.html">The Game</a></li>'
+      +   '<li><a href="https://prim.orderofthetile.com/community.html">Community</a></li>'
+      +   '<li><a href="https://prim.orderofthetile.com/about-prim.html">About Prim</a></li>'
+      +   '<li><a href="https://prim.orderofthetile.com/nmjl-card-history.html">Card History</a></li>'
+      +   '<li><a href="https://www.orderofthetile.com/" class="oott-nav-cta">Join the Table</a></li>'
+      + '</ul>';
+
+    // Insert at the very top of body
+    document.body.insertBefore(nav, document.body.firstChild);
+
+    // Hamburger toggle
+    var hamburger = nav.querySelector('.oott-hamburger');
+    var links = nav.querySelector('.oott-nav-links');
+
+    hamburger.addEventListener('click', function() {
+      var isOpen = links.classList.toggle('open');
+      hamburger.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    // Close on link click
+    links.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        links.classList.remove('open');
+        hamburger.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Close on resize past breakpoint
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 1280) {
+        links.classList.remove('open');
+        hamburger.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // Run when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
