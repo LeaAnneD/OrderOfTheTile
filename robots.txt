@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://prim.orderofthetile.com/sitemap.xml
+Sitemap: https://www.orderofthetile.com/sitemap.xml
