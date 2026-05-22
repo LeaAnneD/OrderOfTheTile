@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<!-- Last reviewed by Prim: 2026-05-21 -->
+<!--
+  GHL INTEGRATION NOTE FOR LEA ANNE
+  =================================
+  This form POSTs its data to a GoHighLevel Inbound Webhook URL.
+
+  To activate:
+    1. In GHL, go to Automation > Workflows > New Workflow
+    2. Add a trigger: "Inbound Webhook"
+    3. GHL will generate a unique webhook URL
+    4. Paste that URL into the GHL_WEBHOOK_URL constant in the
+       <script> at the bottom of this file (search for
+       "GHL_WEBHOOK_URL")
+    5. In the workflow, build steps to:
+       - Create/Update Contact with the email and name fields
+       - Apply tags based on the interests[] array (each tag = one
+         product they checked: "notify-faq", "notify-card-decoder",
+         "notify-lessons", "notify-alternate-cards",
+         "notify-exposure")
+       - Optional: Add to a "Product Launch Notifications" list
+
+  The form sends this JSON shape on submit:
+    {
+      "name": "Jane Doe",
+      "email": "jane@example.com",
+      "interests": ["faq", "card-decoder", "exposure"],
+      "source": "orderofthetile.com/get-notified.html",
+      "submitted_at": "2026-05-21T20:14:00Z"
+    }
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Notified | The Order of the Tile</title>
+  <meta name="description" content="Tell Prim which upcoming resources you want first word about. The FAQ, the Card Decoder, the Lesson Library, alternate card lessons, the Exposure course.">
+  <meta name="author" content="The Order of the Tile">
+  <link rel="canonical" href="https://www.orderofthetile.com/get-notified.html">
+  <link rel="icon" type="image/png" href="images/seal.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="The Order of the Tile">
+  <meta property="og:title" content="Get Notified | The Order of the Tile">
+  <meta property="og:description" content="Be first told when Prim's next thing arrives. Pick what you want, hear when it lands.">
+  <meta property="og:url" content="https://www.orderofthetile.com/get-notified.html">
+  <meta property="og:image" content="https://www.orderofthetile.com/images/seal.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Get Notified | The Order of the Tile">
+  <meta name="twitter:description" content="Be first told when Prim's next thing arrives.">
+  <meta name="twitter:image" content="https://www.orderofthetile.com/images/seal.png">
+
+  <link rel="stylesheet" href="shared.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://www.orderofthetile.com/get-notified.html#page",
+        "name": "Get Notified",
+        "description": "Signup page for product launch notifications from The Order of the Tile.",
+        "url": "https://www.orderofthetile.com/get-notified.html",
+        "publisher": { "@id": "https://www.orderofthetile.com/#organization" },
+        "inLanguage": "en-US",
+        "datePublished": "2026-05-21",
+        "dateModified": "2026-05-21"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://www.orderofthetile.com/#organization",
+        "name": "The Order of the Tile",
+        "url": "https://www.orderofthetile.com/",
+        "logo": "https://www.orderofthetile.com/images/seal.png"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.orderofthetile.com/" },
+          { "@type": "ListItem", "position": 2, "name": "The Game", "item": "https://www.orderofthetile.com/the-game.html" },
+          { "@type": "ListItem", "position": 3, "name": "Get Notified", "item": "https://www.orderofthetile.com/get-notified.html" }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    .page-hero {
+      padding: 140px 56px 48px;
+      max-width: 980px;
+      margin: 0 auto;
+      border-bottom: 0.5px solid var(--lilac);
+    }
+    .page-hero-eyebrow {
+      font-family: var(--body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dusk);
+      margin-bottom: 18px;
+    }
+    .page-hero-headline {
+      font-family: var(--serif);
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 500;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 18px;
+    }
+    .page-hero-headline em {
+      font-style: italic;
+      color: var(--orchid);
+    }
+    .page-hero-sub {
+      font-family: var(--body);
+      font-size: 18px;
+      color: var(--dusk);
+      line-height: 1.7;
+      max-width: 620px;
+    }
+
+    .form-container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 56px 56px 80px;
+    }
+
+    .form-intro {
+      font-family: var(--body);
+      font-size: 16.5px;
+      color: var(--dusk);
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .form-card {
+      background: var(--ivory);
+      border: 0.5px solid var(--lilac);
+      border-radius: 4px;
+      padding: 40px 36px;
+    }
+
+    .form-field {
+      margin-bottom: 26px;
+    }
+    .form-field label {
+      display: block;
+      font-family: var(--serif-sc);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .form-field input[type="text"],
+    .form-field input[type="email"] {
+      width: 100%;
+      font-family: var(--body);
+      font-size: 17px;
+      color: var(--ink);
+      background: var(--cloud);
+      border: 0.5px solid var(--lilac);
+      border-radius: 4px;
+      padding: 12px 14px;
+      transition: border-color 0.15s;
+    }
+    .form-field input[type="text"]:focus,
+    .form-field input[type="email"]:focus {
+      outline: none;
+      border-color: var(--orchid);
+    }
+    .form-field .optional {
+      font-family: var(--body);
+      font-size: 12px;
+      color: var(--dusk);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      margin-left: 8px;
+    }
+
+    .checkbox-group {
+      margin-top: 8px;
+    }
+    .checkbox-group-label {
+      display: block;
+      font-family: var(--serif-sc);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      border: 0.5px solid var(--lilac);
+      border-radius: 4px;
+      margin-bottom: 10px;
+      background: var(--cloud);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .checkbox-item:hover {
+      border-color: var(--orchid);
+    }
+    .checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--orchid);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .checkbox-item-text {
+      flex: 1;
+    }
+    .checkbox-item-name {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+      letter-spacing: -0.005em;
+    }
+    .checkbox-item-desc {
+      font-family: var(--body);
+      font-size: 14px;
+      color: var(--dusk);
+      line-height: 1.55;
+    }
+    .checkbox-item.select-all {
+      background: var(--ivory);
+      border-color: var(--melon);
+      margin-bottom: 18px;
+    }
+    .checkbox-item.select-all .checkbox-item-name {
+      color: var(--ink);
+    }
+
+    .form-submit {
+      font-family: var(--serif-sc);
+      font-size: 15px;
+      letter-spacing: 0.05em;
+      background: var(--melon);
+      color: var(--ink);
+      border: none;
+      padding: 15px 36px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 8px;
+    }
+    .form-submit:hover { opacity: 0.85; }
+    .form-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .privacy-note {
+      font-family: var(--body);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--dusk);
+      margin-top: 18px;
+      line-height: 1.65;
+    }
+
+    .form-error {
+      display: none;
+      background: #f8e6e6;
+      border: 0.5px solid #c47878;
+      color: #6b2929;
+      padding: 14px 18px;
+      border-radius: 4px;
+      font-family: var(--body);
+      font-size: 14.5px;
+      margin-top: 18px;
+      line-height: 1.6;
+    }
+    .form-error.visible { display: block; }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 56px 24px;
+    }
+    .form-success.visible { display: block; }
+    .form-success-headline {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+    .form-success-headline em {
+      font-style: italic;
+      color: var(--orchid);
+    }
+    .form-success-body {
+      font-family: var(--body);
+      font-size: 17px;
+      color: var(--dusk);
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto 28px;
+    }
+    .form-success-back {
+      font-family: var(--serif-sc);
+      font-size: 14px;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 0.5px solid var(--lilac);
+      padding-bottom: 2px;
+    }
+
+    @media (max-width: 700px) {
+      .page-hero { padding: 110px 20px 40px; }
+      .form-container { padding: 40px 20px 60px; }
+      .form-card { padding: 28px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav></nav>
+
+<div class="page-hero">
+  <p class="page-hero-eyebrow">Get Notified</p>
+  <h1 class="page-hero-headline">Be first told. <em>Always.</em></h1>
+  <p class="page-hero-sub">Prim is building several things at once. Tell her which ones you want first word about and she will write to you the day each one lands. Nothing else, nothing extra, no inbox crowding.</p>
+</div>
+
+<div class="form-container">
+
+  <p class="form-intro">Fill in your name and email. Check the things you want to be told about. Prim does the rest. You can change your mind any time by replying to one of her notes.</p>
+
+  <div class="form-card" id="form-card">
+
+    <form id="notify-form">
+
+      <div class="form-field">
+        <label for="name">Your name <span class="optional">(optional)</span></label>
+        <input type="text" id="name" name="name" autocomplete="name" placeholder="Lea Anne, or whoever you prefer">
+      </div>
+
+      <div class="form-field">
+        <label for="email">Your email</label>
+        <input type="email" id="email" name="email" autocomplete="email" required placeholder="your-email@something.com">
+      </div>
+
+      <div class="checkbox-group">
+        <span class="checkbox-group-label">Tell me when these arrive</span>
+
+        <label class="checkbox-item select-all" for="select-all">
+          <input type="checkbox" id="select-all">
+          <div class="checkbox-item-text">
+            <div class="checkbox-item-name">Tell me about everything</div>
+            <div class="checkbox-item-desc">A single check, and Prim will let you know about every new release as it lands.</div>
+          </div>
+        </label>
+
+        <label class="checkbox-item" for="i-faq">
+          <input type="checkbox" id="i-faq" name="interest" value="faq">
+          <div class="checkbox-item-text">
+            <div class="checkbox-item-name">The FAQ</div>
+            <div class="checkbox-item-desc">The questions Prim hears most. House rules, joker etiquette, what to do when something goes sideways.</div>
+          </div>
+        </label>
+
+        <label class="checkbox-item" for="i-card-decoder">
+          <input type="checkbox" id="i-card-decoder" name="interest" value="card-decoder">
+          <div class="checkbox-item-text">
+            <div class="checkbox-item-name">The Card Decoder</div>
+            <div class="checkbox-item-desc">Prim's guide to reading any year's NMJL card in about ten minutes.</div>
+          </div>
+        </label>
+
+        <label class="checkbox-item" for="i-lessons">
+          <input type="checkbox" id="i-lessons" name="interest" value="lessons">
+          <div class="checkbox-item-text">
+            <div class="checkbox-item-name">The Lesson Library</div>
+            <div class="checkbox-item-desc">Single-topic lessons on the Charleston, joker etiquette, card reading, and more. One topic per page.</div>
+          </div>
+        </label>
+
+        <label class="checkbox-item" for="i-alternate-cards">
+          <input type="checkbox" id="i-alternate-cards" name="interest" value="alternate-cards">
+          <div class="checkbox-item-text">
+            <div class="checkbox-item-name">Alternate Card Lessons</div>
+            <div class="checkbox-item-desc">Teachings on Siamese, Gladys Grad, and the other non-NMJL cards in the market.</div>
+          </div>
+        </label>
+
+        <label class="checkbox-item" for="i-exposure">
+          <input type="checkbox" id="i-exposure" name="interest" value="exposure">
+          <div class="checkbox-item-text">
+            <div class="checkbox-item-name">The Exposure</div>
+            <div class="checkbox-item-desc">Prim's deep course in American Mah Jongg. Where the social game becomes the competitive one. Coming Fall 2026.</div>
+          </div>
+        </label>
+
+      </div>
+
+      <button class="form-submit" type="submit" id="submit-btn">Notify Me</button>
+
+      <p class="privacy-note">Your email goes only to Prim. No selling, no swapping, no spam. You can unsubscribe with one click any time.</p>
+
+      <div class="form-error" id="form-error"></div>
+
+    </form>
+
+    <div class="form-success" id="form-success">
+      <h2 class="form-success-headline">You're on the list. <em>Thank you.</em></h2>
+      <p class="form-success-body">Prim has your note. She will write the day each thing you asked about arrives. In the meantime, the newsletter and the podcast are still the best way to spend time at the table.</p>
+      <a class="form-success-back" href="the-game.html">← Back to the Learning Hub</a>
+    </div>
+
+  </div>
+
+</div>
+
+<footer></footer>
+
+<script src="shared.js"></script>
+
+<script>
+  (function () {
+    'use strict';
+
+    /* =========================================================
+       GHL_WEBHOOK_URL — PASTE YOUR INBOUND WEBHOOK URL HERE
+       Get this from GHL: Automation > Workflows > New Workflow
+       > Add Trigger > Inbound Webhook > copy the URL.
+       Until this is set, the form will show a friendly error.
+       ========================================================= */
+    var GHL_WEBHOOK_URL = '';
+    /* ========================================================= */
+
+    var form = document.getElementById('notify-form');
+    var formCard = document.getElementById('form-card');
+    var successEl = document.getElementById('form-success');
+    var errorEl = document.getElementById('form-error');
+    var submitBtn = document.getElementById('submit-btn');
+    var selectAll = document.getElementById('select-all');
+    var interestBoxes = document.querySelectorAll('input[name="interest"]');
+
+    // Select-all behavior
+    selectAll.addEventListener('change', function () {
+      interestBoxes.forEach(function (cb) { cb.checked = selectAll.checked; });
+    });
+    interestBoxes.forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        if (!cb.checked) selectAll.checked = false;
+      });
+    });
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.add('visible');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Notify Me';
+    }
+
+    function showSuccess() {
+      form.style.display = 'none';
+      successEl.classList.add('visible');
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errorEl.classList.remove('visible');
+
+      var name = document.getElementById('name').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var interests = [];
+      interestBoxes.forEach(function (cb) {
+        if (cb.checked) interests.push(cb.value);
+      });
+
+      if (!email) {
+        showError('Please add your email so Prim knows where to write.');
+        return;
+      }
+      if (interests.length === 0) {
+        showError('Pick at least one thing for Prim to notify you about, or check "Tell me about everything".');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      var payload = {
+        name: name,
+        email: email,
+        interests: interests,
+        source: 'orderofthetile.com/get-notified.html',
+        submitted_at: new Date().toISOString()
+      };
+
+      if (!GHL_WEBHOOK_URL) {
+        showError('This form is not yet wired up to the notification system. Please check back shortly, or email Prim directly at prim@orderofthetile.com.');
+        return;
+      }
+
+      fetch(GHL_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function (res) {
+        if (res.ok) {
+          showSuccess();
+        } else {
+          showError('Something went wrong sending your note (status ' + res.status + '). Please try again, or email Prim at prim@orderofthetile.com.');
+        }
+      }).catch(function () {
+        showError('Network error while sending. Please try again, or email Prim at prim@orderofthetile.com.');
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
