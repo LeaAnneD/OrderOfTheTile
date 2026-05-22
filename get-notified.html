@@ -14,19 +14,23 @@
        "GHL_WEBHOOK_URL")
     5. In the workflow, build steps to:
        - Create/Update Contact with the email and name fields
-       - Apply tags based on the interests[] array (each tag = one
-         product they checked: "notify-faq", "notify-card-decoder",
-         "notify-lessons", "notify-alternate-cards",
-         "notify-exposure")
+       - Apply tags based on the interests[] array. Each value
+         in the array maps to a tag:
+           "game-releases"      -> notify-game-releases
+           "new-etsy-listings"  -> notify-new-etsy-listings
+           "special-content"    -> notify-special-content
+       - The "Everything" checkbox on the form is a select-all
+         helper. It checks all three category boxes, so anyone
+         picking it gets all three tags.
        - Optional: Add to a "Product Launch Notifications" list
 
   The form sends this JSON shape on submit:
     {
       "name": "Jane Doe",
       "email": "jane@example.com",
-      "interests": ["faq", "card-decoder", "exposure"],
+      "interests": ["game-releases", "new-etsy-listings", "special-content"],
       "source": "orderofthetile.com/get-notified.html",
-      "submitted_at": "2026-05-21T20:14:00Z"
+      "submitted_at": "2026-05-22T20:14:00Z"
     }
 -->
 <html lang="en">
@@ -355,53 +359,37 @@
       </div>
 
       <div class="checkbox-group">
-        <span class="checkbox-group-label">Tell me when these arrive</span>
+        <span class="checkbox-group-label">Tell me about</span>
 
         <label class="checkbox-item select-all" for="select-all">
           <input type="checkbox" id="select-all">
           <div class="checkbox-item-text">
-            <div class="checkbox-item-name">Tell me about everything</div>
+            <div class="checkbox-item-name">Everything</div>
             <div class="checkbox-item-desc">A single check, and Prim will let you know about every new release as it lands.</div>
           </div>
         </label>
 
-        <label class="checkbox-item" for="i-faq">
-          <input type="checkbox" id="i-faq" name="interest" value="faq">
+        <label class="checkbox-item" for="i-game-releases">
+          <input type="checkbox" id="i-game-releases" name="interest" value="game-releases">
           <div class="checkbox-item-text">
-            <div class="checkbox-item-name">The FAQ</div>
-            <div class="checkbox-item-desc">The questions Prim hears most. House rules, joker etiquette, what to do when something goes sideways.</div>
+            <div class="checkbox-item-name">Game releases</div>
+            <div class="checkbox-item-desc">New games on the site, new editions of the main game, and any other playable thing Prim builds for the table.</div>
           </div>
         </label>
 
-        <label class="checkbox-item" for="i-card-decoder">
-          <input type="checkbox" id="i-card-decoder" name="interest" value="card-decoder">
+        <label class="checkbox-item" for="i-etsy">
+          <input type="checkbox" id="i-etsy" name="interest" value="new-etsy-listings">
           <div class="checkbox-item-text">
-            <div class="checkbox-item-name">The Card Decoder</div>
-            <div class="checkbox-item-desc">Prim's guide to reading any year's NMJL card in about ten minutes.</div>
+            <div class="checkbox-item-name">New Etsy listings</div>
+            <div class="checkbox-item-desc">Every new printable, guide, bundle, or product the moment it goes up on Etsy.</div>
           </div>
         </label>
 
-        <label class="checkbox-item" for="i-lessons">
-          <input type="checkbox" id="i-lessons" name="interest" value="lessons">
+        <label class="checkbox-item" for="i-special">
+          <input type="checkbox" id="i-special" name="interest" value="special-content">
           <div class="checkbox-item-text">
-            <div class="checkbox-item-name">The Lesson Library</div>
-            <div class="checkbox-item-desc">Single-topic lessons on the Charleston, joker etiquette, card reading, and more. One topic per page.</div>
-          </div>
-        </label>
-
-        <label class="checkbox-item" for="i-alternate-cards">
-          <input type="checkbox" id="i-alternate-cards" name="interest" value="alternate-cards">
-          <div class="checkbox-item-text">
-            <div class="checkbox-item-name">Alternate Cards (Lessons + Companion Guide)</div>
-            <div class="checkbox-item-desc">Teachings and the reference companion guide for The American Mahjong Society card, The Big Card, and the other non-NMJL cards in the market.</div>
-          </div>
-        </label>
-
-        <label class="checkbox-item" for="i-exposure">
-          <input type="checkbox" id="i-exposure" name="interest" value="exposure">
-          <div class="checkbox-item-text">
-            <div class="checkbox-item-name">The Exposure</div>
-            <div class="checkbox-item-desc">Prim's deep course in American Mah Jongg. Where the social game becomes the competitive one. Coming Fall 2026.</div>
+            <div class="checkbox-item-name">Special content</div>
+            <div class="checkbox-item-desc">Members-only newsletters, bonus podcast episodes, seasonal exclusives, and the deeper teaching not on the general list.</div>
           </div>
         </label>
 
@@ -488,7 +476,7 @@
         return;
       }
       if (interests.length === 0) {
-        showError('Pick at least one thing for Prim to notify you about, or check "Tell me about everything".');
+        showError('Pick at least one thing for Prim to notify you about, or check "Everything".');
         return;
       }
 
