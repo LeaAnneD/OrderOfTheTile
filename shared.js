@@ -30,7 +30,6 @@
     +     '<li><a href="https://www.orderofthetile.com/events.html"' + activeClass('events.html') + '>Events</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/community.html"' + activeClass('community.html') + '>Community</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/about-prim.html"' + activeClass('about-prim.html') + '>About Prim</a></li>'
-    +     '<li><a href="https://www.orderofthetile.com/nmjl-card-history.html"' + activeClass('nmjl-card-history.html') + '>Card History</a></li>'
     +     '<li><a href="https://newsletter.orderofthetile.com/#/portal/signup" class="nav-cta">Join the Table Here</a></li>'
     +   '</ul>'
     + '</div>';
