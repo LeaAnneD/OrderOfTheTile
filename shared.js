@@ -24,6 +24,7 @@
     +   '</button>'
     +   '<ul class="nav-links" id="primary-nav-list">'
     +     '<li><a href="https://www.orderofthetile.com/"' + activeClass('index.html') + '>The Story</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/alls-fair-in-love-and-mahjong.html"' + activeClass('alls-fair-in-love-and-mahjong.html') + '>The Movie</a></li>'
     +     '<li><a href="https://newsletter.orderofthetile.com/"' + activeClass('the-letters.html') + '>The Letters</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>The Game</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/events.html"' + activeClass('events.html') + '>Events</a></li>'
