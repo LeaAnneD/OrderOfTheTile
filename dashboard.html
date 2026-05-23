@@ -1683,30 +1683,31 @@
     <!-- ROUTINE:hero:start -->
     <div class="hero">
       <div class="label">If you read nothing else</div>
-      <h3>Start the Mahjong Glossary page on orderofthetile.com. <span class="accent">First session.</span></h3>
-      <p>The Year-One Business Plan (locked 5/21) names the Glossary page as <strong>the first concrete first-90-days action</strong> and <strong>the highest single SEO+AEO asset</strong> Q1 can produce. The Glossary becomes the template for every lesson page that follows, the foundation of the downloadable Mahjong knowledge base, and the anchor for <code>DefinedTerm</code> and FAQ Schema.org markup. The folder shell at <code>Website/Learning Hub/Glossary/</code> exists since 5/22 17:01. No prose yet. Two days without prose means the rest of Q1 stays held up by a missing structural piece.</p>
-      <p>First-session goal: a clean 30 to 50 term list with one sentence per term in Prim's voice. Sources are the 80-page Voices doc, the Card Decoder chapter prose at <code>chapters/section-*/</code>, the Rulebook glossary entries, and Letters 01-10 incidental term definitions. No AI framing in any term definition. Schema markup and HTML deploy come after the prose lands.</p>
-      <p>The original 5/11 One Thing (Card Decoder InDesign layout for The Map + Hold/Pass/Pivot pages) stays paused, not dropped. The 5/22 Card Decoder README formalized the 3-piece line as locked, but the year-one plan reframes the evergreen as a candidate $47 to $97 e-book repurpose. Defer further InDesign time on the Decoder until the e-book vs. three-piece decision lands.</p>
+      <h3>Deploy AEO foundation on the live site. <span class="accent">Schema markup + llms.txt + knowledge-base.json.</span></h3>
+      <p>The Glossary went live 5/21 (commit 5713449). The Learning Hub at <code>the-game.html</code> was rebuilt 5/21 (commit e566f58). "The Exposure" is locked as the course name (commit a135c0f). The get-notified.html capture page is live. <strong>The structural pieces of Q1 shipped two days ago.</strong> What is still missing is the Schema.org markup and AEO assets that turn those live pages into AI-discoverable knowledge. Without that layer the Glossary and Learning Hub do not earn their full SEO+AEO leverage.</p>
+      <p>First-session goal: ship four AEO components on top of what is already live. (1) <code>DefinedTerm</code> JSON-LD on every Glossary entry. (2) <code>FAQPage</code> + <code>HowTo</code> JSON-LD on the-game.html section blocks. (3) <code>Person</code> for Prim + <code>Organization</code> for OOTT in a site-wide <code>shared.js</code> injection. (4) <code>llms.txt</code> at the site root and a publicly downloadable <code>knowledge-base.json</code>. The Authority Play first-mover window is open right now.</p>
+      <p>Where to work: the deploy repo at <code>C:\Users\LeaAn\OrderOfTheTile\</code>. Edit the live HTML directly, commit, push. Test JSON-LD with Google Rich Results test before declaring done.</p>
 
       <ul class="bonus">
-        <li><strong>If capacity opens:</strong> Amazon Associates signup + affiliate spreadsheet stub at <code>Business/Revenue/Affiliates/</code>. ~30 minutes. Fastest revenue lever in the year-one plan.</li>
+        <li><strong>If capacity opens:</strong> Amazon Associates signup + affiliate spreadsheet stub at <code>Business/Revenue/Affiliates/</code> (folder exists, empty). ~30 minutes. Fastest revenue lever in the year-one plan.</li>
         <li><strong>10-minute close-out:</strong> Confirm Cloudflare Access protection on <code>dashboard.html</code> per <code>Website/Cloudflare-Access-Setup-Guide.md</code>. The 5/22 21:30 health-log entry left it as a TODO.</li>
-        <li><strong>Caution flag:</strong> the new <code>Business/Internal Tools/OOTT Dashboard/</code> build is real, useful infrastructure (Neon + Next.js, design-phase docs landed 5/22 23:28-23:33), but the year-one plan caps it at 15-20 hours and explicitly classifies it as internal tool, NOT a revenue line. Resist letting Phase 0 setup eat the Saturday slot that belongs to the Glossary.</li>
+        <li><strong>Caution flag:</strong> the new <code>Business/Internal Tools/OOTT Dashboard/</code> build is real, useful infrastructure (Neon + Next.js, design-phase docs landed 5/22 23:28-23:33), but the year-one plan caps it at 15-20 hours and explicitly classifies it as internal tool, NOT a revenue line. Resist letting Phase 0 setup eat the Saturday slot that belongs to AEO.</li>
       </ul>
 
       <div style="margin-top: 22px; padding: 18px 22px; background: var(--cream-deep); border-left: 3px solid var(--gold); font-size: 13.5px; line-height: 1.55;">
-        <div style="font-family: 'Playfair Display', serif; text-transform: uppercase; letter-spacing: 0.18em; font-size: 11px; color: var(--burgundy); font-weight: 600; margin-bottom: 10px;">Today's Defaults <span style="color: var(--ink-soft); font-weight: 400; text-transform: none; letter-spacing: 0; font-style: italic; font-family: 'Crimson Text', serif; font-size: 12px;">·&nbsp; autonomous calls based on file evidence; override by telling me</span></div>
+        <div style="font-family: 'Playfair Display', serif; text-transform: uppercase; letter-spacing: 0.18em; font-size: 11px; color: var(--burgundy); font-weight: 600; margin-bottom: 10px;">Today's Defaults <span style="color: var(--ink-soft); font-weight: 400; text-transform: none; letter-spacing: 0; font-style: italic; font-family: 'Crimson Text', serif; font-size: 12px;">·&nbsp; autonomous calls based on file evidence and the deploy-repo git log; override by telling me</span></div>
         <ul style="margin: 0; padding-left: 18px;">
-          <li><strong>Strategic frame LOCKED 5/21-5/22:</strong> Q1 is leveraged assets, not more Etsy products. Five Q1 priorities (Glossary, AEO foundation, course pre-sale, monetization layer, Card Decoder e-book) replace the Etsy-launch-of-the-week cadence.</li>
-          <li><strong>Publish pipeline LIVE 5/22 evening.</strong> Health log shows OK at 20:32, 21:30, 21:30:57. dashboard.html verified live (HTTP 200) at orderofthetile.com.</li>
+          <li><strong>Major site overhaul LIVE 5/21-22.</strong> Deploy repo git log shows 14 commits across 5/21-22 including the Glossary launch, The Game → Learning Hub rebuild, course rename to "The Exposure", AI mentions removed, notify page added, Rulebook renamed to "American Mah Jongg Learning Guide", Alternate Cards Companion added, All's Fair in Love & Mahjong landing page added, "Become a Favorite Fourth" funnel Step One. Today's One Thing is no longer about shipping these. It is about the AEO layer on top of them.</li>
+          <li><strong>Strategic frame LOCKED 5/21-5/22:</strong> Q1 is leveraged assets, not more Etsy products. Glossary done; Learning Hub scaffold done; course landing capture live. Next Q1 priorities: AEO foundation, monetization (affiliates), individual lesson pages, Card Decoder e-book.</li>
+          <li><strong>Publish pipeline LIVE 5/22 evening.</strong> Health log shows OK at 20:32, 21:30, 21:30:57. dashboard.html verified live (HTTP 200) at orderofthetile.com. Today's run replaced the Markdown-render pipeline with direct DASHBOARD.html publish.</li>
           <li><strong>Cloudflare Access on dashboard.html: NOT yet confirmed.</strong> 5/22 21:30 log entry left it as your overnight TODO. Worth a 10-minute click-through today.</li>
           <li><strong>OOTT Dashboard internal-tool build = design-phase only.</strong> 15-20 hour cap. Background priority. Build only when Q1 revenue priorities are not in flight.</li>
           <li><strong>Card Decoder line README locked 5/22</strong> as 3-piece structure with open e-book reframe. Decision still open.</li>
-          <li><strong>Newsletter platform: Ghost(Pro).</strong> Letter-09 + Letter-10 both shipped from Ghost cleanly.</li>
+          <li><strong>Course name LOCKED to "The Exposure"</strong> per commit a135c0f (5/21). AI mentions removed from all marketing copy. Open question retired.</li>
+          <li><strong>Rulebook renamed to "American Mah Jongg Learning Guide"</strong> per commit 2cb1da9. Alternate Cards Companion added as new product line under Books & Guides.</li>
+          <li><strong>Newsletter platform: Ghost(Pro).</strong> Letter-09 + Letter-10 both shipped from Ghost cleanly. Beehiiv decision textarea below has been retired as stale.</li>
           <li><strong>Letter-11 (May 28) on track</strong> from v2 body drafted 5/17. Polish week begins Monday. First letter to carry an affiliate link / in-letter product placement.</li>
-          <li><strong>Affiliate setup begins this week.</strong> Did not move yesterday.</li>
           <li><strong>LinkedIn paid offer naming</strong> is the Q1 blocker that still hasn't moved. <code>Business/LinkedIn/Paid-Offer-Decision.md</code> open since 5/22.</li>
-          <li><strong>Tile Verification Quick-Check Card, Tournament Prep Printable, Year Hand Decoder</strong> all stay demoted to background.</li>
         </ul>
       </div>
     </div>
@@ -1935,19 +1936,19 @@
         <h3>Today. Critical-path or unblocks everything.</h3>
       </div>
       <ul class="tasks" data-touched="2026-05-23">
-        <li data-stages="Source pool review|30 terms drafted|50 terms drafted|Prim voice pass|Schema markup|HTML deploy">
+        <li data-stages="DefinedTerm on glossary entries|FAQPage + HowTo on the-game.html|Person + Organization in shared.js|llms.txt at root|knowledge-base.json published|Google Rich Results test pass">
           <input type="checkbox">
           <div class="task-body">
-            <div class="task-title">Start Mahjong Glossary page draft <span class="price">~2-3 hr first pass</span></div>
-            <div class="task-meta">30 to 50 terms, one sentence per term in Prim's voice. Folder shell exists since 5/22 17:01; no prose yet (2nd day as One Thing). Sources: Card Decoder chapter prose, Rulebook glossary, 80-page Voices doc, Letters 01-10 incidental terms. No AI framing. Schema markup + HTML deploy after the prose lands. Year-one plan names this the first concrete first-90-days action AND the highest SEO+AEO asset in the Authority Play.</div>
-            <span class="task-file">Website/Learning Hub/Glossary/</span>
+            <div class="task-title">Deploy AEO foundation (Schema.org + llms.txt + KB JSON)</div>
+            <div class="task-meta">Now that Glossary + Learning Hub are live (5/21), the next Authority Play move is the structured-data layer that makes those pages AI-discoverable. Work in <code>C:\Users\LeaAn\OrderOfTheTile\</code>. Verify with Google Rich Results test before declaring done.</div>
+            <span class="task-file">C:\Users\LeaAn\OrderOfTheTile\</span>
           </div>
         </li>
         <li data-stages="Account created|First product link tested|Spreadsheet stub built">
           <input type="checkbox">
           <div class="task-body">
             <div class="task-title">Amazon Associates signup + affiliate spreadsheet stub <span class="price">~30 min</span></div>
-            <div class="task-meta">If Glossary closes faster than expected. Stub at <code>Business/Revenue/Affiliates/</code> with columns: vendor, product, commission, link, first-letter-used-in. Fastest revenue lever in the year-one plan (days, not months).</div>
+            <div class="task-meta">If AEO closes faster than expected. Affiliates folder at <code>Business/Revenue/Affiliates/</code> already exists, empty. Build stub with columns: vendor, product, commission, link, first-letter-used-in. Fastest revenue lever in the year-one plan (days, not months).</div>
             <span class="task-file">Business/Revenue/Affiliates/</span>
           </div>
         </li>
@@ -1999,14 +2000,6 @@
             <div class="task-meta">Currently only on Etsy. Revenue/README.md flagged this as a fast win.</div>
           </div>
         </li>
-        <li data-stages="Folder created|Hero copy drafted|Email capture wired|Pre-sale toggle added">
-          <input type="checkbox">
-          <div class="task-body">
-            <div class="task-title">Course landing page first draft</div>
-            <div class="task-meta">Lives at <code>Website/Learning Hub/Course Landing/</code>. Captures email signups even before the course exists. Becomes the pre-sale page in late Q1. Marketing copy: zero AI framing.</div>
-            <span class="task-file">Website/Learning Hub/Course Landing/</span>
-          </div>
-        </li>
       </ul>
     </div>
 
@@ -2018,20 +2011,12 @@
         <span class="what">Q1 build-outs. Each unblocks downstream revenue.</span>
       </div>
       <ul class="tasks">
-        <li data-stages="Scaffold|First lesson page|Five lesson pages|Schema baked|10 pages live">
+        <li data-stages="Topic picked|Outline|Draft in Prim voice|Tile illustrations|Schema baked|Live under the-game.html">
           <input type="checkbox">
           <div class="task-body">
-            <div class="task-title">Lesson Library scaffold + first lesson page</div>
-            <div class="task-meta">Uses Glossary as template once Glossary is live. Sources: Card Decoder + Letters + 80-page Voices doc. Target: 10 lesson pages by end of Q1, then 1/wk ongoing. Replaces <code>the-game.html</code> "Coming Soon" state.</div>
-            <span class="task-file">Website/Learning Hub/Lesson Library/</span>
-          </div>
-        </li>
-        <li data-stages="Schema.org Article|FAQ|HowTo|Person+Org|llms.txt at root|knowledge-base.json public">
-          <input type="checkbox">
-          <div class="task-body">
-            <div class="task-title">AEO foundation deployment</div>
-            <div class="task-meta">Sitewide Schema.org (Article, FAQ, HowTo, Person/Author for Prim, Organization for OOTT). <code>llms.txt</code> at site root. <code>knowledge-base.json</code> publicly downloadable. Lives in <code>Website/Knowledge Base/</code>. First-mover window is open NOW per the Authority Play.</div>
-            <span class="task-file">Website/Knowledge Base/</span>
+            <div class="task-title">Write the first lesson under The Lessons</div>
+            <div class="task-meta">The Game page (Learning Hub) is live with "The Lessons" section showing the Lesson Library as "Coming Soon" pointing at get-notified.html. First lesson candidates: the Charleston explained step by step, joker etiquette, reading the card, handling a wall game. One topic per page. Target: 10 lessons by end of Q1, then 1/wk ongoing. Sources: Card Decoder chapter prose, Letters 01-10, 80-page Voices doc. No AI framing.</div>
+            <span class="task-file">C:\Users\LeaAn\OrderOfTheTile\the-game.html</span>
           </div>
         </li>
         <li data-stages="Pricing decision|Email sequence|50% mechanic|Landing-page wired|Pre-sale runs">
@@ -2236,8 +2221,15 @@
         <li>
           <input type="checkbox">
           <div class="task-body">
-            <div class="task-title">Rulebook Etsy PDF price</div>
-            <div class="task-meta">Recommend $9.99. Last open row in <code>OOTT_Launchable_Pricing.xlsx</code> "Pricing Decisions Needed" sheet.</div>
+            <div class="task-title">American Mah Jongg Learning Guide — Etsy PDF price</div>
+            <div class="task-meta">Renamed from "Rulebook" per commit 2cb1da9 (5/21). Recommend $9.99. Last open row in <code>OOTT_Launchable_Pricing.xlsx</code> "Pricing Decisions Needed" sheet.</div>
+          </div>
+        </li>
+        <li>
+          <input type="checkbox">
+          <div class="task-body">
+            <div class="task-title">Alternate Cards Companion — Etsy PDF + Books & Guides listing</div>
+            <div class="task-meta">Added to The Game / Learning Hub "Books and guides" section 5/21 (commit 2cb1da9). Pairs with the Learning Guide. Pricing + final PDF + listing copy needed.</div>
           </div>
         </li>
         <li>
@@ -2316,15 +2308,6 @@
       <h3>Decisions. Recorded.</h3>
       <p class="subtitle">Type your decision under each. Saves automatically. Anything left blank stays an open decision.</p>
       <ol>
-        <li>
-          <strong>Commerce platform.</strong>
-          <span class="recorded">Decided</span>
-          <div class="note-block">
-            <span class="note-prompt">Your decision (edit any time):</span>
-            <textarea data-note-id="decision-commerce-platform" placeholder="Type your decision here.">Beehiiv for the newsletter. Etsy for selling. Considering Beehiiv for selling as well. Kindle (KDP) for the Rulebook and downstream products.</textarea>
-            <span class="note-saved">recorded May 2</span>
-          </div>
-        </li>
         <li>
           <strong>Legal posture for hand-specific 2026 card content.</strong>
           <span class="recorded">Decided</span>
@@ -2422,10 +2405,31 @@
           </div>
         </li>
         <li>
-          <strong>Newsletter platform (correction to decision i above).</strong>
-          <span class="recorded">Re-locked 5/10 → Ghost</span>
-          <div class="note-block" style="background: rgba(184,150,86,0.08); border: 1px solid var(--gold); padding: 10px 14px; font-size: 13.5px;">
-            Decision i above ("Beehiiv for the newsletter") is <strong>superseded</strong>. Locked 5/10 to Ghost(Pro). Letter-09 shipped from Ghost 5/14 (first Ghost send), Letter-10 from Ghost 5/21. Beehiiv archive of Letters 01-08 remains; subscriber-list migration plan still open (see Open Questions). The textarea above is preserved for historical record.
+          <strong>Newsletter platform.</strong>
+          <span class="recorded">Ghost since 5/10</span>
+          <div class="note-block" style="background: var(--cream-deep); border: 1px solid var(--rule-soft); padding: 10px 14px; font-size: 13.5px;">
+            Ghost(Pro) for the newsletter. Letter-09 shipped from Ghost 5/14 (first Ghost send), Letter-10 from Ghost 5/21. Beehiiv archive of Letters 01-08 remains; subscriber-list migration plan still open (see Open Questions). The earlier Beehiiv-era decision textarea has been retired.
+          </div>
+        </li>
+        <li>
+          <strong>Major site overhaul.</strong>
+          <span class="recorded">Shipped 5/21</span>
+          <div class="note-block" style="background: var(--cream-deep); border: 1px solid var(--rule-soft); padding: 10px 14px; font-size: 13.5px;">
+            Glossary live (commit 5713449), The Game rebuilt as the Learning Hub (e566f58), "Become a Favorite Fourth" funnel Step One (b185f23), landing page refined (4f72808), All's Fair in Love & Mahjong page added (116e84b). 14 deploy-repo commits 5/21-22.
+          </div>
+        </li>
+        <li>
+          <strong>Course name.</strong>
+          <span class="recorded">"The Exposure" 5/21</span>
+          <div class="note-block" style="background: var(--cream-deep); border: 1px solid var(--rule-soft); padding: 10px 14px; font-size: 13.5px;">
+            Locked per commit a135c0f. AI mentions removed from all public marketing copy in the same commit. The earlier "The Master's Card" alternate is retired. Get-notified.html captures pre-sale interest.
+          </div>
+        </li>
+        <li>
+          <strong>Rulebook name + Alternate Cards Companion.</strong>
+          <span class="recorded">5/21</span>
+          <div class="note-block" style="background: var(--cream-deep); border: 1px solid var(--rule-soft); padding: 10px 14px; font-size: 13.5px;">
+            Rulebook renamed to "American Mah Jongg Learning Guide" (commit 2cb1da9). Alternate Cards Companion added as a new product under "Books and guides" on the-game.html. Pricing + final PDF + listing copy still open for both.
           </div>
         </li>
       </ol>
@@ -2444,27 +2448,27 @@
     <!-- ROUTINE:recent-wins:start -->
     <div class="wins-grid">
       <div class="win-card">
-        <div class="date">May 22 (last night, late)</div>
+        <div class="date">May 21 — major site overhaul</div>
+        <h4>Glossary LIVE · Learning Hub built · The Exposure locked</h4>
+        <p>14 commits to the deploy repo on 5/21-22. Glossary page live (5713449 "every word you'll hear at the table"). The Game page rebuilt as the Learning Hub with Free resources / Books and guides / The Lessons / Alternate cards / The course sections (e566f58). Course renamed to "The Exposure"; AI mentions removed from public copy (a135c0f). Get-notified.html added as pre-sale capture. "Become a Favorite Fourth" funnel Step One (b185f23). Rulebook renamed to "American Mah Jongg Learning Guide" + Alternate Cards Companion added (2cb1da9). All's Fair in Love & Mahjong landing page added (116e84b).</p>
+        <p class="win-link"><a href="https://www.orderofthetile.com/glossary.html">orderofthetile.com/glossary.html</a></p>
+      </div>
+      <div class="win-card">
+        <div class="date">May 22 (evening)</div>
+        <h4>Publish pipeline LIVE end-to-end</h4>
+        <p><code>_publish-dashboard.sh</code> + <code>dashboard-template.html</code> written 21:28-21:30. First render + push committed at 21:30. <code>orderofthetile.com/dashboard.html</code> verified live (HTTP 200). Cloudflare Access protection guide drafted at 21:20. Today's run replaced the Markdown-render path with a direct DASHBOARD.html publish.</p>
+        <p class="win-link"><a href="Website/_publish-dashboard.sh">Website/_publish-dashboard.sh</a></p>
+      </div>
+      <div class="win-card">
+        <div class="date">May 22 (late evening)</div>
         <h4>OOTT Dashboard internal-tool build scoped</h4>
         <p>Six new files in <code>Business/Internal Tools/OOTT Dashboard/</code> written 23:28-23:33 (README, ARCHITECTURE, SCHEMA, DECISIONS, BUILD-PLAN, MIGRATION). Stack chosen: Next.js 15 + Drizzle + Neon Postgres + Cloudflare Pages + CF Access. Same internal-tool posture as Socials SaaS. Capped at 15-20 hours of focused work.</p>
         <p class="win-link"><a href="Business/Internal Tools/OOTT Dashboard/">Business/Internal Tools/OOTT Dashboard/</a></p>
       </div>
       <div class="win-card">
-        <div class="date">May 22 (yesterday evening)</div>
-        <h4>Publish pipeline LIVE end-to-end</h4>
-        <p><code>_publish-dashboard.sh</code> + <code>dashboard-template.html</code> written 21:28-21:30. First render + push committed at 21:30 (commit 24384b0). <code>orderofthetile.com/dashboard.html</code> verified live (HTTP 200). Cloudflare Access protection guide drafted at 21:20.</p>
-        <p class="win-link"><a href="Website/_publish-dashboard.sh">Website/_publish-dashboard.sh</a></p>
-      </div>
-      <div class="win-card">
-        <div class="date">May 22 (yesterday)</div>
-        <h4>Vault reorg + Card Decoder README lock</h4>
-        <p>Course / Game / Revenue / LinkedIn / Internal Tools elevated as top-level workstreams. Website augmented with Learning Hub / Knowledge Base / Mini-Games. 14 README files written. <code>00_Start Here.md</code> rewritten as canonical orientation primer. Card Decoder README rewritten as locked 3-piece line with open e-book reframe question.</p>
-        <p class="win-link"><a href="00_Start Here.md">00_Start Here.md</a></p>
-      </div>
-      <div class="win-card">
-        <div class="date">May 21</div>
-        <h4>Strategic frame approved · Year-One Business Plan</h4>
-        <p>$10K-$20K/mo by May 2027. Authority Play, Site Architecture, Visual Strategy, Marketing Rules all locked in one session. Course-as-#1-revenue-line decision made. LinkedIn paid offer surfaced as Q1 blocker. Letter-10 ("Mom mahjong texts") shipped 7am via Ghost the same morning.</p>
+        <div class="date">May 21-22 — strategy lock</div>
+        <h4>Year-One Business Plan + vault reorg</h4>
+        <p>Year-One Business Plan locked 5/21 ($10K-$20K/mo by May 2027). Authority Play, Site Architecture, Visual Strategy, Marketing Rules all locked in the same session. Vault reorg landed 5/22: Course / Game / Revenue / LinkedIn / Internal Tools elevated as top-level workstreams. 14 README files written. <code>00_Start Here.md</code> rewritten. Letter-10 ("Mom mahjong texts") shipped 7am Ghost the same morning.</p>
         <p class="win-link"><a href="Business/Strategy/2026-05-21_Year-One_Business_Plan.md">2026-05-21_Year-One_Business_Plan.md</a></p>
       </div>
     </div>
@@ -2544,14 +2548,6 @@
           <div class="note-block">
             <span class="note-prompt">Your answer (edit any time):</span>
             <textarea data-note-id="oq-card-decoder-ebook" placeholder="Type your answer here. Leave blank to keep this question open."></textarea>
-            <span class="note-saved"></span>
-          </div>
-        </li>
-        <li>
-          <strong>Course final name.</strong> "The Exposure" carried from Letter-06 footer; "The Master's Card" alternate in plan file. Lock before pre-sale.
-          <div class="note-block">
-            <span class="note-prompt">Your answer (edit any time):</span>
-            <textarea data-note-id="oq-course-final-name" placeholder="Type your answer here. Leave blank to keep this question open."></textarea>
             <span class="note-saved"></span>
           </div>
         </li>
