@@ -2102,8 +2102,17 @@
       <div class="tier-head">
         <span class="badge p3">P3</span>
         <h3>Listings teed up. Pursue when capacity opens.</h3>
+        <span class="what">Etsy = background flywheel ($1-2K/mo target). Seasonal pulls are allowed if they reuse existing assets.</span>
       </div>
       <ul class="tasks">
+        <li data-stages="Concept brief (palette + voice)|Pull existing assets to remix|Generate 4-6 listings|Listing copy + tags|Live on Etsy by Jun 13|Letter-12 + Letter-13 cross-promo">
+          <input type="checkbox">
+          <div class="task-body">
+            <div class="task-title">4th of July + Summer Etsy refresh <span class="price">T-42 to July 4</span></div>
+            <div class="task-meta">Six-week runway to ship by mid-June for the July 4 weekend pull. <strong>Posture: remix, not net-new.</strong> Reuse existing Quote Cards palette in red/white/blue, refresh the Mom Card Pack / Coupon Book aesthetic into a summer-party variant, frame the Party Pack as "4th of July Mahjong Night." Candidate concepts: Patriotic Pung quote card, Summer Charleston scoresheet variant, Pickle Bar marathon-prep printable (June 28 marathon, T-36; a real demand anchor in Summerville SC), Lake-and-Tile summer reading bundle echoing the Letters. <strong>Constraint:</strong> this is background flywheel work per the 5/21 strategy lock. Do NOT let it eat the Q1 leveraged priorities (AEO, affiliates, lesson pages, course pre-sale). Target capacity: 1-2 sessions across 3 weeks.</div>
+            <span class="task-file">Business/Products/Etsy Designs/_summer-2026/</span>
+          </div>
+        </li>
         <li data-stages="Print proof|Listing copy approved|Photos generated|Listing built|Published on Etsy">
           <input type="checkbox">
           <div class="task-body">
@@ -2250,12 +2259,12 @@
     </div>
     <!-- ROUTINE:priority-queue:end -->
 
-    <!-- P5 Newsletter -->
+    <!-- P5 Newsletter housekeeping -->
     <div class="tier">
       <div class="tier-head">
         <span class="badge p5">P5</span>
-        <h3>Newsletter pipeline.</h3>
-        <span class="what">Letters 01-08 published / scheduled. Letter-09+ live status lives in section ii.</span>
+        <h3>Newsletter housekeeping.</h3>
+        <span class="what">Letter status lives in section ii (Weekly Ritual). This tier is the meta-work behind the pipeline.</span>
       </div>
       <ul class="tasks">
         <li data-stages="Read buffer file|Sort entries by destination|Append to letter-log.md|Append to crak-intelligence-bank.md|Mark taglines as used|Delete buffer" data-explanation="<strong>What this is.</strong> A housekeeping task. There's a file called Letter_Tracking_Updates.md in your Skills folder. It's a temporary buffer where I logged metadata about Letters 02-05 as you wrote them: which taglines were used, which Crak Intelligence topics were covered, which Tile Envy products got featured, which guests were spotlighted in Who's Talking.<br><br><strong>Why it's a buffer.</strong> That metadata is supposed to live PERMANENTLY in three reference files inside Skills/_extracted/order-of-the-tile-newsletter/references/ (specifically letter-log.md, crak-intelligence-bank.md, and taglines.md). Those reference files are the canonical record I check before drafting a new letter so I don't accidentally repeat a tagline or reuse an already-covered Crak Intelligence topic. The buffer was a holding pen because I didn't have write access to those references at the time.<br><br><strong>The actual work.</strong> Take the contents of Letter_Tracking_Updates.md, integrate them into the right reference files (each entry already labels which file it belongs in), then delete the buffer. It's mechanical, not creative. Probably 15 minutes if you do it manually, or you can ask me to do it next session.<br><br><strong>Why this matters.</strong> If we don't sync, the next time I write a letter I might reuse a tagline or repeat a Crak Intelligence topic. Small risk now (5 letters of uncovered metadata), grows worse as more letters land in the buffer.">
@@ -2896,7 +2905,9 @@
     // One-off non-letter events (sorted ascending by date). Past events drop off automatically.
     // ROUTINE:events-array:start
     const EVENTS = [
-      { date: '2026-06-28', label: '48hr Pickle Bar Marathon', weekday: 'Sunday', note: 'Summerville SC. Letter-12 / Letter-13 Set Your Rack candidate; hunger relief + Alzheimer\'s benefit.' },
+      { date: '2026-06-13', label: 'Summer Etsy refresh — listings target-live', weekday: 'Saturday', note: 'Aim for 4-6 summer/4th of July listings live by this date so Etsy has 3 weeks of indexing before the July 4 weekend pull.' },
+      { date: '2026-06-28', label: '48hr Pickle Bar Marathon', weekday: 'Sunday', note: 'Summerville SC. Letter-12 / Letter-13 Set Your Rack candidate; hunger relief + Alzheimer\'s benefit. Marathon Prep Printable demand anchor.' },
+      { date: '2026-07-04', label: '4th of July', weekday: 'Saturday', note: 'Summer Etsy pull. Patriotic Pung + Summer Charleston scoresheet + 4th of July Mahjong Night Party Pack frame. Letter-15 / 16 thematic candidate.' },
       { date: '2026-08-21', label: 'Q1 Gate Check', weekday: 'Friday', note: 'Glossary + 5+ lesson pages live with schema; AEO foundation deployed; Card Decoder e-book; pre-sale $1.5K; affiliate revenue producing; LinkedIn ≥ 3 inbound DMs/wk.' }
     ];
     // ROUTINE:events-array:end
