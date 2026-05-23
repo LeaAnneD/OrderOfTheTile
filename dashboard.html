@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<!--
+  OOTT DASHBOARD - TEMPLATE
+  ------------------------------------------------------------
+  This file is the template the morning routine pours rendered
+  DASHBOARD.md content into. It is NOT the deployed dashboard.
+  The deployed file is at C:\Users\LeaAn\OrderOfTheTile\dashboard.html.
+
+  The routine reads this file, replaces three placeholders
+  (LAST-REFRESHED, STALE-BANNER, CONTENT) with the rendered
+  values, then writes the result to the repo and pushes.
+
+  Edit this template here in the vault. The next routine run
+  picks up your changes automatically.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dashboard — The Order of the Tile</title>
+  <link rel="icon" type="image/png" href="images/seal.png" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+    :root {
+      --cloud: #F8F6F2;
+      --ivory: #F5F0E8;
+      --ink: #1A1412;
+      --dusk: #6B6560;
+      --lilac: #C9B8C4;
+      --melon: #F2A97A;
+      --orchid: #9B72A0;
+      --butter: #F5E6A3;
+      --warn: #B85C3C;
+      --serif-sc: 'Playfair Display SC', Georgia, serif;
+      --serif: 'Playfair Display', Georgia, serif;
+      --body: 'Crimson Text', Georgia, serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--cloud);
+      color: #3D3530;
+      font-family: var(--body);
+      font-size: 17px;
+      line-height: 1.6;
+      padding: 32px 24px 64px;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    header.page-head {
+      border-bottom: 0.5px solid var(--lilac);
+      padding-bottom: 18px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    header.page-head .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header.page-head .brand img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      opacity: 0.85;
+    }
+    header.page-head .brand-text {
+      font-family: var(--serif-sc);
+      font-size: 17px;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+    header.page-head .brand-text .sub {
+      display: block;
+      font-family: var(--body);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--dusk);
+      letter-spacing: 0;
+      margin-top: 2px;
+    }
+    header.page-head .meta {
+      font-family: var(--body);
+      font-size: 13px;
+      color: var(--dusk);
+      text-align: right;
+    }
+    header.page-head .meta strong { color: var(--ink); font-weight: 600; }
+
+    /* Stale banner — visible if  is non-empty */
+    .stale-banner {
+      background: rgba(184, 92, 60, 0.08);
+      border-left: 4px solid var(--warn);
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      font-family: var(--body);
+      font-size: 15px;
+      color: var(--warn);
+      border-radius: 2px;
+    }
+    .stale-banner strong { font-weight: 600; }
+
+    /* Headings */
+    .content h1 {
+      font-family: var(--serif);
+      font-size: 30px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-top: 4px;
+      margin-bottom: 18px;
+      line-height: 1.2;
+    }
+    .content h2 {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-top: 36px;
+      margin-bottom: 10px;
+      border-bottom: 0.5px solid var(--lilac);
+      padding-bottom: 6px;
+    }
+    .content h3 {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--orchid);
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+    .content h4 {
+      font-family: var(--serif-sc);
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--dusk);
+      margin-top: 18px;
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Body text */
+    .content p { margin-bottom: 12px; }
+    .content ul, .content ol { margin: 8px 0 16px 22px; }
+    .content li { margin-bottom: 4px; }
+
+    /* Blockquotes — used for "callouts" in the dashboard */
+    .content blockquote {
+      border-left: 3px solid var(--lilac);
+      padding: 8px 16px;
+      margin: 12px 0;
+      color: var(--dusk);
+      font-style: italic;
+      background: rgba(201, 184, 196, 0.08);
+    }
+
+    /* Tables — heavily used by the dashboard for deadlines, queue, etc. */
+    .content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 22px;
+      font-size: 15px;
+    }
+    .content th {
+      background: var(--ivory);
+      text-align: left;
+      padding: 8px 12px;
+      font-family: var(--serif-sc);
+      font-weight: 400;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      border-bottom: 1px solid var(--lilac);
+    }
+    .content td {
+      padding: 8px 12px;
+      border-bottom: 0.5px solid rgba(201, 184, 196, 0.4);
+      vertical-align: top;
+    }
+    .content tr:last-child td { border-bottom: none; }
+
+    /* Code + inline */
+    .content code {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      background: var(--ivory);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--ink);
+    }
+    .content pre {
+      background: var(--ivory);
+      padding: 12px 14px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+    .content pre code { background: none; padding: 0; }
+
+    /* Horizontal rule = diamond divider */
+    .content hr {
+      border: none;
+      text-align: center;
+      margin: 32px 0;
+      height: 12px;
+    }
+    .content hr::after {
+      content: "◆";
+      color: var(--lilac);
+      font-size: 14px;
+    }
+
+    /* Links */
+    .content a {
+      color: var(--orchid);
+      text-decoration: underline;
+      text-decoration-thickness: 0.5px;
+      text-underline-offset: 3px;
+    }
+    .content a:hover { color: var(--ink); }
+
+    /* Checkboxes in task lists */
+    .content input[type="checkbox"] {
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    /* Print */
+    @media print {
+      body { background: white; font-size: 12pt; padding: 0; }
+      .stale-banner { background: white; }
+      .content h2, .content h3 { break-after: avoid; }
+      a { color: var(--ink); text-decoration: none; }
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      body { padding: 18px 14px 48px; font-size: 16px; }
+      .content h1 { font-size: 24px; }
+      .content h2 { font-size: 19px; }
+      .content table { font-size: 13px; }
+      header.page-head .meta { text-align: left; }
+    }
+
+    footer.page-foot {
+      margin-top: 56px;
+      padding-top: 18px;
+      border-top: 0.5px solid var(--lilac);
+      font-family: var(--body);
+      font-size: 13px;
+      color: var(--dusk);
+      text-align: center;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="page-head">
+      <div class="brand">
+        <img src="images/seal.png" alt="OOTT seal" />
+        <div class="brand-text">
+          The Order of the Tile
+          <span class="sub">Daily Dashboard</span>
+        </div>
+      </div>
+      <div class="meta">
+        Last refreshed: <strong>2026-05-22 (Fri evening, verification run)</strong>
+      </div>
+    </header>
+
+    
+
+    <div class="content">
+<h1>OOTT Dashboard. What&#39;s next.</h1>
+<blockquote>
+<p><strong>Today is Friday, May 22, 2026.</strong> Letter-10 (Mom mahjong texts) shipped yesterday from Ghost. Letter-11 ships Thursday May 28 (T-6). Q1 of the year-one plan just locked: Glossary page is the single highest-leverage build of the next 90 days. The vault reorg completed today (Course / Game / Revenue / LinkedIn elevated; Learning Hub + Knowledge Base + Mini-Games scaffolded under Website). Pickle Bar marathon still on the calendar June 28 (T-37). Q1 gate Aug 21 (T-91).
+<strong>Read order:</strong> Today&#39;s One Thing, then Today&#39;s Defaults, then Deadlines, then Priority Queue.
+<strong>Not organized by day.</strong> Knock out as many or as few items as you have energy for. The queue holds the order.
+<strong>Refreshed:</strong> 2026-05-22 (Fri evening) by <code>ott-morning-dashboard-refresh</code>. This is the FIRST automated run after the routine was seeded. Inputs: yesterday&#39;s strategy locks (5/21), today&#39;s reorg (5/22), 00_Start Here.md rewrite (5/22 20:01), 11-day-stale prior dashboard, no new market research file since 5/11. State file <code>OOTT_dashboard_state.json</code> not present at root.</p>
+</blockquote>
+<h2>Live on Etsy</h2>
+<blockquote>
+<p>Confirmed live as of last sync. No file-system rollback evidence in the window.</p>
+</blockquote>
+<ul>
+<li>Mahjong <strong>Movie Game Night Bundle</strong> ($10.99)</li>
+<li>Mahjong <strong>Mom Card Pack</strong> ($7.99)</li>
+<li>Mahjong <strong>Mom Coupon Book</strong> ($4.99)</li>
+<li>Mahjong <strong>Mother&#39;s Day Mega Bundle</strong> ($16.99)</li>
+</ul>
+<p>Etsy is now classified as <strong>background flywheel</strong> under the year-one plan ($1K-$2K/mo target). Do not restore to primary revenue position without redirection.</p>
+<h2>Today&#39;s One Thing</h2>
+<h3>Start the Mahjong Glossary page on orderofthetile.com.</h3>
+<p>The year-one plan locked yesterday lists the Glossary as <strong>the first concrete first-90-days action</strong> and the <strong>highest single SEO+AEO asset</strong> Q1 can produce. The reasoning is unusually clean. The Glossary becomes the template for every lesson page that follows. It is the foundation of the downloadable Mahjong knowledge base (the AI labs grab structured definition assets). It anchors <code>DefinedTerm</code> and FAQ Schema.org markup that the rest of the site copies. It is the single piece of content the course funnel needs to point free traffic into. Without it, every other Q1 priority is held up by a missing structural piece.</p>
+<p><code>Website/Learning Hub/Glossary/</code> exists as a folder shell, scaffolded today at 17:01. Nothing is drafted yet. The 80-page Voices doc plus Card Decoder chapter prose plus Rulebook glossary entries are the source pool. The first session goal is a clean 30-50 term list with one sentence per term, Prim&#39;s voice, no AI framing. Schema markup and deploy come after the prose lands.</p>
+<p>Optional second pass if Glossary draft closes faster than expected: <strong>sign up for Amazon Associates</strong> and start the affiliate spreadsheet at <code>Business/Revenue/Affiliates/</code>. The Authority Play sequencing puts monetization in Week 1 specifically because it is the fastest revenue lever in the entire plan (days, not months).</p>
+<h2>Today&#39;s Defaults</h2>
+<blockquote>
+<p>Autonomous calls made by today&#39;s run from the year-one plan, the 5/22 reorg, the strategy lock files, and file evidence in the last 28 hours. Override any of these by editing the dashboard or telling me.</p>
+</blockquote>
+<ul>
+<li><strong>Strategic frame LOCKED 5/21-5/22: Q1 is leveraged assets, not more Etsy products.</strong> Defaulted by routine because: <code>Business/Strategy/2026-05-21_Year-One_Business_Plan.md</code> is approved and the 5/22 reorg structurally elevated Course / Game / Revenue / LinkedIn out of <code>Business/Products/</code> to match the new priority order. Etsy printables drop to background flywheel ($1K-$2K/mo target). The five Q1 priorities (Glossary + AEO + Course pre-sale + Monetization + Card Decoder e-book) replace the Etsy-launch-of-the-week cadence.</li>
+<li><strong>Today&#39;s reorg is COMPLETE.</strong> Defaulted by routine because: 14 README files written between 16:59 and 20:01 today, all dated 2026-05-22, all internally cross-referenced. <code>00_Start Here.md</code> was rewritten as the canonical orientation primer (the prior 421-line version was 24 days stale). No further file moves needed before drafting begins.</li>
+<li><strong>Glossary page is Today&#39;s One Thing.</strong> Defaulted by routine because: it is named the first concrete first-90-days action in the year-one plan AND the highest SEO+AEO asset in the Authority Play. Folder shell exists; no prose yet. The opportunity cost of any other choice today is high.</li>
+<li><strong>Letter-11 (May 28) is on track from existing v2 body.</strong> Defaulted by routine because: <code>Letter-11-v2-body.html</code> last touched 5/17 21:33 and the Letter-11 ship date is 5/28 (six days out). No urgent build pressure this weekend. Letter-10 shipped 5/21 per the Thursday cadence (no evidence to the contrary; v2 body was finalized 5/14).</li>
+<li><strong>Affiliate setup begins this week.</strong> Defaulted by routine because: the Authority Play sequencing puts monetization in Week 1, the Revenue/README.md flags Lea Anne&#39;s &quot;don&#39;t know how to set up affiliate links&quot; gap, and revenue is the fastest needle-mover in the plan. Action item: Amazon Associates signup plus the link-tracking spreadsheet stub.</li>
+<li><strong>LinkedIn paid offer naming is the Q1 blocker that hasn&#39;t moved.</strong> Defaulted by routine because: <code>Business/LinkedIn/Paid-Offer-Decision.md</code> is open and dated today (5/22). Without a named offer, LinkedIn produces $0 even with batched content. Decision should land this week or next.</li>
+<li><strong>Card Decoder line is PAUSED at &quot;what&#39;s drafted, ships when capacity opens.&quot;</strong> Defaulted by routine because: the line is locked as 3 pieces (Primer free/$3, 2026 Decoder $15, evergreen Card Decoder $9.99), prose drafted through sections 2-9 in <code>chapters/section-*/</code>, and the year-one plan now treats Card Decoder primarily as a <strong>$47-$97 e-book repurpose for Etsy/KDP</strong> rather than the original three-printable line. The evergreen ship/no-ship is still flagged for Lea Anne in <code>positioning.md</code>. Defer further InDesign layout time until the e-book repurpose decision lands.</li>
+<li><strong>Tile Verification Quick-Check Card, Tournament Prep Printable, Year Hand Decoder all DEMOTED to background.</strong> Defaulted by routine because: these were Priority 1 on the 5/11 dashboard under the old &quot;ship more Etsy products&quot; strategy. Under the year-one plan, Etsy is no longer the primary lever. None of these three have folders yet, and the 11 days since the last refresh produced none. Move them to Priority 4 as &quot;ship-if-quick&quot; rather than weekly targets.</li>
+<li><strong>Hallmark react podcast SHELVED.</strong> Defaulted by routine because: the May 12 drop window passed without the podcast happening, the Hallmark cultural moment is now T+13 from premiere, and Letter-09 carried the tile-materiality and designers content. Recover the prep work if a future episode needs a Hallmark callback; do not pursue a standalone supplemental.</li>
+<li><strong>Mediterranean Cruise photo flood DID NOT happen</strong> (cruise boarded May 15). Defaulted by routine because: no cruise-related image assets surfaced in the last 28-hour file walk. Either Lea Anne is on the cruise without uploading, or the cruise plan changed. Either way, Letter-11 should not assume photos.</li>
+</ul>
+<h2>The Weekly Ritual</h2>
+<blockquote>
+<p><strong>Every Thursday at 7:00 a.m.</strong> Letter-10 shipped May 21 (yesterday). Focus this week: Letter-11 polish for May 28 send, while the strategic Q1 build begins.</p>
+</blockquote>
+<h3>Letter-11 . &quot;Nothing escapes notice&quot; . Thursday May 28 (T-6)</h3>
+<p><code>Letter-11-Draft.md</code> and <code>Letter-11-v2-body.html</code> both last touched 5/17. &quot;The card loves a 6&quot; beat. Citation triangle stable at three (Mahj Tile Talk Part II + Part III + Salt Lake Mahjong Club). Sells the May 19 Three Things About the 2026 Card printable (if it ships; deferred under the new strategic frame). Conover&#39;s &quot;treat jokers like currency&quot; is the most quotable hook.</p>
+<p><strong>This week&#39;s prep:</strong> quote cards generated, audio finalized, Ghost post body uploaded, test-send to self, schedule Thursday 7 am. <strong>First letter that should carry an affiliate link or in-letter product placement</strong> per the Authority Play monetization priority.</p>
+<h3>Letter-12 . &quot;Consider yourself informed&quot; . Thursday June 4 (T-13)</h3>
+<p><code>Letter-12-Draft.md</code> and <code>Letter-12-v2-body.html</code> last touched 5/17. Possible &quot;48 hours at the Pickle Bar&quot; Set Your Rack hook for the June 28 marathon. Three-point giving-back arc available (Houston Mahjong with a Cause + The Mahjong Line&#39;s Big Card 2026 30%-to-WCK + Summerville June 28 marathon). Consider folding the orphaned Bloomberg &quot;third place&quot; beat here if it fits the giving-back frame.</p>
+<h3>Letter-13 and beyond</h3>
+<p>No draft files yet. Open question whether the next letter cycle ties into Q1 strategy milestones (Glossary launch announcement, Course pre-sale tease, first affiliate-revenue confession piece).</p>
+<h2>Time-Sensitive Deadlines</h2>
+<table>
+<thead>
+<tr>
+<th>Deadline</th>
+<th>Days out</th>
+<th>Item</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Fri May 22 (TODAY)</strong></td>
+<td>0</td>
+<td>Start Mahjong Glossary page draft</td>
+<td>Folder shell live; prose pending. Today&#39;s One Thing.</td>
+</tr>
+<tr>
+<td><strong>This week</strong></td>
+<td>0-2</td>
+<td>Amazon Associates signup + tracking spreadsheet</td>
+<td>Year-one plan Week 1 deliverable.</td>
+</tr>
+<tr>
+<td><strong>This week</strong></td>
+<td>0-2</td>
+<td>Name the LinkedIn paid offer</td>
+<td>Q1 blocker. <code>Paid-Offer-Decision.md</code> open.</td>
+</tr>
+<tr>
+<td><strong>Thu May 28</strong></td>
+<td>6</td>
+<td>Letter-11 publishes 7am</td>
+<td>v2 body drafted 5/17. Test-send + schedule by Wed.</td>
+</tr>
+<tr>
+<td><strong>Thu Jun 4</strong></td>
+<td>13</td>
+<td>Letter-12 publishes 7am</td>
+<td>v2 body drafted 5/17.</td>
+</tr>
+<tr>
+<td><strong>Sun Jun 28</strong></td>
+<td>37</td>
+<td>48hr Pickle Bar marathon, Summerville SC</td>
+<td>Letter-12 Set Your Rack candidate.</td>
+</tr>
+<tr>
+<td><strong>late-Q1 (Jul-Aug)</strong></td>
+<td>50-91</td>
+<td>Course pre-sale to 300-sub list at 50% off</td>
+<td>Target $1.5K. Course landing page must be live first.</td>
+</tr>
+<tr>
+<td><strong>Fri Aug 21</strong></td>
+<td>91</td>
+<td>Q1 gate check</td>
+<td>Glossary + 5+ lesson pages live with schema; AEO foundation deployed; Card Decoder e-book; pre-sale $1.5K; affiliate revenue producing; LinkedIn 3+ inbound DMs/wk.</td>
+</tr>
+</tbody></table>
+<h2>Priority Queue</h2>
+<h3>Priority 0. Today.</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Start Mahjong Glossary page draft.</strong> 30-50 terms target, one sentence per term in Prim&#39;s voice, sourced from Card Decoder chapter prose + Rulebook glossary + 80-page Voices doc. Lives in <code>Website/Learning Hub/Glossary/</code>. No AI framing. Schema markup and HTML deploy come after the prose lands.</li>
+<li><input disabled="" type="checkbox"> <strong>(If capacity) Amazon Associates account signup.</strong> ~30 min. Start the link-tracking spreadsheet stub at <code>Business/Revenue/Affiliates/</code> (vendor, product, commission, link, first-letter-used-in). This is the fastest revenue lever in the year-one plan.</li>
+</ul>
+<h3>Priority 1. This week (May 22-28).</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Letter-11 polish + schedule.</strong> Quote cards, audio finalize, Ghost post body upload, test-send, schedule Thursday 7 am. Carries the first affiliate link or in-letter product placement.</li>
+<li><input disabled="" type="checkbox"> <strong>Name the LinkedIn paid offer.</strong> Pick one of the three candidates in <code>Paid-Offer-Decision.md</code>. Without a name, LinkedIn produces nothing.</li>
+<li><input disabled="" type="checkbox"> <strong>3-5 direct affiliate vendor outreach.</strong> Where the Winds Blow, AmeriMaj, NMJL card resellers, Miss Mahjong, others as identified. Short outreach email template, log responses.</li>
+<li><input disabled="" type="checkbox"> <strong>Add tip jar (&quot;Support Prim&quot;) to Ghost.</strong> Currently only on Etsy. Revenue/README.md flagged this as a fast win.</li>
+<li><input disabled="" type="checkbox"> <strong>Course landing page first draft.</strong> Lives at <code>Website/Learning Hub/Course Landing/</code>. Captures email signups even before the course exists. Becomes the pre-sale page in late Q1.</li>
+</ul>
+<h3>Priority 2. Start developing.</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Lesson Library scaffold + first lesson page.</strong> Uses Glossary template once Glossary is live. Sources: Card Decoder + Letters + 80-page Voices doc. 10 lesson pages by end of Q1.</li>
+<li><input disabled="" type="checkbox"> <strong>AEO foundation deployment.</strong> Sitewide Schema.org (Article, FAQ, HowTo, Person/Author for Prim, Organization for OOTT). <code>llms.txt</code> at site root. <code>knowledge-base.json</code> publicly downloadable. Lives in <code>Website/Knowledge Base/</code>.</li>
+<li><input disabled="" type="checkbox"> <strong>Course pre-sale prep.</strong> Pricing decision ($147+$297 vs $297/$497), pre-sale email sequence, 50%-off mechanic. Pre-sale runs late Q1 to validate before full Q2 build.</li>
+<li><input disabled="" type="checkbox"> <strong>Card Decoder as $47-$97 e-book on Etsy/KDP.</strong> Year-one plan Q1 line item. Decide whether this absorbs the 2026 Decoder ($15) and Primer ($3) into one premium product, or runs in parallel. Flagged in <code>positioning.md</code> for Lea Anne.</li>
+<li><input disabled="" type="checkbox"> <strong>Backfill on-site letter archive.</strong> <code>the-letters.html</code> currently shows letters 1-4 only. There are 10+ shipped. Low-effort, high-value for SEO (per Site Architecture doc).</li>
+<li><input disabled="" type="checkbox"> <strong>Beginner Mahjong Course / &quot;The Exposure&quot; curriculum build continues.</strong> Module definitions + question bank already done. Next: module-by-module scripting + production planning. <strong>Marketing copy must avoid all AI framing.</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Daily NMJL Hand Puzzle (first mini-game) spec + build.</strong> Plan: build in Q1 weeks 6-12. Spec lives in <code>Business/Game/Mini-Games/</code>. Free-tier draw for daily-active audience.</li>
+</ul>
+<h3>Priority 3. Listings teed up; pursue when capacity opens.</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Quote Cards Set 1 ($7.99 bundle / $2.99 individual).</strong> 8 PNGs designed; listing copy draft pending.</li>
+<li><input disabled="" type="checkbox"> <strong>Score Pad ($4) listing live on Etsy.</strong> PDF in folder. Pair with a Letter affiliate moment when listed.</li>
+<li><input disabled="" type="checkbox"> <strong>Party Pack ($12.99) listing approval.</strong> Components final; awaiting listing copy + InDesign typeset sign-off.</li>
+<li><input disabled="" type="checkbox"> <strong>Tournament Kit ($12.99) listing approval.</strong> Components final; decide on bundling Score Pad as 9th component.</li>
+</ul>
+<h3>Priority 4. Future / decision needed / background.</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Tile Verification Quick-Check Card, Tournament Prep Printable, Year Hand Decoder.</strong> Demoted from &quot;this week&quot; to background. Build only if a quick-win window opens. Etsy is no longer the primary lever.</li>
+<li><input disabled="" type="checkbox"> <strong>Three Things About the 2026 Card.</strong> Citation triangle stable at three. May 19 ship target missed under the strategic pivot. Defer or fold into a future letter.</li>
+<li><input disabled="" type="checkbox"> <strong>The Table at the Center of It All.</strong> Bloomberg &quot;third place&quot; angle, orphaned from Letter-09. Possible Letter-12 fit if the giving-back frame absorbs it.</li>
+<li><input disabled="" type="checkbox"> <strong>Aunt Grace brand-world doc.</strong> Required before any product references her. Cast canon locked 5/10 but no backing doc.</li>
+<li><input disabled="" type="checkbox"> <strong>Rulebook (American Mah Jongg Learning Guide) Etsy PDF price.</strong> Recommended $9.99. Last open row in <code>OOTT_Launchable_Pricing.xlsx</code>.</li>
+<li><input disabled="" type="checkbox"> <strong>Charity tie-in for an OOTT digital product.</strong> Comp: Big Card 2026 = 30% to WCK. Operational complexity not auto-recommended.</li>
+<li><input disabled="" type="checkbox"> <strong>Marathon Prep Printable.</strong> Tied to June 28 Pickle Bar marathon. Pull forward if Letter-12 needs an anchor.</li>
+<li><input disabled="" type="checkbox"> <strong>Quote Cards Sets 2-3 + Mega Bundle.</strong> Wait 30 days post-Set 1 sales data before shipping survivors.</li>
+<li><input disabled="" type="checkbox"> <strong>Hand Reference Helper.</strong> Asset-blocked. Locked-to-ship 5/6 but no .indd yet.</li>
+<li><input disabled="" type="checkbox"> <strong>Etiquette Guide ($7.99).</strong> Mahjong Manor saga is the demand anchor. Not started.</li>
+<li><input disabled="" type="checkbox"> <strong>Evergreen Card Decoder ship/no-ship.</strong> Flagged in <code>positioning.md</code>. The new strategic frame may absorb it into the $47-$97 e-book repurpose.</li>
+</ul>
+<h3>Priority 5. Newsletter / Podcast pipeline.</h3>
+<table>
+<thead>
+<tr>
+<th>Letter</th>
+<th>Status</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Letter-08 (The wall has been read)</td>
+<td>SHIPPED May 7.</td>
+<td>Last from Beehiiv.</td>
+</tr>
+<tr>
+<td>Letter-09 (Best discard, no one expects)</td>
+<td>SHIPPED May 14 (from Ghost).</td>
+<td>First Ghost send.</td>
+</tr>
+<tr>
+<td>Letter-10 (Mom mahjong texts)</td>
+<td>SHIPPED May 21 (yesterday).</td>
+<td>Per cadence; no rollback evidence.</td>
+</tr>
+<tr>
+<td>Letter-11 (Nothing escapes notice)</td>
+<td>v2 body drafted 5/17</td>
+<td>May 28 ship (T-6). Polish week.</td>
+</tr>
+<tr>
+<td>Letter-12 (Consider yourself informed)</td>
+<td>v2 body drafted 5/17</td>
+<td>June 4 ship (T-13).</td>
+</tr>
+</tbody></table>
+<p><strong>Podcast supplementals queued:</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Three Mistakes on the 2026 Card.</strong> Evergreen, 20 min.</li>
+<li><input disabled="" type="checkbox"> <strong>What Three Educators Noticed About the 2026 Card</strong> (Letter-11 companion or standalone).</li>
+<li><input disabled="" type="checkbox"> <strong>Forty-eight hours at the Pickle Bar</strong> (June 28 marathon prep, Letter-12 tie).</li>
+<li><input disabled="" type="checkbox"> <strong>Crossover with Mahj Tile Talk / Mahjong &amp; Mics.</strong> Backlog.</li>
+</ul>
+<h2>Today&#39;s Market Signals</h2>
+<blockquote>
+<p><strong>No new market research run today.</strong> Most recent research file is 2026-05-11 (11 days old). The <code>OOTT_Daily_Market_Research_LATEST.md</code> pointer is stale at the same date. This dashboard runs on file evidence + the 5/21 strategy locks + the 5/22 reorg; market intelligence is carryover.</p>
+</blockquote>
+<h3>Carryover signals from 5/11 (still likely live but unverified)</h3>
+<ul>
+<li>Hallmark Miss Heirloom is <strong>preorder shipping early December 2026</strong>, not stock-out-awaiting-restock. (Corrected from the 5/10 framing.) Tile Verification Card framing should be evergreen new-set verification, not Hallmark-overflow.</li>
+<li>Card Decoder line stayed locked as three-piece (Primer + 2026 Decoder + evergreen) on the 5/11 read. The year-one plan now reframes the evergreen as a candidate $47-$97 e-book.</li>
+<li>Fantasy Land News dropped first named Hallmark review (Holly Gately, 4/5, hobby-to-business framing). Aggregate scores still empty as of 5/11.</li>
+<li>Mockingbird &amp; Magnolia Mahjong surfaced as new educator citation with 3-min-Charleston pace data.</li>
+<li>Daily Dot picked up the Mahjong Manor saga (mainstream-press density now Yahoo + Daily Dot at last read).</li>
+<li>Marvelous Mrs. Mahj price band ($45 live-stream, $150-$250 in-person) holds as entry-tier comparable. The Exposure premium at $297-$497 stays.</li>
+<li>Pink Palmetto Mahjong / Jennifer Kenwell still on the educator watchlist.</li>
+</ul>
+<p><strong>Action item:</strong> the market research routine has not run in 11 days. Whatever wakes that routine should be the next dashboard refresh&#39;s first signal. Flag to Lea Anne if it keeps not running.</p>
+<h2>Cross-Cutting Decisions</h2>
+<blockquote>
+<p>One choice each, unblocks many things. Sourced from the 5/21 strategy locks, the 5/22 reorg, and prior accumulated locks.</p>
+</blockquote>
+<ul>
+<li><strong>Strategic frame LOCKED 2026-05-21</strong> by <code>2026-05-21_Year-One_Business_Plan.md</code> (approved). $10K-$20K/mo by May 2027. Tiered channels: OOTT 75-80%, LinkedIn 20-25%, Education AI tools parked, SaaS social tool internal-only. Etsy printables = background flywheel.</li>
+<li><strong>Q1 priorities LOCKED 2026-05-21:</strong> Glossary first, AEO foundation, course pre-sale, monetization layer, Card Decoder repurposed as e-book. NOT more Etsy products.</li>
+<li><strong>Authority Play LOCKED 2026-05-21</strong> by <code>Authority_Play_SEO_AEO_Games_Monetization.md</code>. Four priorities, one play. SEO + AEO + Daily Games + Monetization compound.</li>
+<li><strong>Site architecture LOCKED 2026-05-21:</strong> orderofthetile.com primary (SEO/AEO target), newsletter.orderofthetile.com is Ghost CNAME, Etsy = storefront. Free teaches the language, paid teaches the strategy.</li>
+<li><strong>Visual strategy LOCKED 2026-05-21:</strong> no Nano Banana for socials. Meta/LinkedIn auto-tag Nano Banana output as AI. Switch to real photos + branded Canva/InDesign templates.</li>
+<li><strong>Marketing rule LOCKED 2026-05-21:</strong> never mention AI in OOTT public copy. Internal docs may discuss freely; public copy stays human-centric. Especially binding for &quot;The Exposure&quot; course landing copy.</li>
+<li><strong>Folder reorg LOCKED 2026-05-22:</strong> Course / Game / Revenue / LinkedIn / Internal Tools elevated out of <code>Business/Products/</code> to top-level workstreams. Website augmented with Learning Hub / Knowledge Base / Mini-Games subfolders. 14 README files written.</li>
+<li><strong>Newsletter platform LOCKED 2026-05-10:</strong> Ghost(Pro), not Beehiiv. Letters 09 onward ship from Ghost. Beehiiv subscriber-list migration plan still open (per old STATUS.md).</li>
+<li><strong>Legal posture for hand-specific 2026 card content</strong> LOCKED May 2: no attorney consultation. Disclaimer + invented examples + paraphrase-with-attribution.</li>
+<li><strong>AAPI/Hallmark voice posture</strong> LOCKED (running): one calm sentence, &quot;in the American Mahjong tradition&quot; phrasing, Kaycee Simpson framing.</li>
+<li><strong>InDesign master file</strong> CLOSED May 2.</li>
+<li><strong>Mahjong Glossary positioning</strong> LOCKED May 6 as bundle component export. <em>Year-one plan supersedes:</em> Glossary is now also the Q1 SEO+AEO foundation on the public site, not just an Etsy product component.</li>
+<li><strong>Card Decoder positioning</strong> REVISED 5/10 (three-piece line), reframed AGAIN 5/21 (also a $47-$97 e-book candidate). Open: which goes first.</li>
+<li><strong>Mahjong Manor saga handling</strong> LOCKED 5/10: Etiquette Guide demand anchor.</li>
+<li><strong>Hand Reference Helper disposition</strong> LOCKED May 6: intended to ship; asset-blocked. Demoted under the strategic pivot.</li>
+<li><strong>Three Generations Hero Print</strong> RETIRED per saved memory.</li>
+<li><strong>NMD launch plan</strong> CLOSED May 2.</li>
+</ul>
+<h2>Recent Wins</h2>
+<blockquote>
+<p>Last 7 days. Earlier wins from the 5/11 dashboard pruned.</p>
+</blockquote>
+<ul>
+<li><strong>2026-05-22 (today).</strong> Vault reorg complete. Course / Game / Revenue / LinkedIn / Internal Tools elevated as top-level workstreams under <code>Business/</code>. Website augmented with Learning Hub / Knowledge Base / Mini-Games subfolders. 14 README files written between 16:59 and 20:01. <code>00_Start Here.md</code> rewritten as canonical orientation primer (replaces 24-day-stale version). <code>00_Index.md</code> refreshed. Year-one plan finalized at 20:09.</li>
+<li><strong>2026-05-21.</strong> Strategic frame approved. Year-One Business Plan locked ($10K-$20K/mo by May 2027). Authority Play, Site Architecture, Visual Strategy, and Marketing Rules all locked in one session. Course-as-#1-revenue-line decision made. LinkedIn paid offer surfaced as Q1 blocker.</li>
+<li><strong>2026-05-21 (likely).</strong> Letter-10 shipped 7am via Ghost. (No rollback evidence; Thursday cadence assumed.)</li>
+<li><strong>2026-05-17.</strong> Letters 09, 10, 11, 12 v2 bodies finalized in one batch session. Letter pipeline four-deep going into the strategic pivot week.</li>
+<li><strong>2026-05-14.</strong> Letter-09 shipped 7am from Ghost (first Ghost send). Spotify CTA button wired into theme.</li>
+<li><strong>2026-05-11 to 2026-05-13.</strong> Ghost theme rebuilt, GScan fixes applied, oott-theme.zip rebuilt and uploaded. Card Decoder InDesign session (per old dashboard); evergreen chapters 2-9 drafted 5/18.</li>
+<li><strong>2026-05-07.</strong> Letter-08 shipped from Beehiiv (last Beehiiv send).</li>
+</ul>
+<h2>Open Questions</h2>
+<ul>
+<li><strong>LinkedIn paid offer name.</strong> Q1 blocker. <code>Business/LinkedIn/Paid-Offer-Decision.md</code> is open. Three candidates: AI integration audit for SMBs, Vibe-coding sprint for small teams, Education AI implementation for K-12 / private tutors.</li>
+<li><strong>Marketing budget for Etsy ads + course launch.</strong> Year-one plan recommends $200-$500/mo. Not yet decided.</li>
+<li><strong>Course pricing tiers.</strong> $147 entry + $297 coaching tier? Or $297/$497? Pre-sale Q1 validates.</li>
+<li><strong>Course final name.</strong> &quot;The Exposure&quot; carried from Letter-06 footer; &quot;The Master&#39;s Card&quot; alternate from plan file. Locked before pre-sale.</li>
+<li><strong>Card Decoder $47-$97 e-book repurpose vs three-piece line.</strong> Year-one plan reframes the evergreen Card Decoder as the e-book candidate. Decide whether the e-book replaces the three-piece line or runs alongside it.</li>
+<li><strong>Evergreen Card Decoder ship/no-ship.</strong> Pre-existing decision flagged in <code>positioning.md</code>, now subsumed by the e-book question above.</li>
+<li><strong>Beehiiv export / migration plan.</strong> Letters 01-08 history lives in Beehiiv. Subscriber list migration to Ghost matters most.</li>
+<li><strong>Bill&#39;s commitment on AI dev duo.</strong> Currently parked per year-one plan. Lea Anne to propose if she wants to reintroduce.</li>
+<li><strong>AI-tag-on-images root cause diagnosis.</strong> Mitigated by switching off Nano Banana; root cause still to be diagnosed during Q1.</li>
+<li><strong>Daily market research routine.</strong> Has not run since 5/11. Why is it stalled? Worth a check.</li>
+<li><strong>Whether to keep / archive / fully migrate the old <code>Business/Products/Course Development/</code> references.</strong> The <code>00_Start Here.md</code> flags pre-2026-05-22 sessions still pointing at the old paths.</li>
+</ul>
+<h2>Research Triage</h2>
+<blockquote>
+<p>No new market research run today. Triage carries over from 5/11 and now factors in the strategic pivot.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Today&#39;s call</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mahjong Glossary on the site</td>
+<td>NEW priority per year-one plan</td>
+<td>Priority 0. Today&#39;s One Thing.</td>
+</tr>
+<tr>
+<td>Amazon Associates + direct vendor affiliates</td>
+<td>NEW priority per Authority Play</td>
+<td>Priority 1 this week.</td>
+</tr>
+<tr>
+<td>LinkedIn paid offer naming</td>
+<td>Q1 blocker (existed pre-pivot, still open)</td>
+<td>Priority 1 this week.</td>
+</tr>
+<tr>
+<td>Letter-11 polish</td>
+<td>Standard weekly</td>
+<td>Priority 1.</td>
+</tr>
+<tr>
+<td>Course landing page</td>
+<td>NEW priority — captures pre-sale interest</td>
+<td>Priority 1-2 this week.</td>
+</tr>
+<tr>
+<td>AEO foundation (schema, llms.txt, KB JSON)</td>
+<td>NEW priority per Authority Play</td>
+<td>Priority 2 this month.</td>
+</tr>
+<tr>
+<td>Card Decoder line vs e-book</td>
+<td>Reframed by year-one plan</td>
+<td>Priority 2 with open decision.</td>
+</tr>
+<tr>
+<td>Tile Verification Card</td>
+<td>Demoted from HIGH to background</td>
+<td>Priority 4.</td>
+</tr>
+<tr>
+<td>Tournament Prep Printable</td>
+<td>Demoted from HIGH to background</td>
+<td>Priority 4.</td>
+</tr>
+<tr>
+<td>Year Hand Decoder</td>
+<td>Demoted from MEDIUM to background</td>
+<td>Priority 4.</td>
+</tr>
+<tr>
+<td>Hallmark react podcast</td>
+<td>Window passed; shelved</td>
+<td>Priority 5 backlog.</td>
+</tr>
+<tr>
+<td>Daily NMJL Hand Puzzle mini-game</td>
+<td>NEW (Authority Play priority 2)</td>
+<td>Priority 2 spec, Q1 weeks 6-12 build.</td>
+</tr>
+<tr>
+<td>Mahjong Manor saga</td>
+<td>Etiquette Guide demand anchor</td>
+<td>Priority 4.</td>
+</tr>
+<tr>
+<td>AAPI named critics</td>
+<td>Posture unchanged</td>
+<td>Carryover.</td>
+</tr>
+<tr>
+<td>Score Pad listing live</td>
+<td>Carryover</td>
+<td>Priority 3.</td>
+</tr>
+<tr>
+<td>Beehiiv export plan</td>
+<td>Carryover</td>
+<td>Open question.</td>
+</tr>
+</tbody></table>
+<h3>Watchlist (next runs will report on)</h3>
+<ul>
+<li>Hallmark Miss Heirloom preorder fulfillment movement (December 2026 ship date).</li>
+<li>First post-Mother&#39;s-Day sales evidence on the 4 live Etsy SKUs.</li>
+<li>Cruise photo flood (boarded May 15; no upload activity yet).</li>
+<li>Mahj Tile Talk next strategy post.</li>
+<li>Bam Good Time next strategy post (vs operations content).</li>
+<li>Lara&#39;s Mahjong Edit live class drops in May.</li>
+<li>Holy Mahj postpartum class enrollment.</li>
+<li>@alllisonnovak Mahjong Manor Parts 5+.</li>
+<li>Pink Palmetto Mahjong / Jennifer Kenwell follow-on coverage.</li>
+<li>@theredheadedcamel / Well and Wonder May 4 drop status.</li>
+<li>AAPI Heritage Month coverage progression.</li>
+<li>Ghost deliverability + render quality on Letters 10 / 11 sends.</li>
+<li>Whether the daily market research routine resumes.</li>
+</ul>
+<h2>Files referenced most often</h2>
+<ol>
+<li><code>00_Start Here.md</code> — orientation primer (rewritten 5/22)</li>
+<li><code>Business/Strategy/2026-05-21_Year-One_Business_Plan.md</code> — master plan</li>
+<li><code>Business/Strategy/Authority_Play_SEO_AEO_Games_Monetization.md</code> — four-priority play</li>
+<li><code>Business/Strategy/Site_Architecture_and_Free_vs_Paid.md</code> — free/paid line + site IA</li>
+<li><code>Brand/Marketing_Rules.md</code> — no-AI-in-public-copy + brand rules</li>
+<li><code>Business/Course/README.md</code> — The Exposure course</li>
+<li><code>Business/Revenue/README.md</code> — affiliates + in-letter + sponsorships</li>
+<li><code>Business/LinkedIn/Paid-Offer-Decision.md</code> — open Q1 blocker</li>
+<li><code>Website/Learning Hub/README.md</code> — Q1 site build (Glossary, FAQ, Lesson Library, Course Landing)</li>
+<li><code>Business/Products/Etsy Designs/Card Decoder/README.md</code> — three-piece line + e-book reframe</li>
+</ol>
+<h2>How this dashboard stays current</h2>
+<ul>
+<li><strong>Daily:</strong> <code>ott-morning-dashboard-refresh</code> re-walks the vault, reads the latest market-research pointer, walks 28 hours of file evidence, writes autonomous defaults. Items stated as done in conversation drop immediately, even if file evidence is older.</li>
+<li><strong>Trust order:</strong> <code>OOTT_dashboard_state.json</code> (your click marks) → conversation statements → file evidence → strategy lock files. Higher beats lower on conflict.</li>
+<li><strong>State file note:</strong> <code>OOTT_dashboard_state.json</code> not present at root today; running on file evidence + 5/21 strategy locks + 5/22 reorg. Click &quot;Save state&quot; in the HTML once to seed it for future runs and the routine will trust your click marks first.</li>
+<li><strong>Market research note:</strong> today&#39;s run had no new market research file. The latest pointer still reads 2026-05-11 (11 days stale). The market research routine should be checked.</li>
+<li><strong>Sister-routine note:</strong> the HTML hero panel at <code>DASHBOARD.html</code> is hard-coded from an earlier cycle and is not auto-overwritten by this routine. The Markdown dashboard is the authoritative version.</li>
+<li><strong>Last refresh:</strong> 2026-05-22 Fri evening by <code>ott-morning-dashboard-refresh</code> (first scheduled run after seed).</li>
+</ul>
+
+    </div>
+
+    <footer class="page-foot">
+      Generated by <code>ott-morning-dashboard-refresh</code>. Source: <code>DASHBOARD.md</code>. Private &mdash; do not share.
+    </footer>
+  </div>
+</body>
+</html>
