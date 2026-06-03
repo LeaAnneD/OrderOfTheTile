@@ -40,11 +40,13 @@
 .voice-card-prim { flex-shrink: 0; background: var(--ivory); border-color: var(--orchid); }
 .voice-card-prim .voice-initial { background: var(--cloud); border-color: var(--orchid); overflow: hidden; }
 .voice-card-prim .voice-initial img { width: 30px; height: 30px; object-fit: contain; }
-.voices-marquee { position: relative; overflow: hidden; flex: 1 1 auto; min-width: 0; padding: 2px 0; }
-.voices-track { display: flex; width: max-content; animation: voices-roll 80s linear infinite; }
+.voices-marquee { position: relative; overflow-x: auto; overflow-y: hidden; flex: 1 1 auto; min-width: 0; padding: 2px 0 10px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--lilac) transparent; }
+.voices-marquee::-webkit-scrollbar { height: 8px; }
+.voices-marquee::-webkit-scrollbar-track { background: transparent; }
+.voices-marquee::-webkit-scrollbar-thumb { background: var(--lilac); border-radius: 4px; }
+.voices-marquee::-webkit-scrollbar-thumb:hover { background: var(--orchid); }
+.voices-track { display: flex; width: max-content; }
 .voices-track .voice-card { margin-right: 18px; }
-@media (hover: hover) { .voices-marquee:hover .voices-track { animation-play-state: paused; } }
-@keyframes voices-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .voices-fade { position: absolute; top: 0; bottom: 0; width: 56px; z-index: 2; pointer-events: none; }
 .voices-fade-l { left: 0; background: linear-gradient(90deg, var(--cloud), rgba(248,246,242,0)); }
 .voices-fade-r { right: 0; background: linear-gradient(-90deg, var(--cloud), rgba(248,246,242,0)); }
@@ -414,9 +416,39 @@
 <footer></footer>
 <script src="shared.js"></script>
 <script>
-// Duplicate the voices track once so the rolling marquee loops seamlessly (-50%).
-const vTrack = document.getElementById('voices-track');
-if (vTrack) vTrack.insertAdjacentHTML('beforeend', vTrack.innerHTML);
+// Rolling Voices marquee driven by scrollLeft, so a real (light) scrollbar is
+// available for manual control too. Auto-scroll pauses on hover and for a few
+// seconds after any manual drag/wheel/touch, then resumes.
+(function () {
+  var marquee = document.querySelector('.voices-marquee');
+  var track = document.getElementById('voices-track');
+  if (marquee && track) {
+    track.insertAdjacentHTML('beforeend', track.innerHTML); // duplicate for a seamless loop
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var paused = reduce;
+    var SPEED = 0.8; // px per frame
+    var resumeTimer = null;
+    function pauseFor(ms) {
+      paused = true;
+      if (resumeTimer) clearTimeout(resumeTimer);
+      if (!reduce) resumeTimer = setTimeout(function () { paused = false; }, ms);
+    }
+    marquee.addEventListener('mouseenter', function () { paused = true; if (resumeTimer) clearTimeout(resumeTimer); });
+    marquee.addEventListener('mouseleave', function () { if (!reduce) paused = false; });
+    marquee.addEventListener('pointerdown', function () { pauseFor(3000); });
+    marquee.addEventListener('wheel', function () { pauseFor(3000); }, { passive: true });
+    marquee.addEventListener('touchstart', function () { pauseFor(3000); }, { passive: true });
+    function tick() {
+      if (!paused) {
+        marquee.scrollLeft += SPEED;
+        var half = marquee.scrollWidth / 2;
+        if (marquee.scrollLeft >= half) marquee.scrollLeft -= half;
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+})();
 
 const navLinks = document.querySelectorAll('.section-nav-link');
 const sections = ['voices','events','envy'].map(id => document.getElementById(id));
