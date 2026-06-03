@@ -460,9 +460,12 @@
   var calY, calM, selectedDay = null;
   var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
+  // Group by EDITION date (the day a story appeared on the Dispatch), not its
+  // source publication date — so a day's cell holds everything published that
+  // day, even if the underlying articles were originally dated earlier.
   function indexByDate(list) {
     var by = {};
-    list.forEach(function (a) { if (a.date) { (by[a.date] = by[a.date] || []).push(a); } });
+    list.forEach(function (a) { var k = a.editionDate || a.date || EDITION_DATE; if (k) { (by[k] = by[k] || []).push(a); } });
     return by;
   }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
@@ -473,7 +476,7 @@
     selectedDay = null;
     document.getElementById('day-banner').style.display = 'none';
     render(allArticles);
-    var seed = (allArticles[0] && allArticles[0].date) || EDITION_DATE;
+    var seed = (allArticles[0] && (allArticles[0].editionDate || allArticles[0].date)) || EDITION_DATE;
     var p = seed.split('-');
     calY = parseInt(p[0], 10); calM = parseInt(p[1], 10) - 1;
     drawCalendar();
@@ -543,6 +546,7 @@
             source_url: it.source_url,
             source_name: it.source_name || '',
             date: (it.published_at || it.created_at || '').slice(0, 10),
+            editionDate: (it.created_at || it.published_at || '').slice(0, 10),
             id: it.id,
             votes: it.votes || { up: 0, down: 0, score: 0 }
           };
