@@ -117,6 +117,20 @@
   .archive { padding: 8px 18px 64px; }
   .day-banner { padding: 12px 18px; flex-wrap: wrap; gap: 8px; }
 }
+
+/* ===== VOTING + FAVORITES ===== */
+.card-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.card-foot .read-more { align-self: auto; margin-top: 0; }
+.lead-foot { text-align: center; margin-top: 20px; }
+.votes { display: inline-flex; align-items: center; gap: 7px; }
+.vbtn { background: none; border: none; cursor: pointer; color: var(--lilac); font-size: 11px; line-height: 1; padding: 4px 5px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
+.vbtn:hover:not(:disabled) { color: var(--melon); background: var(--ivory); }
+.vbtn.on { color: var(--orchid); }
+.vbtn:disabled { cursor: default; }
+.vscore { font-family: var(--body); font-size: 13px; font-weight: 600; color: var(--dusk); min-width: 16px; text-align: center; }
+.favorites { max-width: 1100px; margin: 0 auto; padding: 6px 56px 0; text-align: center; }
+.favorites .dispatch-grid { padding: 0; max-width: none; margin: 0; text-align: left; }
+@media (max-width: 640px) { .favorites { padding: 6px 18px 0; } }
 </style>
 <script defer src="https://cdn.jsdelivr.net/ghost/portal@latest/umd/portal.min.js" data-ghost="https://newsletter.orderofthetile.com"></script>
 </head>
@@ -140,6 +154,12 @@
 <div class="day-banner" id="day-banner" style="display:none;"></div>
 
 <section class="lead" id="lead"></section>
+
+<section class="favorites" id="favorites" style="display:none;">
+  <p class="grid-label">Reader Favorites</p>
+  <div class="grid-label-rule"></div>
+  <div class="dispatch-grid" id="fav-grid"></div>
+</section>
 
 <div class="grid-wrap">
   <p class="grid-label">More from the table</p>
@@ -326,6 +346,53 @@
     return HOUSE_ADS[idx];
   }
 
+  // ===== Voting =====
+  function getVoted() { try { return JSON.parse(localStorage.getItem('oott_dispatch_votes') || '{}'); } catch (e) { return {}; } }
+  function voteControl(a) {
+    if (!a.id) return '';
+    var score = (a.votes && typeof a.votes.score === 'number') ? a.votes.score : 0;
+    var voted = getVoted()[a.id];
+    return '<span class="votes" data-id="' + esc(a.id) + '"' + (voted ? ' data-voted="' + voted + '"' : '') + '>' +
+      '<button class="vbtn up' + (voted === 'up' ? ' on' : '') + '" data-dir="up" type="button" aria-label="Like"' + (voted ? ' disabled' : '') + '>&#9650;</button>' +
+      '<span class="vscore">' + score + '</span>' +
+      '<button class="vbtn down' + (voted === 'down' ? ' on' : '') + '" data-dir="down" type="button" aria-label="Not for me"' + (voted ? ' disabled' : '') + '>&#9660;</button>' +
+      '</span>';
+  }
+  function eachVotes(id, fn) { document.querySelectorAll('.votes[data-id="' + id + '"]').forEach(fn); }
+  function findArt(id) { for (var i = 0; i < allArticles.length; i++) { if (allArticles[i].id === id) return allArticles[i]; } return null; }
+  function handleVote(btn) {
+    var wrap = btn.closest('.votes'); if (!wrap) return;
+    var id = wrap.getAttribute('data-id'), dir = btn.getAttribute('data-dir');
+    var voted = getVoted(); if (voted[id]) return;
+    voted[id] = dir;
+    try { localStorage.setItem('oott_dispatch_votes', JSON.stringify(voted)); } catch (e) {}
+    var art = findArt(id), newScore;
+    if (art) { art.votes = art.votes || { up: 0, down: 0, score: 0 }; if (dir === 'up') art.votes.up++; else art.votes.down++; art.votes.score = art.votes.up - art.votes.down; newScore = art.votes.score; }
+    else { newScore = dir === 'up' ? 1 : -1; }
+    eachVotes(id, function (w) {
+      w.setAttribute('data-voted', dir);
+      w.querySelectorAll('.vbtn').forEach(function (b) { b.disabled = true; b.classList.toggle('on', b.getAttribute('data-dir') === dir); });
+      var s = w.querySelector('.vscore'); if (s) s.textContent = newScore;
+    });
+    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vote: true, id: id, dir: dir }) })
+      .then(function (r) { return r.json(); })
+      .then(function (res) { if (res && typeof res.score === 'number') { if (art) art.votes.score = res.score; eachVotes(id, function (w) { var s = w.querySelector('.vscore'); if (s) s.textContent = res.score; }); } })
+      .catch(function () {});
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var btn = (t && t.classList && t.classList.contains('vbtn')) ? t : (t && t.closest ? t.closest('.vbtn') : null);
+    if (btn && !btn.disabled) handleVote(btn);
+  });
+  function renderFavorites() {
+    var favs = allArticles.filter(function (a) { return a.votes && a.votes.score > 0; })
+      .sort(function (a, b) { return b.votes.score - a.votes.score; }).slice(0, 4);
+    var sec = document.getElementById('favorites');
+    if (!favs.length) { sec.style.display = 'none'; return; }
+    document.getElementById('fav-grid').innerHTML = favs.map(cardHTML).join('');
+    sec.style.display = 'block';
+  }
+
   function leadHTML(a) {
     var body = (a.body || []).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('');
     // Read-more lives at the end of the article flow so it lands after the
@@ -336,7 +403,8 @@
     return '<p class="lead-kicker">' + esc(a.category) + '</p>' +
       '<h2 class="lead-headline">' + richEsc(a.title) + '</h2>' +
       (a.dek ? '<p class="lead-dek">' + richEsc(a.dek) + '</p>' : '') +
-      '<div class="lead-body">' + body + readmore + '</div>';
+      '<div class="lead-body">' + body + readmore + '</div>' +
+      (a.id ? '<div class="lead-foot">' + voteControl(a) + '</div>' : '');
   }
 
   function cardHTML(a) {
@@ -347,7 +415,9 @@
       '<h3 class="card-headline">' + richEsc(a.title) + '</h3>' +
       (a.dek ? '<p class="card-dek">' + richEsc(a.dek) + '</p>' : '') +
       '<p class="card-meta">' + meta + '</p>' +
-      (a.source_url ? '<a class="read-more" href="' + esc(a.source_url) + '" target="_blank" rel="noopener">Read more &rarr;</a>' : '') +
+      '<div class="card-foot">' + voteControl(a) +
+        (a.source_url ? '<a class="read-more" href="' + esc(a.source_url) + '" target="_blank" rel="noopener">Read more &rarr;</a>' : '') +
+      '</div>' +
       '</article>';
   }
 
@@ -407,6 +477,7 @@
     var p = seed.split('-');
     calY = parseInt(p[0], 10); calM = parseInt(p[1], 10) - 1;
     drawCalendar();
+    renderFavorites();
   }
 
   function drawCalendar() {
@@ -471,7 +542,9 @@
             body: Array.isArray(it.body) ? it.body : (it.summary ? [it.summary] : []),
             source_url: it.source_url,
             source_name: it.source_name || '',
-            date: (it.published_at || it.created_at || '').slice(0, 10)
+            date: (it.published_at || it.created_at || '').slice(0, 10),
+            id: it.id,
+            votes: it.votes || { up: 0, down: 0, score: 0 }
           };
         });
         // If the live feed is reachable but empty, fall back to the baked
