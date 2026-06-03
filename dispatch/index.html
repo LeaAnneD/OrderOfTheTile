@@ -121,7 +121,8 @@
 /* ===== VOTING + FAVORITES ===== */
 .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
 .card-foot .read-more { align-self: auto; margin-top: 0; }
-.lead-foot { text-align: center; margin-top: 20px; }
+.lead-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.lead-foot .read-more { margin-left: auto; align-self: auto; margin-top: 0; }
 .votes { display: inline-flex; align-items: center; gap: 7px; }
 .vbtn { background: none; border: none; cursor: pointer; color: var(--lilac); font-size: 11px; line-height: 1; padding: 4px 5px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
 .vbtn:hover:not(:disabled) { color: var(--melon); background: var(--ivory); }
@@ -400,11 +401,12 @@
     var readmore = a.source_url
       ? '<a class="read-more" href="' + esc(a.source_url) + '" target="_blank" rel="noopener">Read more at ' + esc(a.source_name || 'the source') + ' &rarr;</a>'
       : '';
+    var foot = (a.id || readmore) ? '<div class="lead-foot">' + (a.id ? voteControl(a) : '') + readmore + '</div>' : '';
     return '<p class="lead-kicker">' + esc(a.category) + '</p>' +
       '<h2 class="lead-headline">' + richEsc(a.title) + '</h2>' +
       (a.dek ? '<p class="lead-dek">' + richEsc(a.dek) + '</p>' : '') +
-      '<div class="lead-body">' + body + readmore + '</div>' +
-      (a.id ? '<div class="lead-foot">' + voteControl(a) + '</div>' : '');
+      '<div class="lead-body">' + body + '</div>' +
+      foot;
   }
 
   function cardHTML(a) {
