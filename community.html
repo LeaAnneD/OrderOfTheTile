@@ -36,14 +36,18 @@
 .voices-section { max-width: 1100px; margin: 0 auto; padding: 64px 56px; }
 .voices-section h2 { font-family: var(--serif); font-size: 28px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
 .voices-intro { font-family: var(--body); font-size: 17px; color: var(--dusk); margin-bottom: 40px; max-width: 540px; }
-.voices-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px; }
+.voices-hint { font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dusk); margin-bottom: 18px; }
+.voices-grid { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x proximity; padding: 4px 4px 22px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--lilac) transparent; }
+.voices-grid::-webkit-scrollbar { height: 8px; }
+.voices-grid::-webkit-scrollbar-track { background: transparent; }
+.voices-grid::-webkit-scrollbar-thumb { background: var(--lilac); border-radius: 4px; }
 
-.voice-card { background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 6px; padding: 28px; transition: border-color 0.2s; }
+.voice-card { background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 6px; padding: 28px; transition: border-color 0.2s; width: 300px; flex-shrink: 0; scroll-snap-align: start; display: flex; flex-direction: column; }
 .voice-card:hover { border-color: var(--orchid); }
 .voice-initial { width: 48px; height: 48px; border-radius: 50%; background: var(--ivory); border: 0.5px solid var(--lilac); display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 18px; font-weight: 500; color: var(--orchid); margin-bottom: 16px; }
 .voice-name { font-family: var(--serif); font-size: 18px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
 .voice-location { font-family: var(--body); font-size: 13px; color: var(--dusk); margin-bottom: 12px; font-style: italic; }
-.voice-desc { font-family: var(--body); font-size: 15px; color: var(--dusk); line-height: 1.6; margin-bottom: 16px; }
+.voice-desc { font-family: var(--body); font-size: 15px; color: var(--dusk); line-height: 1.6; margin-bottom: 16px; flex: 1; }
 .voice-link { font-family: var(--body); font-size: 13px; color: var(--melon); border-bottom: 0.5px solid var(--melon); padding-bottom: 1px; text-decoration: none; }
 
 /* EVENTS */
@@ -82,7 +86,7 @@
 
 /* TABLET */
 @media (max-width: 900px) {
-  .voices-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .voice-card { width: 280px; }
   .envy-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
 
@@ -94,7 +98,7 @@
   .section-nav-link { padding: 14px 16px 16px; font-size: 14px; white-space: nowrap; }
   .voices-section, .envy-section { padding: 48px 18px; }
   .events-section { padding: 48px 18px; }
-  .voices-grid { grid-template-columns: 1fr; gap: 16px; }
+  .voice-card { width: 82vw; max-width: 300px; }
   .envy-grid { grid-template-columns: 1fr; gap: 14px; }
   .event-row {
     grid-template-columns: 64px 1fr;
@@ -136,6 +140,7 @@
   <p class="section-label">Who's Talking</p>
   <h2>Voices worth knowing.</h2>
   <p class="voices-intro">Featured in The Order of the Tile. These are the people shaping American Mahjong right now.</p>
+  <p class="voices-hint">Scroll sideways for more &rarr;</p>
   <div class="voices-grid">
 
     <div class="voice-card">
@@ -184,6 +189,86 @@
       <div class="voice-location">Chinoiserie & Premium Acrylic</div>
       <p class="voice-desc">Where the aesthetic of the game meets genuine craft. Their sets are as beautiful as anything on the market, and they know it.</p>
       <a href="https://southernsparrow.com" target="_blank" rel="noopener" class="voice-link">southernsparrow.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">LE</div>
+      <div class="voice-name">Lara's Mahjong Edit</div>
+      <div class="voice-location">Lara Orndorff</div>
+      <p class="voice-desc">Clear, beginner-friendly teaching on the NMJL card, from your first hands to the finer points of the rules. A go-to when you want the why behind the how.</p>
+      <a href="https://larasmahjongedit.com" target="_blank" rel="noopener" class="voice-link">larasmahjongedit.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">SL</div>
+      <div class="voice-name">Salt Lake Mahjong Club</div>
+      <div class="voice-location">Katie Poulsen</div>
+      <p class="voice-desc">Numbers-minded writing on the American game, including close looks at what each year's card actually rewards. For the player who likes a little analysis with their tiles.</p>
+      <a href="https://www.saltlakemahjongclub.com" target="_blank" rel="noopener" class="voice-link">saltlakemahjongclub.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">MB</div>
+      <div class="voice-name">Mahj on the Beach</div>
+      <div class="voice-location">Kari Long / Boca Raton, FL</div>
+      <p class="voice-desc">South Florida lessons and beautifully hosted evenings. Kari Long brought the game to Boca's clubs and living rooms, and made it look effortless.</p>
+      <a href="https://www.mahjonthebeach.com" target="_blank" rel="noopener" class="voice-link">mahjonthebeach.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">TT</div>
+      <div class="voice-name">Talk Tiles to Me</div>
+      <div class="voice-location">Tori Rittinger / Falls Church, VA</div>
+      <p class="voice-desc">The DMV's first dedicated mahjong studio. Tori Rittinger gave the area a real room of its own for lessons, leagues, and the occasional happy hour.</p>
+      <a href="https://www.talktilestome.com" target="_blank" rel="noopener" class="voice-link">talktilestome.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">MP</div>
+      <div class="voice-name">The Mahjong Project</div>
+      <div class="voice-location">Nicole Wong / Oakland, CA</div>
+      <p class="voice-desc">Author and keeper of the game's stories. Nicole Wong's work honors American mahjong's roots and the families who carried it forward.</p>
+      <a href="https://www.themahjongproject.com" target="_blank" rel="noopener" class="voice-link">themahjongproject.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">M&amp;M</div>
+      <div class="voice-name">Mockingbird &amp; Magnolia</div>
+      <div class="voice-location">Bentonville, AR</div>
+      <p class="voice-desc">Northwest Arkansas classes, set rentals, and tournament prep, run with Southern warmth and a serious eye for the card.</p>
+      <a href="https://www.mockingbirdmagnolia.com" target="_blank" rel="noopener" class="voice-link">mockingbirdmagnolia.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">MoM</div>
+      <div class="voice-name">Mahjong Molly</div>
+      <div class="voice-location">Molly Hardy / Dallas, TX</div>
+      <p class="voice-desc">A patient teacher for the player past the basics. Molly Hardy trains other instructors too, which tells you something.</p>
+      <a href="https://www.mahjongmolly.com" target="_blank" rel="noopener" class="voice-link">mahjongmolly.com &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">MaM</div>
+      <div class="voice-name">Mahj and Miami</div>
+      <div class="voice-location">Brooke Lam &amp; Gabi Boros</div>
+      <p class="voice-desc">Roaming mahjong nights with Miami flair. Brooke and Gabi can find a table anywhere and make it the best seat in the city.</p>
+      <a href="https://www.instagram.com/mahjandmiami/" target="_blank" rel="noopener" class="voice-link">@mahjandmiami &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">PP</div>
+      <div class="voice-name">Pink Palmetto Mahjong</div>
+      <div class="voice-location">Jennifer Kenwell / Lowcountry, SC</div>
+      <p class="voice-desc">Lowcountry lessons and a hand of the month worth studying. Jennifer Kenwell teaches the game the way Charleston does everything, graciously.</p>
+      <a href="https://www.facebook.com/p/Pink-Palmetto-Mahjong-61580876327179/" target="_blank" rel="noopener" class="voice-link">Pink Palmetto on Facebook &rarr;</a>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-initial">TS</div>
+      <div class="voice-name">Toby Salk</div>
+      <div class="voice-location">Berkeley / Bay Area, CA</div>
+      <p class="voice-desc">A Bay Area institution and the West Coast's warmest welcome to the table. Toby Salk has taught generations of players and co-wrote a beloved beginner's guide to the game.</p>
+      <a href="https://tobysmj.com" target="_blank" rel="noopener" class="voice-link">tobysmj.com &rarr;</a>
     </div>
 
   </div>
@@ -284,6 +369,21 @@
       <div class="envy-brand">Peace Love Mahjong</div>
       <p class="envy-desc">Modern and affordable without apology. The right set for a player just beginning to build their collection.</p>
       <a href="https://peacelovemahjong.com" target="_blank" rel="noopener" class="envy-link">peacelovemahjong.com</a>
+    </div>
+    <div class="envy-card">
+      <div class="envy-brand">Crisloid</div>
+      <p class="envy-desc">American-made luxury since 1948. Game sets with the satisfying weight and click of a true heirloom.</p>
+      <a href="https://www.crisloid.com" target="_blank" rel="noopener" class="envy-link">crisloid.com</a>
+    </div>
+    <div class="envy-card">
+      <div class="envy-brand">Bespoke Mahjong</div>
+      <p class="envy-desc">Modern luxury tiles, mats, and even automatic tables. For the player who wants the whole room to match the set.</p>
+      <a href="https://www.bespokemahjong.com" target="_blank" rel="noopener" class="envy-link">bespokemahjong.com</a>
+    </div>
+    <div class="envy-card">
+      <div class="envy-brand">Bam Bird Boutique</div>
+      <p class="envy-desc">A Dallas boutique for tiles, accessories, and open play. Half shop, half clubhouse, all charm.</p>
+      <a href="https://www.bambirdboutique.com" target="_blank" rel="noopener" class="envy-link">bambirdboutique.com</a>
     </div>
   </div>
 </div>
