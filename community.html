@@ -36,11 +36,20 @@
 .voices-section { max-width: 1100px; margin: 0 auto; padding: 64px 56px; }
 .voices-section h2 { font-family: var(--serif); font-size: 28px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
 .voices-intro { font-family: var(--body); font-size: 17px; color: var(--dusk); margin-bottom: 40px; max-width: 540px; }
-.voices-hint { font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dusk); margin-bottom: 18px; }
-.voices-grid { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x proximity; padding: 4px 4px 22px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--lilac) transparent; }
-.voices-grid::-webkit-scrollbar { height: 8px; }
-.voices-grid::-webkit-scrollbar-track { background: transparent; }
-.voices-grid::-webkit-scrollbar-thumb { background: var(--lilac); border-radius: 4px; }
+.voices-row { display: flex; align-items: stretch; gap: 18px; padding-bottom: 4px; }
+.voice-card-prim { flex-shrink: 0; background: var(--ivory); border-color: var(--orchid); }
+.voice-card-prim .voice-initial { background: var(--cloud); border-color: var(--orchid); overflow: hidden; }
+.voice-card-prim .voice-initial img { width: 30px; height: 30px; object-fit: contain; }
+.voices-marquee { position: relative; overflow: hidden; flex: 1 1 auto; min-width: 0; padding: 2px 0; }
+.voices-track { display: flex; width: max-content; animation: voices-roll 80s linear infinite; }
+.voices-track .voice-card { margin-right: 18px; }
+@media (hover: hover) { .voices-marquee:hover .voices-track { animation-play-state: paused; } }
+@keyframes voices-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.voices-fade { position: absolute; top: 0; bottom: 0; width: 56px; z-index: 2; pointer-events: none; }
+.voices-fade-l { left: 0; background: linear-gradient(90deg, var(--cloud), rgba(248,246,242,0)); }
+.voices-fade-r { right: 0; background: linear-gradient(-90deg, var(--cloud), rgba(248,246,242,0)); }
+@media (prefers-reduced-motion: reduce) { .voices-track { animation: none; } .voices-marquee { overflow-x: auto; } }
+@media (max-width: 640px) { .voices-row { display: block; } .voices-row .voice-card-prim { width: auto; max-width: none; margin-bottom: 16px; } }
 
 .voice-card { background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 6px; padding: 28px; transition: border-color 0.2s; width: 300px; flex-shrink: 0; scroll-snap-align: start; display: flex; flex-direction: column; }
 .voice-card:hover { border-color: var(--orchid); }
@@ -140,8 +149,18 @@
   <p class="section-label">Who's Talking</p>
   <h2>Voices worth knowing.</h2>
   <p class="voices-intro">Featured in The Order of the Tile. These are the people shaping American Mahjong right now.</p>
-  <p class="voices-hint">Scroll sideways for more &rarr;</p>
-  <div class="voices-grid">
+  <div class="voices-row">
+
+    <div class="voice-card voice-card-prim">
+      <div class="voice-initial"><img src="/images/seal.png" alt=""></div>
+      <div class="voice-name">Prim Proper</div>
+      <div class="voice-location">The Order of the Tile</div>
+      <p class="voice-desc">Your hostess and favorite fourth. Prim keeps the letters, the lessons, and the talk of the table, and always saves you a seat.</p>
+      <a href="https://www.orderofthetile.com/about-prim.html" class="voice-link">Meet Prim &rarr;</a>
+    </div>
+
+    <div class="voices-marquee">
+      <div class="voices-track" id="voices-track">
 
     <div class="voice-card">
       <div class="voice-initial">MW</div>
@@ -271,6 +290,10 @@
       <a href="https://tobysmj.com" target="_blank" rel="noopener" class="voice-link">tobysmj.com &rarr;</a>
     </div>
 
+      </div>
+      <div class="voices-fade voices-fade-l"></div>
+      <div class="voices-fade voices-fade-r"></div>
+    </div>
   </div>
 </div>
 
@@ -391,6 +414,10 @@
 <footer></footer>
 <script src="shared.js"></script>
 <script>
+// Duplicate the voices track once so the rolling marquee loops seamlessly (-50%).
+const vTrack = document.getElementById('voices-track');
+if (vTrack) vTrack.insertAdjacentHTML('beforeend', vTrack.innerHTML);
+
 const navLinks = document.querySelectorAll('.section-nav-link');
 const sections = ['voices','events','envy'].map(id => document.getElementById(id));
 window.addEventListener('scroll', () => {
