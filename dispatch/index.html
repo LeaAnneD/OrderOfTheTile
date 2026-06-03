@@ -462,24 +462,21 @@
   var calY, calM, selectedDay = null;
   var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  // Group by EDITION date (the day a story appeared on the Dispatch), not its
-  // source publication date — so a day's cell holds everything published that
-  // day, even if the underlying articles were originally dated earlier.
+  // Group by each article's own date, so a calendar day holds only the stories
+  // dated that exact day (a day may have just one).
   function indexByDate(list) {
     var by = {};
-    list.forEach(function (a) { var k = a.editionDate || a.date || EDITION_DATE; if (k) { (by[k] = by[k] || []).push(a); } });
+    list.forEach(function (a) { if (a.date) { (by[a.date] = by[a.date] || []).push(a); } });
     return by;
   }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
 
   // Entry point: store the full list, render it, and build the calendar.
   function setData(list) {
-    allArticles = list || [];
+    allArticles = (list || []).slice().sort(function (a, b) { var x = a.date || '', y = b.date || ''; return x < y ? 1 : (x > y ? -1 : 0); });
     selectedDay = null;
     document.getElementById('day-banner').style.display = 'none';
-    var byd = indexByDate(allArticles);
-    var dayKeys = Object.keys(byd).sort();
-    LATEST = dayKeys.length ? dayKeys[dayKeys.length - 1] : EDITION_DATE;
+    LATEST = (allArticles[0] && allArticles[0].date) || EDITION_DATE;
     showLatest();
     var p = LATEST.split('-');
     calY = parseInt(p[0], 10); calM = parseInt(p[1], 10) - 1;
@@ -527,8 +524,7 @@
     window.scrollTo({ top: y < 0 ? 0 : y, behavior: 'smooth' });
   }
   function showLatest() {
-    var byd = indexByDate(allArticles);
-    render(byd[LATEST] || allArticles.slice(0, 12));
+    render(allArticles.slice(0, 9));
   }
   function backToLatest() {
     selectedDay = null;
