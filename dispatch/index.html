@@ -63,7 +63,7 @@
 .card-meta { font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dusk); margin-bottom: 12px; }
 
 /* ===== HOUSE AD (fills an odd cell) ===== */
-.card.house-ad { background: var(--ivory); border-radius: 6px; border-bottom: none; padding: 32px 34px; align-items: flex-start; justify-content: center; text-align: left; margin: 18px 0; }
+.card.house-ad { background: var(--ivory); border-radius: 6px; border-bottom: none; padding: 32px 34px; align-items: center; justify-content: center; text-align: center; margin: 18px 0; }
 .card.house-ad.in-left { margin-right: 36px; }
 .card.house-ad.in-right { margin-left: 36px; }
 .ad-eyebrow { font-family: var(--body); font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk); margin-bottom: 10px; }
@@ -156,17 +156,17 @@
 
 <section class="lead" id="lead"></section>
 
-<section class="favorites" id="favorites" style="display:none;">
-  <p class="grid-label">Reader Favorites</p>
-  <div class="grid-label-rule"></div>
-  <div class="dispatch-grid" id="fav-grid"></div>
-</section>
-
 <div class="grid-wrap">
   <p class="grid-label">More from the table</p>
   <div class="grid-label-rule"></div>
 </div>
 <div class="dispatch-grid" id="dispatch-grid"></div>
+
+<section class="favorites" id="favorites" style="display:none;">
+  <p class="grid-label">Reader Favorites</p>
+  <div class="grid-label-rule"></div>
+  <div class="dispatch-grid" id="fav-grid"></div>
+</section>
 
 <section class="archive" id="archive">
   <p class="grid-label">The Archive</p>
@@ -197,6 +197,12 @@
   //  News rules: report only what a cited source states, attribute
   //  every figure, never invent numbers, never claim Prim/OOTT
   //  purchased, endorses, or recommends buying anything.
+  //  Display rules:
+  //   - 7-day rolloff (ROLLOFF_DAYS): the page shows only dispatches
+  //     published within the last 7 days. Older items stay in the API
+  //     archive but roll off the public page.
+  //   - Archive calendar: clicking a day shows ONLY the dispatches
+  //     published on that exact day (keyed on published_at).
   // ============================================================
   var USE_SAMPLE = false;
   var API = 'https://dashboard.orderofthetile.com/api/news?status=approved';
@@ -319,10 +325,12 @@
   ];
 
   // House ads fill an odd cell so the grid never leaves a blank.
+  // Rotating house ads, each color-coded so readers notice when the ad changes.
+  // Future slots to add here: Games, the Card Decoder, the Rulebook.
   var HOUSE_ADS = [
-    { eyebrow: 'From the Order', title: 'Join the table', body: 'Prim’s letters, in your inbox. Game wisdom, traditions, and the stories the table is talking about.', cta: 'Become a Favorite Fourth', url: 'https://newsletter.orderofthetile.com/#/portal/signup' },
-    { eyebrow: 'Listen', title: 'The Order, read aloud', body: 'Every letter becomes an episode. Hear Prim on the podcast, wherever you listen.', cta: 'Listen on Spotify', url: 'https://open.spotify.com/show/0ndaZ0MXj2x03ToJkXMuIT' },
-    { eyebrow: 'Prim’s shop', title: 'Printables for the table', body: 'Cards, guides, and digital goods for American mah jongg, from the Order of the Tile shop on Etsy.', cta: 'Visit the Etsy shop', url: 'https://www.etsy.com/shop/OrderofTheTile' }
+    { eyebrow: 'Prim’s shop', title: 'Printables for the table', body: 'Cards, guides, and digital goods for American mah jongg, from the Order of the Tile shop on Etsy.', cta: 'Visit the Etsy shop', url: 'https://www.etsy.com/shop/OrderofTheTile', bg: '#f9e4d5', accent: 'var(--melon)', ctaText: 'var(--ink)' },
+    { eyebrow: 'Listen', title: 'The Order, read aloud', body: 'Every letter becomes an episode. Hear Prim on the podcast, wherever you listen.', cta: 'Listen on Spotify', url: 'https://open.spotify.com/show/0ndaZ0MXj2x03ToJkXMuIT', bg: '#eae1ef', accent: 'var(--orchid)', ctaText: '#fff' },
+    { eyebrow: 'From the Order', title: 'Join the table', body: 'Prim’s letters, in your inbox. Game wisdom, traditions, and the stories the table is talking about.', cta: 'Become a Favorite Fourth', url: 'https://newsletter.orderofthetile.com/#/portal/signup', bg: '#f6edc6', accent: '#8a6d1f', ctaText: '#fff' }
   ];
 
   function esc(s) {
@@ -342,7 +350,7 @@
   }
 
   function pickAd() {
-    var d = new Date(EDITION_DATE + 'T12:00:00');
+    var d = new Date(); // rotate by the actual day so the ad (and its color) changes day to day
     var idx = (isNaN(d) ? 0 : d.getDate()) % HOUSE_ADS.length;
     return HOUSE_ADS[idx];
   }
@@ -425,12 +433,12 @@
 
   function adHTML(side) {
     var ad = pickAd();
-    return '<aside class="card house-ad ' + (side === 'left' ? 'in-left' : 'in-right') + '">' +
-      '<p class="ad-eyebrow">' + esc(ad.eyebrow) + '</p>' +
+    return '<aside class="card house-ad ' + (side === 'left' ? 'in-left' : 'in-right') + '" style="background:' + ad.bg + ';">' +
+      '<p class="ad-eyebrow" style="color:' + ad.accent + ';">' + esc(ad.eyebrow) + '</p>' +
       '<img class="ad-seal" src="/images/seal.png" alt="">' +
       '<h3 class="ad-title">' + esc(ad.title) + '</h3>' +
       '<p class="ad-body">' + esc(ad.body) + '</p>' +
-      '<a class="ad-cta" href="' + esc(ad.url) + '" target="_blank" rel="noopener">' + esc(ad.cta) + '</a>' +
+      '<a class="ad-cta" href="' + esc(ad.url) + '" target="_blank" rel="noopener" style="background:' + ad.accent + ';color:' + ad.ctaText + ';">' + esc(ad.cta) + '</a>' +
       '</aside>';
   }
 
@@ -524,7 +532,9 @@
     window.scrollTo({ top: y < 0 ? 0 : y, behavior: 'smooth' });
   }
   function showLatest() {
-    render(allArticles.slice(0, 9));
+    // Front page shows the full rolling window (already bounded to the last
+    // ROLLOFF_DAYS days by withinRolloff), newest first.
+    render(allArticles);
   }
   function backToLatest() {
     selectedDay = null;
@@ -536,6 +546,20 @@
 
   document.getElementById('cal-prev').addEventListener('click', function () { calM--; if (calM < 0) { calM = 11; calY--; } drawCalendar(); });
   document.getElementById('cal-next').addEventListener('click', function () { calM++; if (calM > 11) { calM = 0; calY++; } drawCalendar(); });
+
+  // 7-day rolloff: the public page shows only dispatches published within the
+  // last ROLLOFF_DAYS days. Older items are NOT deleted (the approval queue and
+  // the API keep the full history); they simply roll off the public page.
+  var ROLLOFF_DAYS = 7;
+  function withinRolloff(list) {
+    var cutoff = new Date(); cutoff.setHours(0, 0, 0, 0);
+    cutoff.setDate(cutoff.getDate() - ROLLOFF_DAYS);
+    return (list || []).filter(function (a) {
+      if (!a.date) return false;
+      var d = new Date(a.date + 'T12:00:00');
+      return !isNaN(d) && d >= cutoff;
+    });
+  }
 
   function fromLiveFeed() {
     fetch(API, { headers: { Accept: 'application/json' } })
@@ -555,9 +579,11 @@
             votes: it.votes || { up: 0, down: 0, score: 0 }
           };
         });
-        // If the live feed is reachable but empty, fall back to the baked
-        // edition so the page is never blank.
-        setData(mapped.length ? mapped : ARTICLES);
+        // Apply the 7-day rolloff. If the live feed returned items but none are
+        // within the window, show the (empty) recent window and let the
+        // empty-state copy stand. Only fall back to the baked edition when the
+        // live feed returned nothing at all, so a cold API never blanks the page.
+        setData(mapped.length ? withinRolloff(mapped) : ARTICLES);
       })
       .catch(function () {
         // Feed unreachable: serve the baked edition rather than an error.
