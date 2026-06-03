@@ -7,6 +7,7 @@
   // Detect current page for active link highlighting
   var path = window.location.pathname.split('/').pop() || 'index.html';
   if (path === '') path = 'index.html';
+  if (/\/dispatch\/?$/.test(window.location.pathname)) path = 'dispatch';
 
   function activeClass(page) {
     return path === page ? ' class="active"' : '';
@@ -15,7 +16,7 @@
   // ===== NAV =====
   var navHTML = ''
     + '<a class="nav-wordmark" href="https://www.orderofthetile.com/">'
-    +   '<img src="images/seal.png" alt="seal" />The Order of the Tile'
+    +   '<img src="/images/seal.png" alt="seal" />The Order of the Tile'
     + '</a>'
     + '<div class="nav-menu">'
     +   '<button class="nav-menu-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="primary-nav-list">'
@@ -26,6 +27,7 @@
     +     '<li><a href="https://www.orderofthetile.com/"' + activeClass('index.html') + '>The Story</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/alls-fair-in-love-and-mahjong.html"' + activeClass('alls-fair-in-love-and-mahjong.html') + '>The Movie</a></li>'
     +     '<li><a href="https://newsletter.orderofthetile.com/"' + activeClass('the-letters.html') + '>The Letters</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/dispatch"' + activeClass('dispatch') + '>The Dispatch</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>The Game</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/events.html"' + activeClass('events.html') + '>Events</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/community.html"' + activeClass('community.html') + '>Community</a></li>'
@@ -43,7 +45,7 @@
   var footerHTML = ''
     + '<div class="footer-inner">'
     +   '<div class="footer-brand">'
-    +     '<img class="footer-seal" src="images/seal.png" alt="seal" />'
+    +     '<img class="footer-seal" src="/images/seal.png" alt="seal" />'
     +     '<div>'
     +       '<div class="footer-wordmark">Order of the Tile</div>'
     +       '<div class="footer-tagline">A newsletter for those who know the game</div>'

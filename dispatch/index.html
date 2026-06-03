@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Dispatch | The Order of the Tile</title>
+<meta name="description" content="The latest from the world of American Mahjong, gathered and told by Prim. Releases, tournaments, and the stories the table is talking about.">
+<meta name="author" content="The Order of the Tile">
+<link rel="canonical" href="https://www.orderofthetile.com/dispatch">
+<link rel="icon" type="image/png" href="images/seal.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Order of the Tile">
+<meta property="og:title" content="The Dispatch | The Order of the Tile">
+<meta property="og:description" content="The latest from the world of American Mahjong, gathered and told by Prim.">
+<meta property="og:url" content="https://www.orderofthetile.com/dispatch">
+<meta property="og:image" content="https://www.orderofthetile.com/images/seal.png">
+<meta property="og:image:alt" content="The Order of the Tile wax seal">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Dispatch | The Order of the Tile">
+<meta name="twitter:description" content="The latest from the world of American Mahjong, gathered and told by Prim.">
+<meta name="twitter:image" content="https://www.orderofthetile.com/images/seal.png">
+
+<link rel="stylesheet" href="/shared.css">
+<style>
+/* ===== MASTHEAD ===== */
+.dispatch-masthead { max-width: 1100px; margin: 0 auto; padding: 122px 56px 0; text-align: center; }
+.masthead-rule-top { border: 0; border-top: 2px solid var(--ink); border-bottom: 0.5px solid var(--ink); height: 4px; margin-bottom: 26px; }
+.masthead-seal { width: 44px; height: 44px; opacity: 0.9; margin-bottom: 14px; }
+.masthead-eyebrow { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--dusk); margin-bottom: 10px; }
+.masthead-name { font-family: var(--serif-sc); font-weight: 400; font-size: clamp(44px, 7vw, 82px); line-height: 1; color: var(--ink); letter-spacing: 0.01em; margin-bottom: 16px; }
+.masthead-tagline { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--orchid); margin-bottom: 22px; }
+.dateline { display: flex; align-items: center; justify-content: center; gap: 18px; font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dusk); border-top: 0.5px solid var(--lilac); border-bottom: 0.5px solid var(--lilac); padding: 12px 0; }
+.dateline .dot { color: var(--melon); font-size: 10px; }
+
+/* ===== LEAD (wide, two columns) ===== */
+.lead { max-width: 1100px; margin: 0 auto; padding: 52px 56px 48px; border-bottom: 0.5px solid var(--lilac); text-align: center; }
+.lead-kicker { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--melon); margin-bottom: 10px; }
+.lead-headline { font-family: var(--serif); font-weight: 600; line-height: 1.08; font-size: clamp(34px, 4.8vw, 56px); color: var(--ink); margin-bottom: 16px; }
+.lead-headline em { font-style: italic; color: var(--orchid); }
+.lead-dek { font-family: var(--serif); font-style: italic; font-size: 21px; color: var(--dusk); line-height: 1.5; margin: 0 auto 30px; max-width: 60ch; }
+.lead-body { font-family: var(--body); font-size: 18px; color: #3D3530; line-height: 1.8; columns: 2; column-gap: 48px; text-align: left; }
+.lead-body p { margin-bottom: 16px; break-inside: avoid; }
+.lead-body p:first-of-type::first-letter { font-family: var(--serif); font-size: 56px; line-height: 0.78; font-weight: 600; float: left; padding: 8px 12px 0 0; color: var(--orchid); }
+.lead-body .read-more { margin-top: 4px; }
+.read-more { display: inline-block; align-self: flex-start; width: auto; margin-top: 6px; font-family: var(--body); font-size: 14px; letter-spacing: 0.03em; color: var(--melon); border-bottom: 0.5px solid var(--melon); padding-bottom: 2px; text-decoration: none; }
+.read-more:hover { color: var(--ink); border-color: var(--ink); }
+
+/* ===== STORY GRID (side by side, even) ===== */
+.grid-wrap { max-width: 1100px; margin: 0 auto; padding: 46px 56px 0; }
+.grid-label { font-family: var(--serif-sc); font-size: 15px; letter-spacing: 0.1em; color: var(--ink); text-align: center; margin-bottom: 4px; }
+.grid-label-rule { width: 60px; height: 0.5px; background: var(--lilac); margin: 0 auto 8px; }
+.dispatch-grid { max-width: 1100px; margin: 0 auto; padding: 0 56px 84px; display: grid; grid-template-columns: 1fr 1fr; }
+.card { padding: 30px 0; border-bottom: 0.5px solid var(--lilac); display: flex; flex-direction: column; }
+.card:nth-child(odd) { padding-right: 36px; border-right: 0.5px solid var(--lilac); }
+.card:nth-child(even) { padding-left: 36px; }
+.card-kicker { font-family: var(--body); font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--melon); margin-bottom: 8px; }
+.card-headline { font-family: var(--serif); font-weight: 500; font-size: 25px; line-height: 1.22; color: var(--ink); margin-bottom: 10px; transition: color 0.2s; }
+.card-headline em { font-style: italic; color: var(--orchid); }
+.card:hover .card-headline { color: var(--orchid); }
+.card-dek { font-family: var(--body); font-size: 16px; color: var(--dusk); line-height: 1.6; margin-bottom: 14px; flex: 1; }
+.card-meta { font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dusk); margin-bottom: 12px; }
+
+/* ===== HOUSE AD (fills an odd cell) ===== */
+.card.house-ad { background: var(--ivory); border-radius: 6px; border-bottom: none; padding: 32px 34px; align-items: flex-start; justify-content: center; text-align: left; margin: 18px 0; }
+.card.house-ad.in-left { margin-right: 36px; }
+.card.house-ad.in-right { margin-left: 36px; }
+.ad-eyebrow { font-family: var(--body); font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk); margin-bottom: 10px; }
+.ad-seal { width: 34px; height: 34px; opacity: 0.85; margin-bottom: 12px; }
+.ad-title { font-family: var(--serif); font-weight: 600; font-size: 26px; line-height: 1.15; color: var(--ink); margin-bottom: 10px; }
+.ad-body { font-family: var(--body); font-size: 16px; color: var(--dusk); line-height: 1.6; margin-bottom: 18px; }
+.ad-cta { font-family: var(--serif-sc); font-size: 14px; background: var(--melon); color: var(--ink); padding: 11px 22px; border-radius: 6px; text-decoration: none; transition: opacity 0.2s; }
+.ad-cta:hover { opacity: 0.85; }
+
+.empty-state { grid-column: 1 / -1; text-align: center; font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--dusk); padding: 40px 0; }
+.empty-state em { color: var(--orchid); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 760px) {
+  .lead-body { columns: 1; }
+  .dispatch-grid { grid-template-columns: 1fr; padding-left: 0; padding-right: 0; }
+  .grid-wrap { padding-left: 0; padding-right: 0; }
+  .grid-wrap, .dispatch-grid { padding-left: 18px; padding-right: 18px; }
+  .card, .card:nth-child(odd), .card:nth-child(even) { padding-left: 0; padding-right: 0; border-right: none; }
+  .card.house-ad, .card.house-ad.in-left, .card.house-ad.in-right { margin-left: 0; margin-right: 0; }
+}
+@media (max-width: 640px) {
+  .dispatch-masthead { padding: 100px 18px 0; }
+  .lead { padding: 40px 18px 36px; }
+  .dateline { gap: 10px; font-size: 10px; flex-wrap: wrap; }
+  .lead-body p:first-of-type::first-letter { font-size: 48px; padding: 6px 10px 0 0; }
+}
+</style>
+<script defer src="https://cdn.jsdelivr.net/ghost/portal@latest/umd/portal.min.js" data-ghost="https://newsletter.orderofthetile.com"></script>
+</head>
+<body>
+
+<nav></nav>
+
+<header class="dispatch-masthead">
+  <hr class="masthead-rule-top">
+  <img class="masthead-seal" src="/images/seal.png" alt="The Order of the Tile seal">
+  <p class="masthead-eyebrow">From the world of American Mahjong</p>
+  <h1 class="masthead-name">The Dispatch</h1>
+  <p class="masthead-tagline">Prim reads everything, so you do not have to.</p>
+  <div class="dateline">
+    <span id="dateline-vol">Volume 2026</span>
+    <span class="dot">&#9670;</span>
+    <span id="dateline-date">&nbsp;</span>
+  </div>
+</header>
+
+<section class="lead" id="lead"></section>
+
+<div class="grid-wrap">
+  <p class="grid-label">More from the table</p>
+  <div class="grid-label-rule"></div>
+</div>
+<div class="dispatch-grid" id="dispatch-grid"></div>
+
+<footer></footer>
+
+<script src="/shared.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ============================================================
+  //  DATA SOURCE
+  //  Design phase: render from ARTICLES below (real, sourced,
+  //  American-only stories pulled from the 2026-06-02 research).
+  //  To go live from the approval queue: set USE_SAMPLE = false.
+  //  News rules: report only what a cited source states, attribute
+  //  every figure, never invent numbers, never claim Prim/OOTT
+  //  purchased, endorses, or recommends buying anything.
+  // ============================================================
+  var USE_SAMPLE = false;
+  var API = 'https://dashboard.orderofthetile.com/api/news?status=approved';
+  var EDITION_DATE = '2026-06-02';
+
+  // shape: { category, title, dek, body[], source_url, source_name, date }
+  var ARTICLES = [
+    {
+      category: 'Set Your Rack',
+      title: 'A 48-hour world-record attempt comes to <em>Summerville</em>',
+      dek: 'Four players, two causes, and a Guinness clock running June 28 to 30 at The Pickle Bar.',
+      body: [
+        'Four American mah jongg players will take their seats at The Pickle Bar in Summerville, South Carolina, from June 28 to 30 for an officially monitored Guinness World Record attempt, according to the Post and Courier. The group intends to keep the game going across the full 48 hours.',
+        'The players named in the coverage are Nancy de Zutter of Summerville, joined by Jan Egri, Michele Frizzell, and Jennifer Clayton from out of state.',
+        'Per the report, the attempt is documented for verification with independent witnesses, certified timekeepers, a detailed logbook, and full video of the weekend. It is the standout American mah jongg event on the late-June calendar.',
+        'The marathon supports two causes, the Post and Courier reports: hunger relief through a Charleston-area food bank, and Mah Jongg for Memories, which raises money for Alzheimer’s. The Order of the Tile is covering the attempt, not promoting it, and will note the result once it is recorded.'
+      ],
+      source_url: 'https://www.postandcourier.com/journal-scene/berkeley-independent/news/world-record-attempt-to-benefit-hunger-relief-alzheimer-s-advocacy/article_58290a29-c24c-4b83-8b07-f814895f853b.html',
+      source_name: 'Post and Courier',
+      date: '2026-06-02'
+    },
+    {
+      category: 'The Surge',
+      title: 'Boca Magazine charts mah jongg’s American resurgence',
+      dek: 'A new feature ties the game’s comeback to face-to-face community, and revisits its 1937 American roots.',
+      body: [
+        'Boca Magazine’s feature "Mahjong Madness" covers the American game’s resurgence and frames it around in-person connection. The piece names Kari Long, founder of Mahj on the Beach, and notes the game’s spread across luxury South Florida clubs.',
+        'According to the article, the American Mah Jongg League was founded in 1937 by five women to standardize the rules and hands. The piece quotes Long on the post-pandemic search for face-to-face interaction.'
+      ],
+      source_url: 'https://bocamag.com/from-the-magazine-mahjong-madness/',
+      source_name: 'Boca Magazine',
+      date: '2026-05-28'
+    },
+    {
+      category: 'The Long Game',
+      title: 'The history of the game, and a word of gratitude for every hand in it',
+      dek: 'A GBH feature follows mah jongg from its Chinese origins to its American life. Prim honors every culture and community that shaped the game we play today, the originating Chinese game above all.',
+      body: [
+        'GBH published a feature tracing the history of mah jongg in America, from the game’s Chinese origins through its arrival in the United States and the present-day conversation about appreciation and appropriation.',
+        'The story is a layered one. Mah jongg began in China and traveled to America in the 1920s. In 1937, a group of American women founded the National Mah Jongg League and standardized the American hands and rules. The American game went on to find a devoted home in Jewish American communities, who kept it alive and thriving at countless tables for generations.',
+        'Prim’s view is simple, and it is one of gratitude. She honors every culture and community that has had a hand in shaping the game we play today, and the originating Chinese game above all. The communities who carried the American version, the women who built the League and the families who kept it alive, did so in honor of those roots.',
+        'The Order of the Tile links to the GBH piece for readers who want the fuller history. Our aim is to honor the game’s origins, not to settle the debate around them.'
+      ],
+      source_url: 'https://www.wgbh.org/culture/2026-05-15/cultural-appropriation-or-appreciation-tracing-the-history-of-mahjong-in-america',
+      source_name: 'GBH',
+      date: '2026-05-15'
+    },
+    {
+      category: 'On the Air',
+      title: 'PBS NewsHour profiles the game’s community boom',
+      dek: 'A national segment frames the surge around connection rather than novelty.',
+      body: [
+        'PBS NewsHour aired a segment on American mah jongg’s growth, framing the trend around community and connection. The report features players and teachers describing the game’s social pull.',
+        'The Order of the Tile points readers to the segment as a clear national snapshot of where the game stands this year.'
+      ],
+      source_url: 'https://www.pbs.org/newshour/show/mahjong-thriving-as-players-embrace-community-and-connection',
+      source_name: 'PBS NewsHour',
+      date: '2026-05-29'
+    },
+    {
+      category: 'For Beginners',
+      title: 'A starting guide to the easiest 2026 hands',
+      dek: 'Lara’s Mahjong Edit walks new players through approachable hands to aim for on this year’s NMJL card.',
+      body: [
+        'Lara’s Mahjong Edit published a beginner-facing guide, "6 Easiest Hands to Win Your First Game With," for the 2026 NMJL card. It walks first-time players through the most approachable hands to attempt early.',
+        'It is a useful free resource for anyone learning the new card. The Order of the Tile is not affiliated with Lara’s Mahjong Edit and links to the original post.'
+      ],
+      source_url: 'https://larasmahjongedit.com/blogs/the-tile-edit/easiest-hands-2026-mahjong-card',
+      source_name: 'Lara’s Mahjong Edit',
+      date: '2026-05-24'
+    },
+    {
+      category: 'At the Table',
+      title: 'Modern Mahjong opens a daily question-and-answer table',
+      dek: 'A new "Talk of the Tiles" check-in invites players to bring a daily question.',
+      body: [
+        'Modern Mahjong launched a daily check-in feature called "Talk of the Tiles," inviting players to bring a question to the table each day, alongside a slate of weekly classes.',
+        'The Order of the Tile notes the format for readers who like a daily place to ask. We are not affiliated with Modern Mahjong and link to their page.'
+      ],
+      source_url: 'https://modernmahjong.com/collections/modern-mahjong-talk-of-the-tiles',
+      source_name: 'Modern Mahjong',
+      date: '2026-05-13'
+    },
+    {
+      category: 'On the Card',
+      title: 'A close reading of what the 2026 card rewards',
+      dek: 'The Salt Lake Mahjong Club breaks down which tiles this year’s card leans on, and why holding your 6s and Flowers pays off.',
+      body: [
+        'In an analysis of the 2026 NMJL card, the Salt Lake Mahjong Club reports that the number 6 appears in 272 of the card’s 678 hand variations, and advises players to hold their 6s and Flowers. The post, by Katie Poulsen, frames it as the card’s defining principle this year.',
+        'It is a useful reference for intermediate players weighing which tiles to keep early. The Order of the Tile is not affiliated with the Salt Lake Mahjong Club and links to the original analysis.'
+      ],
+      source_url: 'https://www.saltlakemahjongclub.com/blog/the-2026-nmjl-card-what-you-actually-need-to-know',
+      source_name: 'Salt Lake Mahjong Club',
+      date: '2026-03-21'
+    },
+    {
+      category: 'On the Road',
+      title: 'Hotels and resorts are adding mah jongg to the itinerary',
+      dek: 'Travel coverage points to a growing slate of mah jongg clinics and retreats at hotels around the country.',
+      body: [
+        'Afar reports that mah jongg clinics and retreats are growing at hotels, naming properties that have added the game to their programming. The piece places the trend alongside the broader surge in American play.',
+        'The Order of the Tile shares it for readers who like to pair the game with a getaway. We are not affiliated with the properties named.'
+      ],
+      source_url: 'https://www.afar.com/magazine/mahjong-clinics-and-retreats-are-growing-at-hotels',
+      source_name: 'Afar',
+      date: ''
+    },
+    {
+      category: 'Tile Envy',
+      title: 'The Hollywood Reporter on mah jongg’s high-end set scene',
+      dek: 'A look at the celebrity attention and the collector sets driving the conversation.',
+      body: [
+        'The Hollywood Reporter covered the celebrity interest in mah jongg and the high-end set market around it, reporting collector prices well into the thousands on the secondary market.',
+        'The Order of the Tile shares the piece for readers who follow the makers and the market. We do not sell sets and are not affiliated with the makers named.'
+      ],
+      source_url: 'https://www.hollywoodreporter.com/lifestyle/lifestyle-news/hollywood-mahjong-mania-1236601440/',
+      source_name: 'The Hollywood Reporter',
+      date: '2026-05-27'
+    }
+  ];
+
+  // House ads fill an odd cell so the grid never leaves a blank.
+  var HOUSE_ADS = [
+    { eyebrow: 'From the Order', title: 'Join the table', body: 'Prim’s letters, in your inbox. Game wisdom, traditions, and the stories the table is talking about.', cta: 'Become a Favorite Fourth', url: 'https://newsletter.orderofthetile.com/#/portal/signup' },
+    { eyebrow: 'Listen', title: 'The Order, read aloud', body: 'Every letter becomes an episode. Hear Prim on the podcast, wherever you listen.', cta: 'Listen on Spotify', url: 'https://open.spotify.com/show/0ndaZ0MXj2x03ToJkXMuIT' }
+  ];
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function richEsc(s) { return esc(s).replace(/&lt;em&gt;/g, '<em>').replace(/&lt;\/em&gt;/g, '</em>'); }
+  function fmtDate(iso) {
+    if (!iso) return '';
+    var d = new Date(iso + (iso.length === 10 ? 'T12:00:00' : ''));
+    return isNaN(d) ? '' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  function fmtMonthDay(iso) {
+    if (!iso) return '';
+    var d = new Date(iso + (iso.length === 10 ? 'T12:00:00' : ''));
+    return isNaN(d) ? '' : d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  }
+
+  function pickAd() {
+    var d = new Date(EDITION_DATE + 'T12:00:00');
+    var idx = (isNaN(d) ? 0 : d.getDate()) % HOUSE_ADS.length;
+    return HOUSE_ADS[idx];
+  }
+
+  function leadHTML(a) {
+    var body = (a.body || []).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('');
+    // Read-more lives at the end of the article flow so it lands after the
+    // last line (bottom of the second column), not floating under column one.
+    var readmore = a.source_url
+      ? '<a class="read-more" href="' + esc(a.source_url) + '" target="_blank" rel="noopener">Read more at ' + esc(a.source_name || 'the source') + ' &rarr;</a>'
+      : '';
+    return '<p class="lead-kicker">' + esc(a.category) + '</p>' +
+      '<h2 class="lead-headline">' + richEsc(a.title) + '</h2>' +
+      (a.dek ? '<p class="lead-dek">' + richEsc(a.dek) + '</p>' : '') +
+      '<div class="lead-body">' + body + readmore + '</div>';
+  }
+
+  function cardHTML(a) {
+    var meta = fmtDate(a.date);
+    if (a.source_name) meta += (meta ? '  ·  ' : '') + esc(a.source_name);
+    return '<article class="card">' +
+      '<p class="card-kicker">' + esc(a.category) + '</p>' +
+      '<h3 class="card-headline">' + richEsc(a.title) + '</h3>' +
+      (a.dek ? '<p class="card-dek">' + richEsc(a.dek) + '</p>' : '') +
+      '<p class="card-meta">' + meta + '</p>' +
+      (a.source_url ? '<a class="read-more" href="' + esc(a.source_url) + '" target="_blank" rel="noopener">Read more &rarr;</a>' : '') +
+      '</article>';
+  }
+
+  function adHTML(side) {
+    var ad = pickAd();
+    return '<aside class="card house-ad ' + (side === 'left' ? 'in-left' : 'in-right') + '">' +
+      '<p class="ad-eyebrow">' + esc(ad.eyebrow) + '</p>' +
+      '<img class="ad-seal" src="/images/seal.png" alt="">' +
+      '<h3 class="ad-title">' + esc(ad.title) + '</h3>' +
+      '<p class="ad-body">' + esc(ad.body) + '</p>' +
+      '<a class="ad-cta" href="' + esc(ad.url) + '" target="_blank" rel="noopener">' + esc(ad.cta) + '</a>' +
+      '</aside>';
+  }
+
+  function render(list) {
+    document.getElementById('dateline-vol').textContent = 'Volume ' + (EDITION_DATE.slice(0, 4));
+    document.getElementById('dateline-date').textContent = fmtMonthDay(EDITION_DATE);
+
+    var leadEl = document.getElementById('lead');
+    var grid = document.getElementById('dispatch-grid');
+
+    if (!list.length) {
+      leadEl.style.display = 'none';
+      grid.innerHTML = '<p class="empty-state">No dispatches just yet. <em>Prim is watching.</em></p>';
+      return;
+    }
+
+    leadEl.innerHTML = leadHTML(list[0]);
+
+    var rest = list.slice(1);
+    var html = rest.map(cardHTML).join('');
+    // Keep the grid even: an odd number of cards leaves a blank, so fill it
+    // with a house ad. The ad lands in the right-hand (even) cell.
+    if (rest.length % 2 === 1) html += adHTML('right');
+    grid.innerHTML = html;
+  }
+
+  function fromLiveFeed() {
+    fetch(API, { headers: { Accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(function (items) {
+        var mapped = (items || []).map(function (it) {
+          return {
+            category: it.category || 'Hot News',
+            title: it.title,
+            dek: it.dek || it.summary || '',
+            body: Array.isArray(it.body) ? it.body : (it.summary ? [it.summary] : []),
+            source_url: it.source_url,
+            source_name: it.source_name || '',
+            date: (it.published_at || it.created_at || '').slice(0, 10)
+          };
+        });
+        // If the live feed is reachable but empty, fall back to the baked
+        // edition so the page is never blank.
+        render(mapped.length ? mapped : ARTICLES);
+      })
+      .catch(function () {
+        // Feed unreachable: serve the baked edition rather than an error.
+        render(ARTICLES);
+      });
+  }
+
+  if (USE_SAMPLE) {
+    render(ARTICLES);
+  } else {
+    fromLiveFeed();
+  }
+})();
+</script>
+</body>
+</html>
