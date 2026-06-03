@@ -435,8 +435,8 @@
   }
 
   function render(list) {
-    document.getElementById('dateline-vol').textContent = 'Volume ' + (EDITION_DATE.slice(0, 4));
-    document.getElementById('dateline-date').textContent = fmtMonthDay(EDITION_DATE);
+    document.getElementById('dateline-vol').textContent = 'Volume ' + (LATEST.slice(0, 4));
+    document.getElementById('dateline-date').textContent = fmtMonthDay(LATEST);
 
     var leadEl = document.getElementById('lead');
     var grid = document.getElementById('dispatch-grid');
@@ -458,7 +458,7 @@
   }
 
   // ===== Archive calendar =====
-  var allArticles = [];
+  var allArticles = [], LATEST = EDITION_DATE;
   var calY, calM, selectedDay = null;
   var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -477,9 +477,11 @@
     allArticles = list || [];
     selectedDay = null;
     document.getElementById('day-banner').style.display = 'none';
-    render(allArticles);
-    var seed = (allArticles[0] && (allArticles[0].editionDate || allArticles[0].date)) || EDITION_DATE;
-    var p = seed.split('-');
+    var byd = indexByDate(allArticles);
+    var dayKeys = Object.keys(byd).sort();
+    LATEST = dayKeys.length ? dayKeys[dayKeys.length - 1] : EDITION_DATE;
+    showLatest();
+    var p = LATEST.split('-');
     calY = parseInt(p[0], 10); calM = parseInt(p[1], 10) - 1;
     drawCalendar();
     renderFavorites();
@@ -524,9 +526,13 @@
     var y = banner.getBoundingClientRect().top + window.scrollY - 84;
     window.scrollTo({ top: y < 0 ? 0 : y, behavior: 'smooth' });
   }
+  function showLatest() {
+    var byd = indexByDate(allArticles);
+    render(byd[LATEST] || allArticles.slice(0, 12));
+  }
   function backToLatest() {
     selectedDay = null;
-    render(allArticles);
+    showLatest();
     document.getElementById('day-banner').style.display = 'none';
     drawCalendar();
     window.scrollTo({ top: 0, behavior: 'smooth' });
