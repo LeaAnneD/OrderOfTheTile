@@ -126,6 +126,12 @@
   .event-day { font-size: 28px; }
 }
 
+.advertise-section { background: var(--ivory); padding: 80px 56px; border-top: 0.5px solid var(--lilac); }
+.advertise-box { max-width: 680px; margin: 0 auto; text-align: center; }
+.advertise-box .section-label { display: block; color: var(--orchid); margin-bottom: 14px; }
+.advertise-box h2 { font-family: var(--serif); font-size: clamp(28px, 3.4vw, 38px); font-weight: 500; color: var(--ink); margin-bottom: 16px; }
+.advertise-intro { font-family: var(--body); font-size: 18px; color: var(--dusk); line-height: 1.7; margin-bottom: 30px; }
+@media (max-width: 640px) { .advertise-section { padding: 56px 18px; } }
 </style>
 <script defer src="https://cdn.jsdelivr.net/ghost/portal@latest/umd/portal.min.js" data-ghost="https://newsletter.orderofthetile.com"></script>
 </head>
@@ -142,8 +148,8 @@
 <div class="section-nav">
   <div class="section-nav-inner">
     <a href="#voices" class="section-nav-link active">Voices Worth Knowing</a>
-    <a href="#events" class="section-nav-link">Set Your Rack</a>
     <a href="#envy" class="section-nav-link">Tile Envy</a>
+    <a href="#advertise" class="section-nav-link">Advertise With Us</a>
   </div>
 </div>
 
@@ -299,77 +305,6 @@
   </div>
 </div>
 
-<div class="events-section" id="events">
-  <div class="events-inner">
-    <p class="section-label">Set Your Rack</p>
-    <h2>Where to be this season.</h2>
-    <p class="events-intro">Tournaments, retreats, and gatherings worth marking on your calendar. Status updated weekly in The Letters.</p>
-    <div class="events-list">
-
-      <div class="event-row">
-        <div class="event-date-block">
-          <div class="event-month">Apr</div>
-          <div class="event-day">17</div>
-        </div>
-        <div>
-          <div class="event-name">Greenbrier Resort Mahjong Tournament</div>
-          <div class="event-detail">White Sulphur Springs, WV &mdash; greenbrier.com</div>
-        </div>
-        <span class="event-status open">Open</span>
-      </div>
-
-      <div class="event-row">
-        <div class="event-date-block">
-          <div class="event-month">Apr</div>
-          <div class="event-day">23</div>
-        </div>
-        <div>
-          <div class="event-name">Destination Mah Jongg Cashiers Retreat</div>
-          <div class="event-detail">Cashiers, NC &mdash; destinationmahjongg.com</div>
-        </div>
-        <span class="event-status open">Open</span>
-      </div>
-
-      <div class="event-row">
-        <div class="event-date-block">
-          <div class="event-month">May</div>
-          <div class="event-day">15</div>
-        </div>
-        <div>
-          <div class="event-name">Destination Mah Jongg Mediterranean Cruise</div>
-          <div class="event-detail">Celebrity Ascent &mdash; destinationmahjongg.com</div>
-        </div>
-        <span class="event-status open">Open</span>
-      </div>
-
-      <div class="event-row">
-        <div class="event-date-block">
-          <div class="event-month">May</div>
-          <div class="event-day">17</div>
-        </div>
-        <div>
-          <div class="event-name">Mah Jongg Fever Las Vegas</div>
-          <div class="event-detail">Planet Hollywood, Las Vegas &mdash; mahjonggfever.com</div>
-        </div>
-        <span class="event-status open">Open</span>
-      </div>
-
-      <div class="event-row">
-        <div class="event-date-block">
-          <div class="event-month">Oct</div>
-          <div class="event-day">TBA</div>
-        </div>
-        <div>
-          <div class="event-name">Mah Jongg World Championship</div>
-          <div class="event-detail">Paris Las Vegas &mdash; mahjonggfever.com</div>
-        </div>
-        <span class="event-status open">Open</span>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 <div class="envy-section" id="envy">
   <p class="section-label">Tile Envy</p>
   <h2>Beauty worth coveting.</h2>
@@ -413,6 +348,15 @@
   </div>
 </div>
 
+<div class="advertise-section" id="advertise">
+  <div class="advertise-box">
+    <p class="section-label">Partner with Prim</p>
+    <h2>Advertise with us.</h2>
+    <p class="advertise-intro">Teachers, makers, and brands who love this game: The Order of the Tile reaches players across the country, in the letters, on the podcast, and here at the table. If you would like them to know you, Prim would be glad to make the introduction.</p>
+    <a href="mailto:Prim@orderofthetile.com?subject=Advertising%20with%20The%20Order%20of%20the%20Tile" class="btn-primary">Get in touch</a>
+  </div>
+</div>
+
 <footer></footer>
 <script src="shared.js"></script>
 <script>
@@ -451,7 +395,7 @@
 })();
 
 const navLinks = document.querySelectorAll('.section-nav-link');
-const sections = ['voices','events','envy'].map(id => document.getElementById(id));
+const sections = ['voices','envy','advertise'].map(id => document.getElementById(id));
 window.addEventListener('scroll', () => {
   let current = 'voices';
   sections.forEach(section => {
