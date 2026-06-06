@@ -198,6 +198,10 @@
   //  every figure, never invent numbers, never claim Prim/OOTT
   //  purchased, endorses, or recommends buying anything.
   //  Display rules:
+  //   - Masthead edition date: the dateline always reads as TODAY so the
+  //     page looks current even on a quiet day with no new story (newspaper
+  //     model). Each story keeps its own date in the card meta; the calendar
+  //     and rolloff below stay keyed on real published_at.
   //   - 7-day rolloff (ROLLOFF_DAYS): the page shows only dispatches
   //     published within the last 7 days. Older items stay in the API
   //     archive but roll off the public page.
@@ -443,8 +447,16 @@
   }
 
   function render(list) {
-    document.getElementById('dateline-vol').textContent = 'Volume ' + (LATEST.slice(0, 4));
-    document.getElementById('dateline-date').textContent = fmtMonthDay(LATEST);
+    // Masthead is the EDITION date: it always reads as today so the page looks
+    // current even on a quiet day with no new story, exactly like a newspaper
+    // masthead. Each story keeps its own dateline in the card meta below, and
+    // the archive calendar + 7-day rolloff stay keyed on real published_at.
+    // Guard: never show a masthead date older than the newest published story.
+    var now = new Date();
+    var todayISO = now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate());
+    var editionISO = (LATEST && LATEST > todayISO) ? LATEST : todayISO;
+    document.getElementById('dateline-vol').textContent = 'Volume ' + editionISO.slice(0, 4);
+    document.getElementById('dateline-date').textContent = fmtMonthDay(editionISO);
 
     var leadEl = document.getElementById('lead');
     var grid = document.getElementById('dispatch-grid');
