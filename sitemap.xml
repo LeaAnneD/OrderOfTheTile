@@ -42,7 +42,13 @@
        separately in Search Console. The old www/the-letters.html is defunct:
        it now redirects there and is intentionally NOT listed here. -->
 
-  <!-- Where to Buy: boutique vendor directory -->
+  <!-- Find Mah Jongg: source-verified directory (shops, play, teachers by state) -->
+  <url>
+    <loc>https://www.orderofthetile.com/find-mahjong.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <!-- Where to Buy: curated boutique vendor directory -->
   <url>
     <loc>https://www.orderofthetile.com/where-to-buy.html</loc>
     <changefreq>monthly</changefreq>
