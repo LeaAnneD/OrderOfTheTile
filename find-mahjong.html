@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Find Mah Jongg Near You — Shops, Games &amp; Teachers by State | The Order of the Tile</title>
-<meta name="description" content="A source-verified directory of American Mah Jongg shops, places to play, and teachers in every U.S. state. Click your state to find supplies, games, groups, and lessons near you.">
+<meta name="description" content="A source-verified directory of American Mah Jongg shops, places to play, and teachers in every U.S. state plus online. Click your state to find supplies, games, groups, and lessons near you.">
 <meta name="author" content="The Order of the Tile">
 <link rel="canonical" href="https://www.orderofthetile.com/find-mahjong.html">
 <link rel="icon" type="image/png" href="/images/seal.png">
@@ -12,48 +12,59 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Order of the Tile">
 <meta property="og:title" content="Find Mah Jongg Near You — Shops, Games &amp; Teachers by State">
-<meta property="og:description" content="A source-verified directory of American Mah Jongg shops, places to play, and teachers in every U.S. state.">
+<meta property="og:description" content="A source-verified directory of American Mah Jongg shops, places to play, and teachers in every U.S. state plus online.">
 <meta property="og:url" content="https://www.orderofthetile.com/find-mahjong.html">
 <meta property="og:image" content="https://www.orderofthetile.com/images/seal.png">
 <meta property="og:image:alt" content="The Order of the Tile wax seal">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Find Mah Jongg Near You — by State">
-<meta name="twitter:description" content="Source-verified American Mah Jongg shops, games, and teachers in every U.S. state.">
+<meta name="twitter:description" content="Source-verified American Mah Jongg shops, games, and teachers in every U.S. state plus online.">
 <meta name="twitter:image" content="https://www.orderofthetile.com/images/seal.png">
 
 <link rel="stylesheet" href="/shared.css">
 <style>
-.page-hero { padding: 132px 56px 36px; max-width: 1100px; margin: 0 auto; text-align: center; }
+.page-hero { padding: 132px 56px 24px; max-width: 1100px; margin: 0 auto; text-align: center; }
 .page-hero-eyebrow { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk); margin-bottom: 18px; }
 .page-hero-headline { font-family: var(--serif); font-size: clamp(34px, 5vw, 56px); font-weight: 500; line-height: 1.1; color: var(--ink); margin-bottom: 18px; }
 .page-hero-headline em { font-style: italic; color: var(--orchid); }
 .page-hero-sub { font-family: var(--body); font-size: 18px; color: var(--dusk); line-height: 1.7; max-width: 600px; margin: 0 auto; }
 
-.controls { max-width: 800px; margin: 8px auto 0; padding: 0 24px; text-align: center; }
-.filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 18px auto 6px; }
+/* ===== TAB SWITCHER ===== */
+.tabs { display: flex; justify-content: center; gap: 0; margin: 26px auto 0; max-width: 520px; padding: 0 24px; }
+.tab { flex: 1; font-family: var(--serif-sc); font-size: 15px; color: var(--dusk); background: var(--cloud); border: 0.5px solid var(--lilac); padding: 13px 16px; cursor: pointer; transition: all 0.15s; }
+.tab:first-child { border-radius: 8px 0 0 8px; }
+.tab:last-child { border-radius: 0 8px 8px 0; border-left: 0; }
+.tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ===== FILTER CHIPS ===== */
+.controls { max-width: 800px; margin: 0 auto; padding: 0 24px; text-align: center; }
+.filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 22px auto 6px; }
 .chip { font-family: var(--serif-sc); font-size: 14px; color: var(--dusk); background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 22px; padding: 8px 18px; cursor: pointer; transition: all 0.15s; }
 .chip:hover { border-color: var(--orchid); color: var(--ink); }
 .chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 .count-line { font-family: var(--body); font-size: 14px; font-style: italic; color: var(--dusk); margin-top: 6px; }
+.crosslink { margin-top: 10px; }
+.crosslink a { font-family: var(--body); font-size: 14px; color: var(--orchid); text-decoration: none; border-bottom: 0.5px solid var(--orchid); padding-bottom: 1px; }
 
+/* ===== TILE MAP ===== */
 .map-wrap { max-width: 720px; margin: 26px auto 0; padding: 0 24px; }
 .tile-map { display: grid; grid-template-columns: repeat(11, 1fr); grid-template-rows: repeat(9, auto); gap: 6px; }
 .state { display: flex; align-items: center; justify-content: center; font-family: var(--serif-sc); font-size: clamp(8px, 1.1vw, 12px); border-radius: 5px; aspect-ratio: 4 / 5; background: var(--ivory); color: var(--lilac); border: 0.5px solid var(--lilac); user-select: none; transition: background 0.15s, color 0.15s, transform 0.12s; }
 .state.live { cursor: pointer; font-weight: 700; color: var(--ink); }
-.tile-map.cat-all .state.live { background: var(--melon); border-color: var(--melon); box-shadow: 0 2px 0 #d98a5c; }
-.tile-map.cat-buy .state.live { background: var(--melon); border-color: var(--melon); box-shadow: 0 2px 0 #d98a5c; }
+.tile-map.cat-all .state.live, .tile-map.cat-buy .state.live { background: var(--melon); border-color: var(--melon); box-shadow: 0 2px 0 #d98a5c; }
 .tile-map.cat-play .state.live { background: var(--orchid); border-color: var(--orchid); color: #fff; box-shadow: 0 2px 0 #6f4f73; }
 .tile-map.cat-learn .state.live { background: var(--butter); border-color: var(--butter); box-shadow: 0 2px 0 #c9b54e; }
 .state.live:hover { transform: translateY(-1px); }
-.state.live.selected { background: var(--ink) !important; color: #fff !important; border-color: var(--ink) !important; box-shadow: 0 2px 0 #000 !important; }
-.state-count { font-size: 0.7em; opacity: 0.7; margin-left: 2px; }
-
-.map-foot { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px; margin-top: 18px; }
-.nat-btn { font-family: var(--serif-sc); font-size: 13px; color: var(--ink); background: var(--ivory); border: 0.5px solid var(--lilac); border-radius: 22px; padding: 8px 18px; cursor: pointer; transition: all 0.15s; }
-.nat-btn:hover { border-color: var(--orchid); }
+.state.live.selected { outline: 3px solid var(--ink); outline-offset: 1px; transform: scale(1.09); position: relative; z-index: 2; }
+.state-count { font-size: 0.7em; opacity: 0.72; margin-left: 2px; }
+.map-foot { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 18px; }
 .legend-note { font-family: var(--body); font-size: 13px; color: var(--dusk); font-style: italic; }
 
+/* ===== PANEL / ENTRIES ===== */
 .panel { max-width: 820px; margin: 30px auto 0; padding: 0 24px; }
 .panel-inner { background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 12px; padding: 30px; }
 .panel-empty { text-align: center; color: var(--dusk); font-style: italic; font-family: var(--body); padding: 18px; }
@@ -61,17 +72,29 @@
 .panel-sub { font-family: var(--body); font-size: 14px; color: var(--dusk); font-style: italic; margin-bottom: 20px; }
 .cat-group { margin-bottom: 26px; }
 .cat-group:last-child { margin-bottom: 0; }
-.cat-head { font-family: var(--serif-sc); font-size: 15px; letter-spacing: 0.04em; color: var(--ink); margin-bottom: 12px; padding-bottom: 6px; border-bottom: 0.5px solid var(--lilac); display: flex; align-items: center; gap: 8px; }
+.cat-head { font-family: var(--serif-sc); font-size: 15px; letter-spacing: 0.04em; color: var(--ink); margin-bottom: 12px; padding-bottom: 6px; border-bottom: 0.5px solid var(--lilac); }
 .entry { padding: 14px 0; border-bottom: 0.5px dashed var(--lilac); }
 .entry:last-child { border-bottom: 0; }
 .entry-name { font-family: var(--serif); font-size: 18px; color: var(--ink); margin-bottom: 2px; }
 .entry-city { font-family: var(--body); font-size: 13px; font-style: italic; color: var(--melon); margin-bottom: 6px; }
 .entry-blurb { font-family: var(--body); font-size: 15px; color: var(--dusk); line-height: 1.55; margin-bottom: 8px; }
-.entry-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.entry-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .entry-source { font-family: var(--serif-sc); font-size: 12px; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--orchid); padding-bottom: 1px; }
 .entry-source:hover { color: var(--orchid); }
 .entry-via { font-family: var(--body); font-size: 11px; color: var(--ink); background: var(--butter); border-radius: 14px; padding: 2px 9px; }
+.entry-badge { font-family: var(--body); font-size: 11px; color: #fff; background: var(--orchid); border-radius: 14px; padding: 2px 9px; }
 
+/* ===== FEATURED AD ===== */
+.ad { max-width: 820px; margin: 28px auto 0; padding: 0 24px; }
+.ad-card { background: var(--ink); border-radius: 14px; padding: 34px 36px; color: var(--cloud); text-align: center; position: relative; overflow: hidden; }
+.ad-eyebrow { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--butter); margin-bottom: 12px; }
+.ad-card h3 { font-family: var(--serif); font-size: clamp(24px, 3.4vw, 32px); font-weight: 500; line-height: 1.15; margin-bottom: 14px; }
+.ad-card h3 em { font-style: italic; color: var(--melon); }
+.ad-card p { font-family: var(--body); font-size: 17px; line-height: 1.6; color: rgba(248,246,242,0.82); max-width: 520px; margin: 0 auto 22px; }
+.ad-btn { font-family: var(--serif-sc); font-size: 15px; background: var(--melon); color: var(--ink); padding: 13px 30px; border-radius: 6px; text-decoration: none; display: inline-block; transition: opacity 0.2s; }
+.ad-btn:hover { opacity: 0.85; }
+
+/* ===== SUBMIT / FINE PRINT ===== */
 .submit-cta { max-width: 820px; margin: 36px auto 0; padding: 0 24px; }
 .submit-inner { background: var(--ivory); border-radius: 12px; padding: 34px; text-align: center; }
 .submit-inner h3 { font-family: var(--serif); font-size: 23px; font-weight: 500; color: var(--ink); margin-bottom: 12px; }
@@ -79,8 +102,8 @@
 .fine-print { max-width: 760px; margin: 30px auto 0; padding: 0 24px 10px; font-family: var(--body); font-size: 13px; color: var(--dusk); font-style: italic; text-align: center; line-height: 1.6; }
 
 @media (max-width: 600px) {
-  .page-hero { padding: 110px 20px 28px; }
-  .panel-inner, .submit-inner { padding: 22px; }
+  .page-hero { padding: 110px 20px 24px; }
+  .panel-inner, .submit-inner, .ad-card { padding: 22px; }
   .tile-map { gap: 4px; }
   .state { font-size: 8px; }
 }
@@ -93,34 +116,67 @@
 <div class="page-hero">
   <p class="page-hero-eyebrow">The Directory</p>
   <h1 class="page-hero-headline">Find Mah Jongg <em>near you.</em></h1>
-  <p class="page-hero-sub">Shops for supplies, tables to play at, and teachers to learn from — gathered state by state, and every single listing backed by a source you can check yourself.</p>
+  <p class="page-hero-sub">Shops for supplies, tables to play at, and teachers to learn from — every listing backed by a source you can check yourself.</p>
 </div>
 
-<div class="controls">
-  <div class="filters" id="filters">
-    <button class="chip active" data-cat="all">Everything</button>
-    <button class="chip" data-cat="buy">🛍️ Shops</button>
-    <button class="chip" data-cat="play">🀄 Places to Play</button>
-    <button class="chip" data-cat="learn">🎓 Teachers</button>
+<div class="tabs">
+  <button class="tab active" id="tabState">📍 By State</button>
+  <button class="tab" id="tabOnline">🌐 Online &amp; National</button>
+</div>
+
+<!-- ============ BY STATE ============ -->
+<div class="view active" id="viewState">
+  <div class="controls">
+    <div class="filters" id="filtersState">
+      <button class="chip active" data-cat="all">Everything</button>
+      <button class="chip" data-cat="buy">🛍️ Shops</button>
+      <button class="chip" data-cat="play">🀄 Places to Play</button>
+      <button class="chip" data-cat="learn">🎓 Teachers</button>
+    </div>
+    <div class="count-line" id="countLine">Loading the directory…</div>
   </div>
-  <div class="count-line" id="countLine">Loading the directory…</div>
-  <div style="margin-top:10px;"><a href="/where-to-buy.html" style="font-family:var(--body);font-size:14px;color:var(--orchid);text-decoration:none;border-bottom:0.5px solid var(--orchid);padding-bottom:1px;">Just want to shop online? See our curated boutique picks &rarr;</a></div>
-</div>
 
-<div class="map-wrap">
-  <div class="tile-map cat-all" id="tileMap"></div>
-  <div class="map-foot">
-    <button class="nat-btn" id="natBtn">🌐 National &amp; Online</button>
-    <span class="legend-note">Tap a lit state to see what's there.</span>
+  <div class="map-wrap">
+    <div class="tile-map cat-all" id="tileMap"></div>
+    <div class="map-foot">
+      <span class="legend-note">Tap a lit state to see what's there.</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-inner" id="panel"><p class="panel-empty">Loading…</p></div>
   </div>
 </div>
 
-<div class="panel">
-  <div class="panel-inner" id="panel">
-    <p class="panel-empty">Loading…</p>
+<!-- ============ ONLINE & NATIONAL ============ -->
+<div class="view" id="viewOnline">
+  <!-- FEATURED SLOT — edit this card to feature yourself / your offering. -->
+  <div class="ad">
+    <div class="ad-card">
+      <p class="ad-eyebrow">Featured</p>
+      <h3>Learn the game with Prim — <em>from anywhere.</em></h3>
+      <p>The Order of the Tile is for players in every state. Prim's weekly letters, the free glossary, the Card Decoder, and lessons built for wherever your table happens to be.</p>
+      <a class="ad-btn" href="https://newsletter.orderofthetile.com/#/portal/signup">Join the Table &rarr;</a>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="filters" id="filtersOnline">
+      <button class="chip active" data-cat="all">Everything</button>
+      <button class="chip" data-cat="buy">🛍️ Shops</button>
+      <button class="chip" data-cat="learn">🎓 Teachers</button>
+      <button class="chip" data-cat="play">🀄 Play</button>
+    </div>
+    <div class="count-line" id="onlineCount">Loading…</div>
+    <div class="crosslink"><a href="/where-to-buy.html">Browse our curated boutique picks &rarr;</a></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-inner" id="onlinePanel"><p class="panel-empty">Loading…</p></div>
   </div>
 </div>
 
+<!-- ============ SHARED FOOTERS ============ -->
 <div class="submit-cta">
   <div class="submit-inner">
     <h3>Know a table, shop, or teacher we missed?</h3>
@@ -135,7 +191,7 @@
 
 <script src="/shared.js"></script>
 <script>
-var STATE_NAMES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",US:"National & Online"};
+var STATE_NAMES = {AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"Washington, D.C.",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",US:"National & Online"};
 
 var GRID = {
   AK:[1,1], ME:[1,11],
@@ -143,114 +199,109 @@ var GRID = {
   WA:[3,1], ID:[3,2], MT:[3,3], ND:[3,4], MN:[3,5], WI:[3,6], MI:[3,8], NY:[3,9], MA:[3,10], RI:[3,11],
   OR:[4,1], NV:[4,2], WY:[4,3], SD:[4,4], IA:[4,5], IL:[4,6], IN:[4,7], OH:[4,8], PA:[4,9], NJ:[4,10], CT:[4,11],
   CA:[5,1], UT:[5,2], CO:[5,3], NE:[5,4], MO:[5,5], KY:[5,6], WV:[5,7], VA:[5,8], MD:[5,9], DE:[5,10],
-  AZ:[6,2], NM:[6,3], KS:[6,4], AR:[6,5], TN:[6,6], NC:[6,8],
+  AZ:[6,2], NM:[6,3], KS:[6,4], AR:[6,5], TN:[6,6], NC:[6,8], DC:[6,9],
   OK:[7,4], LA:[7,5], MS:[7,6], AL:[7,7], GA:[7,8], SC:[7,9],
   TX:[8,4], FL:[8,8],
   HI:[9,1]
 };
 
-var CATS = {
-  buy:  { label: "Shops & Supplies", icon: "🛍️" },
-  play: { label: "Places to Play",   icon: "🀄" },
-  learn:{ label: "Teachers",         icon: "🎓" }
-};
+var CATS = { buy:{label:"Shops & Supplies",icon:"🛍️"}, play:{label:"Places to Play",icon:"🀄"}, learn:{label:"Teachers",icon:"🎓"} };
 
-var DATA = { entries: [] }, BY_CODE = {}, activeCat = "all", selectedCode = null;
+var DATA={entries:[]}, BY_CODE={}, ONLINE=[], stateCat="all", onlineCat="all", selectedCode=null;
 
-fetch('/find-mahjong-data.json').then(function(r){ return r.json(); }).then(function(j){
-  DATA = j;
-  DATA.entries.forEach(function(e){ (BY_CODE[e.code] = BY_CODE[e.code] || []).push(e); });
-  buildMap();
-  updateCount();
-  document.getElementById('panel').innerHTML = '<p class="panel-empty">Tap a lit state above, or browse 🌐 National &amp; Online.</p>';
+fetch('/find-mahjong-data.json').then(function(r){return r.json();}).then(function(j){
+  DATA=j;
+  DATA.entries.forEach(function(e){ (BY_CODE[e.code]=BY_CODE[e.code]||[]).push(e); });
+  ONLINE = DATA.entries.filter(function(e){ return e.code==="US" || e.o===1; });
+  buildMap(); updateCount(); renderOnline();
+  document.getElementById('panel').innerHTML='<p class="panel-empty">Tap a lit state above to see its shops, games, and teachers.</p>';
 }).catch(function(){
-  document.getElementById('countLine').textContent = "Couldn't load the directory just now — please refresh.";
-  document.getElementById('panel').innerHTML = '<p class="panel-empty">Couldn’t load the directory. Please refresh.</p>';
-});
-
-function catCount(code, cat){
-  var list = BY_CODE[code] || [];
-  return cat === "all" ? list.length : list.filter(function(e){ return e.c === cat; }).length;
-}
-function totalCount(cat){
-  return DATA.entries.filter(function(e){ return e.code !== "US" && (cat==="all" || e.c===cat); }).length;
-}
-
-function buildMap(){
-  var map = document.getElementById('tileMap');
-  map.innerHTML = Object.keys(GRID).map(function(code){
-    var pos = GRID[code];
-    var n = catCount(code, activeCat);
-    var live = n > 0;
-    return '<div class="state' + (live ? ' live' : '') + '"'
-      + ' style="grid-row:' + pos[0] + ';grid-column:' + pos[1] + ';"'
-      + (live ? ' data-code="' + code + '" role="button" tabindex="0" title="' + STATE_NAMES[code] + ' — ' + n + '"' : '')
-      + '>' + code + (live ? '<span class="state-count">' + n + '</span>' : '') + '</div>';
-  }).join('');
-}
-
-function setCat(cat){
-  activeCat = cat;
-  document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('active', c.getAttribute('data-cat') === cat); });
-  var map = document.getElementById('tileMap');
-  map.className = 'tile-map cat-' + cat;
-  buildMap();
-  if (selectedCode) renderPanel(selectedCode);
-  updateCount();
-}
-function updateCount(){
-  var t = totalCount(activeCat);
-  var label = activeCat === "all" ? "listings" : CATS[activeCat].label.toLowerCase();
-  document.getElementById('countLine').textContent = t + " verified " + label + " across the states, plus national & online.";
-}
-
-document.getElementById('filters').addEventListener('click', function(e){
-  if (e.target.classList.contains('chip')) setCat(e.target.getAttribute('data-cat'));
-});
-document.getElementById('natBtn').addEventListener('click', function(){ renderPanel('US'); });
-
-document.getElementById('tileMap').addEventListener('click', function(e){
-  var t = e.target.closest('.state.live'); if (t) renderPanel(t.getAttribute('data-code'));
-});
-document.getElementById('tileMap').addEventListener('keydown', function(e){
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('live')){ e.preventDefault(); renderPanel(e.target.getAttribute('data-code')); }
+  document.getElementById('countLine').textContent="Couldn't load the directory — please refresh.";
+  document.getElementById('panel').innerHTML='<p class="panel-empty">Couldn’t load. Please refresh.</p>';
 });
 
 function esc(s){ return (s||"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function catCount(code,cat){ var l=BY_CODE[code]||[]; return cat==="all"?l.length:l.filter(function(e){return e.c===cat;}).length; }
+function totalCount(cat){ return DATA.entries.filter(function(e){return e.code!=="US" && (cat==="all"||e.c===cat);}).length; }
+
+/* ---- tabs ---- */
+document.getElementById('tabState').addEventListener('click', function(){ switchTab('state'); });
+document.getElementById('tabOnline').addEventListener('click', function(){ switchTab('online'); });
+function switchTab(which){
+  var s=which==="state";
+  document.getElementById('tabState').classList.toggle('active', s);
+  document.getElementById('tabOnline').classList.toggle('active', !s);
+  document.getElementById('viewState').classList.toggle('active', s);
+  document.getElementById('viewOnline').classList.toggle('active', !s);
+}
+
+/* ---- map ---- */
+function buildMap(){
+  var map=document.getElementById('tileMap');
+  map.innerHTML=Object.keys(GRID).map(function(code){
+    var pos=GRID[code], n=catCount(code,stateCat), live=n>0;
+    return '<div class="state'+(live?' live':'')+'" style="grid-row:'+pos[0]+';grid-column:'+pos[1]+';"'
+      +(live?' data-code="'+code+'" role="button" tabindex="0" title="'+STATE_NAMES[code]+' — '+n+'"':'')
+      +'>'+code+(live?'<span class="state-count">'+n+'</span>':'')+'</div>';
+  }).join('');
+}
+document.getElementById('filtersState').addEventListener('click', function(e){
+  if(!e.target.classList.contains('chip')) return;
+  stateCat=e.target.getAttribute('data-cat');
+  document.querySelectorAll('#filtersState .chip').forEach(function(c){ c.classList.toggle('active', c.getAttribute('data-cat')===stateCat); });
+  document.getElementById('tileMap').className='tile-map cat-'+stateCat;
+  buildMap(); if(selectedCode) renderPanel(selectedCode); updateCount();
+});
+function updateCount(){
+  var t=totalCount(stateCat), label=stateCat==="all"?"listings":CATS[stateCat].label.toLowerCase();
+  document.getElementById('countLine').textContent=t+" verified "+label+" across the states, plus online & national.";
+}
+document.getElementById('tileMap').addEventListener('click', function(e){ var t=e.target.closest('.state.live'); if(t) renderPanel(t.getAttribute('data-code')); });
+document.getElementById('tileMap').addEventListener('keydown', function(e){ if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('live')){ e.preventDefault(); renderPanel(e.target.getAttribute('data-code')); } });
+
+function entryRow(e, showBadge){
+  var via=e.ts?'<span class="entry-via">via '+esc(e.ts)+'</span>':'';
+  var badge=showBadge?'<span class="entry-badge">'+(e.code==="US"?"National":esc(STATE_NAMES[e.code]||e.code))+'</span>':'';
+  var city=e.city?'<div class="entry-city">'+esc(e.city)+'</div>':'';
+  var blurb=e.b?'<div class="entry-blurb">'+esc(e.b)+'</div>':'';
+  var src=e.s?esc(e.s):'source';
+  return '<div class="entry"><div class="entry-name">'+esc(e.n)+'</div>'+city+blurb
+    +'<div class="entry-foot"><a class="entry-source" href="'+esc(e.u)+'" target="_blank" rel="noopener">Source: '+src+' ↗</a>'+badge+via+'</div></div>';
+}
+function groupHtml(list, showBadge){
+  return ["buy","play","learn"].map(function(cat){
+    var items=list.filter(function(e){return e.c===cat;});
+    if(!items.length) return "";
+    return '<div class="cat-group"><div class="cat-head">'+CATS[cat].icon+' '+CATS[cat].label+' <span style="color:var(--dusk);font-weight:400;">('+items.length+')</span></div>'
+      +items.map(function(e){return entryRow(e, showBadge);}).join('')+'</div>';
+  }).join('');
+}
 
 function renderPanel(code){
-  selectedCode = code;
+  selectedCode=code;
   document.querySelectorAll('.state.selected').forEach(function(s){ s.classList.remove('selected'); });
-  var tile = document.querySelector('.state[data-code="' + code + '"]'); if (tile) tile.classList.add('selected');
+  var tile=document.querySelector('.state[data-code="'+code+'"]'); if(tile) tile.classList.add('selected');
+  var list=(BY_CODE[code]||[]).filter(function(e){return stateCat==="all"||e.c===stateCat;});
+  var panel=document.getElementById('panel');
+  if(!list.length){ panel.innerHTML='<div class="panel-title">'+STATE_NAMES[code]+'</div><p class="panel-empty">No '+(stateCat==="all"?"listings":CATS[stateCat].label.toLowerCase())+' sourced here yet. Know one? Tell Prim below.</p>'; return; }
+  panel.innerHTML='<div class="panel-title">'+STATE_NAMES[code]+'</div>'
+    +'<div class="panel-sub">'+list.length+' verified '+(list.length===1?'listing':'listings')+' &middot; follow any Source link to see the proof</div>'
+    +groupHtml(list, false);
+  panel.scrollIntoView({block:'nearest'});
+}
 
-  var list = (BY_CODE[code] || []).filter(function(e){ return activeCat === "all" || e.c === activeCat; });
-  var panel = document.getElementById('panel');
-  if (!list.length){
-    panel.innerHTML = '<div class="panel-title">' + STATE_NAMES[code] + '</div>'
-      + '<p class="panel-empty">No ' + (activeCat==="all"?"listings":CATS[activeCat].label.toLowerCase()) + ' sourced here yet. Know one? Tell Prim below.</p>';
-    return;
-  }
-  var order = ["buy","play","learn"];
-  var groups = order.map(function(cat){
-    var items = list.filter(function(e){ return e.c === cat; });
-    if (!items.length) return "";
-    var rows = items.map(function(e){
-      var via = e.ts ? '<span class="entry-via">via ' + esc(e.ts) + '</span>' : '';
-      var city = e.city ? '<div class="entry-city">' + esc(e.city) + '</div>' : '';
-      var blurb = e.b ? '<div class="entry-blurb">' + esc(e.b) + '</div>' : '';
-      var src = e.s ? esc(e.s) : 'source';
-      return '<div class="entry">'
-        + '<div class="entry-name">' + esc(e.n) + '</div>'
-        + city + blurb
-        + '<div class="entry-foot"><a class="entry-source" href="' + esc(e.u) + '" target="_blank" rel="noopener">Source: ' + src + ' ↗</a>' + via + '</div>'
-        + '</div>';
-    }).join('');
-    return '<div class="cat-group"><div class="cat-head">' + CATS[cat].icon + ' ' + CATS[cat].label + ' <span style="color:var(--dusk);font-weight:400;">(' + items.length + ')</span></div>' + rows + '</div>';
-  }).join('');
-  panel.innerHTML = '<div class="panel-title">' + STATE_NAMES[code] + '</div>'
-    + '<div class="panel-sub">' + list.length + ' verified ' + (list.length===1?'listing':'listings') + ' &middot; follow any Source link to see the proof</div>'
-    + groups;
-  panel.scrollIntoView({ block: 'nearest' });
+/* ---- online tab ---- */
+document.getElementById('filtersOnline').addEventListener('click', function(e){
+  if(!e.target.classList.contains('chip')) return;
+  onlineCat=e.target.getAttribute('data-cat');
+  document.querySelectorAll('#filtersOnline .chip').forEach(function(c){ c.classList.toggle('active', c.getAttribute('data-cat')===onlineCat); });
+  renderOnline();
+});
+function renderOnline(){
+  var list=ONLINE.filter(function(e){ return onlineCat==="all"||e.c===onlineCat; });
+  document.getElementById('onlineCount').textContent=ONLINE.length+" online & national listings (national shops, online teachers, and locals who also serve online).";
+  var panel=document.getElementById('onlinePanel');
+  panel.innerHTML = list.length ? groupHtml(list, true) : '<p class="panel-empty">Nothing in this category yet.</p>';
 }
 </script>
 </body>
