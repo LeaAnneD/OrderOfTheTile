@@ -24,6 +24,7 @@
     +     '<svg class="nav-menu-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg>'
     +   '</button>'
     +   '<ul class="nav-links" id="primary-nav-list">'
+    +     '<li><a href="https://www.orderofthetile.com/ask.html"' + activeClass('ask.html') + '>🪄 Ask Prim</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/"' + activeClass('index.html') + '>📖 The Story</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/alls-fair-in-love-and-mahjong.html"' + activeClass('alls-fair-in-love-and-mahjong.html') + '>🎬 The Movie</a></li>'
     +     '<li><a href="https://newsletter.orderofthetile.com/"' + activeClass('the-letters.html') + '>✉️ The Letters</a></li>'
@@ -129,4 +130,108 @@
       if (window.innerWidth > 1280) setOpen(false);
     });
   }
+
+  // ===== ASK PRIM WIDGET =====
+  // Site-wide: a slim "Ask Prim" bar under the nav that opens a pop-up box.
+  // On ask.html (or any page with <div id="ask-home">) it renders the box
+  // inline instead and skips the bar. All of it calls POST /api/ask.
+  (function () {
+    var API = 'https://ask.orderofthetile.com/api/ask';
+    var PLACEHOLDER = 'Ask Prim anything about American Mahjong…';
+
+    function renderAsk(container) {
+      container.innerHTML =
+        '<form class="ask-form">'
+        + '<textarea class="ask-q" rows="2" maxlength="1000" placeholder="' + PLACEHOLDER + '" required></textarea>'
+        + '<button type="submit" class="ask-btn">Ask Prim</button>'
+        + '</form>'
+        + '<div class="ask-answer" aria-live="polite"><p class="ask-answer-text"></p>'
+        + '<div class="ask-sources" style="display:none"></div></div>';
+
+      var form = container.querySelector('.ask-form');
+      var q = container.querySelector('.ask-q');
+      var btn = container.querySelector('.ask-btn');
+      var ans = container.querySelector('.ask-answer');
+      var ansText = container.querySelector('.ask-answer-text');
+      var srcs = container.querySelector('.ask-sources');
+
+      function show(text, sources) {
+        ansText.textContent = text;
+        if (sources && sources.length) {
+          srcs.style.display = 'block';
+          srcs.innerHTML = 'Sources: ' + sources.map(function (s) {
+            return s.url ? '<a href="' + s.url + '">' + s.name + '</a>' : s.name;
+          }).join(' · ');
+        } else { srcs.style.display = 'none'; srcs.innerHTML = ''; }
+        ans.classList.add('show');
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var question = q.value.trim();
+        if (question.length < 3) return;
+        btn.disabled = true; btn.textContent = 'Thinking…';
+        show('', null); ansText.textContent = '';
+        fetch(API, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: question })
+        })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+          .then(function (res) {
+            if (!res.ok) { show('Sorry — something went sideways. Try again in a moment.', null); return; }
+            show(res.j.answer || "I don't have that one yet.", res.j.sources);
+          })
+          .catch(function () { show("Sorry — I couldn't reach the table just now. Try again in a moment.", null); })
+          .finally(function () { btn.disabled = false; btn.textContent = 'Ask Prim'; });
+      });
+      return q;
+    }
+
+    var home = document.getElementById('ask-home');
+    if (path === 'ask.html' || home) {
+      if (home) renderAsk(home);
+      return; // dedicated page handles it inline; no bar/modal
+    }
+
+    // Slim bar
+    var bar = document.createElement('div');
+    bar.className = 'ask-bar';
+    bar.setAttribute('role', 'button');
+    bar.setAttribute('tabindex', '0');
+    bar.setAttribute('aria-label', 'Ask Prim a question');
+    bar.innerHTML =
+      '<span class="ask-bar-icon" aria-hidden="true">🪄</span>'
+      + '<span class="ask-bar-text">Ask Prim anything about American Mahjong</span>';
+    document.body.appendChild(bar);
+
+    // Pop-up
+    var modal = document.createElement('div');
+    modal.className = 'ask-modal';
+    modal.innerHTML =
+      '<div class="ask-modal-card">'
+      + '<button class="ask-modal-close" type="button" aria-label="Close">&times;</button>'
+      + '<h2 class="ask-modal-title">Ask Prim <em>anything</em></h2>'
+      + '<div class="ask-modal-body"></div></div>';
+    document.body.appendChild(modal);
+    var qEl = renderAsk(modal.querySelector('.ask-modal-body'));
+
+    function openModal() {
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(function () { if (qEl) qEl.focus(); }, 30);
+    }
+    function closeModal() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    bar.addEventListener('click', openModal);
+    bar.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(); }
+    });
+    modal.querySelector('.ask-modal-close').addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+  })();
 })();

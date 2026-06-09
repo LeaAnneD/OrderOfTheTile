@@ -228,3 +228,84 @@ footer {
   .footer-brand { flex-direction: column; gap: 10px; }
   .social-links { justify-content: center; }
 }
+
+/* ===== ASK PRIM WIDGET ===== */
+/* Slim bar pinned just under the fixed 74px nav, on every page except ask.html. */
+.ask-bar {
+  position: fixed; top: 74px; left: 0; right: 0; z-index: 99;
+  height: 40px; display: flex; align-items: center; gap: 8px;
+  padding: 0 16px; cursor: pointer;
+  background: rgba(245,240,232,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 0.5px solid var(--lilac);
+  font-family: var(--body); color: var(--dusk);
+  transition: color 0.15s, background 0.15s;
+}
+.ask-bar:hover { color: var(--ink); background: rgba(245,240,232,0.98); }
+.ask-bar:focus-visible { outline: 1.5px solid var(--orchid); outline-offset: -2px; }
+.ask-bar-icon { font-size: 15px; }
+.ask-bar-text { font-size: 15px; letter-spacing: 0.01em; }
+.ask-bar-text::after { content: ' →'; color: var(--orchid); }
+
+/* Pop-up over the page (used everywhere except the dedicated ask page). */
+.ask-modal {
+  position: fixed; inset: 0; z-index: 200; display: none;
+  align-items: flex-start; justify-content: center;
+  padding: 88px 16px 24px;
+  background: rgba(26,20,18,0.45); overflow-y: auto;
+}
+.ask-modal.open { display: flex; }
+.ask-modal-card {
+  position: relative; width: 100%; max-width: 600px;
+  background: #fff; border-radius: 14px; padding: 30px 26px 26px;
+  box-shadow: 0 18px 50px rgba(26,20,18,0.28);
+}
+.ask-modal-close {
+  position: absolute; top: 12px; right: 14px;
+  background: none; border: none; font-size: 26px; line-height: 1;
+  color: var(--dusk); cursor: pointer; padding: 4px;
+}
+.ask-modal-close:hover { color: var(--ink); }
+.ask-modal-title {
+  font-family: var(--serif); font-weight: 500; font-size: 26px;
+  color: var(--ink); margin: 0 0 16px;
+}
+.ask-modal-title em { font-style: italic; color: var(--orchid); }
+
+/* Shared form bits (modal + the dedicated ask.html page reuse these). */
+.ask-form { display: flex; flex-direction: column; gap: 12px; }
+.ask-q {
+  font-family: var(--body); font-size: 17px; color: var(--ink); background: #fff;
+  border: 1px solid var(--lilac); border-radius: 10px; padding: 13px 14px;
+  resize: vertical; min-height: 60px; line-height: 1.45;
+}
+.ask-q:focus { outline: none; border-color: var(--orchid); }
+.ask-btn {
+  align-self: flex-start; font-family: var(--body); font-size: 16px; font-weight: 600;
+  letter-spacing: 0.01em; color: #fff; background: var(--orchid);
+  border: none; border-radius: 10px; padding: 11px 22px; cursor: pointer;
+  box-shadow: 0 3px 0 #6E4F73; transition: transform 0.06s, box-shadow 0.06s;
+}
+.ask-btn:hover { box-shadow: 0 4px 0 #6E4F73; }
+.ask-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #6E4F73; }
+.ask-btn:disabled { opacity: 0.55; cursor: default; box-shadow: 0 3px 0 #6E4F73; transform: none; }
+.ask-answer { margin-top: 18px; display: none; }
+.ask-answer.show { display: block; }
+.ask-answer-text {
+  font-family: var(--body); font-size: 17px; line-height: 1.65; color: #3D3530;
+  margin: 0 0 12px; white-space: pre-wrap;
+}
+.ask-sources {
+  font-family: var(--body); font-size: 14px; color: var(--dusk);
+  border-top: 1px solid var(--lilac); padding-top: 12px;
+}
+.ask-sources a { color: var(--orchid); text-decoration: none; }
+.ask-sources a:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .ask-bar { height: 38px; padding: 0 14px; }
+  .ask-bar-text { font-size: 13.5px; }
+  .ask-modal { padding: 80px 12px 20px; }
+  .ask-modal-card { padding: 26px 18px 20px; }
+  .ask-btn { align-self: stretch; }
+}
