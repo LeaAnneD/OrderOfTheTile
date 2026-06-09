@@ -37,14 +37,10 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- The Letters: archive landing page. Individual issues live on the Ghost
-       newsletter subdomain (newsletter.orderofthetile.com) and are indexed via
-       its own auto-generated sitemap, submitted separately in Search Console. -->
-  <url>
-    <loc>https://www.orderofthetile.com/the-letters.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  <!-- The Letters live entirely on the Ghost newsletter
+       (newsletter.orderofthetile.com), indexed via its own sitemap submitted
+       separately in Search Console. The old www/the-letters.html is defunct:
+       it now redirects there and is intentionally NOT listed here. -->
 
   <!-- Where to Buy: boutique vendor directory -->
   <url>
