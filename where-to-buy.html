@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where to Buy American Mah Jongg — The Boutique Directory | The Order of the Tile</title>
+<meta name="description" content="A curated directory of boutique American Mah Jongg vendors — tiles, racks, mats, bags, and gifts. Shop the boutiques that ship nationwide, or find a shop near you on the tile map.">
+<meta name="author" content="The Order of the Tile">
+<link rel="canonical" href="https://www.orderofthetile.com/where-to-buy.html">
+<link rel="icon" type="image/png" href="/images/seal.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Order of the Tile">
+<meta property="og:title" content="Where to Buy American Mah Jongg — The Boutique Directory">
+<meta property="og:description" content="A curated directory of boutique American Mah Jongg vendors — tiles, racks, mats, bags, and gifts. Ships nationwide, or find a shop near you.">
+<meta property="og:url" content="https://www.orderofthetile.com/where-to-buy.html">
+<meta property="og:image" content="https://www.orderofthetile.com/images/seal.png">
+<meta property="og:image:alt" content="The Order of the Tile wax seal">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Where to Buy American Mah Jongg — The Boutique Directory">
+<meta name="twitter:description" content="A curated directory of boutique American Mah Jongg vendors. Ships nationwide, or find a shop near you.">
+<meta name="twitter:image" content="https://www.orderofthetile.com/images/seal.png">
+
+<link rel="stylesheet" href="/shared.css">
+<style>
+/* ===== PAGE HERO ===== */
+.page-hero { padding: 132px 56px 48px; max-width: 1100px; margin: 0 auto; text-align: center; }
+.page-hero-eyebrow { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk); margin-bottom: 18px; }
+.page-hero-headline { font-family: var(--serif); font-size: clamp(36px, 5vw, 58px); font-weight: 500; line-height: 1.1; color: var(--ink); margin-bottom: 20px; }
+.page-hero-headline em { font-style: italic; color: var(--orchid); }
+.page-hero-sub { font-family: var(--body); font-size: 18px; color: var(--dusk); line-height: 1.75; max-width: 620px; margin: 0 auto; }
+
+/* ===== SECTION SHELL ===== */
+.section { max-width: 1100px; margin: 0 auto; padding: 40px 56px 24px; }
+.section-head { text-align: center; margin-bottom: 8px; }
+.section-eyebrow { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--melon); margin-bottom: 12px; }
+.section-title { font-family: var(--serif); font-size: clamp(28px, 4vw, 40px); font-weight: 500; color: var(--ink); margin-bottom: 14px; }
+.section-title em { font-style: italic; color: var(--orchid); }
+.section-note { font-family: var(--body); font-size: 16px; color: var(--dusk); max-width: 560px; margin: 0 auto 12px; line-height: 1.7; }
+.section-divider { max-width: 1100px; margin: 8px auto 0; border: 0; border-top: 0.5px solid var(--lilac); }
+
+/* ===== FILTER CHIPS ===== */
+.filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 22px auto 30px; max-width: 760px; }
+.chip {
+  font-family: var(--serif-sc); font-size: 13px; letter-spacing: 0.02em;
+  color: var(--dusk); background: var(--cloud);
+  border: 0.5px solid var(--lilac); border-radius: 20px;
+  padding: 7px 16px; cursor: pointer; transition: all 0.15s;
+}
+.chip:hover { border-color: var(--orchid); color: var(--ink); }
+.chip.active { background: var(--orchid); color: #fff; border-color: var(--orchid); }
+
+/* ===== VENDOR GRID ===== */
+.vendor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 8px; }
+.vendor-card {
+  background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 8px;
+  padding: 24px; display: flex; flex-direction: column;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.vendor-card:hover { border-color: var(--orchid); box-shadow: 0 10px 28px rgba(26,20,18,0.07); transform: translateY(-2px); }
+.vendor-name { font-family: var(--serif); font-size: 21px; font-weight: 500; color: var(--ink); margin-bottom: 8px; line-height: 1.25; }
+.vendor-loc { font-family: var(--body); font-size: 13px; font-style: italic; color: var(--melon); margin-bottom: 10px; }
+.vendor-blurb { font-family: var(--body); font-size: 15px; color: var(--dusk); line-height: 1.6; margin-bottom: 16px; flex-grow: 1; }
+.vendor-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+.vendor-tag { font-family: var(--body); font-size: 11px; letter-spacing: 0.03em; color: var(--ink); background: var(--butter); border-radius: 16px; padding: 3px 10px; }
+.vendor-visit {
+  font-family: var(--serif-sc); font-size: 13px; color: var(--ink);
+  text-decoration: none; align-self: flex-start;
+  border-bottom: 1px solid var(--melon); padding-bottom: 2px; transition: color 0.15s;
+}
+.vendor-visit:hover { color: var(--orchid); border-color: var(--orchid); }
+.vendor-card.hidden { display: none; }
+
+/* ===== TILE MAP ===== */
+.map-wrap { max-width: 760px; margin: 18px auto 8px; }
+.tile-map {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(8, auto);
+  gap: 6px;
+  aspect-ratio: 11 / 8;
+}
+.state {
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif-sc); font-size: clamp(8px, 1.1vw, 12px);
+  border-radius: 5px; aspect-ratio: 1 / 1;
+  background: var(--ivory); color: var(--lilac);
+  border: 0.5px solid var(--lilac); user-select: none;
+}
+.state.has-stores {
+  background: var(--melon); color: var(--ink); cursor: pointer;
+  border-color: var(--melon); font-weight: 700;
+  box-shadow: 0 2px 0 #d98a5c;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
+}
+.state.has-stores:hover { background: #f6b98f; transform: translateY(-1px); }
+.state.has-stores.selected { background: var(--orchid); color: #fff; border-color: var(--orchid); box-shadow: 0 2px 0 #6f4f73; }
+.map-legend { display: flex; justify-content: center; gap: 20px; margin-top: 18px; font-family: var(--body); font-size: 13px; color: var(--dusk); }
+.legend-item { display: flex; align-items: center; gap: 7px; }
+.legend-swatch { width: 14px; height: 14px; border-radius: 3px; border: 0.5px solid var(--lilac); }
+
+/* ===== STATE DETAIL PANEL ===== */
+.state-panel {
+  max-width: 760px; margin: 26px auto 0; padding: 28px;
+  background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 10px;
+}
+.state-panel-empty { text-align: center; color: var(--dusk); font-style: italic; font-family: var(--body); }
+.state-panel-title { font-family: var(--serif); font-size: 26px; color: var(--ink); margin-bottom: 18px; }
+.store-row { padding: 16px 0; border-top: 0.5px solid var(--lilac); }
+.store-row:first-of-type { border-top: 0; padding-top: 0; }
+.store-name { font-family: var(--serif); font-size: 19px; color: var(--ink); margin-bottom: 4px; }
+.store-city { font-family: var(--body); font-size: 13px; font-style: italic; color: var(--melon); margin-bottom: 8px; }
+.store-blurb { font-family: var(--body); font-size: 15px; color: var(--dusk); line-height: 1.6; margin-bottom: 10px; }
+.store-visit { font-family: var(--serif-sc); font-size: 12px; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--melon); padding-bottom: 2px; }
+.store-visit:hover { color: var(--orchid); border-color: var(--orchid); }
+
+/* ===== SUBMIT CTA ===== */
+.submit-cta { max-width: 760px; margin: 18px auto 0; padding: 36px; text-align: center; background: var(--ivory); border-radius: 10px; }
+.submit-cta h3 { font-family: var(--serif); font-size: 24px; font-weight: 500; color: var(--ink); margin-bottom: 12px; }
+.submit-cta p { font-family: var(--body); font-size: 16px; color: var(--dusk); line-height: 1.7; max-width: 480px; margin: 0 auto 22px; }
+
+/* ===== FINE PRINT ===== */
+.fine-print { max-width: 760px; margin: 32px auto 0; font-family: var(--body); font-size: 13px; color: var(--dusk); font-style: italic; text-align: center; line-height: 1.6; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 880px) {
+  .vendor-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .page-hero { padding: 110px 22px 36px; }
+  .section { padding: 32px 22px 20px; }
+  .vendor-grid { grid-template-columns: 1fr; }
+  .tile-map { gap: 4px; }
+  .state { font-size: 8px; }
+}
+</style>
+</head>
+<body>
+
+<nav></nav>
+
+<div class="page-hero">
+  <p class="page-hero-eyebrow">The Directory</p>
+  <h1 class="page-hero-headline">Where to find<br>your <em>tiles.</em></h1>
+  <p class="page-hero-sub">The good ones don't show up on the front page of a search. So Prim has gathered them here — the boutiques worth your money, the shops worth a visit, and the makers who take this game as seriously as you do.</p>
+</div>
+
+<!-- ===== SHIPS NATIONWIDE ===== -->
+<section class="section">
+  <div class="section-head">
+    <p class="section-eyebrow">Ships Nationwide</p>
+    <h2 class="section-title">The boutiques, <em>delivered.</em></h2>
+    <p class="section-note">Most of the best American Mah Jongg boutiques live online and ship anywhere in the country. Filter by what you're after.</p>
+  </div>
+
+  <div class="filters" id="filters">
+    <button class="chip active" data-cat="all">Everything</button>
+    <button class="chip" data-cat="tiles">Tiles &amp; Sets</button>
+    <button class="chip" data-cat="racks">Racks &amp; Pushers</button>
+    <button class="chip" data-cat="mats">Mats</button>
+    <button class="chip" data-cat="bags">Bags &amp; Cases</button>
+    <button class="chip" data-cat="cards">Cards</button>
+    <button class="chip" data-cat="gifts">Gifts &amp; Apparel</button>
+    <button class="chip" data-cat="custom">Custom</button>
+  </div>
+
+  <div class="vendor-grid" id="vendorGrid"><!-- rendered by JS --></div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ===== SHOP IN PERSON ===== -->
+<section class="section">
+  <div class="section-head">
+    <p class="section-eyebrow">Shop in Person</p>
+    <h2 class="section-title">Find a shop <em>near you.</em></h2>
+    <p class="section-note">A few brick-and-mortar boutiques keep real tiles on real shelves. Tap a lit tile to see what's there. (More states as we find them — see one we missed below.)</p>
+  </div>
+
+  <div class="map-wrap">
+    <div class="tile-map" id="tileMap"><!-- rendered by JS --></div>
+    <div class="map-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--melon);border-color:var(--melon);"></span> Has a shop</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--ivory);"></span> None yet</span>
+    </div>
+  </div>
+
+  <div class="state-panel" id="statePanel">
+    <p class="state-panel-empty">Tap a lit tile above to see boutiques in that state.</p>
+  </div>
+</section>
+
+<!-- ===== SUBMIT CTA ===== -->
+<section class="section">
+  <div class="submit-cta">
+    <h3>Know a boutique we missed?</h3>
+    <p>If there's a shop, a maker, or a table-side boutique that belongs on this map, tell Prim. The best part of this game has always been the people who point you somewhere good.</p>
+    <a class="btn-primary" href="https://www.orderofthetile.com/get-notified.html">Tell Prim about a shop</a>
+  </div>
+
+  <p class="fine-print">Every listing here is an independent business, included because it serves the game — not a paid placement or an affiliate. Prim doesn't earn a cent when you shop these boutiques. Details change; confirm hours and stock with the shop before you make the drive.</p>
+</section>
+
+<footer></footer>
+
+<script src="/shared.js"></script>
+<script>
+/* ===== VENDOR DATA ===== */
+var ONLINE = [
+  { name: "The Mahjong Line", url: "https://themahjongline.com/", cats: ["tiles","custom","gifts"],
+    blurb: "Custom, hand-selected colorway tiles and modern accessories. Limited releases with real personality." },
+  { name: "Oh My Mahjong", url: "https://ohmymahjong.com/", cats: ["tiles","racks","mats","bags"],
+    blurb: "Elevated sets and accessories — acrylic racks, the Astor mat, starter kits for brand-new tables." },
+  { name: "Where The Winds Blow", url: "https://wherethewindsblow.com/", cats: ["tiles","racks","bags","cards","gifts"],
+    blurb: "The longtime name in American Mah Jongg — sets, cards, cases, and themed gifts since 2000." },
+  { name: "Bam Bird Boutique", url: "https://www.bambirdboutique.com/", cats: ["tiles","gifts"],
+    blurb: "A curated boutique of sets, accessories, and décor, including the East Meets West tiles." },
+  { name: "Yellow Mountain Imports", url: "https://www.ymimports.com/collections/mahjong-american", cats: ["tiles","racks","bags"],
+    blurb: "A broad range of American sets and accessories across many designs and price points." },
+  { name: "Peace Love Mahjong", url: "https://peacelovemahjong.com/", cats: ["tiles","racks","mats"],
+    blurb: "Modern tiles, wooden racks, and mats with a bright, contemporary feel." },
+  { name: "My Fair Mahjong", url: "https://myfairmahjong.com/", cats: ["racks"],
+    blurb: "Patent-pending acrylic racks with mix-and-match pushers, plus wooden and mini options." },
+  { name: "I Love Mahj", url: "https://ilovemahj.com/shop/mahj-sets", cats: ["tiles","gifts"],
+    blurb: "Sets and accessories from a community-favorite shop and resource." },
+  { name: "Bespoke Mahjong", url: "https://www.bespokemahjong.com/", cats: ["racks"],
+    blurb: "Racks that hold the tiles beautifully, with detachable pushers." },
+  { name: "GammonVillage", url: "https://www.gammonvillage.com/mah-jong-shop/", cats: ["tiles","racks","bags"],
+    blurb: "A wide selection of sets, racks, and cases — classic to contemporary." },
+  { name: "American-Wholesaler", url: "https://american-wholesaler.com/collections/mahjong-sets", cats: ["tiles","bags"],
+    blurb: "Linda Li collection sets with soft bags and hard cases, free shipping." },
+  { name: "Dishique", url: "https://dishiqueboutique.com/collections/mahjong", cats: ["tiles","gifts"],
+    blurb: "A gift boutique with a curated mahjong collection." }
+];
+
+/* ===== IN-PERSON STORES, BY STATE ===== */
+var STORES = {
+  SC: { name: "South Carolina", shops: [
+    { name: "The Happy Southerner", city: "Mt. Pleasant (Charleston)", url: "https://thehappysoutherner.com/collections/mahjong",
+      blurb: "The largest mahjong selection in the Charleston area — carries Oh My Mahjong, Bam, Miss Mahjong and more." },
+    { name: "The Boutique Charleston", city: "Charleston", url: "https://theboutiquecharleston.com/collections/mahjong",
+      blurb: "A 60-year Charleston destination shop with a mahjong collection." }
+  ]},
+  CO: { name: "Colorado", shops: [
+    { name: "Wish Gifts", city: "Denver (Wash Park & Happy Canyon)", url: "https://wishgiftsdenver.com/collections/mahjong",
+      blurb: "Denver gift boutiques carrying mahjong sets — visit either location in person." }
+  ]},
+  FL: { name: "Florida", shops: [
+    { name: "Pah and Mah Jongg", city: "Delray Beach (Jog Rd & Atlantic Ave)", url: "https://www.pahandmahjongg.com/",
+      blurb: "Everything canasta & mahjong, plus a wall of novelty gifts." }
+  ]},
+  TX: { name: "Texas", shops: [
+    { name: "Emerson Sloan", city: "Houston", url: "https://www.emersonsloan.com/collections/mahjong",
+      blurb: "A modern party-and-gift shop with a stylish mahjong collection." }
+  ]},
+  CA: { name: "California", shops: [
+    { name: "Beauty, Jewelry & Gifts Co.", city: "San Francisco (Chinatown, 1021 Grant Ave)", url: "",
+      blurb: "A Grant Avenue shop carrying plastic and bone & bamboo sets, and tables." }
+  ]}
+};
+
+/* ===== US TILE-CARTOGRAM LAYOUT [row, col] ===== */
+var GRID = {
+  AK:[1,1], ME:[1,11],
+  VT:[2,10], NH:[2,11],
+  WA:[3,1], ID:[3,2], MT:[3,3], ND:[3,4], MN:[3,5], WI:[3,6], MI:[3,8], NY:[3,9], MA:[3,10], RI:[3,11],
+  OR:[4,1], NV:[4,2], WY:[4,3], SD:[4,4], IA:[4,5], IL:[4,6], IN:[4,7], OH:[4,8], PA:[4,9], NJ:[4,10], CT:[4,11],
+  CA:[5,1], UT:[5,2], CO:[5,3], NE:[5,4], MO:[5,5], KY:[5,6], WV:[5,7], VA:[5,8], MD:[5,9], DE:[5,10],
+  AZ:[6,2], NM:[6,3], KS:[6,4], AR:[6,5], TN:[6,6], NC:[6,7], SC:[6,8],
+  HI:[7,1], TX:[7,3], OK:[7,4], LA:[7,5], MS:[7,6], AL:[7,7], GA:[7,8],
+  FL:[8,9]
+};
+
+/* ===== RENDER ONLINE VENDORS ===== */
+(function renderVendors() {
+  var grid = document.getElementById('vendorGrid');
+  var html = ONLINE.map(function (v) {
+    var tags = v.cats.map(function (c) { return '<span class="vendor-tag">' + catLabel(c) + '</span>'; }).join('');
+    return '<div class="vendor-card" data-cats="' + v.cats.join(' ') + '">'
+      + '<div class="vendor-name">' + v.name + '</div>'
+      + '<div class="vendor-blurb">' + v.blurb + '</div>'
+      + '<div class="vendor-tags">' + tags + '</div>'
+      + '<a class="vendor-visit" href="' + v.url + '" target="_blank" rel="noopener">Visit shop &rarr;</a>'
+      + '</div>';
+  }).join('');
+  grid.innerHTML = html;
+})();
+
+function catLabel(c) {
+  return { tiles:"Tiles", racks:"Racks", mats:"Mats", bags:"Bags", cards:"Cards", gifts:"Gifts", custom:"Custom" }[c] || c;
+}
+
+/* ===== FILTER ===== */
+document.getElementById('filters').addEventListener('click', function (e) {
+  if (!e.target.classList.contains('chip')) return;
+  var cat = e.target.getAttribute('data-cat');
+  document.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('active'); });
+  e.target.classList.add('active');
+  document.querySelectorAll('.vendor-card').forEach(function (card) {
+    var cats = card.getAttribute('data-cats').split(' ');
+    card.classList.toggle('hidden', cat !== 'all' && cats.indexOf(cat) === -1);
+  });
+});
+
+/* ===== RENDER TILE MAP ===== */
+(function renderMap() {
+  var map = document.getElementById('tileMap');
+  var html = Object.keys(GRID).map(function (code) {
+    var pos = GRID[code];
+    var has = STORES.hasOwnProperty(code);
+    return '<div class="state' + (has ? ' has-stores' : '') + '"'
+      + ' style="grid-row:' + pos[0] + ';grid-column:' + pos[1] + ';"'
+      + (has ? ' data-state="' + code + '" role="button" tabindex="0"' : '')
+      + '>' + code + '</div>';
+  }).join('');
+  map.innerHTML = html;
+
+  map.addEventListener('click', function (e) {
+    var t = e.target.closest('.has-stores');
+    if (t) selectState(t.getAttribute('data-state'), t);
+  });
+  map.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('has-stores')) {
+      e.preventDefault();
+      selectState(e.target.getAttribute('data-state'), e.target);
+    }
+  });
+})();
+
+function selectState(code, el) {
+  document.querySelectorAll('.state.selected').forEach(function (s) { s.classList.remove('selected'); });
+  if (el) el.classList.add('selected');
+  var data = STORES[code];
+  var panel = document.getElementById('statePanel');
+  var rows = data.shops.map(function (s) {
+    var link = s.url
+      ? '<a class="store-visit" href="' + s.url + '" target="_blank" rel="noopener">Visit shop &rarr;</a>'
+      : '';
+    return '<div class="store-row">'
+      + '<div class="store-name">' + s.name + '</div>'
+      + '<div class="store-city">' + s.city + '</div>'
+      + '<div class="store-blurb">' + s.blurb + '</div>'
+      + link
+      + '</div>';
+  }).join('');
+  panel.innerHTML = '<div class="state-panel-title">' + data.name + '</div>' + rows;
+}
+</script>
+</body>
+</html>

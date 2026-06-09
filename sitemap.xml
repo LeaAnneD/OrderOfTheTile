@@ -37,36 +37,20 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- The Letters: archive page + live Ghost archive (keeps all 12+ issues discoverable) -->
+  <!-- The Letters: archive landing page. Individual issues live on the Ghost
+       newsletter subdomain (newsletter.orderofthetile.com) and are indexed via
+       its own auto-generated sitemap, submitted separately in Search Console. -->
   <url>
     <loc>https://www.orderofthetile.com/the-letters.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Where to Buy: boutique vendor directory -->
   <url>
-    <loc>https://www.orderofthetile.com/archive</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.orderofthetile.com/p/order-of-the-tile-the-season-has-begun</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.orderofthetile.com/p/order-of-the-tile-755510de4a86e145</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.orderofthetile.com/p/order-of-the-tile-37d478b8ad3d6b14</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.orderofthetile.com/p/order-of-the-tile-ac0887c985f9c375</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <loc>https://www.orderofthetile.com/where-to-buy.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <!-- About / community / events -->
