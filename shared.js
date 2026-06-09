@@ -29,7 +29,7 @@
     +     '<li><a href="https://newsletter.orderofthetile.com/"' + activeClass('the-letters.html') + '>✉️ The Letters</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/dispatch"' + activeClass('dispatch') + '>📰 The Dispatch</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>🀄 The Game</a></li>'
-    +     '<li><a href="https://www.orderofthetile.com/find-mahjong.html"' + activeClass('find-mahjong.html') + '>🗺️ Find Mah Jongg</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/find-mahjong.html"' + activeClass('find-mahjong.html') + '>🗺️ Mahjong Near You</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/where-to-buy.html"' + activeClass('where-to-buy.html') + '>🛍️ Shop Boutiques</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/events.html"' + activeClass('events.html') + '>📅 Events</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/about-prim.html"' + activeClass('about-prim.html') + '>🌸 About Prim</a></li>'

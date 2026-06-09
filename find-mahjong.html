@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Find Mah Jongg Near You — Shops, Games &amp; Teachers by State | The Order of the Tile</title>
-<meta name="description" content="A source-verified directory of American Mah Jongg shops, places to play, and teachers in every U.S. state plus online. Click your state to find supplies, games, groups, and lessons near you.">
+<title>Mahjong Near You — American Mah Jongg Shops, Games, Teachers &amp; Books by State | The Order of the Tile</title>
+<meta name="description" content="A source-verified directory of American Mahjong (Mah Jongg) shops, places to play, teachers, and books — in every U.S. state plus online. Find supplies, games, groups, and lessons near you.">
+<meta name="keywords" content="mahjong, mah jongg, mahjongg, american mahjong, american mah jongg, mahjong near me, where to play mahjong, mahjong teachers, mahjong lessons, mahjong shops, mahjong books">
 <meta name="author" content="The Order of the Tile">
 <link rel="canonical" href="https://www.orderofthetile.com/find-mahjong.html">
 <link rel="icon" type="image/png" href="/images/seal.png">
@@ -83,6 +84,8 @@
 .entry-source:hover { color: var(--orchid); }
 .entry-via { font-family: var(--body); font-size: 11px; color: var(--ink); background: var(--butter); border-radius: 14px; padding: 2px 9px; }
 .entry-badge { font-family: var(--body); font-size: 11px; color: #fff; background: var(--orchid); border-radius: 14px; padding: 2px 9px; }
+.entry-prim { font-family: var(--body); font-size: 11px; color: var(--ink); background: var(--melon); border-radius: 14px; padding: 2px 9px; font-weight: 600; }
+.entry-featured { box-shadow: inset 3px 0 0 var(--melon); padding-left: 12px; border-radius: 0 6px 6px 0; }
 
 /* ===== FEATURED AD ===== */
 .ad { max-width: 820px; margin: 28px auto 0; padding: 0 24px; }
@@ -115,8 +118,8 @@
 
 <div class="page-hero">
   <p class="page-hero-eyebrow">The Directory</p>
-  <h1 class="page-hero-headline">Find Mah Jongg <em>near you.</em></h1>
-  <p class="page-hero-sub">Shops for supplies, tables to play at, and teachers to learn from — every listing backed by a source you can check yourself.</p>
+  <h1 class="page-hero-headline">Mahjong <em>near you.</em></h1>
+  <p class="page-hero-sub">Shops for supplies, tables to play at, teachers to learn from, and books to read — every listing backed by a source you can check yourself.</p>
 </div>
 
 <div class="tabs">
@@ -128,7 +131,7 @@
 <div class="view active" id="viewState">
   <div class="controls">
     <div class="filters" id="filtersState">
-      <button class="chip active" data-cat="all">Everything</button>
+      <button class="chip active" data-cat="all">∞ Everything</button>
       <button class="chip" data-cat="buy">🛍️ Shops</button>
       <button class="chip" data-cat="play">🀄 Places to Play</button>
       <button class="chip" data-cat="learn">🎓 Teachers</button>
@@ -162,8 +165,9 @@
 
   <div class="controls">
     <div class="filters" id="filtersOnline">
-      <button class="chip active" data-cat="all">Everything</button>
+      <button class="chip active" data-cat="all">∞ Everything</button>
       <button class="chip" data-cat="buy">🛍️ Shops</button>
+      <button class="chip" data-cat="book">📚 Books</button>
       <button class="chip" data-cat="learn">🎓 Teachers</button>
       <button class="chip" data-cat="play">🀄 Play</button>
     </div>
@@ -185,7 +189,7 @@
   </div>
 </div>
 
-<p class="fine-print">Every listing is sourced from a public website or article — follow the "Source" link on any entry to see where it came from. Teachers reflected from another directory are tagged with that directory and link back to it. These are independent businesses and groups, listed because they serve the game — not paid placements. Details change; confirm before you go.</p>
+<p class="fine-print">Every listing is sourced from a public website or article — follow the "Source" link on any entry to see where it came from. Teachers reflected from another directory are tagged with that directory and link back to it. These are independent businesses and groups, listed because they serve the game — not paid placements (Prim's own shop and book are marked “✦ Prim's own”). Details change; confirm before you go.</p>
 
 <footer></footer>
 
@@ -205,7 +209,7 @@ var GRID = {
   HI:[9,1]
 };
 
-var CATS = { buy:{label:"Shops & Supplies",icon:"🛍️"}, play:{label:"Places to Play",icon:"🀄"}, learn:{label:"Teachers",icon:"🎓"} };
+var CATS = { buy:{label:"Shops & Supplies",icon:"🛍️"}, book:{label:"Books",icon:"📚"}, play:{label:"Places to Play",icon:"🀄"}, learn:{label:"Teachers",icon:"🎓"} };
 
 var DATA={entries:[]}, BY_CODE={}, ONLINE=[], stateCat="all", onlineCat="all", selectedCode=null;
 
@@ -264,14 +268,21 @@ function entryRow(e, showBadge){
   var badge=showBadge?'<span class="entry-badge">'+(e.code==="US"?"National":esc(STATE_NAMES[e.code]||e.code))+'</span>':'';
   var city=e.city?'<div class="entry-city">'+esc(e.city)+'</div>':'';
   var blurb=e.b?'<div class="entry-blurb">'+esc(e.b)+'</div>':'';
-  var src=e.s?esc(e.s):'source';
-  return '<div class="entry"><div class="entry-name">'+esc(e.n)+'</div>'+city+blurb
-    +'<div class="entry-foot"><a class="entry-source" href="'+esc(e.u)+'" target="_blank" rel="noopener">Source: '+src+' ↗</a>'+badge+via+'</div></div>';
+  var link, primBadge='';
+  if(e.prim){
+    link='<a class="entry-source" href="'+esc(e.u)+'" target="_blank" rel="noopener">'+esc(e.cta||'Visit ↗')+'</a>';
+    primBadge='<span class="entry-prim">✦ Prim\'s own</span>';
+  } else {
+    link='<a class="entry-source" href="'+esc(e.u)+'" target="_blank" rel="noopener">Source: '+(e.s?esc(e.s):'source')+' ↗</a>';
+  }
+  return '<div class="entry'+(e.prim?' entry-featured':'')+'"><div class="entry-name">'+esc(e.n)+'</div>'+city+blurb
+    +'<div class="entry-foot">'+link+primBadge+badge+via+'</div></div>';
 }
 function groupHtml(list, showBadge){
-  return ["buy","play","learn"].map(function(cat){
+  return ["buy","book","play","learn"].map(function(cat){
     var items=list.filter(function(e){return e.c===cat;});
     if(!items.length) return "";
+    items.sort(function(a,b){return (b.prim?1:0)-(a.prim?1:0);}); // Prim's own first
     return '<div class="cat-group"><div class="cat-head">'+CATS[cat].icon+' '+CATS[cat].label+' <span style="color:var(--dusk);font-weight:400;">('+items.length+')</span></div>'
       +items.map(function(e){return entryRow(e, showBadge);}).join('')+'</div>';
   }).join('');
