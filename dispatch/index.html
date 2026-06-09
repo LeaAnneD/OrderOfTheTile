@@ -70,7 +70,8 @@
 .ad-seal { width: 34px; height: 34px; opacity: 0.85; margin-bottom: 12px; }
 .ad-title { font-family: var(--serif); font-weight: 600; font-size: 26px; line-height: 1.15; color: var(--ink); margin-bottom: 10px; }
 .ad-body { font-family: var(--body); font-size: 16px; color: var(--dusk); line-height: 1.6; margin-bottom: 18px; }
-.ad-cta { font-family: var(--serif-sc); font-size: 14px; background: var(--melon); color: var(--ink); padding: 11px 22px; border-radius: 6px; text-decoration: none; transition: opacity 0.2s; }
+.ad-cta { font-family: var(--serif-sc); font-size: 14px; font-weight: 700; background: var(--melon); color: var(--ink); padding: 11px 22px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; text-align: center; box-shadow: 0 4px 0 #d98a5c, 0 6px 14px rgba(26,20,18,0.14); transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.2s; }
+.ad-cta:active { transform: translateY(2px); box-shadow: 0 1px 0 #d98a5c, 0 2px 6px rgba(26,20,18,0.14); }
 .ad-cta:hover { opacity: 0.85; }
 
 .empty-state { grid-column: 1 / -1; text-align: center; font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--dusk); padding: 40px 0; }

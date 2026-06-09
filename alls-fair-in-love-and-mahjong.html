@@ -322,6 +322,7 @@
       background: transparent !important;
       color: var(--ink) !important;
       border: 1px solid var(--melon);
+      box-shadow: none;
       transition: background 0.2s, opacity 0.2s;
     }
     .start-card-cta-secondary:hover {
@@ -376,18 +377,23 @@
     .start-card-cta {
       font-family: var(--serif-sc);
       font-size: 14px;
-      font-weight: 400;
+      font-weight: 700;
       letter-spacing: 0.05em;
       background: var(--melon);
       color: var(--ink) !important;
       padding: 12px 22px;
       border-radius: 4px;
       text-decoration: none;
-      display: inline-block;
-      align-self: flex-start;
-      transition: opacity 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      align-self: stretch;
+      box-shadow: 0 4px 0 #d98a5c, 0 6px 14px rgba(26,20,18,0.14);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.2s;
     }
-    .start-card-cta:hover { opacity: 0.85; }
+    .start-card-cta:hover { filter: brightness(1.04); }
+    .start-card-cta:active { transform: translateY(3px); box-shadow: 0 1px 0 #d98a5c, 0 2px 6px rgba(26,20,18,0.14); }
 
     /* DIAMOND DIVIDER */
     .diamond-divider {
@@ -550,7 +556,7 @@
         <div class="start-card-title">The Card Decoder</div>
         <div class="start-card-price">Coming soon</div>
         <div class="start-card-desc">Prim's guide to reading the NMJL card. After reading it once, you will be able to read any year's card in about ten minutes. The card is the language of the game. Decode it.</div>
-        <a class="start-card-cta" href="get-notified.html" style="background: var(--lilac); opacity: 0.85;">Get Notified</a>
+        <a class="start-card-cta" href="get-notified.html" style="background: var(--lilac); box-shadow: 0 4px 0 #a892a3, 0 6px 14px rgba(26,20,18,0.14);">Get Notified</a>
       </div>
 
     </div>

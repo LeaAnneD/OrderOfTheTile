@@ -100,7 +100,8 @@
 .ad-card h3 { font-family: var(--serif); font-size: clamp(24px, 3.4vw, 32px); font-weight: 500; line-height: 1.15; margin-bottom: 14px; }
 .ad-card h3 em { font-style: italic; color: var(--melon); }
 .ad-card p { font-family: var(--body); font-size: 17px; line-height: 1.6; color: rgba(248,246,242,0.82); max-width: 520px; margin: 0 auto 22px; }
-.ad-btn { font-family: var(--serif-sc); font-size: 15px; background: var(--melon); color: var(--ink); padding: 13px 30px; border-radius: 6px; text-decoration: none; display: inline-block; transition: opacity 0.2s; }
+.ad-btn { font-family: var(--serif-sc); font-size: 15px; font-weight: 700; background: var(--melon); color: var(--ink); padding: 13px 30px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; text-align: center; box-shadow: 0 4px 0 #d98a5c, 0 6px 14px rgba(26,20,18,0.14); transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.2s; }
+.ad-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #d98a5c, 0 2px 6px rgba(26,20,18,0.14); }
 .ad-btn:hover { opacity: 0.85; }
 
 /* ===== SUBMIT / FINE PRINT ===== */

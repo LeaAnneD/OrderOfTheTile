@@ -213,7 +213,8 @@
 .subscribe-form input { flex: 1; font-family: var(--body); font-size: 16px; padding: 13px 18px; border: 0.5px solid var(--lilac); border-radius: 6px; background: var(--cloud); color: var(--ink); outline: none; }
 .subscribe-form input::placeholder { color: var(--dusk); }
 .subscribe-form input:focus { border-color: var(--orchid); }
-.subscribe-form button { font-family: var(--serif); font-size: 15px; font-weight: 500; background: var(--melon); color: var(--ink); border: none; padding: 13px 24px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+.subscribe-form button { font-family: var(--serif); font-size: 15px; font-weight: 700; background: var(--melon); color: var(--ink); border: none; padding: 13px 24px; border-radius: 6px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; text-align: center; box-shadow: 0 4px 0 #d98a5c, 0 6px 14px rgba(26,20,18,0.14); transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.2s; }
+.subscribe-form button:active { transform: translateY(2px); box-shadow: 0 1px 0 #d98a5c, 0 2px 6px rgba(26,20,18,0.14); }
 .subscribe-form button:hover { opacity: 0.85; }
 .subscribe-fine { font-family: var(--body); font-size: 13px; color: var(--dusk); font-style: italic; }
 .subscribe-seal { width: 56px; height: 56px; margin: 0 auto 28px; opacity: 0.9; }

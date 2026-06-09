@@ -404,15 +404,22 @@
   .btn-primary {
     font-family: var(--serif-sc);
     font-size: 15px;
+    font-weight: 700;
     background: var(--melon);
     color: var(--ink);
     padding: 14px 32px;
+    border: none;
     border-radius: 4px;
     text-decoration: none;
-    display: inline-block;
-    transition: opacity 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 4px 0 #d98a5c, 0 6px 14px rgba(26,20,18,0.14);
+    transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.2s;
   }
-  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:hover { filter: brightness(1.04); }
+  .btn-primary:active { transform: translateY(3px); box-shadow: 0 1px 0 #d98a5c, 0 2px 6px rgba(26,20,18,0.14); }
 
   /* RESPONSIVE */
   @media (max-width: 1024px) {
