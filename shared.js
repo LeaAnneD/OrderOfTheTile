@@ -28,7 +28,7 @@
     +     '<li><a href="https://www.orderofthetile.com/alls-fair-in-love-and-mahjong.html"' + activeClass('alls-fair-in-love-and-mahjong.html') + '>🎬 The Movie</a></li>'
     +     '<li><a href="https://newsletter.orderofthetile.com/"' + activeClass('the-letters.html') + '>✉️ The Letters</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/dispatch"' + activeClass('dispatch') + '>📰 The Dispatch</a></li>'
-    +     '<li><a href="https://www.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>🀄 The Game</a></li>'
+    +     '<li><a href="https://www.orderofthetile.com/the-game.html"' + activeClass('the-game.html') + '>🀄 Learning the Game</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/faq.html"' + activeClass('faq.html') + '>❓ FAQ</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/find-mahjong.html"' + activeClass('find-mahjong.html') + '>🗺️ Mahjong Near You</a></li>'
     +     '<li><a href="https://www.orderofthetile.com/where-to-buy.html"' + activeClass('where-to-buy.html') + '>🛍️ Shop Boutiques</a></li>'
