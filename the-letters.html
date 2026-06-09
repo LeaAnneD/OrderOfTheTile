@@ -14,12 +14,6 @@
 .page-hero-headline em { font-style: italic; color: var(--orchid); }
 .page-hero-sub { font-family: var(--body); font-size: 18px; color: var(--dusk); line-height: 1.75; max-width: 520px; }
 
-/* FILTER BAR */
-
-
-
-
-
 /* LETTERS GRID */
 .letters-section { max-width: 1100px; margin: 0 auto; padding: 56px 56px 100px; }
 .letters-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -43,6 +37,8 @@
 .listen-link { display: inline-flex; align-items: center; gap: 6px; font-family: var(--body); font-size: 13px; color: #1DB954; text-decoration: none; margin-left: 12px; border-bottom: 0.5px solid #1DB954; padding-bottom: 1px; }
 .listen-link svg { flex-shrink: 0; }
 
+@media (max-width: 880px) { .letters-grid { grid-template-columns: repeat(2, 1fr); } .letter-card.featured { grid-column: span 2; } .coming-soon { grid-column: span 2; } }
+@media (max-width: 600px) { .page-hero { padding: 120px 22px 44px; } .letters-section { padding: 40px 22px 72px; } .letters-grid { grid-template-columns: 1fr; } .letter-card.featured { grid-column: span 1; } .coming-soon { grid-column: span 1; } }
 </style>
 </head>
 <body>
@@ -56,83 +52,85 @@
 </div>
 
 <div class="letters-section">
-  <div class="letters-grid">
-
-    <div class="letter-card featured">
-      <div class="letter-meta">
-        <span class="letter-number">Letter No. 4</span>
-        <span class="letter-tag">Latest</span>
-      </div>
-      <div class="letter-title">A New Card. A New Season. Same Prim.</div>
-      <p class="letter-excerpt">The 2026 card is here, and Prim has opinions. What changed, what didn't, and what it means for the players who actually pay attention.</p>
-      <div class="letter-date">April 9, 2026</div>
-      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
-        <a href="https://www.orderofthetile.com/p/order-of-the-tile-ac0887c985f9c375" target="_blank" rel="noopener" class="letter-read">Read this letter &rarr;</a>
-        <a href="https://open.spotify.com/episode/3bSNZwmW6CoJiJlXwnim21?si=2KReCLagQz6zoNXl17D3iw" target="_blank" rel="noopener" class="listen-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-          Listen
-        </a>
-      </div>
-    </div>
-
-    <div class="letter-card">
-      <div class="letter-meta">
-        <span class="letter-number">Letter No. 3</span>
-      </div>
-      <div class="letter-title">The Tiles Don't Lie. Neither Do We.</div>
-      <p class="letter-excerpt">Strategy columns, community spotlights, and the opinions no one asked for but everyone needed. Prim's sharpest edition yet.</p>
-      <div class="letter-date">April 2, 2026</div>
-      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
-        <a href="https://www.orderofthetile.com/p/order-of-the-tile-37d478b8ad3d6b14" target="_blank" rel="noopener" class="letter-read">Read this letter &rarr;</a>
-        <a href="https://open.spotify.com/episode/1UKOTAU7FWN9iCKS8OGXFi?si=-tM0Ys4PQx-n2IZdbLX6Sw" target="_blank" rel="noopener" class="listen-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-          Listen
-        </a>
-      </div>
-    </div>
-
-    <div class="letter-card">
-      <div class="letter-meta">
-        <span class="letter-number">Letter No. 2</span>
-      </div>
-      <div class="letter-title">The Charleston Never Lies</div>
-      <p class="letter-excerpt">What you pass in the Charleston tells everyone at the table exactly who you are as a player. Prim has thoughts. They are not diplomatic.</p>
-      <div class="letter-date">March 26, 2026</div>
-      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
-        <a href="https://www.orderofthetile.com/p/order-of-the-tile-755510de4a86e145" target="_blank" rel="noopener" class="letter-read">Read this letter &rarr;</a>
-        <a href="https://open.spotify.com/episode/2vnj0Vdnak3BN99knyrW4m?si=m6H00B0qQXmrcETc2Z4RgA" target="_blank" rel="noopener" class="listen-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-          Listen
-        </a>
-      </div>
-    </div>
-
-    <div class="letter-card">
-      <div class="letter-meta">
-        <span class="letter-number">Letter No. 1</span>
-        <span class="letter-tag">Debut</span>
-      </div>
-      <div class="letter-title">The Season Has Begun</div>
-      <p class="letter-excerpt">The new card has arrived. So has Prim. First impressions of the 2026 NMJL card, what changed, what did not, and what it all means for the season ahead.</p>
-      <div class="letter-date">March 19, 2026</div>
-      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
-        <a href="https://www.orderofthetile.com/p/order-of-the-tile-the-season-has-begun" target="_blank" rel="noopener" class="letter-read">Read this letter &rarr;</a>
-        <a href="https://open.spotify.com/episode/2il7KOtPQcFpjK37nmm4RP?si=t6XqzCEdQL6iDVUGiWca6A" target="_blank" rel="noopener" class="listen-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-          Listen
-        </a>
-      </div>
-    </div>
-
-    <div class="coming-soon">
-      <p>The conversation continues. It always does.</p>
-    </div>
-
-  </div>
+  <div class="letters-grid" id="lettersGrid"><!-- rendered by JS --></div>
 </div>
 
 <footer></footer>
 
 <script src="shared.js"></script>
+<script>
+/* ===== THE LETTERS — newest first. Add one entry per new issue. =====
+   Issues live on the Ghost newsletter (newsletter.orderofthetile.com).
+   spotify is optional; omit if there's no episode yet. */
+var LETTERS = [
+  { n: 12, title: "Consider Yourself Informed", date: "June 4, 2026",
+    url: "https://newsletter.orderofthetile.com/consider-yourself-informed/",
+    excerpt: "The 13579 issue — the news, the numbers, and Prim's read on all of it." },
+  { n: 11, title: "Nothing at the Table Escapes Notice", date: "May 28, 2026",
+    url: "https://newsletter.orderofthetile.com/nothing-at-the-table-escapes-notice/",
+    excerpt: "The information game — what the watchful players notice while everyone else is busy watching their own rack." },
+  { n: 10, title: "At This Table, We Remember", date: "May 21, 2026",
+    url: "https://newsletter.orderofthetile.com/at-this-table-we-remember/",
+    excerpt: "The Memorial Day issue — the tables we keep, and the players we don't forget." },
+  { n: 9, title: "The Best Discard Is the One No One Expects", date: "May 14, 2026",
+    url: "https://newsletter.orderofthetile.com/issue-09-the-best-discard-is-the-one-no-one-expects/",
+    excerpt: "On the backup hand and why the 2026 card rewards two-option play — plus teaching new players, Toby Salk's generous practice, and four centuries of history in a two-inch tile." },
+  { n: 8, title: "The Wall Has Been Read", date: "May 7, 2026",
+    url: "https://newsletter.orderofthetile.com/issue-08-the-wall-has-been-read/",
+    excerpt: "The wall remembers. Prim on counting what's gone and playing what's left." },
+  { n: 7, title: "Every Discard Tells a Story", date: "April 30, 2026",
+    url: "https://newsletter.orderofthetile.com/issue-07-every-discard-tells-a-story/",
+    excerpt: "What the table throws away says more than what it keeps. Prim on reading the discards." },
+  { n: 6, title: "What a Joker.", date: "April 23, 2026",
+    url: "https://newsletter.orderofthetile.com/what-a-joker/",
+    excerpt: "Eight tiles, endless trouble. Prim on the joker — when to hoard it, when to spend it, and when to let it go." },
+  { n: 5, title: "Patience Is Not a Virtue. It Is a Strategy.", date: "April 16, 2026",
+    url: "https://newsletter.orderofthetile.com/issue-05-patience-is-not-a-virtue/",
+    excerpt: "Why waiting on the perfect hand is how you lose. Prim on patience as tactic, not virtue." },
+  { n: 4, title: "A New Card. A New Season. Same Prim.", date: "April 9, 2026",
+    url: "https://newsletter.orderofthetile.com/issue-04-a-new-card-a-new-season/",
+    excerpt: "The 2026 card is here, and Prim has opinions. What changed, what didn't, and what it means for the players who actually pay attention.",
+    spotify: "https://open.spotify.com/episode/3bSNZwmW6CoJiJlXwnim21?si=2KReCLagQz6zoNXl17D3iw" },
+  { n: 3, title: "The Tiles Don't Lie. Neither Do We.", date: "April 2, 2026",
+    url: "https://newsletter.orderofthetile.com/issue-03-the-tiles-dont-lie/",
+    excerpt: "Strategy columns, community spotlights, and the opinions no one asked for but everyone needed. Prim's sharpest edition yet.",
+    spotify: "https://open.spotify.com/episode/1UKOTAU7FWN9iCKS8OGXFi?si=-tM0Ys4PQx-n2IZdbLX6Sw" },
+  { n: 2, title: "The Charleston Never Lies", date: "March 26, 2026",
+    url: "https://newsletter.orderofthetile.com/issue-02-the-charleston-never-lies/",
+    excerpt: "What you pass in the Charleston tells everyone at the table exactly who you are as a player. Prim has thoughts. They are not diplomatic.",
+    spotify: "https://open.spotify.com/episode/2vnj0Vdnak3BN99knyrW4m?si=m6H00B0qQXmrcETc2Z4RgA" },
+  { n: 1, title: "The Season Has Begun", date: "March 19, 2026",
+    url: "https://newsletter.orderofthetile.com/issue-01-the-season-has-begun/",
+    excerpt: "The new card has arrived. So has Prim. First impressions of the 2026 NMJL card, what changed, what did not, and what it all means for the season ahead.",
+    spotify: "https://open.spotify.com/episode/2il7KOtPQcFpjK37nmm4RP?si=t6XqzCEdQL6iDVUGiWca6A", tag: "Debut" }
+];
+
+var SPOTIFY_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>';
+
+(function renderLetters() {
+  var grid = document.getElementById('lettersGrid');
+  var html = LETTERS.map(function (L, i) {
+    var featured = i === 0;
+    var tag = featured ? 'Latest' : (L.tag || '');
+    var listen = L.spotify
+      ? '<a href="' + L.spotify + '" target="_blank" rel="noopener" class="listen-link">' + SPOTIFY_SVG + 'Listen</a>'
+      : '';
+    return '<div class="letter-card' + (featured ? ' featured' : '') + '">'
+      + '<div class="letter-meta">'
+      +   '<span class="letter-number">Letter No. ' + L.n + '</span>'
+      +   (tag ? '<span class="letter-tag">' + tag + '</span>' : '')
+      + '</div>'
+      + '<div class="letter-title">' + L.title + '</div>'
+      + '<p class="letter-excerpt">' + L.excerpt + '</p>'
+      + '<div class="letter-date">' + L.date + '</div>'
+      + '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:auto;">'
+      +   '<a href="' + L.url + '" target="_blank" rel="noopener" class="letter-read">Read this letter &rarr;</a>'
+      +   listen
+      + '</div>'
+      + '</div>';
+  }).join('');
+  grid.innerHTML = html + '<div class="coming-soon"><p>The conversation continues. It always does.</p></div>';
+})();
+</script>
 </body>
 </html>
