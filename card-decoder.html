@@ -62,6 +62,11 @@
 
 .disclaimer { max-width: 620px; margin: 30px auto 0; padding: 0 24px; font-family: var(--body); font-size: 13px; font-style: italic; color: var(--dusk); text-align: center; line-height: 1.6; }
 
+.explore { max-width: 760px; margin: 44px auto 0; padding: 0 24px; }
+.explore-inner { border-top: 0.5px solid var(--lilac); padding-top: 24px; display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: center; }
+.explore-label { font-family: var(--body); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dusk); width: 100%; text-align: center; margin-bottom: 6px; }
+.explore-inner a { font-family: var(--serif-sc); font-size: 14px; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--melon); padding-bottom: 2px; transition: color 0.15s, border-color 0.15s; }
+.explore-inner a:hover { color: var(--orchid); border-color: var(--orchid); }
 @media (max-width:600px){ .page-hero{padding:110px 20px 24px;} .dec-wrap{padding:20px 18px 30px;} .sections{grid-template-columns:1fr;} .notify-inner{padding:28px;} }
 </style>
 </head>
@@ -106,6 +111,16 @@
 </div>
 
 <p class="disclaimer">The Order of the Tile is not affiliated with the National Mah Jongg League. The Card Decoder is an independent teaching guide, built with respect for the League and for the players. It does not reproduce the NMJL card.</p>
+
+<div class="explore">
+  <div class="explore-inner">
+    <span class="explore-label">Keep exploring</span>
+    <a href="the-game.html">🀄 The Game</a>
+    <a href="glossary.html">📖 The Glossary</a>
+    <a href="faq.html">❓ The FAQ</a>
+    <a href="rulebook.html">📕 The Learning Guide</a>
+  </div>
+</div>
 
 <footer></footer>
 <script src="shared.js"></script>

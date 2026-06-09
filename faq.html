@@ -469,6 +469,8 @@
 .faq-closing-inner p { font-family: var(--body); font-size: 16px; color: var(--dusk); line-height: 1.65; max-width: 520px; margin: 0 auto 22px; }
 .faq-closing-links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
+.back-top { display: block; text-align: right; margin-top: 12px; font-family: var(--body); font-size: 12px; letter-spacing: 0.02em; color: var(--dusk); text-decoration: none; transition: color 0.15s; }
+.back-top:hover { color: var(--orchid); }
 @media (max-width: 600px) {
   .page-hero { padding: 110px 20px 26px; }
   .faq-wrap { padding: 16px 18px 32px; }
@@ -480,7 +482,7 @@
 
 <nav></nav>
 
-<div class="page-hero">
+<div class="page-hero" id="top">
   <p class="page-hero-eyebrow">The FAQ</p>
   <h1 class="page-hero-headline">American Mahjong, <em>answered.</em></h1>
   <p class="page-hero-sub">The questions players actually ask — the Charleston, the card, the jokers, all of it — answered plainly. No jargon, no gatekeeping.</p>
@@ -713,5 +715,16 @@
 
 <footer></footer>
 <script src="shared.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('.faq-item, .howto-item').forEach(function(el){
+    var a = document.createElement('a');
+    a.className = 'back-top';
+    a.href = '#top';
+    a.textContent = '↑ Back to top';
+    el.appendChild(a);
+  });
+})();
+</script>
 </body>
 </html>

@@ -19,7 +19,7 @@
   --body: 'Crimson Text', Georgia, serif;
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 92px; }
 body {
   background: var(--cloud);
   color: #3D3530;
