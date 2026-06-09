@@ -41,6 +41,11 @@
 .view { display: none; }
 .view.active { display: block; }
 
+.search-wrap { max-width: 560px; margin: 22px auto 0; padding: 0 24px; }
+.search-wrap input { width: 100%; font-family: var(--body); font-size: 16px; color: var(--ink); background: var(--cloud); border: 0.5px solid var(--lilac); border-radius: 26px; padding: 13px 22px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+.search-wrap input::placeholder { color: var(--dusk); }
+.search-wrap input:focus { border-color: var(--orchid); box-shadow: 0 4px 18px rgba(155,114,160,0.12); }
+
 /* ===== FILTER CHIPS ===== */
 .controls { max-width: 800px; margin: 0 auto; padding: 0 24px; text-align: center; }
 .filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 22px auto 6px; }
@@ -122,6 +127,10 @@
   <p class="page-hero-sub">Shops for supplies, tables to play at, teachers to learn from, and books to read — every listing backed by a source you can check yourself.</p>
 </div>
 
+<div class="search-wrap">
+  <input id="searchInput" type="search" autocomplete="off" placeholder="🔎 Search a name, city, or state — a shop, teacher, or game…">
+</div>
+
 <div class="tabs">
   <button class="tab active" id="tabState">📍 By State</button>
   <button class="tab" id="tabOnline">🌐 Online &amp; National</button>
@@ -170,6 +179,7 @@
       <button class="chip" data-cat="book">📚 Books</button>
       <button class="chip" data-cat="learn">🎓 Teachers</button>
       <button class="chip" data-cat="play">🀄 Play</button>
+      <button class="chip" data-cat="national">🌐 No home state</button>
     </div>
     <div class="count-line" id="onlineCount">Loading…</div>
     <div class="crosslink"><a href="/where-to-buy.html">Browse our curated boutique picks &rarr;</a></div>
@@ -178,6 +188,12 @@
   <div class="panel">
     <div class="panel-inner" id="onlinePanel"><p class="panel-empty">Loading…</p></div>
   </div>
+</div>
+
+<!-- ============ SEARCH RESULTS ============ -->
+<div class="view" id="viewSearch">
+  <div class="controls"><div class="count-line" id="searchCount"></div></div>
+  <div class="panel"><div class="panel-inner" id="searchPanel"></div></div>
 </div>
 
 <!-- ============ SHARED FOOTERS ============ -->
@@ -209,7 +225,7 @@ var GRID = {
   HI:[9,1]
 };
 
-var CATS = { buy:{label:"Shops & Supplies",icon:"🛍️"}, book:{label:"Books",icon:"📚"}, play:{label:"Places to Play",icon:"🀄"}, learn:{label:"Teachers",icon:"🎓"} };
+var CATS = { buy:{label:"Shops & Supplies",icon:"🛍️"}, book:{label:"Books & Guides",icon:"📚"}, play:{label:"Places to Play",icon:"🀄"}, learn:{label:"Teachers",icon:"🎓"} };
 
 var DATA={entries:[]}, BY_CODE={}, ONLINE=[], stateCat="all", onlineCat="all", selectedCode=null;
 
@@ -309,10 +325,31 @@ document.getElementById('filtersOnline').addEventListener('click', function(e){
   renderOnline();
 });
 function renderOnline(){
-  var list=ONLINE.filter(function(e){ return onlineCat==="all"||e.c===onlineCat; });
+  var list=ONLINE.filter(function(e){ return onlineCat==="all" ? true : (onlineCat==="national" ? e.code==="US" : e.c===onlineCat); });
   document.getElementById('onlineCount').textContent=ONLINE.length+" online & national listings (national shops, online teachers, and locals who also serve online).";
   var panel=document.getElementById('onlinePanel');
   panel.innerHTML = list.length ? groupHtml(list, true) : '<p class="panel-empty">Nothing in this category yet.</p>';
+}
+
+/* ---- global search (name / city / state) ---- */
+var searchInput=document.getElementById('searchInput');
+searchInput.addEventListener('input', function(){
+  var raw=searchInput.value.trim(), q=raw.toLowerCase();
+  if(q.length<2){ setSearchMode(false); return; }
+  setSearchMode(true);
+  var hits=DATA.entries.filter(function(e){
+    var hay=(e.n+' '+(e.city||'')+' '+(STATE_NAMES[e.code]||'')+' '+e.code+' '+(e.s||'')+' '+(e.ts||'')).toLowerCase();
+    return hay.indexOf(q)>-1;
+  });
+  hits.sort(function(a,b){ var x=a.n.toLowerCase(), y=b.n.toLowerCase(); return x<y?-1:(x>y?1:0); });
+  document.getElementById('searchCount').textContent=hits.length+' match'+(hits.length===1?'':'es')+' for “'+raw+'” · grouped by type, A–Z';
+  document.getElementById('searchPanel').innerHTML = hits.length ? groupHtml(hits, true) : '<p class="panel-empty">No matches. Try a name, city, or state — or tell Prim who’s missing, below.</p>';
+});
+function setSearchMode(on){
+  document.querySelector('.tabs').style.display = on ? 'none' : '';
+  document.getElementById('viewSearch').classList.toggle('active', on);
+  document.getElementById('viewState').classList.toggle('active', !on && document.getElementById('tabState').classList.contains('active'));
+  document.getElementById('viewOnline').classList.toggle('active', !on && document.getElementById('tabOnline').classList.contains('active'));
 }
 </script>
 </body>
