@@ -89,6 +89,14 @@
   .scoreline{display:flex; gap:12px; margin:14px 0;}
   .scoreline .stat{flex:1; text-align:center;}
   .slow{font-size:.92rem; color:var(--ink-soft); margin:10px 0 4px;} .slow b{color:var(--ink); font-style:normal;}
+  .modal-actions{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px;}
+  .modal-actions .btn{width:100%; padding:11px 10px; font-size:.96rem; margin:0;}
+  .summary{background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); padding:18px;}
+  .summary h2{font-family:"Playfair Display",serif; margin:.1em 0 .5em;}
+  .summary table{width:100%; border-collapse:collapse; font-size:.95rem; margin-bottom:6px;}
+  .summary td,.summary th{text-align:left; padding:5px 8px; border-bottom:1px solid var(--line);}
+  .summary th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .summary .note{font-style:italic; color:var(--ink-soft); margin:12px 0; font-size:.92rem;}
   .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
   @media(max-width:560px){
     .buckets,.buckets.c4,.buckets.c7{grid-template-columns:repeat(3,1fr);}
@@ -122,7 +130,8 @@
     <button id="newRound" class="btn ghost">New round</button>
     <button id="nextLevel" class="btn" disabled>Next level</button>
     <span class="hint" id="hint">Clear a round at 100% on the first try to open the next level.</span>
-    <button id="resetAll" class="btn ghost" style="margin-left:auto; font-size:.85rem; padding:6px 12px;">Reset progress</button>
+    <button id="stopBtn" class="btn ghost" style="margin-left:auto;">Stop</button>
+    <button id="resetAll" class="btn ghost" style="font-size:.85rem; padding:6px 12px;">Reset progress</button>
   </div>
 
   <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
@@ -138,15 +147,17 @@
       <div class="stat"><div class="k">Time</div><div class="v" id="cardTime">—</div></div>
     </div>
     <div class="slow" id="cardSlow"></div>
-    <div class="controls" style="margin-top:18px;">
+    <div class="modal-actions">
       <button id="cardAgain" class="btn ghost">Again</button>
       <button id="cardNext" class="btn" disabled>Next level</button>
+      <button id="cardChoose" class="btn ghost">Choose another game</button>
+      <button id="cardDone" class="btn ghost">Finished</button>
     </div>
   </div>
 </div>
 
 <script>
-const BUILD="v3 · 2026-06-10";
+const BUILD="v4 · 2026-06-10";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_tm_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_tm_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -343,6 +354,42 @@ $("#nextLevel").onclick=()=>{if(prog.unlocked>cur.n)gotoLevel(cur.n+1);};
 $("#cardAgain").onclick=()=>{$("#scrim").classList.remove("show"); deal();};
 $("#cardNext").onclick=()=>{$("#scrim").classList.remove("show"); if(cur.n<LEVELS.length)gotoLevel(cur.n+1);};
 $("#resetAll").onclick=()=>{if(confirm("Reset all progress, best times, and per-tile stats?")){localStorage.removeItem(LS); prog=loadProg(); prog.unlocked=1; prog.best={sort:{},hunt:{},name:{}}; prog.faces={}; saveProg(); cur=LEVELS[0]; setMode("sort");}};
+
+$("#stopBtn").onclick=()=>{
+  clearInterval(timerId);
+  const secs=(round&&round.t0)?(performance.now()-round.t0)/1000:0;
+  const acc=(round&&round.attempted)?Math.round(round.firstRight/round.attempted*100):0;
+  $("#cardTitle").textContent="Stopped.";
+  $("#cardVerdict").textContent="You ended the round early. Pick up wherever you like.";
+  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s"; $("#cardSlow").innerHTML="";
+  $("#cardNext").disabled=!(prog.unlocked>cur.n);
+  $("#scrim").classList.add("show");
+};
+$("#cardChoose").onclick=()=>{
+  $("#scrim").classList.remove("show");
+  window.scrollTo({top:0,behavior:'smooth'});
+  const mb=document.querySelector('.modebar');
+  if(mb&&mb.animate) mb.animate([{filter:'brightness(1)'},{filter:'brightness(1.18)'},{filter:'brightness(1)'}],{duration:800});
+};
+$("#cardDone").onclick=()=>{ $("#scrim").classList.remove("show"); showSummary(); };
+function showSummary(){
+  clearInterval(timerId);
+  const modeName={sort:'Sort',hunt:'Hunt',name:'Name'};
+  let rows='';
+  ['sort','hunt','name'].forEach(m=>{for(let L=1;L<=3;L++){const b=prog.best[m]&&prog.best[m][L]; if(b)rows+=`<tr><td>${modeName[m]}</td><td>Level ${L}</td><td>${b.toFixed(1)}s</td></tr>`;}});
+  if(!rows) rows=`<tr><td colspan="3" style="color:var(--ink-soft); font-style:italic;">No clean rounds yet — clear one at 100% to set a best time.</td></tr>`;
+  const faces=Object.entries(prog.faces||{}).filter(([n,f])=>f.seen>0);
+  const reps=faces.reduce((s,[,f])=>s+f.seen,0);
+  const work=faces.map(([n,f])=>({n,acc:f.right/f.seen,ms:f.ms/f.n})).sort((a,b)=>a.acc-b.acc||b.ms-a.ms).slice(0,3).map(x=>`<b>${x.n}</b> ${Math.round(x.acc*100)}%`).join(' · ');
+  $("#game").innerHTML=`<div class="summary">
+    <h2>Your practice so far</h2>
+    <table><thead><tr><th>Game</th><th>Level</th><th>Best (100%)</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="note">${faces.length} tiles practiced · ${reps} reps total${work?` · tiles to work on: ${work}`:''}</p>
+    <p class="note">These stats live only on this device for now. Soon you'll be able to create a free account to save your progress across devices and see how you rank — and we will never sell your information.</p>
+    <button class="btn" id="backToPlay">Back to practice</button>
+  </div>`;
+  $("#backToPlay").onclick=()=>deal();
+}
 
 deal();
 </script>
