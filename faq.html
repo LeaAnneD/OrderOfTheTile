@@ -748,7 +748,7 @@
 .faq-intro { font-family: var(--body); font-size: 17px; font-style: italic; color: var(--dusk); line-height: 1.65; margin-bottom: 26px; max-width: 600px; }
 .faq-section article, .howto-section article { padding: 22px 0; border-bottom: 0.5px solid var(--lilac); }
 .faq-section article:last-child, .howto-section article:last-child { border-bottom: 0; }
-.faq-section h3, .howto-section h3 { font-family: var(--serif); font-size: 20px; font-weight: 500; color: var(--ink); line-height: 1.3; margin-bottom: 10px; }
+.faq-section article h3, .howto-section article h3 { font-family: var(--serif); font-size: 20px; font-weight: 500; color: var(--ink); line-height: 1.3; margin-bottom: 10px; }
 .faq-section p, .howto-section li { font-family: var(--body); font-size: 16.5px; color: #3D3530; line-height: 1.7; }
 .howto-meta { color: var(--dusk) !important; font-style: italic; font-size: 15px !important; margin-bottom: 10px; }
 .howto-section { margin-top: 44px; padding-top: 28px; border-top: 0.5px solid var(--lilac); }
@@ -780,11 +780,11 @@
 
 .faq-section article, .howto-section article { padding: 0; }
 .faq-section article:first-of-type, .howto-section article:first-of-type { border-top: 0.5px solid var(--lilac); }
-.faq-section h3, .howto-section h3 { margin: 0; padding: 17px 38px 17px 2px; cursor: pointer; position: relative; user-select: none; }
-.faq-section h3::after, .howto-section h3::after { content: '+'; position: absolute; right: 6px; top: 15px;
+.faq-section article h3, .howto-section article h3 { margin: 0; padding: 17px 38px 17px 2px; cursor: pointer; position: relative; user-select: none; }
+.faq-section article h3::after, .howto-section article h3::after { content: '+'; position: absolute; right: 6px; top: 15px;
   font-size: 23px; font-weight: 400; line-height: 1; color: var(--dusk); }
 .faq-section article.open h3::after, .howto-section article.open h3::after { content: '\2013'; }
-.faq-section h3:hover, .howto-section h3:hover { color: var(--orchid); }
+.faq-section article h3:hover, .howto-section article h3:hover { color: var(--orchid); }
 .faq-section article > :not(h3), .howto-section article > :not(h3) {
   max-height: 0; overflow: hidden; opacity: 0; margin: 0;
   transition: max-height .3s ease, opacity .2s ease, padding .2s ease; }
@@ -793,6 +793,14 @@
 .howto-section article.open > .howto-meta { padding-bottom: 4px; }
 .howto-section article.open > ol { margin: 0 0 16px 22px; }
 .faq-item.faq-hide, .howto-item.faq-hide { display: none; }
+.faq-group { margin: 0 0 6px; }
+.faq-group-title { font-family: var(--serif); font-size: clamp(20px, 2.6vw, 26px); font-weight: 500; color: var(--orchid); margin: 40px 0 2px; padding-bottom: 9px; border-bottom: 1px solid var(--lilac); }
+.faq-group:first-of-type .faq-group-title { margin-top: 14px; }
+.faq-group.faq-hide { display: none; }
+.faq-search-hint { margin: 2px 0 0; font-size: 14px; color: var(--dusk); line-height: 1.55; }
+.faq-search-hint .kw { font-style: italic; color: var(--ink); }
+.faq-search-hint a { color: var(--orchid); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--lilac); }
+.faq-search-hint a:hover { color: var(--ink); }
 </style>
 </head>
 <body>
@@ -810,380 +818,332 @@
   <svg class="si" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
   <input id="faqSearch" class="faq-search" type="search" placeholder="Search the FAQ, joker, dead hand, Charleston…" aria-label="Search the FAQ">
 </div>
+<p class="faq-search-hint">Search by keyword — try <span class="kw">joker</span>, <span class="kw">Charleston</span>, or <span class="kw">dead hand</span>. Have a specific question of your own? <a href="/ask.html">Ask Prim</a>.</p>
 <div class="faq-search-count" id="faqSearchCount" aria-live="polite"></div>
 <section id="faq" class="faq-section">
   <h2>Frequently Asked Questions About American Mahjong</h2>
   <p class="faq-intro">The questions players actually ask, answered plainly, from someone who has watched this hand a thousand times.</p>
 
-  <article class="faq-item">
+    <div class="faq-group">
+    <h3 class="faq-group-title">The Basics</h3>
+<article class="faq-item">
     <h3>What is American Mahjong?</h3>
     <p>American Mahjong is the game four women have been playing on Tuesday afternoons for nearly a century. Joseph Babcock brought a simplified version of the Chinese game home from Shanghai in the early 1920s, and the country went mad for it. By 1937, the National Mah Jongg League had been founded in New York City, giving the American variant its lasting shape: jokers, a card of legal hands reissued every April, and rules that hold from one table to the next.</p>
   </article>
-
-  <article class="faq-item">
+<article class="faq-item">
     <h3>How do you play American Mahjong?</h3>
     <p>Four players sit around the table. Everyone rolls dice, and the highest roller becomes East, the dealer. East receives 14 tiles; the other three players receive 13. After the Charleston (a structured tile exchange that opens every game), and a courtesy pass, East discards one tile from her hand. South sits to the right of East and draws next, play moves counter-clockwise around the table. Each player draws a tile and then discards one, until somebody completes a valid hand from the current NMJL card. A player can call a tile that has been discarded if the tile will complete a pung, kong, quint, or sextet. That called tile and the matching tiles that go with it must be displayed on the rack for the remainder of the game. Once a player has a complete hand matching one on the card, that player wins the round by calling Mahjong. The player then shares the hand with the others to show the complete hand.</p>
   </article>
-
-  <article class="faq-item">
+<article class="faq-item">
     <h3>How is American Mahjong different from Chinese Mahjong?</h3>
     <p>Two big differences. American Mahjong uses 8 jokers and asks you to build a specific hand from the NMJL card, a sheet of legal patterns reissued every spring. Chinese Mahjong has no jokers, is played differently, and scores differently. The Charleston, that structured pass of three tiles right, three across, three left at the start of every game, is also pure American. Chinese Mahjong doesn't conduct that ritual.</p>
   </article>
-
-  <article class="faq-item">
-    <h3>How many tiles are in an American Mahjong set?</h3>
-    <p>A standard NMJL set has 152 tiles: 36 each of Bams, Craks, and Dots; 16 winds; 12 dragons; 8 flowers; and 8 jokers. Most commercial sets ship with 166 tiles because they include extra blanks and spare jokers, you can set those aside before play.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is the Charleston in Mahjong?</h3>
-    <p>The Charleston is the tile exchange that opens every American Mahjong game. Three tiles right, three across, three left, that's the first Charleston, and it's mandatory. After that comes the optional second Charleston in reverse: three left, three across, three right. Any player can stop the second Charleston before it begins. This cadence is the time to shed the tiles you do not want and see what the table sends back. On the third pass of each Charleston, you can conduct a blind pass. In the first round, that is the pass to your left. In the second round, it is the pass to your right. To blind pass, you can take 1, 2, or 3 tiles that are passed to you and pass them on to the next player to complete the three-tile total. So if you only have one to pass, you can pull two from those passed to you and blindly pass them on.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is the NMJL card?</h3>
-    <p>The NMJL card is the annual tri-fold card published by the National Mah Jongg League listing every legal hand for the current year, usually around 72 hands grouped by category. Every official American Mahjong game is played to match one of those patterns. A new card comes out each April. The old one expires the same day. While it is the main card for this community, other cards do exist and can be played with if all four tablemates are using the same card.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>When does the NMJL release a new card each year?</h3>
-    <p>The National Mah Jongg League releases a new card every April. You can pre-order through the NMJL directly or pick one up from a local distributor. It is good for a year, then a fresh card takes its place.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>How many players do you need for American Mahjong?</h3>
-    <p>Four. American Mahjong is built for four players, the Charleston, the seat winds, and the wall configuration all assume a full table. You can play a modified game with three, or even two, but the proper game wants four. Solo mahj is a game for one and is good for practicing, but it does not replace the real game.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>How long does a game of American Mahjong take?</h3>
-    <p>A single hand usually takes 15 to 30 minutes. Most groups play multiple hands in a sitting, and a full evening of mahjong runs about two to three hours. Some tables are faster. Some tables are gossipier.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is a joker in American Mahjong and how is it used?</h3>
-    <p>A joker is a wild tile. It can stand in for any tile inside a group of three or more, a pung (3 matching), kong (4 matching), quint (5 matching), or sextet (6 matching), on the NMJL card. Jokers can never substitute for a single tile or a pair, which is why you will not see one in a NEWS hand, a year-number hand, a run, or anywhere the pattern asks for a tile to stand alone. There are 8 jokers in a standard set.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can you use a joker for a pair or single?</h3>
-    <p>No. Jokers only stand in for tiles inside a group of three or more like tiles, a pung, kong, quint, or sextet. Pairs and singles must be the actual tile, no matter what hand you are playing.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is a joker swap in American Mahjong?</h3>
-    <p>A joker swap is when you offer a real tile from your hand to redeem a joker that has been exposed on any rack at the table, including your own. The swap happens on your turn. You cannot swap for a joker held concealed in someone's hand; only ones that have already been exposed are in play.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is soap in Mahjong?</h3>
-    <p>Soap is what we call the white dragon tile, named for its blank face that looks like a small bar of soap. In most hands it functions as a regular white dragon. In specific hands on the NMJL card, it works as a zero instead.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>When can the white dragon (soap) be used as a zero?</h3>
-    <p>The soap stands in for a zero anywhere a 0 appears on the NMJL card. Year-number hands are the most common place you will see it, the 2026 hand uses two soaps as the zeroes, but any hand with a zero counts. When the soap is doing zero work, it is suit-neutral. It does not need to match the Dots suit.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is a dead hand in American Mahjong?</h3>
-    <p>A hand is declared dead when a player can no longer complete any valid NMJL pattern, usually because she has exposed tiles incorrectly, drawn the wrong number, or made an impossible exchange. A dead hand cannot win the round. Most groups have the player with the dead hand pay into the pot at game end. One does not have to verbally claim a dead hand if no one else knows. She can continue to play in a defensive manner to prevent others from winning their hand.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is a wall game in American Mahjong?</h3>
-    <p>A wall game (sometimes just called a wall) happens when every tile has been drawn from the wall and nobody has declared Mahjong. Nobody wins. Nobody pays out. The hand resets and a new one begins.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is the difference between an exposed and concealed hand?</h3>
-    <p>An exposed hand has at least one group of tiles displayed with a tile claimed from another player's discard, with all tiles in that grouping shown face-up on the rack. A concealed hand is built entirely from your own draws, with nothing exposed. Concealed hands pay more because they are harder to complete. Jokers can be used in a concealed hand as you would in any other hand.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>How does scoring work in American Mahjong?</h3>
-    <p>Every hand on the NMJL card has a point value next to it, typically somewhere between 25 and 75 points. The player who calls Mahjong collects from each opponent based on that point value. The opponent who discarded the winning tile pays double. Concealed hands and jokerless hands carry bonuses. Most tables play for small stakes, a penny per point is common, though the specifics vary by group.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>When can you call a discarded tile?</h3>
-    <p>You can call a discarded tile to complete a pung, kong, quint, or sextet. You cannot call for a pair or single, except as your very last tile, when claiming that discard wins the hand and you declare Mahjong. The discard is only available until the next player draws a tile from the wall and racks it (or makes her own discard). After that, the tile is dead. If more than one person calls the discarded tile, it goes to the player next in line to play, unless one of them is calling Mahjong. If a player calls Mahjong, the tile goes to her first. If two players call Mahjong on the same tile, it goes to the one next in order of play.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What if a player misnames the tile they discard and I call Mahjong on the misnamed tile?</h3>
-    <p>You still win. In American Mahjong, <em>looking takes priority over listening</em>, what counts is the actual tile sitting on the table, not the name the discarder called out. Say the player before you discards a tile and announces "Four Crak," but the tile they actually set down is a Four Bam, and that Four Bam is exactly what completes your hand. You call Mahjong on that misnamed tile, and your win stands. Because the discarder named it wrong, the rules treat the mistake as theirs: that player pays you four times the value of your hand, and the other two players pay nothing. You are not penalized at all, the misnamer is. One caveat: you are expected to look as well as listen, so always confirm the tile really is the one you need before you call.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What do X and C mean on the NMJL card?</h3>
-    <p>Two things people mix up. The X next to a hand means Exposed, you can call discards to build it. The C means Concealed, the hand must be played closed, with every tile self-drawn, and the only discard you can claim is the final tile to declare Mahjong. Suit relationships are not shown by X or C at all; they are shown by color. Tiles in the same color must be the same suit. Tiles in different colors must be different suits.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What are flower tiles and when do you use them?</h3>
-    <p>Flower tiles are 8 to a set, usually painted with flowers or seasons, and count as a single tile category. Several hands on the NMJL card require flowers as part of the pattern. Jokers can substitute for flowers in the same manner they are used in other hands, never for a single or a pair, but allowed inside a group of three or more. A discarded flower can be called to complete a flower pung, kong, quint, or sextet (a group of multiple flowers together), or as your final tile to declare Mahjong, never to fill a single flower slot. Some flowers have letters or numbers on them. That decoration has no meaning in the game of American Mahjong.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is a NEWS hand in American Mahjong?</h3>
-    <p>A NEWS hand is a category on the NMJL card built around the four wind tiles: North, East, West, South. The pattern typically asks for specific arrangements of the four winds alongside other tiles. Because the winds usually appear as singles (one of each tile, no repeated tiles) in these hands, jokers cannot be used to fill the wind slots.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is a courtesy pass in the Charleston?</h3>
-    <p>The courtesy pass is the optional exchange that comes after the Charleston concludes (whether it plays once or twice). It is separate from and follows the Charleston. You and the player across the table swap one, two, or three tiles, equal number both ways, but only if both of you agree. Either player can say no, and that is the end of it.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is a blind pass in the Charleston?</h3>
-    <p>A blind pass is when you pass tiles during the Charleston without looking at all of them first. You take the tiles handed to you and pass them straight along. Blind passes are only allowed on the second pass left (in the first Charleston) and the final pass right (in the second Charleston). They are your escape hatch when you have nothing useful to give up.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Where can I play American Mahjong or find a group?</h3>
-    <p>A few places that actually work: the Bam Good Time directory of local games, Meetup for mahjong groups in your city, local Facebook groups for players in your area, and your nearest Jewish Community Center (JCC), community center, or senior center, many of them host weekly games. If you have never played, ask anyway. Most tables welcome a beginner. In fact, many cities now have gathering parlors specifically for mahjong.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can you play American Mahjong online?</h3>
-    <p>Yes. The main platforms NMJL players use most are I Love Mahj, Real Mah Jongg, and Mahjong 4 Friends. More are being released this year. All three support live play with friends, and most offer practice modes against the computer when you cannot get a table together.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Is there a good guide or rulebook for learning American Mahjong?</h3>
-    <p>Yes, several. For absolute beginners, Elaine Sandberg's <em>A Beginner's Guide to American Mah Jongg</em> and Gregg Swain &amp; Toby Salk's <em>American Mah Jongg for Everyone</em> are the standard recommendations. For players who know the basics and want one comprehensive reference on the table, Prim's own <a href="/rulebook.html">American Mahjong Learning Guide</a> is a 50-page annotated rulebook covering the Charleston in full, jokers and the Finesse Move, scoring, dead hands, etiquette, and a quick reference, the things experienced players know but rarely write down.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>How do you read the NMJL Mahjong card?</h3>
-    <p>The National Mah Jongg League card lists roughly seventy legal hands in a compact shorthand of abbreviations, color blocks, and groupings. Each line is one hand. The card is organized into families: year hands like 2026, the even-number 2468 family, consecutive runs, the odd-number 13579 family, winds and dragons, and singles and pairs. The colors map to the three suits, Bams, Craks, and Dots, and the small print tells you which groups can take a joker (any group of three or more) and which cannot (singles and pairs). Once that key clicks, each April's new card stops being intimidating. Prim's <a href="/card-decoder.html">NMJL Card Decoder</a> walks the card section by section to teach exactly this.</p>
-  </article>
-
-  <article class="faq-item">
+<article class="faq-item">
     <h3>How is American Mahjong different from Mahjong solitaire (the matching game)?</h3>
     <p>Completely different games that happen to share a name. Mahjong solitaire, the one on your computer or phone, sometimes called Shanghai, is a single-player puzzle where you clear a stack by matching identical tiles two at a time. American Mahjong is a four-player social game where everyone draws and discards tiles to build a specific hand from the NMJL card, with jokers, the Charleston, and real strategy. If you wandered over from the matching game, welcome, this is the original, and it is a great deal more fun. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
   </article>
-
-  <article class="faq-item">
+<article class="faq-item">
     <h3>Is American Mahjong hard to learn?</h3>
     <p>Not as hard as the tiles make it look. You can pick up the basic flow, Charleston, draw, discard, call, declare Mahjong, in a single afternoon. What takes longer is reading the NMJL card fluently and sharpening your strategy, and that is the part players happily fuss over for years. If you can play gin rummy, you can play American Mahjong. The symbols look intimidating for about twenty minutes, and then they do not. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
   </article>
-
-  <article class="faq-item">
-    <h3>What do you need to start playing American Mahjong?</h3>
-    <p>Four things: an American Mahjong set (152 tiles, including 8 jokers and 8 flowers), the current year's NMJL card, four racks, pushers make life easier but are not required, and three other players. That is the whole list. You do not need a special table or a timer. Most new groups share one set and give everyone their own card. <em>Ready to shop? See <a href="/where-to-buy.html">where to buy</a>, or check the <a href="/glossary.html">glossary</a> for any unfamiliar terms.</em></p>
+<article class="faq-item">
+    <h3>How many players do you need for American Mahjong?</h3>
+    <p>Four. American Mahjong is built for four players, the Charleston, the seat winds, and the wall configuration all assume a full table. You can play a modified game with three, or even two, but the proper game wants four. Solo mahj is a game for one and is good for practicing, but it does not replace the real game.</p>
   </article>
-
-  <article class="faq-item">
-    <h3>How much does an American Mahjong set cost?</h3>
-    <p>It ranges widely. A basic, perfectly playable American set runs roughly $30 to $60. Nicer sets with a carrying case and heavier tiles climb into the low hundreds, and high-end sets run around $400 and up, with custom sets higher still. The NMJL card is separate and inexpensive, generally around $14 to $15, ordered straight from the National Mah Jongg League each spring. <em>See <a href="/where-to-buy.html">where to buy</a> for current options.</em></p>
+<article class="faq-item">
+    <h3>How long does a game of American Mahjong take?</h3>
+    <p>A single hand usually takes 15 to 30 minutes. Most groups play multiple hands in a sitting, and a full evening of mahjong runs about two to three hours. Some tables are faster. Some tables are gossipier.</p>
   </article>
-
-  <article class="faq-item">
-    <h3>Can you use any Mahjong set to play American Mahjong?</h3>
-    <p>Not quite any set. The American game needs 8 jokers and 8 flowers, and many imported Chinese sets either skip the jokers entirely or use different bonus tiles. If your set has the jokers and flowers, you are ready to play. If it is missing jokers, you can convert spare blank tiles with joker stickers from the National Mah Jongg League, a lot of sets ship with extra blanks for exactly that reason. The one thing you cannot do is play the American game without jokers; they are built into the card. <em>Shopping for a set? See <a href="/where-to-buy.html">where to buy</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
+<article class="faq-item">
     <h3>Is American Mahjong gambling, or do you have to play for money?</h3>
     <p>You do not have to play for money at all, plenty of tables play purely for the fun and the company. When money is in it, the stakes are almost always tiny: a penny a point is the classic, so a whole afternoon might swing a few dollars in either direction. It is a game of skill and patience with a dash of luck, much closer to a standing card night than a casino floor. Play for pennies, play for bragging rights, or play for nothing at all. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
   </article>
-
-  <article class="faq-item">
-    <h3>What is a pung, kong, quint, and sextet in American Mahjong?</h3>
-    <p>They are the names for groups of matching tiles, and they are the building blocks of almost every hand. A pung is three identical tiles. A kong is four. A quint is five. A sextet is six. The larger groups only appear on certain hands, and quints and sextets always lean on jokers to reach those counts. A pair, for the record, is just two matching tiles, and a pair is the one grouping a joker can never help you complete. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+<article class="faq-item">
+    <h3>Is there a good guide or rulebook for learning American Mahjong?</h3>
+    <p>Yes, several. For absolute beginners, Elaine Sandberg's <em>A Beginner's Guide to American Mah Jongg</em> and Gregg Swain &amp; Toby Salk's <em>American Mah Jongg for Everyone</em> are the standard recommendations. For players who know the basics and want one comprehensive reference on the table, Prim's own <a href="/rulebook.html">American Mahjong Learning Guide</a> is a 50-page annotated rulebook covering the Charleston in full, jokers and the Finesse Move, scoring, dead hands, etiquette, and a quick reference, the things experienced players know but rarely write down.</p>
   </article>
-
-  <article class="faq-item">
-    <h3>What are Bams, Craks, and Dots in American Mahjong?</h3>
-    <p>They are the three suits in an American Mahjong set, each running 1 through 9, with four of every number. Bams (short for bamboo) are the green tiles, usually little stalks, and the 1 Bam is traditionally a bird. Craks (short for characters) carry a Chinese numeral above a symbol. Dots (sometimes called circles) show that many round dots on the tile. Many hands on the NMJL card ask you to build within one suit or to match suits across groups, so learning to spot the three at a glance is one of the first things that clicks. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </div>
+  <div class="faq-group">
+    <h3 class="faq-group-title">Gear & Setup</h3>
+<article class="faq-item">
+    <h3>How many tiles are in an American Mahjong set?</h3>
+    <p>A standard NMJL set has 152 tiles: 36 each of Bams, Craks, and Dots; 16 winds; 12 dragons; 8 flowers; and 8 jokers. Most commercial sets ship with 166 tiles because they include extra blanks and spare jokers, you can set those aside before play.</p>
   </article>
-
-  <article class="faq-item">
-    <h3>What are the dragons in American Mahjong?</h3>
-    <p>There are three dragons, with four of each. The Red dragon, the Green dragon, and the White dragon, which everyone at the table calls Soap (White Dragon), because its mostly blank face looks like a little bar of soap. Each dragon pairs with a suit: Red with Craks, Green with Bams, and Soap (White Dragon) with Dots. In certain hands the Soap (White Dragon) also stands in for a zero. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+<article class="faq-item">
+    <h3>What do you need to start playing American Mahjong?</h3>
+    <p>Four things: an American Mahjong set (152 tiles, including 8 jokers and 8 flowers), the current year's NMJL card, four racks, pushers make life easier but are not required, and three other players. That is the whole list. You do not need a special table or a timer. Most new groups share one set and give everyone their own card. <em>Ready to shop? See <a href="/where-to-buy.html">where to buy</a>, or check the <a href="/glossary.html">glossary</a> for any unfamiliar terms.</em></p>
   </article>
-
-  <article class="faq-item">
+<article class="faq-item">
+    <h3>How much does an American Mahjong set cost?</h3>
+    <p>It ranges widely. A basic, perfectly playable American set runs roughly $30 to $60. Nicer sets with a carrying case and heavier tiles climb into the low hundreds, and high-end sets run around $400 and up, with custom sets higher still. The NMJL card is separate and inexpensive, generally around $14 to $15, ordered straight from the National Mah Jongg League each spring. <em>See <a href="/where-to-buy.html">where to buy</a> for current options.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>Can you use any Mahjong set to play American Mahjong?</h3>
+    <p>Not quite any set. The American game needs 8 jokers and 8 flowers, and many imported Chinese sets either skip the jokers entirely or use different bonus tiles. If your set has the jokers and flowers, you are ready to play. If it is missing jokers, you can convert spare blank tiles with joker stickers from the National Mah Jongg League, a lot of sets ship with extra blanks for exactly that reason. The one thing you cannot do is play the American game without jokers; they are built into the card. <em>Shopping for a set? See <a href="/where-to-buy.html">where to buy</a>.</em></p>
+  </article>
+<article class="faq-item">
     <h3>Who goes first in American Mahjong, and how is East decided?</h3>
     <p>East goes first, and East is decided by a roll of the dice, the highest roller takes the East seat and the extra fourteenth tile. From there, play moves counter-clockwise: South sits to East's right and draws next, then West, then North. After each hand, the East position passes to the player on East's right, so everyone takes a turn as the dealer. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
   </article>
-
-  <article class="faq-item">
-    <h3>Can you swap for a joker while playing a concealed hand?</h3>
-    <p>Yes. A concealed hand does not lock you out of joker swaps. Redeeming a joker depends on only two things: the joker has to be exposed on a rack, yours or anyone else's, and it has to be your turn. Neither one depends on whether your own hand is open or closed. The swap does not break your concealment because it is not a call for an exposure: you hand one real tile into the other player's exposure and take the joker back into your hand, with nothing of yours ever going face-up. Your hand stays closed, and that joker can fill any pung, kong, quint, or sextet you are building. The only joker you cannot touch is one still hidden in a player's hand, it has to be exposed to be fair game. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What do you call out when you discard a joker?</h3>
-    <p>When you discard a joker, you may announce it three ways: say "Joker," say "Same," or repeat the name of the tile that was just discarded before it. All three are legal. Here is the part that trips people up: it makes no difference which one you choose, because a discarded joker is permanently dead, no one can ever pick it up, call it, or use it, no matter what you name it. Naming a joker after the previous discard does not turn it into that tile. Players mostly do it when dogging, playing defensively late in the hand and throwing only safe tiles, because a joker is the safest possible discard, and echoing the previous throw keeps the rhythm without handing the table any information. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What happens if you call Mahjong by mistake?</h3>
-    <p>Call it back fast and you are usually fine. If you announce Mahjong, then catch the mistake before you have exposed your hand and before anyone else has disturbed theirs, you simply take it back and play continues with no penalty. But once you have laid your hand down, that hand is declared dead: you stop drawing and discarding for the rest of the round, the others keep playing, and when someone does win you pay the winner the full value of the hand. If you declared on a discard and realize you were wrong, you may downgrade your claim to a call for exposure instead. The lesson every table learns the hard way is to count twice before you call. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can you take back a discarded tile?</h3>
-    <p>No. Once a tile has been named aloud or has touched the table, it is discarded for good, there is no taking it back. Players call this rule "Down is Down." The same idea applies to tiles you have committed to: once you move a tile from the wall or place a called tile on your rack, it is yours to keep. The rule keeps the game honest and the pace moving, so name your discard only when you are sure. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can you play American Mahjong with two or three players?</h3>
-    <p>Yes, with small adjustments, though four is the true game. With three players you still build all four walls and deal as usual, but you skip the Charleston and East simply opens by discarding. With two players you sit opposite each other, each build your own wall plus the wall to your right, skip the Charleston, and East starts. Neither version carries the full rhythm of a four-player table, but both are good for a short game or for teaching someone new. Solo practice, sometimes called solo mahj, is a fourth option when you just want to drill hands. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is the Bettor, and can a fifth person play American Mahjong?</h3>
-    <p>Yes, a fifth player can join as the Bettor. After the Charleston, the Bettor quietly picks the player they believe will win (or bets on a wall game, meaning no winner at all) and keeps it secret, writing the name down or using a small betting disk. The Bettor cannot talk, signal, or interfere during play. When the hand ends, the Bettor wins or loses the same amount as the player they bet on. It is the traditional way to seat a fifth person without breaking up the four at the table, they rotate in as seats open. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What are the Heavenly Hand and Earthly Hand in American Mahjong?</h3>
-    <p>Two rare, lucky wins, both belonging to East. A Heavenly Hand is when East is dealt a complete, valid hand and declares Mahjong before the Charleston even begins, the passing is waived entirely. An Earthly Hand is when East completes the hand during the Charleston and declares the moment it ends, before any tile is drawn from the wall. Both count as self-picked, so East collects double from every player. You may go years without seeing one, which is exactly why they have names. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>How do you win at American Mahjong? Tips for beginners</h3>
-    <p>Winning comes down to three habits. First, pick a direction early, look at what you are dealt, find the hands on the card that fit, and lean that way during the Charleston instead of chasing tiles. Second, stay flexible: keep a backup hand in mind, because the tiles passed to you will rarely match your first plan. Third, watch the table, every discard and exposure tells you what your opponents are building, so you can stop feeding them. Late in the hand, when your own win looks unlikely, switch to defense and throw only safe tiles. And guard your jokers, because a wasted joker is usually a wasted hand. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is defensive play, or "dogging," in American Mahjong?</h3>
-    <p>Defensive play is what you do when your own hand has stalled and you would rather no one win than hand the round to someone else. The classic move is called dogging: you break up your hand and throw only safe tiles, often whatever the player just before you discarded, since it clearly was not claimed. The goal is to avoid throwing a hot tile that an opponent obviously needs. It matters because you cannot win second in American Mahjong; once someone declares Mahjong the hand is over, so a good defensive game protects the whole table from a player who is one tile away. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What is a hot tile in American Mahjong?</h3>
-    <p>A hot tile is one an opponent obviously needs, something you can read from their exposures, the hands on the card, and the tiles they have pointedly not discarded. Throwing a hot tile late in the hand is how you hand someone the win. Learning which tiles have gone cold, or safe, and which are running hot is a big part of playing good defense. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>If two players want the same discarded tile, who gets it?</h3>
-    <p>The player whose turn comes up first, closest to the discarder's right, going around the table, has first claim, unless another player has already started laying down their exposure for that tile, in which case it is theirs. And Mahjong beats everything: if one player wants the tile for an exposure and another wants it to win, the one calling Mahjong gets it, even if the other was technically next in line. If two people both call Mahjong on the same tile, it goes to the one nearer the discarder's right. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can I say "wait" or "hold" before calling for a discard?</h3>
-    <p>Yes. You are allowed to say "wait" or "hold" to freeze the table for a moment while you check your hand against the card. It buys you a beat to decide, but it is for a quick look, not a long deliberation, so don't keep the table hanging. Once you have decided, say your call clearly: "call," "take," or just name the tile.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can I call a tile that was discarded earlier, or only the most recent one?</h3>
-    <p>Only the one just discarded, and only during its brief window. Once a tile has gone dead, the next player has drawn and racked, it is out of play for good. You can't reach back for something from three turns ago, no matter how badly you need it now. Every discard gets exactly one moment; miss it and it is gone.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can I call a discard if I only have jokers to go with it?</h3>
-    <p>Yes, the discarded tile itself is your one "real" tile, and you fill out the rest of the group with jokers from your hand. So if you need a pung of 5 Dot and you are holding two jokers, you can call a discarded 5 Dot and complete the pung with that tile plus your two jokers. The only thing you can't do is build an exposure out of nothing but jokers, but a called discard always gives you that one real tile to build on. Jokers still can't stand in for a single or a pair, as always. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What does "Mahjong trumps everything" mean?</h3>
-    <p>It is the tiebreaker for a hot discard. Normally the player next in turn has first claim on a discarded tile, but if someone else wants that same tile to complete their winning hand, Mahjong wins out. Calling Mahjong outranks calling for an exposure, every time. So even if you were "next," a player declaring Mahjong on that tile gets it.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What are all the ways a hand can go dead?</h3>
-    <p>A hand is dead when it can no longer make a legal Mahjong, and there are a handful of common ways it happens: holding the wrong number of tiles (fewer than 13 or more than 14); exposing tiles that do not form a real pung, kong, quint, or sextet (like exposing NEWS or a year, which are singles); exposing a group that matches no hand on the card; exposing while you are supposed to be playing a concealed hand; swapping a joker before you have picked or called; or picking out of turn, from the wrong wall, or "ahead." It can also be called dead if you are clearly waiting on a single or pair that has already been used up around the table. One important catch: a hand is not officially dead until another player points it out, you can't declare your own hand dead. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can I call another player's hand dead, and how does a "death challenge" work?</h3>
-    <p>You can. If the exposures and discards on the table make it clear someone can't possibly finish a legal hand, any player may challenge it and call that hand dead, it is a "death challenge." Keep it civil: the conversation is just between you and the challenged player, and everyone else stays quiet. If you are right, that hand sits out the rest of the round. If the challenge turns out to be wrong, the player who was mistaken owes the other a small penalty (commonly fifty cents) on top of whatever the eventual winner collects. Only call it when the table can actually see it from the exposed tiles, never from a peek at someone's concealed hand.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>I was called dead, now what?</h3>
-    <p>Your hand stops trying to win: you do not pick or discard for the rest of that round, and at game's end you pay the winner the full value of their hand. But you are not out, you keep your tiles and play defensively, holding back the tiles other players obviously need so you don't hand someone the win. A quiet dead hand can still decide a round. And if you do not think you are actually dead, say so, the challenge gets settled, and whoever was wrong pays the small penalty.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can I declare my own hand dead?</h3>
-    <p>No, and this one surprises people. Even if you know in your heart your hand is cooked, you can't announce it yourself; a hand is only official-dead when another player recognizes it from your visible tiles. The reason: calling your own hand dead would leak information and let you off the hook. So keep a straight face, keep playing defensively, and let someone else make the call, if they even notice.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What happens if I have the wrong number of tiles?</h3>
-    <p>It depends on when it is caught. If it is spotted before the game truly starts, during the Charleston, the tiles are thrown in and everyone re-deals (one exception: the player to East's left may take their rightful tile from the wall if they are simply short one and East has not discarded yet). But once East has thrown the first tile and you are found holding the wrong number, your hand is dead, you pay the winner, but can't win yourself. If two players have the wrong count, the others play on; if three do, the whole hand is replayed.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What does "paying for the table" mean?</h3>
-    <p>It is the game's steepest penalty, paid at four times the value of the hand, for a mistake at a big moment that spoils things for everyone. You will hear it come up when someone declares Mahjong on a misnamed tile (they pay the rightful winner four times), or destroys the wall before the game is over. Exactly who pays whom depends on the situation, but the idea is always the same: a costly error, settled at the quadruple rate. It is a very good reason to slow down when the stakes are high.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can I take a joker back from a dead player's rack?</h3>
-    <p>Yes, as long as that joker was exposed before the hand was called dead. A joker sitting in an exposure on a dead player's rack is still fair game: on your turn, you can hand over the real tile it stands for and take the joker into your hand. The only ones off-limits are jokers that were never exposed, or any tile still hidden in a hand. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>How many jokers can I redeem in a single turn?</h3>
-    <p>As many as your tiles allow, there is no cap. If it is your turn and you hold the real tiles for three exposed jokers around the table, you can redeem all three before you discard. Just do it on your own turn, one clean swap at a time, and finish by discarding as usual.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can I grab a joker and immediately use it to call a discard?</h3>
-    <p>No, you have to make your call first. You can't pull a joker off a rack and then use that joker to claim the tile someone just threw. Take the discard (or pick from the wall) and complete your turn first; redeeming jokers is a separate move you make on your own turn. The order matters, and tables enforce it.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What happens if someone redeems a joker with the wrong tile?</h3>
-    <p>If it slips by, the wrong tile goes into the exposure and nobody notices before the next discard, that player's hand is dead. But if someone catches it before the discard, it is a simple fix with no penalty: put the right tile in, or undo the swap. The lesson is to double-check that the tile actually matches the joker before you hand it over.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>When does a hand count as "jokerless" for the bonus?</h3>
-    <p>When there is not a single joker in your completed winning hand. Here is the part people miss: if you used a joker along the way but it got swapped out before you went out, an opponent redeemed it, or you traded it for the real tile, your hand still counts as jokerless. It is the final fourteen tiles that matter. A jokerless win doubles your payout, on every category except Singles and Pairs, where the bonus is already built into the value. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>What does "any" or "any suit" mean when a hand is shown in two or three colors?</h3>
-    <p>On the NMJL card, color stands for suit, not a specific one. A hand printed in two colors means any two of the three suits (Bams, Craks, Dots); three colors means all three, and they can be in any order. The rule is simply: tiles in the same color must be the same suit, and tiles in different colors must be different suits. So a two-color hand is not telling you green means Bams; it is telling you to pick two suits and keep them distinct. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Can the Soap (White Dragon) zero be used in a consecutive run?</h3>
-    <p>No. When the Soap (White Dragon) is doing duty as a zero, it lives in year-number hands and other spots where the card shows a 0, but it can never stand in as part of a consecutive run of numbers. A run wants actual numbered tiles in sequence, and a zero is not one of them. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
-    <h3>Who pays the winner, and who pays double?</h3>
-    <p>When you win off a tile someone discarded, that person, the one who threw your winning tile, pays double the hand's value, and the other two players pay the single printed value. If instead you pick your own winning tile from the wall, all three players pay double; that is the reward for going out on your own. And a jokerless hand doubles the payout again on top of either of those.</p>
-  </article>
-
-  <article class="faq-item">
-    <h3>How do the concealed and jokerless bonuses work?</h3>
-    <p>Two different things. A jokerless hand, no jokers at all in your final fourteen tiles, doubles your payout, on every category except Singles and Pairs, where it is already built in. Concealed hands work differently: there is no separate concealed bonus added on. The card simply prints a higher value for hands that must be played concealed, so the reward is already in the number you collect. Stack a jokerless win with a self-picked win and you reach the ceiling: four times the hand's value from each player. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
-  </article>
-
-  <article class="faq-item">
+<article class="faq-item">
     <h3>Why do you roll the dice in American Mahjong?</h3>
     <p>The dice do two jobs at the start. First, before the very first game, everyone rolls and the highest roller takes the East seat. Then East rolls again to decide where to break the wall, counting in from the right by the number on the dice, so no one can rig where the tiles come from. After that first game, East just passes to the right each hand, and the roll mostly settles the break point as you go.</p>
   </article>
-
-  <article class="faq-item">
-    <h3>Is it okay to touch another player's tiles or rack?</h3>
-    <p>As a rule, no, keep your hands to your own rack. Even during a joker swap, you do not reach over and grab the joker yourself: you announce the swap, hand your real tile to that player, and let them place the joker into your hand. It keeps the game honest and keeps the peace. The one thing everyone touches together is the shuffle at the start, when all four players mix the tiles.</p>
+  </div>
+  <div class="faq-group">
+    <h3 class="faq-group-title">The Tiles</h3>
+<article class="faq-item">
+    <h3>What are Bams, Craks, and Dots in American Mahjong?</h3>
+    <p>They are the three suits in an American Mahjong set, each running 1 through 9, with four of every number. Bams (short for bamboo) are the green tiles, usually little stalks, and the 1 Bam is traditionally a bird. Craks (short for characters) carry a Chinese numeral above a symbol. Dots (sometimes called circles) show that many round dots on the tile. Many hands on the NMJL card ask you to build within one suit or to match suits across groups, so learning to spot the three at a glance is one of the first things that clicks. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
   </article>
-
-  <article class="faq-item">
-    <h3>Can our group make up its own table rules?</h3>
-    <p>For a casual game at home, absolutely, plenty of tables add little house rules, as long as everyone agrees before the hand starts. Just know they are house rules, not official ones: in a sanctioned game or a tournament, the National Mah Jongg League's rules are what stand. When in doubt, play it the League's way, and save the variations for your own Tuesday table.</p>
+<article class="faq-item">
+    <h3>What are the dragons in American Mahjong?</h3>
+    <p>There are three dragons, with four of each. The Red dragon, the Green dragon, and the White dragon, which everyone at the table calls Soap (White Dragon), because its mostly blank face looks like a little bar of soap. Each dragon pairs with a suit: Red with Craks, Green with Bams, and Soap (White Dragon) with Dots. In certain hands the Soap (White Dragon) also stands in for a zero. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
   </article>
-
-  <article class="faq-item">
-    <h3>What are the most common beginner mistakes?</h3>
-    <p>A few show up at every new table. Committing to one hand too early and refusing to pivot when the Charleston hands you something else. Passing tiles in the Charleston that obviously help a neighbor. Wasting jokers on groups you could fill with real tiles. Forgetting to play defense once your own hand stalls, you can't win second, so a hot tile thrown late hands someone the round. And calling Mahjong before counting to fourteen. None of them are fatal, and all of them fade fast with a few games. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+<article class="faq-item">
+    <h3>What is soap in Mahjong?</h3>
+    <p>Soap is what we call the white dragon tile, named for its blank face that looks like a small bar of soap. In most hands it functions as a regular white dragon. In specific hands on the NMJL card, it works as a zero instead.</p>
   </article>
-
-  <article class="faq-item">
+<article class="faq-item">
+    <h3>When can the white dragon (soap) be used as a zero?</h3>
+    <p>The soap stands in for a zero anywhere a 0 appears on the NMJL card. Year-number hands are the most common place you will see it, the 2026 hand uses two soaps as the zeroes, but any hand with a zero counts. When the soap is doing zero work, it is suit-neutral. It does not need to match the Dots suit.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can the Soap (White Dragon) zero be used in a consecutive run?</h3>
+    <p>No. When the Soap (White Dragon) is doing duty as a zero, it lives in year-number hands and other spots where the card shows a 0, but it can never stand in as part of a consecutive run of numbers. A run wants actual numbered tiles in sequence, and a zero is not one of them. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>What are flower tiles and when do you use them?</h3>
+    <p>Flower tiles are 8 to a set, usually painted with flowers or seasons, and count as a single tile category. Several hands on the NMJL card require flowers as part of the pattern. Jokers can substitute for flowers in the same manner they are used in other hands, never for a single or a pair, but allowed inside a group of three or more. A discarded flower can be called to complete a flower pung, kong, quint, or sextet (a group of multiple flowers together), or as your final tile to declare Mahjong, never to fill a single flower slot. Some flowers have letters or numbers on them. That decoration has no meaning in the game of American Mahjong.</p>
+  </article>
+<article class="faq-item">
+    <h3>What is a pung, kong, quint, and sextet in American Mahjong?</h3>
+    <p>They are the names for groups of matching tiles, and they are the building blocks of almost every hand. A pung is three identical tiles. A kong is four. A quint is five. A sextet is six. The larger groups only appear on certain hands, and quints and sextets always lean on jokers to reach those counts. A pair, for the record, is just two matching tiles, and a pair is the one grouping a joker can never help you complete. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>What is a NEWS hand in American Mahjong?</h3>
+    <p>A NEWS hand is a category on the NMJL card built around the four wind tiles: North, East, West, South. The pattern typically asks for specific arrangements of the four winds alongside other tiles. Because the winds usually appear as singles (one of each tile, no repeated tiles) in these hands, jokers cannot be used to fill the wind slots.</p>
+  </article>
+  </div>
+  <div class="faq-group">
+    <h3 class="faq-group-title">The Card & the Charleston</h3>
+<article class="faq-item">
+    <h3>What is the NMJL card?</h3>
+    <p>The NMJL card is the annual tri-fold card published by the National Mah Jongg League listing every legal hand for the current year, usually around 72 hands grouped by category. Every official American Mahjong game is played to match one of those patterns. A new card comes out each April. The old one expires the same day. While it is the main card for this community, other cards do exist and can be played with if all four tablemates are using the same card.</p>
+  </article>
+<article class="faq-item">
+    <h3>When does the NMJL release a new card each year?</h3>
+    <p>The National Mah Jongg League releases a new card every April. You can pre-order through the NMJL directly or pick one up from a local distributor. It is good for a year, then a fresh card takes its place.</p>
+  </article>
+<article class="faq-item">
+    <h3>What do X and C mean on the NMJL card?</h3>
+    <p>Two things people mix up. The X next to a hand means Exposed, you can call discards to build it. The C means Concealed, the hand must be played closed, with every tile self-drawn, and the only discard you can claim is the final tile to declare Mahjong. Suit relationships are not shown by X or C at all; they are shown by color. Tiles in the same color must be the same suit. Tiles in different colors must be different suits.</p>
+  </article>
+<article class="faq-item">
+    <h3>How do you read the NMJL Mahjong card?</h3>
+    <p>The National Mah Jongg League card lists roughly seventy legal hands in a compact shorthand of abbreviations, color blocks, and groupings. Each line is one hand. The card is organized into families: year hands like 2026, the even-number 2468 family, consecutive runs, the odd-number 13579 family, winds and dragons, and singles and pairs. The colors map to the three suits, Bams, Craks, and Dots, and the small print tells you which groups can take a joker (any group of three or more) and which cannot (singles and pairs). Once that key clicks, each April's new card stops being intimidating. Prim's <a href="/card-decoder.html">NMJL Card Decoder</a> walks the card section by section to teach exactly this.</p>
+  </article>
+<article class="faq-item">
+    <h3>What does "any" or "any suit" mean when a hand is shown in two or three colors?</h3>
+    <p>On the NMJL card, color stands for suit, not a specific one. A hand printed in two colors means any two of the three suits (Bams, Craks, Dots); three colors means all three, and they can be in any order. The rule is simply: tiles in the same color must be the same suit, and tiles in different colors must be different suits. So a two-color hand is not telling you green means Bams; it is telling you to pick two suits and keep them distinct. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
     <h3>What are the "alternate" cards, versus the NMJL card?</h3>
     <p>The National Mah Jongg League card is the standard most American players use, but it is not the only one, other publishers put out their own annual cards with different hands. Any of them is perfectly legal to play, with one rule: everyone at the table has to be on the same card, since the hands do not match across them. Most groups pick one and stick with it for the year.</p>
   </article>
+<article class="faq-item">
+    <h3>What is the Charleston in Mahjong?</h3>
+    <p>The Charleston is the tile exchange that opens every American Mahjong game. Three tiles right, three across, three left, that's the first Charleston, and it's mandatory. After that comes the optional second Charleston in reverse: three left, three across, three right. Any player can stop the second Charleston before it begins. This cadence is the time to shed the tiles you do not want and see what the table sends back. On the third pass of each Charleston, you can conduct a blind pass. In the first round, that is the pass to your left. In the second round, it is the pass to your right. To blind pass, you can take 1, 2, or 3 tiles that are passed to you and pass them on to the next player to complete the three-tile total. So if you only have one to pass, you can pull two from those passed to you and blindly pass them on.</p>
+  </article>
+<article class="faq-item">
+    <h3>What is a courtesy pass in the Charleston?</h3>
+    <p>The courtesy pass is the optional exchange that comes after the Charleston concludes (whether it plays once or twice). It is separate from and follows the Charleston. You and the player across the table swap one, two, or three tiles, equal number both ways, but only if both of you agree. Either player can say no, and that is the end of it.</p>
+  </article>
+<article class="faq-item">
+    <h3>What is a blind pass in the Charleston?</h3>
+    <p>A blind pass is when you pass tiles during the Charleston without looking at all of them first. You take the tiles handed to you and pass them straight along. Blind passes are only allowed on the second pass left (in the first Charleston) and the final pass right (in the second Charleston). They are your escape hatch when you have nothing useful to give up.</p>
+  </article>
+  </div>
+  <div class="faq-group">
+    <h3 class="faq-group-title">Jokers</h3>
+<article class="faq-item">
+    <h3>What is a joker in American Mahjong and how is it used?</h3>
+    <p>A joker is a wild tile. It can stand in for any tile inside a group of three or more, a pung (3 matching), kong (4 matching), quint (5 matching), or sextet (6 matching), on the NMJL card. Jokers can never substitute for a single tile or a pair, which is why you will not see one in a NEWS hand, a year-number hand, a run, or anywhere the pattern asks for a tile to stand alone. There are 8 jokers in a standard set.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can you use a joker for a pair or single?</h3>
+    <p>No. Jokers only stand in for tiles inside a group of three or more like tiles, a pung, kong, quint, or sextet. Pairs and singles must be the actual tile, no matter what hand you are playing.</p>
+  </article>
+<article class="faq-item">
+    <h3>What is a joker swap in American Mahjong?</h3>
+    <p>A joker swap is when you offer a real tile from your hand to redeem a joker that has been exposed on any rack at the table, including your own. The swap happens on your turn. You cannot swap for a joker held concealed in someone's hand; only ones that have already been exposed are in play.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can you swap for a joker while playing a concealed hand?</h3>
+    <p>Yes. A concealed hand does not lock you out of joker swaps. Redeeming a joker depends on only two things: the joker has to be exposed on a rack, yours or anyone else's, and it has to be your turn. Neither one depends on whether your own hand is open or closed. The swap does not break your concealment because it is not a call for an exposure: you hand one real tile into the other player's exposure and take the joker back into your hand, with nothing of yours ever going face-up. Your hand stays closed, and that joker can fill any pung, kong, quint, or sextet you are building. The only joker you cannot touch is one still hidden in a player's hand, it has to be exposed to be fair game. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>What do you call out when you discard a joker?</h3>
+    <p>When you discard a joker, you may announce it three ways: say "Joker," say "Same," or repeat the name of the tile that was just discarded before it. All three are legal. Here is the part that trips people up: it makes no difference which one you choose, because a discarded joker is permanently dead, no one can ever pick it up, call it, or use it, no matter what you name it. Naming a joker after the previous discard does not turn it into that tile. Players mostly do it when dogging, playing defensively late in the hand and throwing only safe tiles, because a joker is the safest possible discard, and echoing the previous throw keeps the rhythm without handing the table any information. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>Can I take a joker back from a dead player's rack?</h3>
+    <p>Yes, as long as that joker was exposed before the hand was called dead. A joker sitting in an exposure on a dead player's rack is still fair game: on your turn, you can hand over the real tile it stands for and take the joker into your hand. The only ones off-limits are jokers that were never exposed, or any tile still hidden in a hand. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>How many jokers can I redeem in a single turn?</h3>
+    <p>As many as your tiles allow, there is no cap. If it is your turn and you hold the real tiles for three exposed jokers around the table, you can redeem all three before you discard. Just do it on your own turn, one clean swap at a time, and finish by discarding as usual.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can I grab a joker and immediately use it to call a discard?</h3>
+    <p>No, you have to make your call first. You can't pull a joker off a rack and then use that joker to claim the tile someone just threw. Take the discard (or pick from the wall) and complete your turn first; redeeming jokers is a separate move you make on your own turn. The order matters, and tables enforce it.</p>
+  </article>
+<article class="faq-item">
+    <h3>What happens if someone redeems a joker with the wrong tile?</h3>
+    <p>If it slips by, the wrong tile goes into the exposure and nobody notices before the next discard, that player's hand is dead. But if someone catches it before the discard, it is a simple fix with no penalty: put the right tile in, or undo the swap. The lesson is to double-check that the tile actually matches the joker before you hand it over.</p>
+  </article>
+<article class="faq-item">
+    <h3>When does a hand count as "jokerless" for the bonus?</h3>
+    <p>When there is not a single joker in your completed winning hand. Here is the part people miss: if you used a joker along the way but it got swapped out before you went out, an opponent redeemed it, or you traded it for the real tile, your hand still counts as jokerless. It is the final fourteen tiles that matter. A jokerless win doubles your payout, on every category except Singles and Pairs, where the bonus is already built into the value. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+  </div>
+  <div class="faq-group">
+    <h3 class="faq-group-title">Playing a Hand</h3>
+<article class="faq-item">
+    <h3>What is the difference between an exposed and concealed hand?</h3>
+    <p>An exposed hand has at least one group of tiles displayed with a tile claimed from another player's discard, with all tiles in that grouping shown face-up on the rack. A concealed hand is built entirely from your own draws, with nothing exposed. Concealed hands pay more because they are harder to complete. Jokers can be used in a concealed hand as you would in any other hand.</p>
+  </article>
+<article class="faq-item">
+    <h3>When can you call a discarded tile?</h3>
+    <p>You can call a discarded tile to complete a pung, kong, quint, or sextet. You cannot call for a pair or single, except as your very last tile, when claiming that discard wins the hand and you declare Mahjong. The discard is only available until the next player draws a tile from the wall and racks it (or makes her own discard). After that, the tile is dead. If more than one person calls the discarded tile, it goes to the player next in line to play, unless one of them is calling Mahjong. If a player calls Mahjong, the tile goes to her first. If two players call Mahjong on the same tile, it goes to the one next in order of play.</p>
+  </article>
+<article class="faq-item">
+    <h3>If two players want the same discarded tile, who gets it?</h3>
+    <p>The player whose turn comes up first, closest to the discarder's right, going around the table, has first claim, unless another player has already started laying down their exposure for that tile, in which case it is theirs. And Mahjong beats everything: if one player wants the tile for an exposure and another wants it to win, the one calling Mahjong gets it, even if the other was technically next in line. If two people both call Mahjong on the same tile, it goes to the one nearer the discarder's right. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>Can I say "wait" or "hold" before calling for a discard?</h3>
+    <p>Yes. You are allowed to say "wait" or "hold" to freeze the table for a moment while you check your hand against the card. It buys you a beat to decide, but it is for a quick look, not a long deliberation, so don't keep the table hanging. Once you have decided, say your call clearly: "call," "take," or just name the tile.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can I call a tile that was discarded earlier, or only the most recent one?</h3>
+    <p>Only the one just discarded, and only during its brief window. Once a tile has gone dead, the next player has drawn and racked, it is out of play for good. You can't reach back for something from three turns ago, no matter how badly you need it now. Every discard gets exactly one moment; miss it and it is gone.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can I call a discard if I only have jokers to go with it?</h3>
+    <p>Yes, the discarded tile itself is your one "real" tile, and you fill out the rest of the group with jokers from your hand. So if you need a pung of 5 Dot and you are holding two jokers, you can call a discarded 5 Dot and complete the pung with that tile plus your two jokers. The only thing you can't do is build an exposure out of nothing but jokers, but a called discard always gives you that one real tile to build on. Jokers still can't stand in for a single or a pair, as always. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>What if a player misnames the tile they discard and I call Mahjong on the misnamed tile?</h3>
+    <p>You still win. In American Mahjong, <em>looking takes priority over listening</em>, what counts is the actual tile sitting on the table, not the name the discarder called out. Say the player before you discards a tile and announces "Four Crak," but the tile they actually set down is a Four Bam, and that Four Bam is exactly what completes your hand. You call Mahjong on that misnamed tile, and your win stands. Because the discarder named it wrong, the rules treat the mistake as theirs: that player pays you four times the value of your hand, and the other two players pay nothing. You are not penalized at all, the misnamer is. One caveat: you are expected to look as well as listen, so always confirm the tile really is the one you need before you call.</p>
+  </article>
+<article class="faq-item">
+    <h3>What does "Mahjong trumps everything" mean?</h3>
+    <p>It is the tiebreaker for a hot discard. Normally the player next in turn has first claim on a discarded tile, but if someone else wants that same tile to complete their winning hand, Mahjong wins out. Calling Mahjong outranks calling for an exposure, every time. So even if you were "next," a player declaring Mahjong on that tile gets it.</p>
+  </article>
+<article class="faq-item">
+    <h3>What is a wall game in American Mahjong?</h3>
+    <p>A wall game (sometimes just called a wall) happens when every tile has been drawn from the wall and nobody has declared Mahjong. Nobody wins. Nobody pays out. The hand resets and a new one begins.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can you take back a discarded tile?</h3>
+    <p>No. Once a tile has been named aloud or has touched the table, it is discarded for good, there is no taking it back. Players call this rule "Down is Down." The same idea applies to tiles you have committed to: once you move a tile from the wall or place a called tile on your rack, it is yours to keep. The rule keeps the game honest and the pace moving, so name your discard only when you are sure. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>Is it okay to touch another player's tiles or rack?</h3>
+    <p>As a rule, no, keep your hands to your own rack. Even during a joker swap, you do not reach over and grab the joker yourself: you announce the swap, hand your real tile to that player, and let them place the joker into your hand. It keeps the game honest and keeps the peace. The one thing everyone touches together is the shuffle at the start, when all four players mix the tiles.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can you play American Mahjong with two or three players?</h3>
+    <p>Yes, with small adjustments, though four is the true game. With three players you still build all four walls and deal as usual, but you skip the Charleston and East simply opens by discarding. With two players you sit opposite each other, each build your own wall plus the wall to your right, skip the Charleston, and East starts. Neither version carries the full rhythm of a four-player table, but both are good for a short game or for teaching someone new. Solo practice, sometimes called solo mahj, is a fourth option when you just want to drill hands. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>What is the Bettor, and can a fifth person play American Mahjong?</h3>
+    <p>Yes, a fifth player can join as the Bettor. After the Charleston, the Bettor quietly picks the player they believe will win (or bets on a wall game, meaning no winner at all) and keeps it secret, writing the name down or using a small betting disk. The Bettor cannot talk, signal, or interfere during play. When the hand ends, the Bettor wins or loses the same amount as the player they bet on. It is the traditional way to seat a fifth person without breaking up the four at the table, they rotate in as seats open. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>What are the Heavenly Hand and Earthly Hand in American Mahjong?</h3>
+    <p>Two rare, lucky wins, both belonging to East. A Heavenly Hand is when East is dealt a complete, valid hand and declares Mahjong before the Charleston even begins, the passing is waived entirely. An Earthly Hand is when East completes the hand during the Charleston and declares the moment it ends, before any tile is drawn from the wall. Both count as self-picked, so East collects double from every player. You may go years without seeing one, which is exactly why they have names. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+  </div>
+  <div class="faq-group">
+    <h3 class="faq-group-title">Dead Hands, Penalties & Scoring</h3>
+<article class="faq-item">
+    <h3>What is a dead hand in American Mahjong?</h3>
+    <p>A hand is declared dead when a player can no longer complete any valid NMJL pattern, usually because she has exposed tiles incorrectly, drawn the wrong number, or made an impossible exchange. A dead hand cannot win the round. Most groups have the player with the dead hand pay into the pot at game end. One does not have to verbally claim a dead hand if no one else knows. She can continue to play in a defensive manner to prevent others from winning their hand.</p>
+  </article>
+<article class="faq-item">
+    <h3>What are all the ways a hand can go dead?</h3>
+    <p>A hand is dead when it can no longer make a legal Mahjong, and there are a handful of common ways it happens: holding the wrong number of tiles (fewer than 13 or more than 14); exposing tiles that do not form a real pung, kong, quint, or sextet (like exposing NEWS or a year, which are singles); exposing a group that matches no hand on the card; exposing while you are supposed to be playing a concealed hand; swapping a joker before you have picked or called; or picking out of turn, from the wrong wall, or "ahead." It can also be called dead if you are clearly waiting on a single or pair that has already been used up around the table. One important catch: a hand is not officially dead until another player points it out, you can't declare your own hand dead. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>Can I call another player's hand dead, and how does a "death challenge" work?</h3>
+    <p>You can. If the exposures and discards on the table make it clear someone can't possibly finish a legal hand, any player may challenge it and call that hand dead, it is a "death challenge." Keep it civil: the conversation is just between you and the challenged player, and everyone else stays quiet. If you are right, that hand sits out the rest of the round. If the challenge turns out to be wrong, the player who was mistaken owes the other a small penalty (commonly fifty cents) on top of whatever the eventual winner collects. Only call it when the table can actually see it from the exposed tiles, never from a peek at someone's concealed hand.</p>
+  </article>
+<article class="faq-item">
+    <h3>I was called dead, now what?</h3>
+    <p>Your hand stops trying to win: you do not pick or discard for the rest of that round, and at game's end you pay the winner the full value of their hand. But you are not out, you keep your tiles and play defensively, holding back the tiles other players obviously need so you don't hand someone the win. A quiet dead hand can still decide a round. And if you do not think you are actually dead, say so, the challenge gets settled, and whoever was wrong pays the small penalty.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can I declare my own hand dead?</h3>
+    <p>No, and this one surprises people. Even if you know in your heart your hand is cooked, you can't announce it yourself; a hand is only official-dead when another player recognizes it from your visible tiles. The reason: calling your own hand dead would leak information and let you off the hook. So keep a straight face, keep playing defensively, and let someone else make the call, if they even notice.</p>
+  </article>
+<article class="faq-item">
+    <h3>What happens if I have the wrong number of tiles?</h3>
+    <p>It depends on when it is caught. If it is spotted before the game truly starts, during the Charleston, the tiles are thrown in and everyone re-deals (one exception: the player to East's left may take their rightful tile from the wall if they are simply short one and East has not discarded yet). But once East has thrown the first tile and you are found holding the wrong number, your hand is dead, you pay the winner, but can't win yourself. If two players have the wrong count, the others play on; if three do, the whole hand is replayed.</p>
+  </article>
+<article class="faq-item">
+    <h3>What happens if you call Mahjong by mistake?</h3>
+    <p>Call it back fast and you are usually fine. If you announce Mahjong, then catch the mistake before you have exposed your hand and before anyone else has disturbed theirs, you simply take it back and play continues with no penalty. But once you have laid your hand down, that hand is declared dead: you stop drawing and discarding for the rest of the round, the others keep playing, and when someone does win you pay the winner the full value of the hand. If you declared on a discard and realize you were wrong, you may downgrade your claim to a call for exposure instead. The lesson every table learns the hard way is to count twice before you call. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>What does "paying for the table" mean?</h3>
+    <p>It is the game's steepest penalty, paid at four times the value of the hand, for a mistake at a big moment that spoils things for everyone. You will hear it come up when someone declares Mahjong on a misnamed tile (they pay the rightful winner four times), or destroys the wall before the game is over. Exactly who pays whom depends on the situation, but the idea is always the same: a costly error, settled at the quadruple rate. It is a very good reason to slow down when the stakes are high.</p>
+  </article>
+<article class="faq-item">
+    <h3>How does scoring work in American Mahjong?</h3>
+    <p>Every hand on the NMJL card has a point value next to it, typically somewhere between 25 and 75 points. The player who calls Mahjong collects from each opponent based on that point value. The opponent who discarded the winning tile pays double. Concealed hands and jokerless hands carry bonuses. Most tables play for small stakes, a penny per point is common, though the specifics vary by group.</p>
+  </article>
+<article class="faq-item">
+    <h3>Who pays the winner, and who pays double?</h3>
+    <p>When you win off a tile someone discarded, that person, the one who threw your winning tile, pays double the hand's value, and the other two players pay the single printed value. If instead you pick your own winning tile from the wall, all three players pay double; that is the reward for going out on your own. And a jokerless hand doubles the payout again on top of either of those.</p>
+  </article>
+<article class="faq-item">
+    <h3>How do the concealed and jokerless bonuses work?</h3>
+    <p>Two different things. A jokerless hand, no jokers at all in your final fourteen tiles, doubles your payout, on every category except Singles and Pairs, where it is already built in. Concealed hands work differently: there is no separate concealed bonus added on. The card simply prints a higher value for hands that must be played concealed, so the reward is already in the number you collect. Stack a jokerless win with a self-picked win and you reach the ceiling: four times the hand's value from each player. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+  </div>
+  <div class="faq-group">
+    <h3 class="faq-group-title">Strategy & Finding a Game</h3>
+<article class="faq-item">
+    <h3>How do you win at American Mahjong? Tips for beginners</h3>
+    <p>Winning comes down to three habits. First, pick a direction early, look at what you are dealt, find the hands on the card that fit, and lean that way during the Charleston instead of chasing tiles. Second, stay flexible: keep a backup hand in mind, because the tiles passed to you will rarely match your first plan. Third, watch the table, every discard and exposure tells you what your opponents are building, so you can stop feeding them. Late in the hand, when your own win looks unlikely, switch to defense and throw only safe tiles. And guard your jokers, because a wasted joker is usually a wasted hand. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>What is defensive play, or "dogging," in American Mahjong?</h3>
+    <p>Defensive play is what you do when your own hand has stalled and you would rather no one win than hand the round to someone else. The classic move is called dogging: you break up your hand and throw only safe tiles, often whatever the player just before you discarded, since it clearly was not claimed. The goal is to avoid throwing a hot tile that an opponent obviously needs. It matters because you cannot win second in American Mahjong; once someone declares Mahjong the hand is over, so a good defensive game protects the whole table from a player who is one tile away. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>What is a hot tile in American Mahjong?</h3>
+    <p>A hot tile is one an opponent obviously needs, something you can read from their exposures, the hands on the card, and the tiles they have pointedly not discarded. Throwing a hot tile late in the hand is how you hand someone the win. Learning which tiles have gone cold, or safe, and which are running hot is a big part of playing good defense. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>What are the most common beginner mistakes?</h3>
+    <p>A few show up at every new table. Committing to one hand too early and refusing to pivot when the Charleston hands you something else. Passing tiles in the Charleston that obviously help a neighbor. Wasting jokers on groups you could fill with real tiles. Forgetting to play defense once your own hand stalls, you can't win second, so a hot tile thrown late hands someone the round. And calling Mahjong before counting to fourteen. None of them are fatal, and all of them fade fast with a few games. <em>New to the terms? See the <a href="/glossary.html">glossary</a>.</em></p>
+  </article>
+<article class="faq-item">
+    <h3>Where can I play American Mahjong or find a group?</h3>
+    <p>A few places that actually work: the Bam Good Time directory of local games, Meetup for mahjong groups in your city, local Facebook groups for players in your area, and your nearest Jewish Community Center (JCC), community center, or senior center, many of them host weekly games. If you have never played, ask anyway. Most tables welcome a beginner. In fact, many cities now have gathering parlors specifically for mahjong.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can you play American Mahjong online?</h3>
+    <p>Yes. The main platforms NMJL players use most are I Love Mahj, Real Mah Jongg, and Mahjong 4 Friends. More are being released this year. All three support live play with friends, and most offer practice modes against the computer when you cannot get a table together.</p>
+  </article>
+<article class="faq-item">
+    <h3>Can our group make up its own table rules?</h3>
+    <p>For a casual game at home, absolutely, plenty of tables add little house rules, as long as everyone agrees before the hand starts. Just know they are house rules, not official ones: in a sanctioned game or a tournament, the National Mah Jongg League's rules are what stand. When in doubt, play it the League's way, and save the variations for your own Tuesday table.</p>
+  </article>
+  </div>
 
   <aside class="faq-cta">
     <p>Want a new edition of The Order of the Tile delivered each week? <a href="/get-notified.html">Pull up a chair.</a></p>
@@ -1284,6 +1244,7 @@
   });
   var input = document.getElementById('faqSearch');
   var count = document.getElementById('faqSearchCount');
+  var groups = [].slice.call(document.querySelectorAll('.faq-group'));
   if(input){
     input.addEventListener('input', function(){
       var t = input.value.trim().toLowerCase();
@@ -1291,10 +1252,14 @@
       items.forEach(function(it){
         var hit = !t || (it._text && it._text.indexOf(t) > -1);
         it.classList.toggle('faq-hide', !hit);
-        if(hit){ shown++; it.classList.toggle('open', !!t); }
+        if(hit){ shown++; }
+        if(t){ it.classList.remove('open'); } // results stay collapsed, a clean list
+      });
+      groups.forEach(function(g){
+        g.classList.toggle('faq-hide', !g.querySelector('.faq-item:not(.faq-hide)'));
       });
       count.textContent = t ? (shown===0
-        ? 'No matches, try another word, or ask Prim directly.'
+        ? 'No matches, try another keyword, or ask Prim your question.'
         : shown + ' result' + (shown===1?'':'s')) : '';
     });
   }
