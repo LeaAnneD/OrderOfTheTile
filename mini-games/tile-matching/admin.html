@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Games Admin — Order of the Tile</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#FBF6EE;--ink:#2B2622;--ink-soft:#6B5F54;--rose:#B76E79;--rose-deep:#9A5662;--line:#E2D6C4;--good:#5E7D5A;--bad:#B5524C;--shadow:0 2px 6px rgba(43,38,34,.12),0 8px 24px rgba(43,38,34,.08);}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Crimson Text",Georgia,serif;}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 18px 60px;}
+  h1{font-family:"Playfair Display",serif;font-weight:700;font-size:1.7rem;margin:.1em 0;}
+  .sub{color:var(--ink-soft);font-style:italic;margin:0 0 18px;}
+  .cards{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 18px;box-shadow:var(--shadow);min-width:130px;}
+  .kpi .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-soft);}
+  .kpi .v{font-family:"Playfair Display",serif;font-weight:700;font-size:1.5rem;}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);font-size:.95rem;}
+  th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;}
+  th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);cursor:pointer;user-select:none;background:#F3EADc;}
+  th:hover{color:var(--rose-deep);}
+  tr:last-child td{border-bottom:none;}
+  td.num{font-variant-numeric:tabular-nums;}
+  input{font-family:inherit;font-size:1rem;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;}
+  button{font-family:"Crimson Text",serif;font-size:1rem;border-radius:11px;padding:9px 18px;border:1px solid var(--rose-deep);background:var(--rose);color:#fff;cursor:pointer;box-shadow:var(--shadow);}
+  button.ghost{background:#fff;color:var(--ink);border-color:var(--line);}
+  .login{max-width:360px;display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow);}
+  .msg{color:var(--bad);min-height:1.2em;font-size:.9rem;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+  .muted{color:var(--ink-soft);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div><h1>Games Admin</h1><p class="sub">Who’s playing, how much, and how to reach them.</p></div>
+    <button id="logout" class="ghost" style="display:none;">Log out</button>
+  </div>
+  <div id="view"></div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb = createClient("https://avltolzpzxcdmgrjnsfa.supabase.co","sb_publishable_zI6klteA7Kz4wbBoMCfOng_sb1Dz-pK");
+const view=document.getElementById('view'), logoutBtn=document.getElementById('logout');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=s=>{s=Math.round(s||0); if(s<60)return s+'s'; const m=Math.floor(s/60),r=s%60; if(m<60)return m+'m '+r+'s'; return Math.floor(m/60)+'h '+(m%60)+'m';};
+const dt=s=>s?new Date(s).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}):'—';
+
+logoutBtn.onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
+
+function showLogin(note){
+  logoutBtn.style.display='none';
+  view.innerHTML=`<div class="login">
+    <h2 style="font-family:'Playfair Display',serif;margin:.1em 0;">Admin sign in</h2>
+    <p class="muted" style="font-style:italic;margin:.2em 0 .6em;">${note||'Sign in with your Order of the Tile admin account.'}</p>
+    <input id="e" type="email" placeholder="Email" autocomplete="email">
+    <input id="p" type="password" placeholder="Password" autocomplete="current-password">
+    <div class="msg" id="m"></div>
+    <button id="go">Sign in</button>
+  </div>`;
+  view.querySelector('#go').onclick=async()=>{
+    const m=view.querySelector('#m'); m.textContent='Working…';
+    const {error}=await sb.auth.signInWithPassword({email:view.querySelector('#e').value.trim(),password:view.querySelector('#p').value});
+    if(error){m.textContent=error.message;return;}
+    boot();
+  };
+}
+
+let rows=[], sortKey='time', sortDir=-1;
+function renderTable(){
+  rows.sort((a,b)=>{const x=a[sortKey],y=b[sortKey]; const c=(x>y?1:x<y?-1:0); return c*sortDir;});
+  const cols=[['name','Player'],['email','Email'],['time','Time played'],['rounds','Rounds'],['days','Days'],['clean','Clean'],['last','Last played'],['joined','Joined']];
+  view.innerHTML=`
+    <div class="cards">
+      <div class="kpi"><div class="k">Players</div><div class="v">${rows.length}</div></div>
+      <div class="kpi"><div class="k">Total time played</div><div class="v">${fmt(rows.reduce((s,r)=>s+r.time,0))}</div></div>
+      <div class="kpi"><div class="k">Total rounds</div><div class="v">${rows.reduce((s,r)=>s+r.rounds,0)}</div></div>
+    </div>
+    <table><thead><tr>${cols.map(c=>`<th data-k="${c[0]}">${c[1]}${sortKey===c[0]?(sortDir<0?' ▾':' ▴'):''}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r=>`<tr>
+      <td>${esc(r.name)}</td><td>${esc(r.email)}</td>
+      <td class="num">${fmt(r.time)}</td><td class="num">${r.rounds}</td><td class="num">${r.days}</td><td class="num">${r.clean}</td>
+      <td>${dt(r.last)}</td><td>${dt(r.joined)}</td></tr>`).join('')||`<tr><td colspan="8" class="muted" style="font-style:italic;">No players yet.</td></tr>`}</tbody></table>`;
+  view.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k; if(sortKey===k)sortDir*=-1; else {sortKey=k; sortDir=-1;} renderTable();});
+}
+
+async function loadDashboard(){
+  logoutBtn.style.display='';
+  view.innerHTML='<p class="muted">Loading players…</p>';
+  const [{data:profiles,error:pe},{data:sessions,error:se}]=await Promise.all([
+    sb.from('profiles').select('id,display_name,email,created_at'),
+    sb.from('sessions').select('user_id,duration_sec,clean,played_at')
+  ]);
+  if(pe||se){view.innerHTML='<p class="msg">'+esc((pe||se).message)+'</p>';return;}
+  const agg={};
+  (sessions||[]).forEach(s=>{const a=agg[s.user_id]||(agg[s.user_id]={time:0,rounds:0,clean:0,days:new Set(),last:null});
+    a.time+=Number(s.duration_sec)||0; a.rounds++; if(s.clean)a.clean++; a.days.add((s.played_at||'').slice(0,10));
+    if(!a.last||s.played_at>a.last)a.last=s.played_at;});
+  rows=(profiles||[]).map(p=>{const a=agg[p.id]||{time:0,rounds:0,clean:0,days:new Set(),last:null};
+    return {name:p.display_name||'(no name)',email:p.email||'',time:a.time,rounds:a.rounds,clean:a.clean,days:a.days.size,last:a.last,joined:p.created_at};});
+  renderTable();
+}
+
+async function boot(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){ showLogin(); return; }
+  const {data:prof,error}=await sb.from('profiles').select('is_admin').eq('id',session.user.id).single();
+  if(error){ showLogin('Could not verify your account. Try again.'); return; }
+  if(!prof||!prof.is_admin){ logoutBtn.style.display=''; view.innerHTML='<p class="msg">This account is not an admin. Ask to be granted access, or log out and use your admin account.</p>'; return; }
+  loadDashboard();
+}
+boot();
+</script>
+</body>
+</html>

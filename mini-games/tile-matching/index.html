@@ -97,6 +97,16 @@
   .summary td,.summary th{text-align:left; padding:5px 8px; border-bottom:1px solid var(--line);}
   .summary th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
   .summary .note{font-style:italic; color:var(--ink-soft); margin:12px 0; font-size:.92rem;}
+  .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:8px; flex-wrap:wrap;}
+  .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.9rem; font-style:italic;}
+  .btn.mini{font-size:.85rem; padding:6px 12px;}
+  .authform{display:flex; flex-direction:column; gap:10px;}
+  .authform input{font-family:inherit; font-size:1rem; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
+  .authmsg{font-size:.9rem; color:var(--bad); min-height:1.2em;} .authmsg.ok{color:var(--good);}
+  .lbtabs{display:flex; gap:8px; margin-bottom:12px;}
+  .lbtable{width:100%; border-collapse:collapse; font-size:.95rem;}
+  .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;}
+  .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
   .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
   @media(max-width:560px){
     .buckets,.buckets.c4,.buckets.c7{grid-template-columns:repeat(3,1fr);}
@@ -107,6 +117,12 @@
 </head>
 <body>
 <div class="wrap">
+  <div class="authbar" id="authbar">
+    <span id="authStatus" class="authstatus">·</span>
+    <button id="lbBtn" class="btn ghost mini">Leaderboard</button>
+    <button id="authBtn" class="btn mini">Log in / Sign up</button>
+    <button id="logoutBtn" class="btn ghost mini" style="display:none;">Log out</button>
+  </div>
   <h1>Name the Tiles</h1>
   <p class="sub">Three ways to know your tiles. A hundred and seventy years of refinement — the least we can do is learn their names.</p>
 
@@ -157,7 +173,7 @@
 </div>
 
 <script>
-const BUILD="v4 · 2026-06-10";
+const BUILD="v5 · 2026-06-10";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_tm_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_tm_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -205,6 +221,7 @@ function finishRound(){
   const secs=(performance.now()-round.t0)/1000;
   const acc=Math.round(round.firstRight/round.attempted*100);
   const clean=acc===100;
+  if(window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode,level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean});
   if(clean){
     if(!prog.best[mode][cur.n]||secs<prog.best[mode][cur.n]) prog.best[mode][cur.n]=+secs.toFixed(1);
     if(cur.n>=prog.unlocked&&cur.n<LEVELS.length) prog.unlocked=cur.n+1;
@@ -359,6 +376,7 @@ $("#stopBtn").onclick=()=>{
   clearInterval(timerId);
   const secs=(round&&round.t0)?(performance.now()-round.t0)/1000:0;
   const acc=(round&&round.attempted)?Math.round(round.firstRight/round.attempted*100):0;
+  if(secs>0&&window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode,level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean:false});
   $("#cardTitle").textContent="Stopped.";
   $("#cardVerdict").textContent="You ended the round early. Pick up wherever you like.";
   $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s"; $("#cardSlow").innerHTML="";
@@ -392,6 +410,102 @@ function showSummary(){
 }
 
 deal();
+</script>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL="https://avltolzpzxcdmgrjnsfa.supabase.co";
+const SB_KEY="sb_publishable_zI6klteA7Kz4wbBoMCfOng_sb1Dz-pK";
+const sb = createClient(SB_URL, SB_KEY);
+let user=null;
+const q=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap=s=>s?s[0].toUpperCase()+s.slice(1):s;
+const fmt=s=>{s=Math.round(s); if(s<60)return s+'s'; const m=Math.floor(s/60),r=s%60; if(m<60)return m+'m '+r+'s'; return Math.floor(m/60)+'h '+(m%60)+'m';};
+
+function renderBar(){
+  const st=q("#authStatus"), a=q("#authBtn"), o=q("#logoutBtn");
+  if(user){ st.textContent='Signed in as '+(user.user_metadata?.display_name||user.email); a.style.display='none'; o.style.display=''; }
+  else { st.textContent='Playing as guest — scores aren’t saved'; a.style.display=''; o.style.display='none'; }
+}
+function modal(html){
+  const scrim=document.createElement('div'); scrim.className='scrim show';
+  scrim.innerHTML='<div class="card">'+html+'</div>';
+  scrim.addEventListener('click',e=>{if(e.target===scrim)scrim.remove();});
+  document.body.appendChild(scrim); return scrim;
+}
+function openAuth(){
+  let signup=false;
+  const m=modal(`<h2 id="aTitle">Log in</h2>
+    <p class="verdict">Save your progress and join the leaderboard.</p>
+    <div class="authform">
+      <input id="aName" type="text" placeholder="Display name (shown on leaderboard)" style="display:none;">
+      <input id="aEmail" type="email" placeholder="Email" autocomplete="email">
+      <input id="aPass" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
+      <div class="authmsg" id="aMsg"></div>
+      <button class="btn" id="aGo">Log in</button>
+      <button class="btn ghost" id="aToggle">New here? Create an account</button>
+      <p class="note" style="font-size:.82rem; color:var(--ink-soft); font-style:italic; margin:6px 0 0;">We never sell your information. Your login only saves your stats and lets you appear on the leaderboard.</p>
+    </div>`);
+  const name=m.querySelector('#aName'),email=m.querySelector('#aEmail'),pass=m.querySelector('#aPass'),msg=m.querySelector('#aMsg'),go=m.querySelector('#aGo'),tog=m.querySelector('#aToggle'),title=m.querySelector('#aTitle');
+  tog.onclick=()=>{ signup=!signup; name.style.display=signup?'':'none'; title.textContent=signup?'Create account':'Log in'; go.textContent=signup?'Create account':'Log in'; tog.textContent=signup?'Have an account? Log in':'New here? Create an account'; msg.textContent=''; };
+  go.onclick=async()=>{
+    msg.className='authmsg'; msg.textContent='Working…'; go.disabled=true;
+    try{
+      if(signup){
+        const {data,error}=await sb.auth.signUp({email:email.value.trim(),password:pass.value,options:{data:{display_name:name.value.trim()||email.value.split('@')[0]}}});
+        if(error)throw error;
+        if(data.session){ msg.className='authmsg ok'; msg.textContent='Account created — you’re in.'; setTimeout(()=>m.remove(),700); }
+        else { msg.className='authmsg ok'; msg.textContent='Check your email to confirm, then log in.'; }
+      }else{
+        const {error}=await sb.auth.signInWithPassword({email:email.value.trim(),password:pass.value});
+        if(error)throw error;
+        msg.className='authmsg ok'; msg.textContent='Welcome back.'; setTimeout(()=>m.remove(),500);
+      }
+    }catch(err){ msg.className='authmsg'; msg.textContent=(err&&err.message)||String(err); }
+    go.disabled=false;
+  };
+}
+async function openLeaderboard(){
+  const m=modal(`<h2>Leaderboard</h2>
+    <div class="lbtabs"><button class="btn mini" id="lbT1">Most time played</button><button class="btn ghost mini" id="lbT2">High scores</button></div>
+    <div id="lbBody">Loading…</div>
+    <div class="modal-actions" style="grid-template-columns:1fr;"><button class="btn ghost" id="lbClose">Close</button></div>`);
+  m.querySelector('#lbClose').onclick=()=>m.remove();
+  const body=m.querySelector('#lbBody'), t1=m.querySelector('#lbT1'), t2=m.querySelector('#lbT2');
+  async function showTime(){
+    t1.className='btn mini'; t2.className='btn ghost mini'; body.textContent='Loading…';
+    const {data,error}=await sb.from('lb_time').select('*').limit(25);
+    if(error){body.innerHTML='<p class="note">'+esc(error.message)+'</p>';return;}
+    if(!data.length){body.innerHTML='<p class="note">No players yet — be the first.</p>';return;}
+    body.innerHTML='<table class="lbtable"><thead><tr><th>#</th><th>Player</th><th>Time played</th><th>Rounds</th></tr></thead><tbody>'+
+      data.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.display_name)}</td><td>${fmt(r.total_seconds)}</td><td>${r.rounds_played}</td></tr>`).join('')+'</tbody></table>';
+  }
+  async function showHigh(){
+    t2.className='btn mini'; t1.className='btn ghost mini'; body.textContent='Loading…';
+    const {data,error}=await sb.from('lb_highscores').select('*');
+    if(error){body.innerHTML='<p class="note">'+esc(error.message)+'</p>';return;}
+    if(!data.length){body.innerHTML='<p class="note">No clean (100%) runs yet.</p>';return;}
+    body.innerHTML='<table class="lbtable"><thead><tr><th>Game</th><th>Level</th><th>Record holder</th><th>Best</th></tr></thead><tbody>'+
+      data.map(r=>`<tr><td>${cap(r.mode)}</td><td>${r.level}</td><td>${esc(r.display_name)}</td><td>${(+r.best_seconds).toFixed(1)}s</td></tr>`).join('')+'</tbody></table>';
+  }
+  t1.onclick=showTime; t2.onclick=showHigh; showTime();
+}
+
+window.OOTT={
+  get user(){return user;},
+  async logSession(d){
+    if(!user)return;
+    try{ await sb.from('sessions').insert({user_id:user.id,game:'tile-matching',mode:d.mode,level:d.level,accuracy:d.accuracy,duration_sec:d.duration_sec,clean:!!d.clean}); }catch(e){}
+  },
+  openAuth, openLeaderboard
+};
+q("#authBtn").onclick=openAuth;
+q("#lbBtn").onclick=openLeaderboard;
+q("#logoutBtn").onclick=async()=>{ await sb.auth.signOut(); };
+sb.auth.onAuthStateChange((_e,session)=>{ user=session?.user||null; renderBar(); });
+const {data:{session}}=await sb.auth.getSession();
+user=session?.user||null; renderBar();
 </script>
 </body>
 </html>
