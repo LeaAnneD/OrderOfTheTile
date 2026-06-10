@@ -175,7 +175,7 @@
 </div>
 
 <script>
-const BUILD="v5 · 2026-06-10";
+const BUILD="v6 · 2026-06-10";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_tm_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_tm_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -455,10 +455,10 @@ function openAuth(){
     msg.className='authmsg'; msg.textContent='Working…'; go.disabled=true;
     try{
       if(signup){
-        const {data,error}=await sb.auth.signUp({email:email.value.trim(),password:pass.value,options:{data:{display_name:name.value.trim()||email.value.split('@')[0]}}});
+        const {data,error}=await sb.auth.signUp({email:email.value.trim(),password:pass.value,options:{emailRedirectTo:'https://www.orderofthetile.com/mini-games/tile-matching/',data:{display_name:name.value.trim()||email.value.split('@')[0]}}});
         if(error)throw error;
         if(data.session){ msg.className='authmsg ok'; msg.textContent='Account created — you’re in.'; setTimeout(()=>m.remove(),700); }
-        else { msg.className='authmsg ok'; msg.textContent='Check your email to confirm, then log in.'; }
+        else { msg.className='authmsg ok'; msg.innerHTML='Almost there — we sent a confirmation link to <b>'+esc(email.value.trim())+'</b>. Click it, then come back and log in.'; }
       }else{
         const {error}=await sb.auth.signInWithPassword({email:email.value.trim(),password:pass.value});
         if(error)throw error;
