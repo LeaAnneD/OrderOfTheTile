@@ -644,6 +644,30 @@
   .faq-wrap { padding: 16px 18px 32px; }
   .faq-closing-inner { padding: 24px; }
 }
+
+/* ===== FAQ accordion + search (redesign) ===== */
+.faq-search-wrap { position: relative; margin: 0 0 8px; }
+.faq-search { width: 100%; font-family: var(--body); font-size: 17px; color: var(--ink);
+  background: #fff; border: 1px solid var(--lilac); border-radius: 12px; padding: 13px 16px 13px 44px; }
+.faq-search:focus { outline: none; border-color: var(--orchid); }
+.faq-search-wrap .si { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--dusk); pointer-events: none; }
+.faq-search-count { margin: 0 0 16px; font-size: 13px; color: var(--dusk); min-height: 16px; }
+
+.faq-section article, .howto-section article { padding: 0; }
+.faq-section article:first-of-type, .howto-section article:first-of-type { border-top: 0.5px solid var(--lilac); }
+.faq-section h3, .howto-section h3 { margin: 0; padding: 17px 38px 17px 2px; cursor: pointer; position: relative; user-select: none; }
+.faq-section h3::after, .howto-section h3::after { content: '+'; position: absolute; right: 6px; top: 15px;
+  font-size: 23px; font-weight: 400; line-height: 1; color: var(--dusk); }
+.faq-section article.open h3::after, .howto-section article.open h3::after { content: '\2013'; }
+.faq-section h3:hover, .howto-section h3:hover { color: var(--orchid); }
+.faq-section article > :not(h3), .howto-section article > :not(h3) {
+  max-height: 0; overflow: hidden; opacity: 0; margin: 0;
+  transition: max-height .3s ease, opacity .2s ease, padding .2s ease; }
+.faq-section article.open > :not(h3), .howto-section article.open > :not(h3) { max-height: 2200px; opacity: 1; }
+.faq-section article.open > p { padding-bottom: 18px; }
+.howto-section article.open > .howto-meta { padding-bottom: 4px; }
+.howto-section article.open > ol { margin: 0 0 16px 22px; }
+.faq-item.faq-hide, .howto-item.faq-hide { display: none; }
 </style>
 </head>
 <body>
@@ -657,6 +681,11 @@
 </div>
 
 <div class="faq-wrap">
+<div class="faq-search-wrap">
+  <svg class="si" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+  <input id="faqSearch" class="faq-search" type="search" placeholder="Search the FAQ — joker, dead hand, Charleston…" aria-label="Search the FAQ">
+</div>
+<div class="faq-search-count" id="faqSearchCount" aria-live="polite"></div>
 <section id="faq" class="faq-section">
   <h2>Frequently Asked Questions About American Mahjong</h2>
   <p class="faq-intro">The questions players actually ask — answered plainly, from someone who has watched this hand a thousand times.</p>
@@ -990,13 +1019,35 @@
 <script src="shared.js?v=20260609"></script>
 <script>
 (function(){
-  document.querySelectorAll('.faq-item, .howto-item').forEach(function(el){
-    var a = document.createElement('a');
-    a.className = 'back-top';
-    a.href = '#top';
-    a.textContent = '↑ Back to top';
-    el.appendChild(a);
+  var items = [].slice.call(document.querySelectorAll('.faq-item, .howto-item'));
+  items.forEach(function(it){
+    var h3 = it.querySelector('h3');
+    if(!h3) return;
+    it._text = it.textContent.toLowerCase();
+    h3.setAttribute('role','button');
+    h3.setAttribute('tabindex','0');
+    function toggle(){ it.classList.toggle('open'); }
+    h3.addEventListener('click', toggle);
+    h3.addEventListener('keydown', function(e){
+      if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggle(); }
+    });
   });
+  var input = document.getElementById('faqSearch');
+  var count = document.getElementById('faqSearchCount');
+  if(input){
+    input.addEventListener('input', function(){
+      var t = input.value.trim().toLowerCase();
+      var shown = 0;
+      items.forEach(function(it){
+        var hit = !t || (it._text && it._text.indexOf(t) > -1);
+        it.classList.toggle('faq-hide', !hit);
+        if(hit){ shown++; it.classList.toggle('open', !!t); }
+      });
+      count.textContent = t ? (shown===0
+        ? 'No matches — try another word, or ask Prim directly.'
+        : shown + ' result' + (shown===1?'':'s')) : '';
+    });
+  }
 })();
 </script>
 </body>
