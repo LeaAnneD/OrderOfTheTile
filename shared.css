@@ -1,4 +1,4 @@
-/* ===== SHARED STYLES — The Order of the Tile ===== */
+/* ===== SHARED STYLES, The Order of the Tile ===== */
 /* Nav, Footer, Variables, Reset, Hamburger Menu     */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
@@ -55,7 +55,7 @@ nav {
 }
 .nav-wordmark img { width: 32px; height: 32px; object-fit: contain; }
 
-/* Dropdown menu — anchored to .nav-menu wrapper. */
+/* Dropdown menu, anchored to .nav-menu wrapper. */
 .nav-links {
   display: none;
   position: absolute;
@@ -147,7 +147,7 @@ nav {
   display: block;
 }
 
-/* Open state — set by JS for hover (with delayed close), tap, and keyboard */
+/* Open state, set by JS for hover (with delayed close), tap, and keyboard */
 .nav-menu-toggle[aria-expanded="true"] .nav-menu-chevron {
   transform: rotate(180deg);
 }

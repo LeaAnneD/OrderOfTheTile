@@ -1,10 +1,10 @@
-/* ===== SHARED NAV + FOOTER — The Order of the Tile ===== */
+/* ===== SHARED NAV + FOOTER, The Order of the Tile ===== */
 /* Single source of truth. Edit here, every page updates. */
 /* CACHE-BUSTING: every page loads this as shared.js?v=YYYYMMDD (and shared.css?v=…).
    GitHub Pages caches these assets for 4 hours, so a returning visitor keeps the
    OLD menu until the token changes. After editing THIS file or shared.css, bump
-   the token: find/replace ?v=20260609 -> ?v=<today> across all *.html, then push.
-   Current token: v=20260609 */
+   the token: find/replace ?v=20260610 -> ?v=<today> across all *.html, then push.
+   Current token: v=20260610 */
 
 (function () {
   'use strict';
@@ -183,10 +183,10 @@
         })
           .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
           .then(function (res) {
-            if (!res.ok) { show('Sorry — something went sideways. Try again in a moment.', null); return; }
+            if (!res.ok) { show('Sorry, something went sideways. Try again in a moment.', null); return; }
             show(res.j.answer || "I don't have that one yet.", res.j.sources);
           })
-          .catch(function () { show("Sorry — I couldn't reach the table just now. Try again in a moment.", null); })
+          .catch(function () { show("Sorry, I couldn't reach the table just now. Try again in a moment.", null); })
           .finally(function () { btn.disabled = false; btn.textContent = 'Ask Prim'; });
       });
       return q;

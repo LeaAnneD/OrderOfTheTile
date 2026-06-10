@@ -22,7 +22,7 @@
 <meta name="twitter:description" content="Mah Jongg gatherings, salons, and tournaments curated by The Order of the Tile.">
 <meta name="twitter:image" content="https://www.orderofthetile.com/images/seal.png">
 
-<link rel="stylesheet" href="shared.css?v=20260609">
+<link rel="stylesheet" href="shared.css?v=20260610">
 <style>
 /* ===== Events page ===== */
 .section-label { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk); margin-bottom: 20px; }
@@ -72,7 +72,7 @@
 
 .marquee { position: relative; overflow: hidden; padding: 10px 0 20px; }
 .marquee-track { display: flex; gap: 20px; width: max-content; animation: marquee linear infinite; }
-/* Only pause on devices with a real pointer — prevents mobile taps from sticking paused */
+/* Only pause on devices with a real pointer, prevents mobile taps from sticking paused */
 @media (hover: hover) {
   .marquee:hover .marquee-track { animation-play-state: paused; }
 }
@@ -216,7 +216,7 @@
 <div class="page-hero">
   <p class="page-hero-eyebrow">Set Your Rack · 2026–2027 Season</p>
   <h1 class="page-hero-headline">Where to be<br><em>this season.</em></h1>
-  <p class="page-hero-sub">The rooms, the resorts, the cruises, the one weekend in October that matters more than the rest. Updated automatically — past events quietly leave the table on their own.</p>
+  <p class="page-hero-sub">The rooms, the resorts, the cruises, the one weekend in October that matters more than the rest. Updated automatically, past events quietly leave the table on their own.</p>
   <p class="page-hero-meta" id="hero-meta"></p>
 </div>
 
@@ -226,7 +226,7 @@
     <div class="featured-left">
       <div class="featured-eyebrow"><span class="featured-star">✦</span><span>The Main Event</span><span class="featured-star">✦</span></div>
       <h2 class="featured-title" id="f-title"></h2>
-      <p class="featured-sub"><em>Paris Las Vegas.</em> October 16–18. Five thousand dollars. The largest prize pool in American Mahjong history — and the only name written on the trophy at the end of the weekend.</p>
+      <p class="featured-sub"><em>Paris Las Vegas.</em> October 16–18. Five thousand dollars. The largest prize pool in American Mahjong history, and the only name written on the trophy at the end of the weekend.</p>
       <div class="featured-meta">
         <div><div class="featured-meta-label">When</div><div class="featured-meta-val" id="f-when"></div></div>
         <div><div class="featured-meta-label">Where</div><div class="featured-meta-val" id="f-where"></div></div>
@@ -271,7 +271,7 @@
     <div class="golden-badge">◆</div>
     <p class="eyebrow">The Golden Ticket</p>
     <h2>Place in the top three at a qualifying event, and October in Vegas gets <em>a little cheaper.</em></h2>
-    <p class="lead">Finishing first, second, or third at any Destination Mah Jongg sanctioned tournament earns a Golden Ticket — a $100 discount toward the Mah Jongg World Championship in Las Vegas. Qualifying events are marked with <span class="inline-gold">◆</span> on the calendar below.</p>
+    <p class="lead">Finishing first, second, or third at any Destination Mah Jongg sanctioned tournament earns a Golden Ticket, a $100 discount toward the Mah Jongg World Championship in Las Vegas. Qualifying events are marked with <span class="inline-gold">◆</span> on the calendar below.</p>
   </div>
 </section>
 
@@ -280,7 +280,7 @@
   <div class="months-head">
     <p class="eyebrow">The Full Calendar</p>
     <h2>Month by <em>month.</em></h2>
-    <p class="lead">Every event we know about — sanctioned, unsanctioned, cruise, charity, and the ones still whispering "TBD."</p>
+    <p class="lead">Every event we know about, sanctioned, unsanctioned, cruise, charity, and the ones still whispering "TBD."</p>
   </div>
   <div class="months-inner" id="months-inner"></div>
 </section>
@@ -290,7 +290,7 @@
   <div class="getaways-head">
     <p class="eyebrow">For the Players Who Travel</p>
     <h2>Getaways &amp; <em>retreats.</em></h2>
-    <p class="lead">Not every weekend is a bracket. These are the spa days, the sailings, and the resort escapes — mahjong as the reason to go, not the reason to win.</p>
+    <p class="lead">Not every weekend is a bracket. These are the spa days, the sailings, and the resort escapes, mahjong as the reason to go, not the reason to win.</p>
   </div>
   <div class="getaway-grid" id="getaway-grid"></div>
 </section>
@@ -299,8 +299,8 @@
 <section class="prim-note">
   <div class="prim-inner">
     <p class="eyebrow">A note from Prim</p>
-    <p class="prim-body">Tournament season is not a to-do list. It is a season. Pick the two or three rooms you want to be seen in, book them properly, and let the rest of the calendar be what it is — <em>interesting to other people.</em></p>
-    <p class="prim-sig">— Prim Proper</p>
+    <p class="prim-body">Tournament season is not a to-do list. It is a season. Pick the two or three rooms you want to be seen in, book them properly, and let the rest of the calendar be what it is, <em>interesting to other people.</em></p>
+    <p class="prim-sig">, Prim Proper</p>
   </div>
 </section>
 
@@ -314,7 +314,7 @@
 </section>
 
 <footer></footer>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js" defer></script><script src="shared.js?v=20260609"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js" defer></script><script src="shared.js?v=20260610"></script>
 
 <script>
 (function () {
@@ -471,7 +471,7 @@
     else { fa.style.display = 'none'; }
   }
 
-  // Marquee — near-horizon, exclude championship (already featured) + TBD rows
+  // Marquee, near-horizon, exclude championship (already featured) + TBD rows
   var marqueeList = upcoming.filter(function(e){ return !e.wc && e.s && !e.tbd && e.cat !== 'getaway'; }).slice(0, 14);
   var track = document.getElementById('marquee-track');
   // Duplicate for seamless loop
@@ -506,7 +506,7 @@
     monthsInner.appendChild(block);
   });
 
-  // Getaways & Retreats — their own room, not mixed with the brackets
+  // Getaways & Retreats, their own room, not mixed with the brackets
   var getaways = upcoming.filter(function(e){ return e.cat === 'getaway'; });
   getaways.sort(function(a,b){ return (a.s||'9999') < (b.s||'9999') ? -1 : 1; });
   if (getaways.length) {
