@@ -1,5 +1,10 @@
 /* ===== SHARED NAV + FOOTER — The Order of the Tile ===== */
 /* Single source of truth. Edit here, every page updates. */
+/* CACHE-BUSTING: every page loads this as shared.js?v=YYYYMMDD (and shared.css?v=…).
+   GitHub Pages caches these assets for 4 hours, so a returning visitor keeps the
+   OLD menu until the token changes. After editing THIS file or shared.css, bump
+   the token: find/replace ?v=20260609 -> ?v=<today> across all *.html, then push.
+   Current token: v=20260609 */
 
 (function () {
   'use strict';

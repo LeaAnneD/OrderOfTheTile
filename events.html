@@ -22,7 +22,7 @@
 <meta name="twitter:description" content="Mah Jongg gatherings, salons, and tournaments curated by The Order of the Tile.">
 <meta name="twitter:image" content="https://www.orderofthetile.com/images/seal.png">
 
-<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="shared.css?v=20260609">
 <style>
 /* ===== Events page ===== */
 .section-label { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dusk); margin-bottom: 20px; }
@@ -136,6 +136,20 @@
 .month-head h3 { font-family: var(--serif); font-size: 28px; font-weight: 500; color: var(--ink); font-style: italic; }
 .month-head span { font-family: var(--body); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dusk); }
 .month-list { display: flex; flex-direction: column; gap: 12px; }
+
+/* ===== Getaways & Retreats ===== */
+.getaways-section { padding: 90px 56px 90px; background: var(--cloud); border-top: 0.5px solid var(--lilac); }
+.getaways-head { max-width: 900px; margin: 0 auto 48px; text-align: center; }
+.getaways-head .eyebrow { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--orchid); margin-bottom: 16px; }
+.getaways-head h2 { font-family: var(--serif); font-size: clamp(32px, 3.5vw, 44px); font-weight: 500; line-height: 1.15; color: var(--ink); margin: 4px 0 14px; }
+.getaways-head h2 em { font-style: italic; color: var(--orchid); }
+.getaways-head .lead { font-family: var(--body); font-size: 17px; color: var(--dusk); font-style: italic; max-width: 580px; margin: 0 auto; }
+.getaway-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.event-tile.getaway { display: flex; flex-direction: column; gap: 14px; }
+.event-tile.getaway .tile-date { display: flex; align-items: baseline; gap: 8px; padding-bottom: 14px; border-bottom: 0.5px solid var(--lilac); }
+.event-tile.getaway .tile-name { min-height: 48px; }
+.tile-type-badge.getaway { background: #e6eef5; color: #2f4a6b; }
+@media (max-width: 600px) { .getaways-section { padding: 60px 18px; } .getaway-grid { grid-template-columns: 1fr; } }
 
 /* ===== Prim's note ===== */
 .prim-note { background: var(--ink); padding: 90px 56px; color: var(--cloud); }
@@ -271,6 +285,16 @@
   <div class="months-inner" id="months-inner"></div>
 </section>
 
+<!-- Getaways & Retreats -->
+<section class="getaways-section" id="getaways-section" style="display:none;">
+  <div class="getaways-head">
+    <p class="eyebrow">For the Players Who Travel</p>
+    <h2>Getaways &amp; <em>retreats.</em></h2>
+    <p class="lead">Not every weekend is a bracket. These are the spa days, the sailings, and the resort escapes — mahjong as the reason to go, not the reason to win.</p>
+  </div>
+  <div class="getaway-grid" id="getaway-grid"></div>
+</section>
+
 <!-- Prim's Note -->
 <section class="prim-note">
   <div class="prim-inner">
@@ -290,7 +314,7 @@
 </section>
 
 <footer></footer>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js" defer></script><script src="shared.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js" defer></script><script src="shared.js?v=20260609"></script>
 
 <script>
 (function () {
@@ -328,6 +352,7 @@
     if (!t) return '';
     if (/world championship/i.test(t)) return 'Championship';
     if (/cruise/i.test(t)) return 'Cruise';
+    if (/retreat/i.test(t)) return 'Retreat';
     if (/multi-day/i.test(t)) return 'Tournament';
     if (/charity/i.test(t)) return 'Charity';
     if (/community/i.test(t)) return 'Community';
@@ -377,6 +402,43 @@
     return tile;
   }
 
+  function renderGetaway(ev){
+    var tile = el('article', 'event-tile getaway');
+
+    var d = formatDateBlock(ev);
+    var yr = ev.s ? (' ' + parseISO(ev.s).getFullYear()) : '';
+    var date = el('div', 'tile-date');
+    date.appendChild(el('div', 'tile-date-top', d.top + yr));
+    date.appendChild(el('div', 'tile-date-bot', d.bot));
+    tile.appendChild(date);
+
+    var body = el('div', 'tile-body');
+
+    var badges = el('div', 'tile-badges');
+    badges.appendChild(el('span', 'tile-type-badge getaway', typeShort(ev.type)));
+    body.appendChild(badges);
+
+    body.appendChild(el('h3', 'tile-name', ev.name));
+    body.appendChild(el('div', 'tile-loc', ev.loc));
+    if (ev.org) body.appendChild(el('div', 'tile-organizer', ev.org));
+
+    var foot = el('div', 'tile-foot');
+    foot.appendChild(el('span', 'tile-price', (ev.price && ev.price !== 'TBD') ? ev.price : ' '));
+    var link = urlOrNull(ev.url);
+    if (link) {
+      var a = el('a', 'tile-link');
+      a.href = link; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = hostname(ev.url) + ' →';
+      foot.appendChild(a);
+    } else {
+      foot.appendChild(el('span', 'tile-link tile-link-muted', ev.contact || ''));
+    }
+    body.appendChild(foot);
+
+    tile.appendChild(body);
+    return tile;
+  }
+
   // -------- Init --------
   fetch('/events-data.json').then(function(r){return r.json();}).then(function(data){
   EVENTS = data.events || [];
@@ -385,10 +447,12 @@
 
   // Hero meter
   var goldCount = upcoming.filter(function(e){ return e.gt; }).length;
+  var getawayCount = upcoming.filter(function(e){ return e.cat === 'getaway'; }).length;
   var asOf = now.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
   document.getElementById('hero-meta').innerHTML =
     upcoming.length + ' upcoming <span class="dot">·</span> ' +
-    goldCount + ' Golden Ticket qualifiers <span class="dot">·</span> As of ' + asOf;
+    goldCount + ' Golden Ticket qualifiers <span class="dot">·</span> ' +
+    getawayCount + ' getaways <span class="dot">·</span> As of ' + asOf;
 
   // Featured
   var champ = upcoming.find(function(e){ return e.wc; });
@@ -408,7 +472,7 @@
   }
 
   // Marquee — near-horizon, exclude championship (already featured) + TBD rows
-  var marqueeList = upcoming.filter(function(e){ return !e.wc && e.s && !e.tbd; }).slice(0, 14);
+  var marqueeList = upcoming.filter(function(e){ return !e.wc && e.s && !e.tbd && e.cat !== 'getaway'; }).slice(0, 14);
   var track = document.getElementById('marquee-track');
   // Duplicate for seamless loop
   var doubled = marqueeList.concat(marqueeList);
@@ -420,7 +484,7 @@
   // Month groups
   var groupsOrder = [];
   var groups = {};
-  upcoming.forEach(function(e){
+  upcoming.filter(function(e){ return e.cat !== 'getaway'; }).forEach(function(e){
     var k = e.m;
     if (!groups[k]) { groups[k] = []; groupsOrder.push(k); }
     groups[k].push(e);
@@ -441,6 +505,15 @@
     block.appendChild(list);
     monthsInner.appendChild(block);
   });
+
+  // Getaways & Retreats — their own room, not mixed with the brackets
+  var getaways = upcoming.filter(function(e){ return e.cat === 'getaway'; });
+  getaways.sort(function(a,b){ return (a.s||'9999') < (b.s||'9999') ? -1 : 1; });
+  if (getaways.length) {
+    document.getElementById('getaways-section').style.display = '';
+    var gGrid = document.getElementById('getaway-grid');
+    getaways.forEach(function(e){ gGrid.appendChild(renderGetaway(e)); });
+  }
   }).catch(function(){});
 })();
 </script>
