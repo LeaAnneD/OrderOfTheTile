@@ -103,10 +103,11 @@
 </div>
 
 <script src="../_engine/scenario.js"></script>
+<script src="../_engine/tiles.js"></script>
 <script src="../_engine/microquiz.js"></script>
 <script>
 "use strict";
-const BUILD="v1 · 2026-06-11";
+const BUILD="v1.1 · 2026-06-11";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_story_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_story_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));

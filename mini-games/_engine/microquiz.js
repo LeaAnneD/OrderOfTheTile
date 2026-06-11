@@ -17,6 +17,8 @@
 window.OOTTMICRO = (function(){
   "use strict";
   const Kit = window.OOTTKit;
+  // render a tile as real OOTT art when available, else fall back to the text chip
+  const T = (t,size)=> window.OOTTTILES ? window.OOTTTILES.img(t,size) : Kit.tileChip(t,size);
   const ri = (n,rand)=>Math.floor((rand||Math.random)()*n);
   const pick = (a,rand)=>a[ri(a.length,rand)];
   function shuffle(a,rand){ rand=rand||Math.random; for(let i=a.length-1;i>0;i--){ const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
@@ -32,7 +34,7 @@ window.OOTTMICRO = (function(){
     const correct = t.label;
     const choices = fourChoices(correct, faces.map(f=>f.label), rand);
     return { kind:'name',
-      promptHTML:`<div class="qlead">What tile is this?</div><div class="qtiles">${Kit.tileChip(t,'big')}</div>`,
+      promptHTML:`<div class="qlead">What tile is this?</div><div class="qtiles">${T(t,'big')}</div>`,
       choices, answer:choices.indexOf(correct),
       explain:`That's the <b>${correct}</b>.` };
   }
@@ -43,7 +45,7 @@ window.OOTTMICRO = (function(){
     const t = pick(faces, rand);
     const others = shuffle(faces.filter(f=>f.label!==t.label), rand).slice(0,3);
     const set = shuffle([t,...others], rand);
-    const tilesHTML = set.map((x,i)=>`<span class="qpicktile" data-i="${i}">${Kit.tileChip(x,'big')}</span>`).join('');
+    const tilesHTML = set.map((x,i)=>`<span class="qpicktile" data-i="${i}">${T(x,'big')}</span>`).join('');
     return { kind:'find', tilePick:true,
       promptHTML:`<div class="qlead">Tap the <b>${t.label}</b>.</div><div class="qtiles">${tilesHTML}</div>`,
       choices:set.map(x=>x.label), answer:set.indexOf(t),
@@ -66,7 +68,7 @@ window.OOTTMICRO = (function(){
     if(a.nums==='run'){ const start=1+ri(7,rand); nums=[start,start+1,start+2]; }
     else if(a.forceAll){ nums=[3,6,9]; }
     else { nums=shuffle(a.nums.slice(),rand).slice(0,3).sort((x,y)=>x-y); }
-    const tilesHTML = nums.map(n=>Kit.tileChip(suitTileN(n,suit),'big')).join('');
+    const tilesHTML = nums.map(n=>T(suitTileN(n,suit),'big')).join('');
     const choices = fourChoices(a.name, archetypes.map(x=>x.name), rand);
     return { kind:'section',
       promptHTML:`<div class="qlead">A hand built only from tiles like these is reaching for which kind of card section?</div><div class="qtiles">${tilesHTML}</div>`,
@@ -101,7 +103,7 @@ window.OOTTMICRO = (function(){
     const opts=new Set([left]); while(opts.size<4){ opts.add(ri(5,rand)); }
     const choices=shuffle([...opts],rand).map(String);
     return { kind:'remaining',
-      promptHTML:`<div class="qlead">You can already see <b>${seen}</b> of the four <b>${t.label}</b> tiles. How many are still unseen?</div><div class="qtiles">${Kit.tileChip(t,'big')}</div>`,
+      promptHTML:`<div class="qlead">You can already see <b>${seen}</b> of the four <b>${t.label}</b> tiles. How many are still unseen?</div><div class="qtiles">${T(t,'big')}</div>`,
       choices, answer:choices.indexOf(String(left)),
       explain:`Four of each suit/honor tile exist — you see ${seen}, so <b>${left}</b> remain. (Only Flowers and Jokers have eight copies.)` };
   }

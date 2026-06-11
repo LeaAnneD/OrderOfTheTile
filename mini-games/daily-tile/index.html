@@ -43,6 +43,7 @@
   .tile .s{font-size:.56rem; text-transform:uppercase; letter-spacing:.04em; margin-top:3px;}
   .tile.bam{color:var(--bam);} .tile.crak{color:var(--crak);} .tile.dot{color:var(--dot);} .tile.honor{color:var(--honor);} .tile.flower{color:var(--flower);}
   .tile.fit{outline:2.5px solid var(--good); outline-offset:1px;}
+  .tw{display:inline-block; line-height:0;} .tw.fit{outline:3px solid var(--good); outline-offset:2px; border-radius:9px;}
   .tile.sm{width:30px; height:40px; border-radius:5px;} .tile.sm .n{font-size:.85rem;} .tile.sm .s{font-size:.46rem;}
   /* guess controls */
   .guessrow{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; justify-content:center; margin:6px 0 4px;}
@@ -158,10 +159,11 @@
   </div>
 </div>
 
+<script src="../_engine/tiles.js"></script>
 <script src="../_data/card2026.js"></script>
 <script>
 "use strict";
-const BUILD="v1 · 2026-06-11";
+const BUILD="v1.1 · 2026-06-11";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_daily_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_daily_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -186,7 +188,7 @@ function faceInfo(f){
   if(f==='F')  return {n:'❀', sub:'Flower', cls:'flower'};
   return {n:f, sub:'', cls:'honor'};
 }
-function tileHTML(f, extra){ const i=faceInfo(f); return `<div class="tile ${i.cls}${extra?(' '+extra):''}"><span class="n">${i.n}</span><span class="s">${i.sub}</span></div>`; }
+function tileHTML(f, extra){ return `<span class="tw${extra?(' '+extra):''}">${window.OOTTTILES.img(f)}</span>`; }
 function faceOrder(f){
   if(/^[1-9]D$/.test(f))return [0,+f[0]];
   if(/^[1-9]B$/.test(f))return [1,+f[0]];
