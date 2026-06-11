@@ -15,7 +15,6 @@
     --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
     --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
     --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A;
-    --felt:#5C7A66; --felt-2:#4E6A58;
     --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -23,7 +22,7 @@
   .wrap{max-width:920px; margin:0 auto; padding:18px 16px 40px;}
   h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.6rem; margin:.1em 0;}
   .sub{color:var(--ink-soft); font-style:italic; margin:0 0 14px;}
-  .modebar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:4px 0 10px;}
+  .toprow{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:4px 0 10px;}
   .modepill{font-family:"Playfair Display",serif; font-weight:600; font-size:.92rem; cursor:pointer; border:1px solid var(--line); background:#fff; color:var(--ink-soft); border-radius:999px; padding:6px 16px; box-shadow:var(--shadow);}
   .modepill.on{background:var(--rose); color:#fff; border-color:var(--rose-deep);}
   .modepill small{display:block; font-family:"Crimson Text",serif; font-weight:400; font-style:italic; font-size:.72rem; opacity:.85;}
@@ -34,51 +33,56 @@
   .stat .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; line-height:1.1;}
   .banner{background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:14px; text-align:center;}
   .banner .lead{font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft);}
-  .banner .ask{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; margin-top:2px; line-height:1.2;}
-  .banner .why{font-style:italic; color:var(--ink-soft); font-size:.92rem; margin-top:5px;}
-  /* dice */
-  .dicerow{display:flex; gap:14px; justify-content:center; align-items:center; margin:6px 0 12px;}
-  .die{width:52px; height:52px; border-radius:12px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); position:relative; display:grid; grid-template:repeat(3,1fr)/repeat(3,1fr); padding:8px;}
+  .banner .ask{font-family:"Playfair Display",serif; font-weight:700; font-size:1.28rem; margin-top:2px; line-height:1.25;}
+  .banner .why{font-style:italic; color:var(--ink-soft); font-size:.92rem; margin-top:6px; line-height:1.35;}
+  @keyframes flashpulse{0%,100%{box-shadow:var(--shadow);} 50%{box-shadow:0 0 0 3px var(--gold), var(--shadow); background:#FBEFD4;}}
+  .banner.flash{animation:flashpulse .9s ease 2;}
+  .tuttag{display:inline-block; font-family:"Playfair Display",serif; font-weight:700; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:#fff; background:var(--sage); border-radius:999px; padding:3px 12px; margin-bottom:8px;}
+  /* dice — centered */
+  .dicerow{display:flex; gap:14px; justify-content:center; align-items:center; margin:8px 0 6px;}
+  .die{width:54px; height:54px; border-radius:12px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); display:grid; grid-template:repeat(3,1fr)/repeat(3,1fr); padding:9px;}
   .die.roll{animation:shake .5s ease;}
   @keyframes shake{0%,100%{transform:none}25%{transform:translateY(-6px) rotate(-8deg)}75%{transform:translateY(-4px) rotate(8deg)}}
   .pip{width:9px; height:9px; border-radius:50%; background:var(--ink); align-self:center; justify-self:center;}
   .dietotal{font-family:"Playfair Display",serif; font-weight:700; font-size:1.5rem; color:var(--rose-deep);}
-  /* wall of stacks */
-  .wallwrap{overflow-x:auto; padding:8px 2px 14px;}
-  .wall{display:flex; gap:3px; justify-content:flex-start; min-width:max-content; margin:0 auto;}
-  .stack{width:24px; cursor:pointer; display:flex; flex-direction:column; gap:2px; align-items:center; padding-top:4px; border-radius:6px;}
-  .stack .t{width:24px; height:16px; border-radius:4px; background:linear-gradient(180deg,#F3E9D6,#DcCcae); border:1px solid #C8B791; box-shadow:0 1px 2px rgba(0,0,0,.15);}
-  .stack .num{font-size:.66rem; color:var(--ink-soft); margin-top:2px; min-height:.9em;}
-  .stack.hl .t{background:linear-gradient(180deg,#FBEFD4,#EAD089); border-color:var(--gold);}
-  .stack.sel .t{outline:2px solid var(--rose); outline-offset:1px;}
+  /* wall: centered, full width, big tiles, NO per-tile numbers */
+  .wallhead{display:flex; justify-content:flex-end; align-items:center; gap:6px; color:var(--rose-deep); font-weight:600; font-size:.82rem; margin:8px 2px 4px;}
+  .wall{display:flex; gap:4px; width:100%; align-items:flex-end;}
+  .stack{flex:1 1 0; min-width:0; cursor:pointer; display:flex; flex-direction:column; gap:3px; padding:4px 0; border-radius:7px;}
+  .stack .t{width:100%; height:30px; border-radius:5px; background:linear-gradient(180deg,#F3E9D6,#DcCcae); border:1px solid #C8B791; box-shadow:0 1px 2px rgba(0,0,0,.15);}
+  .stack.sel{background:#F6E9E6; box-shadow:0 0 0 2px var(--rose) inset;}
+  .stack.counted .t{background:linear-gradient(180deg,#FBEFD4,#EAD089); border-color:var(--gold);}
   .stack.right .t{background:linear-gradient(180deg,#E4EFE0,#BcD8B6); border-color:var(--good);}
   .stack.wrong .t{background:linear-gradient(180deg,#F6E2E0,#E6B6B2); border-color:var(--bad);}
-  .stack:hover .t{filter:brightness(1.04);}
-  .righttag{text-align:right; color:var(--ink-soft); font-size:.78rem; font-style:italic; margin:-4px 4px 6px;}
-  /* seats row (deal mode) */
-  .seatsrow{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:8px 0;}
-  .seat{width:120px; padding:10px 8px; border-radius:13px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); text-align:center; cursor:pointer; transition:.1s;}
-  .seat .nm{font-family:"Playfair Display",serif; font-weight:600;}
+  .stack:hover .t{filter:brightness(1.05);}
+  .breakgap{flex:0 0 0; width:0; border-left:3px dashed var(--rose-deep); align-self:stretch; margin:0 1px;}
+  /* seats row (deal) */
+  .seatsrow{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:10px 0 2px;}
+  .seat{flex:1 1 130px; max-width:200px; padding:12px 8px; border-radius:13px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); text-align:center; cursor:pointer; transition:.1s;}
+  .seat .nm{font-family:"Playfair Display",serif; font-weight:600; font-size:1.02rem;}
   .seat .ro{font-size:.72rem; color:var(--ink-soft);}
-  .seat .pickn{font-family:"Playfair Display",serif; font-weight:700; color:var(--rose-deep); min-height:1.2em;}
   .seat:hover{border-color:var(--rose);}
+  .seat.sel{border-color:var(--rose); background:#F6E9E6; box-shadow:0 0 0 2px var(--rose) inset, var(--shadow);}
   .seat.right{border-color:var(--good); background:var(--good-bg);}
   .seat.wrong{border-color:var(--bad); background:var(--bad-bg);}
-  .seat.done{opacity:.6;}
-  /* choices (manners mode) */
-  .choices{display:flex; flex-direction:column; gap:9px; max-width:560px; margin:6px auto;}
+  .seat.dim{opacity:.5;}
+  /* choices (manners) */
+  .choices{display:flex; flex-direction:column; gap:9px; max-width:600px; margin:6px auto;}
   .choice{font-family:"Crimson Text",serif; font-size:1rem; text-align:left; padding:11px 15px; border-radius:11px; border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer; box-shadow:var(--shadow);}
   .choice:hover{border-color:var(--rose);}
   .choice.right{border-color:var(--good); background:var(--good-bg);}
   .choice.wrong{border-color:var(--bad); background:var(--bad-bg);}
   .choice.dim{opacity:.5;}
+  .submitbar{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin:14px 0 2px;}
   .feedline{text-align:center; font-style:italic; color:var(--ink-soft); min-height:1.4em; margin-top:8px; font-size:.96rem;}
   .feedline b{font-style:normal; color:var(--ink);}
   .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; align-items:center;}
   button.btn{font-family:"Crimson Text",serif; font-size:1rem; border-radius:11px; padding:9px 18px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer; box-shadow:var(--shadow);}
   button.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
   button:disabled{opacity:.45; cursor:not-allowed;}
-  .hint{color:var(--ink-soft); font-style:italic; font-size:.92rem;}
+  .hint{color:var(--ink-soft); font-style:italic; font-size:.9rem;}
+  .startwrap{text-align:center;}
+  .startwrap .big{font-size:1.15rem; padding:13px 34px;}
   .scrim{position:fixed; inset:0; background:rgba(43,38,34,.42); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000;}
   .scrim.show{display:flex;}
   .card{background:var(--paper); border-radius:18px; max-width:440px; width:100%; padding:26px 24px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line);}
@@ -90,10 +94,10 @@
   .modal-actions .btn{width:100%; padding:11px 10px; font-size:.96rem; margin:0;}
   .summary{background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); padding:18px;}
   .summary h2{font-family:"Playfair Display",serif; margin:.1em 0 .5em;}
-  .summary table{width:100%; border-collapse:collapse; font-size:.95rem; margin-bottom:6px;}
+  .summary table{width:100%; border-collapse:collapse; font-size:.95rem;}
   .summary td,.summary th{text-align:left; padding:5px 8px; border-bottom:1px solid var(--line);}
   .summary th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
-  .summary .note{font-style:italic; color:var(--ink-soft); margin:12px 0; font-size:.92rem;}
+  .note{font-style:italic; color:var(--ink-soft); font-size:.92rem;}
   .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:8px; flex-wrap:wrap;}
   .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.9rem; font-style:italic;}
   .btn.mini{font-size:.85rem; padding:6px 12px;}
@@ -105,7 +109,7 @@
   .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;}
   .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
   .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
-  @media(max-width:560px){ h1{font-size:1.34rem;} .banner .ask{font-size:1.12rem;} .leveltag{margin-left:0; width:100%;} .seat{width:46%;} }
+  @media(max-width:560px){ h1{font-size:1.34rem;} .banner .ask{font-size:1.1rem;} .leveltag{margin-left:0; width:100%;} .stack .t{height:26px;} }
 </style>
 </head>
 <body>
@@ -117,10 +121,10 @@
     <button id="logoutBtn" class="btn ghost mini" style="display:none;">Log out</button>
   </div>
   <h1>Wall-Break Simulator</h1>
-  <p class="sub">Roll, count, break, deal. Learn the open of the game cold — and where tables differ.</p>
+  <p class="sub">Roll, count from the right, break, deal. Learn the open of the game — and where tables differ.</p>
 
-  <div class="modebar">
-    <div class="modepill on" data-mode="break">Break the Wall<small>roll → count → where does it split?</small></div>
+  <div class="toprow">
+    <div class="modepill on" data-mode="break">Break the Wall<small>roll &rarr; count from the right</small></div>
     <div class="modepill" data-mode="deal">Deal Order<small>who takes tiles, in what order</small></div>
     <div class="modepill" data-mode="manners">Table Manners<small>procedure &amp; house rules</small></div>
     <div class="leveltag" id="levelTag">Level 1</div>
@@ -128,19 +132,19 @@
 
   <div class="hud">
     <div class="stat"><div class="k">Accuracy</div><div class="v" id="hudAcc">—</div></div>
-    <div class="stat"><div class="k">Time</div><div class="v" id="hudTime">0.0s</div></div>
+    <div class="stat"><div class="k">Time</div><div class="v" id="hudTime">—</div></div>
     <div class="stat"><div class="k">Answered</div><div class="v" id="hudProg">0 / 0</div></div>
-    <div class="stat"><div class="k">Best (100%)</div><div class="v" id="hudBest">—</div></div>
+    <div class="stat"><div class="k">Best</div><div class="v" id="hudBest">—</div></div>
   </div>
 
   <div id="game"></div>
 
   <div class="controls">
-    <button id="newRound" class="btn ghost">New round</button>
-    <button id="nextLevel" class="btn" disabled>Next level</button>
-    <span class="hint" id="hint">Clear a round at 100% on the first try to open the next level.</span>
-    <button id="stopBtn" class="btn ghost" style="margin-left:auto;">Stop</button>
-    <button id="resetAll" class="btn ghost" style="font-size:.85rem; padding:6px 12px;">Reset progress</button>
+    <button id="toggleBtn" class="btn">Play &#9654;</button>
+    <button id="nextLevel" class="btn ghost" disabled>Next level</button>
+    <button id="tutBtn" class="btn ghost">How to play</button>
+    <span class="hint" id="hint">Press Play to start — the clock only runs while you play.</span>
+    <button id="resetAll" class="btn ghost" style="margin-left:auto; font-size:.85rem; padding:6px 12px;">Reset progress</button>
   </div>
 
   <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
@@ -156,260 +160,249 @@
       <div class="stat"><div class="k">Time</div><div class="v" id="cardTime">—</div></div>
     </div>
     <div class="modal-actions">
-      <button id="cardAgain" class="btn ghost">Again</button>
+      <button id="cardAgain" class="btn ghost">Play again</button>
       <button id="cardNext" class="btn" disabled>Next level</button>
-      <button id="cardChoose" class="btn ghost">Another mode</button>
+      <button id="cardChoose" class="btn ghost">How to play</button>
       <button id="cardDone" class="btn ghost">Finished</button>
     </div>
   </div>
 </div>
 
 <script>
-const BUILD="v1 · 2026-06-10";
+const BUILD="v2 · 2026-06-10";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
 document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
 
-/* ---------- wall-break model (from Mahjong Made Easy) ----------
-   152 tiles → four walls of 19 double-tiered stacks (19 per player).
-   East throws two dice. The TOTAL is counted on EAST'S OWN wall from the
-   extreme RIGHT, moving left. East stops at that stack; those counted
-   tiles (right of the stop) are set aside, and East deals from the next
-   tiles to the LEFT. Stacks are 0..18 left→right, so the stop stack
-   counting N from the right is index (19 - N).
-   Dealing: four at a time — East, then East's RIGHT, then ACROSS, then
-   LEFT — three rounds (12 each), then the supplement leaves East with 14.  */
+/* ---------- model (from Mahjong Made Easy) ----------
+   152 tiles -> four walls of 19 double-tiered stacks each.
+   East throws two dice; the TOTAL is counted on East's own wall FROM THE RIGHT,
+   moving left, to find the break. Stacks 0..18 left->right, so counting N from the
+   right stops on index (19 - N).
+   Dealing: four at a time -> East, then East's RIGHT (South), ACROSS (West), LEFT
+   (North). Each player takes their OWN four (in casual play, don't touch others'
+   tiles; some house rules let one person deal them out). Three rounds -> 12 each.
+   Supplement: East takes two more (the 1st & 3rd) to reach 14; South, West, North
+   each take one more to reach 13.                                                    */
 const STACKS=19;
 const rnd=n=>Math.floor(Math.random()*n);
 const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
-function rollDie(){return 1+rnd(6);}
+const DEAL=["East (You)","South","West","North"];
+const ordinal=n=>n+(["th","st","nd","rd"][(n%100>>3^1)&&n%10<4?n%10:0]||"th");
 
-const LEVELS=[
-  {n:1,title:"Level 1 — With Guides",hints:true},
-  {n:2,title:"Level 2 — No Numbers",hints:false},
-  {n:3,title:"Level 3 — Clean & Quick",hints:false},
-];
-const MODES={break:"Break the Wall",deal:"Deal Order",manners:"Table Manners"};
-const LS="oott_wallbreak_v1";
-function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
-function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
-let prog=loadProg();
-prog.unlocked=prog.unlocked||1; prog.best=prog.best||{break:{},deal:{},manners:{}}; prog.kinds=prog.kinds||{};
-let mode="break", cur=LEVELS[0], round=null, timerId=null;
-const K=6;
-
-const $=s=>document.querySelector(s);
-const el=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
-function recordKind(kind,correct,ms){const f=prog.kinds[kind]||{seen:0,right:0,ms:0,n:0}; f.seen++; if(correct)f.right++; f.ms+=ms; f.n++; prog.kinds[kind]=f; round.handle[kind]=Math.max(round.handle[kind]||0,ms); saveProg();}
-function startClock(){if(!round.started){round.started=true; round.t0=performance.now(); timerId=setInterval(()=>{if(round.t0)$("#hudTime").textContent=((performance.now()-round.t0)/1000).toFixed(1)+"s";},100);}}
-function updateHud(){
-  const acc=round.attempted?Math.round(round.firstRight/round.attempted*100):null;
-  $("#hudAcc").textContent=acc==null?"—":acc+"%";
-  $("#hudProg").textContent=round.idx+" / "+round.K;
-  const best=prog.best[mode][cur.n]; $("#hudBest").textContent=best?best.toFixed(1)+"s":"—";
-  $("#levelTag").textContent=cur.title;
-  $("#nextLevel").disabled=!(prog.unlocked>cur.n);
-}
-
-/* ---------- scenario generation ---------- */
 const MANNERS=[
   {q:"How many tiles does East start the game holding?",opts:["14","13","16","12"],a:0,why:"East starts with 14; everyone else starts with 13."},
-  {q:"Why is the wall broken by a roll of the dice?",opts:["To randomize where it opens and prevent cheating","To decide the hand to build","To choose the trump suit","To set the timer"],a:0,why:"The dice randomize the break so no one can stack the wall."},
-  {q:"When a game ends, who becomes East for the next game?",opts:["The player to East's right","East again","The winner","The player across from East"],a:0,why:"East passes to the right; the dice go with it."},
-  {q:"East counts to find the break starting from which end of their wall?",opts:["The extreme right, moving left","The extreme left, moving right","The middle, both ways","Wherever they like"],a:0,why:"Count the dice total from the far right of East's own wall."},
-  {q:"When tiles are dealt, they are taken four at a time in what order?",opts:["East, then East's right, then across, then left","Clockwise from the winner","Left, across, right, East","All at once"],a:0,why:"Four at a time: East → right → across → left, for three rounds."},
-  {q:"After counting off the break, East deals from which tiles?",opts:["The tiles just to the LEFT of the counted-off group","The tiles to the right","The bottom row only","A fresh wall"],a:0,why:"The counted tiles are set aside; dealing starts from the next tiles to the left."},
-  {q:"How many stacks tall/long is each player's wall at the start?",opts:["19 double-tiered stacks","13 stacks","17 stacks","21 stacks"],a:0,why:"152 tiles split four ways = 19 double-tiered stacks per wall."},
-  {q:"Different tables handle touching the tiles or wall before your turn...",opts:["...differently — it's a house rule, so ask the table","...the same everywhere, always allowed","...the same everywhere, always forbidden","...only at tournaments"],a:0,why:"Tile-touching etiquette is a house rule. When in doubt, ask the table."},
+  {q:"Why is the wall broken by a roll of the dice?",opts:["To randomize where it opens and prevent cheating","To decide the hand to build","To choose a trump suit","To set the timer"],a:0,why:"The dice randomize the break so no one can stack the wall."},
+  {q:"East counts to find the break starting from which end of the wall?",opts:["The far RIGHT, moving left","The far left, moving right","The middle","Wherever they like"],a:0,why:"Count the dice total from the far RIGHT of East's own wall."},
+  {q:"After counting off the break, East deals from which tiles?",opts:["The tiles just to the LEFT of the counted-off group","The counted-off tiles on the right","The bottom row only","A fresh wall"],a:0,why:"The counted-off tiles are set aside; dealing starts from the next tiles to the left."},
+  {q:"In casual play, who picks up each player's four tiles?",opts:["Each player takes their own — many don't want others touching their tiles","One person hands them all out, always","The winner of the last game","East deals every tile"],a:0,why:"Take your own four. Some house rules let one person deal them out, but informally, hands off other people's tiles."},
+  {q:"Tiles are dealt four at a time, in what order?",opts:["East, then South (right), West (across), North (left)","Clockwise from the winner","North, West, South, East","All at once"],a:0,why:"Four at a time: East -> South -> West -> North, three times around."},
+  {q:"After three rounds everyone has 12. How does East reach 14?",opts:["East takes two more; South, West, North each take one more","East takes four more","Everyone takes two more","East trades with South"],a:0,why:"East takes two (the 1st & 3rd), and South, West, and North each take one — East 14, the rest 13."},
+  {q:"When a game ends, who becomes East next?",opts:["The player to East's right (South)","East again","The winner","The player across"],a:0,why:"East passes to the right; the dice go with it."},
 ];
-function makeScenario(){
-  if(mode==="break"){
-    const d1=rollDie(),d2=rollDie(),tot=d1+d2;
-    return {kind:"Break point",d1,d2,tot,stop:STACKS-tot}; // index from left of the stop stack
-  }
-  if(mode==="deal"){
-    // ask: "who takes the Nth group of four?"  order cycles E,R,A,L
-    const order=["East (You)","Your right","Across","Your left"];
-    const groupN=1+rnd(cur.n>=2?12:4);   // L1 first 4 groups; L2+ any of the 12
-    const who=(groupN-1)%4;
-    return {kind:"Deal order",order,groupN,who};
-  }
-  // manners
-  const i=rnd(MANNERS.length);
-  const base=MANNERS[i];
-  // shuffle options, track answer
-  const idx=base.opts.map((_,k)=>k); for(let k=idx.length-1;k>0;k--){const j=rnd(k+1);[idx[k],idx[j]]=[idx[j],idx[k]];}
-  const opts=idx.map(k=>base.opts[k]); const a=idx.indexOf(base.a);
-  return {kind:"Table manners",q:base.q,opts,a,why:base.why};
-}
 
-/* ---------- rendering ---------- */
-function renderScenario(){
-  const sc=round.seq[round.idx]; round._show=performance.now(); startClock();
-  const g=$("#game"); g.innerHTML=""; const feed=el("div","feedline"); feed.id="feed";
-  if(sc.kind==="Break point") renderBreak(g,sc);
-  else if(sc.kind==="Deal order") renderDeal(g,sc);
-  else renderManners(g,sc);
-  g.appendChild(feed); updateHud();
-}
-function ordinal(n){return n+(["th","st","nd","rd"][(n%100>>3^1)&&n%10<4?n%10:0]||"th");}
+const LEVELS=[{n:1,title:"Level 1 — With Guides",hints:true},{n:2,title:"Level 2 — No Guides",hints:false},{n:3,title:"Level 3 — Clean & Quick",hints:false}];
+const LS="oott_wallbreak_v2";
+function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
+function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
+let prog=loadProg(); prog.unlocked=prog.unlocked||{break:1,deal:1,manners:1}; prog.best=prog.best||{break:{},deal:{}}; prog.tutDone=prog.tutDone||false;
+let mode="break", cur=LEVELS[0], round=null, timerId=null, tutorial=null, playing=false;
+const K=6;
+const $=s=>document.querySelector(s);
+const el=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+const timed=()=>mode!=="manners";
 
-function renderBreak(g,sc){
-  const banner=el("div","banner");
-  banner.innerHTML=`<div class="lead">East rolls to break the wall</div>
-    <div class="ask">East rolled <b>${sc.tot}</b>. Counting from the right, where does the wall break?</div>
-    ${cur.hints?`<div class="why">Tap the stack East stops on — the ${ordinal(sc.tot)} stack from the right end.</div>`:`<div class="why">Count ${sc.tot} stacks in from the right and tap where East stops.</div>`}`;
-  g.appendChild(banner);
-  const dr=el("div","dicerow");
-  dr.innerHTML=`${dieHTML(sc.d1)}${dieHTML(sc.d2)}<span class="dietotal">= ${sc.tot}</span>`;
-  g.appendChild(dr);
-  setTimeout(()=>dr.querySelectorAll('.die').forEach(d=>d.classList.add('roll')),20);
-  const ww=el("div","wallwrap"); const wall=el("div","wall");
-  for(let i=0;i<STACKS;i++){
-    const s=el("div","stack"); s.dataset.i=i;
-    const fromRight=STACKS-i;
-    s.innerHTML=`<div class="t"></div><div class="t"></div><div class="num">${cur.hints?fromRight:""}</div>`;
-    s.onclick=()=>submitBreak(sc,i,wall);
-    wall.appendChild(s);
-  }
-  ww.appendChild(wall); g.appendChild(ww);
-  g.appendChild(Object.assign(el("div","righttag"),{textContent:"right end →"}));
-}
+/* ---------- scenario generation (no repeats within a round) ---------- */
+function makeBreak(used){ let tot; let g=0; do{ tot=(1+rnd(6))+(1+rnd(6)); g++; }while(used.has("b"+tot)&&g<40); used.add("b"+tot); const d1=1+rnd(6); const d2=tot-d1>=1&&tot-d1<=6?tot-d1:Math.min(6,tot-1); return {kind:"break",d1,d2:tot-d1>=1&&tot-d1<=6?tot-d1:d2,tot,stop:STACKS-tot}; }
+function makeDeal(used){ let groupN,who,key,g=0; do{ groupN=1+rnd(cur.n>=2?12:8); who=(groupN-1)%4; key="d"+groupN; g++; }while(used.has(key)&&g<40); used.add(key); return {kind:"deal",groupN,who}; }
+function makeManners(used){ let i,g=0; do{ i=rnd(MANNERS.length); g++; }while(used.has("m"+i)&&g<40); used.add("m"+i); const base=MANNERS[i]; const idx=base.opts.map((_,k)=>k); for(let k=idx.length-1;k>0;k--){const j=rnd(k+1);[idx[k],idx[j]]=[idx[j],idx[k]];} return {kind:"manners",q:base.q,opts:idx.map(k=>base.opts[k]),a:idx.indexOf(base.a),why:base.why}; }
+function makeOne(used){ return mode==="break"?makeBreak(used):mode==="deal"?makeDeal(used):makeManners(used); }
+
+/* ---------- dice ---------- */
 function dieHTML(v){let cells=""; for(let i=0;i<9;i++)cells+=`<span ${PIPS[v].includes(i)?'class="pip"':''}></span>`; return `<div class="die">${cells}</div>`;}
-function submitBreak(sc,i,wall){
-  if(round._answered)return; round._answered=true; const ms=performance.now()-round._show;
-  const stacks=[...wall.querySelectorAll('.stack')];
-  stacks.forEach(s=>s.onclick=null);
-  const correct=i===sc.stop;
-  stacks[i].classList.add(correct?'right':'wrong');
-  if(!correct)stacks[sc.stop].classList.add('right');
-  // shade the counted-off tiles to the right of the stop
-  for(let k=sc.stop;k<STACKS;k++) if(k!==i&&k!==sc.stop) stacks[k].classList.add('hl');
-  $("#feed").innerHTML=correct
-    ? `Right — count ${sc.tot} from the right and the wall opens there. Those ${sc.tot} stacks are set aside; East deals from the next tiles to the left.`
-    : `Not quite. Counting ${sc.tot} from the right lands on the highlighted stack. The ${sc.tot} stacks to its right are set aside.`;
-  afterAnswer(correct,ms,sc.kind);
-}
 
-function renderDeal(g,sc){
-  const banner=el("div","banner");
-  banner.innerHTML=`<div class="lead">Dealing — four tiles at a time</div>
-    <div class="ask">Who takes the <b>${ordinal(sc.groupN)}</b> group of four tiles?</div>
-    ${cur.hints?`<div class="why">Order repeats: East → your right → across → your left.</div>`:``}`;
-  g.appendChild(banner);
+/* ---------- shared renderer ---------- */
+let sel={stack:null,seat:null,locked:false};
+function renderScenario(sc,opts){
+  opts=opts||{}; sel={stack:null,seat:null,locked:false};
+  const hints=opts.hints!=null?opts.hints:cur.hints;
+  const g=$("#game"); g.innerHTML="";
+  if(sc.kind==="break")   renderBreak(g,sc,hints,opts);
+  else if(sc.kind==="deal") renderDeal(g,sc,hints,opts);
+  else renderManners(g,sc,opts);
+  const feed=el("div","feedline"); feed.id="feed"; g.appendChild(feed);
+}
+function bannerEl(lead,ask,why,opts){
+  const b=el("div","banner flash");
+  b.innerHTML=(opts&&opts.tut?`<span class="tuttag">Tutorial${opts.step?" · "+opts.step:""}</span>`:"")+
+    (opts&&opts.tutText?`<div class="why" style="margin:0 0 8px; font-style:normal; color:var(--ink);">${opts.tutText}</div>`:"")+
+    `<div class="lead">${lead}</div><div class="ask">${ask}</div>`+(why?`<div class="why">${why}</div>`:"");
+  return b;
+}
+function submitBar(sc,opts){
+  const sb=el("div","submitbar");
+  const sub=el("button","btn"); sub.id="submitBtn"; sub.textContent="Submit"; sub.disabled=true; sub.onclick=()=>doSubmit(sc,opts); sb.appendChild(sub);
+  return sb;
+}
+function enableSubmit(on){const s=$("#submitBtn"); if(s)s.disabled=!on;}
+
+function renderBreak(g,sc,hints,opts){
+  g.appendChild(bannerEl("East rolls to break the wall",
+    `East rolled <b>${sc.tot}</b>. Count <b>${sc.tot}</b> from the <b>right</b> and tap the stack where the wall breaks.`,
+    hints?"East counts the dice total from the far right of their own wall.":"",opts));
+  const dr=el("div","dicerow"); dr.innerHTML=`${dieHTML(sc.d1)}${dieHTML(sc.d2)}<span class="dietotal">= ${sc.tot}</span>`; g.appendChild(dr);
+  setTimeout(()=>dr.querySelectorAll('.die').forEach(d=>d.classList.add('roll')),20);
+  const head=el("div","wallhead"); head.innerHTML="start counting here &rarr;"; g.appendChild(head);
+  const wall=el("div","wall");
+  for(let i=0;i<STACKS;i++){ const s=el("div","stack"); s.dataset.i=i; s.innerHTML=`<div class="t"></div><div class="t"></div>`; s.onclick=()=>pickStack(sc,i,wall); wall.appendChild(s); }
+  g.appendChild(wall);
+  g.appendChild(submitBar(sc,opts));
+}
+function pickStack(sc,i,wall){ if(sel.locked)return; sel.stack=i; [...wall.querySelectorAll('.stack')].forEach((s,k)=>s.classList.toggle('sel',k===i)); enableSubmit(true); }
+
+function renderDeal(g,sc,hints,opts){
+  g.appendChild(bannerEl("Dealing — four tiles at a time",
+    `Who takes the <b>${ordinal(sc.groupN)}</b> group of four tiles?`,
+    hints?"Order repeats: East &rarr; South (your right) &rarr; West (across) &rarr; North (your left).":"",opts));
   const row=el("div","seatsrow");
-  sc.order.forEach((nm,k)=>{
-    const s=el("div","seat"); s.dataset.k=k;
-    s.innerHTML=`<div class="nm">${nm}</div><div class="ro">seat ${["E","R","A","L"][k]}</div><div class="pickn"></div>`;
-    s.onclick=()=>submitDeal(sc,k,row);
-    row.appendChild(s);
-  });
+  DEAL.forEach((nm,k)=>{ const s=el("div","seat"); s.dataset.k=k; s.innerHTML=`<div class="nm">${nm.replace(" (You)","")}</div><div class="ro">${["East","South","West","North"][k]}${k===0?" · you":""}</div>`; s.onclick=()=>pickSeat(sc,k,row); row.appendChild(s); });
   g.appendChild(row);
+  g.appendChild(submitBar(sc,opts));
 }
-function submitDeal(sc,k,row){
-  if(round._answered)return; round._answered=true; const ms=performance.now()-round._show;
-  const seats=[...row.querySelectorAll('.seat')]; seats.forEach(s=>s.onclick=null);
-  const correct=k===sc.who;
-  seats[k].classList.add(correct?'right':'wrong');
-  if(!correct)seats[sc.who].classList.add('right');
-  $("#feed").innerHTML=correct
-    ? `Right — the ${ordinal(sc.groupN)} four go to <b>${sc.order[sc.who]}</b>.`
-    : `Not quite — the ${ordinal(sc.groupN)} four go to <b>${sc.order[sc.who]}</b>. The order East → right → across → left just repeats.`;
-  afterAnswer(correct,ms,sc.kind);
-}
+function pickSeat(sc,k,row){ if(sel.locked)return; sel.seat=k; [...row.querySelectorAll('.seat')].forEach((s,j)=>s.classList.toggle('sel',j===k)); enableSubmit(true); }
 
-function renderManners(g,sc){
-  const banner=el("div","banner");
-  banner.innerHTML=`<div class="lead">Table manners</div><div class="ask">${sc.q}</div>`;
-  g.appendChild(banner);
+function renderManners(g,sc,opts){
+  g.appendChild(bannerEl("Table manners",sc.q,"",opts));
   const box=el("div","choices");
-  sc.opts.forEach((o,k)=>{ const b=el("button","choice"); b.textContent=o; b.onclick=()=>submitManners(sc,k,box); box.appendChild(b); });
+  sc.opts.forEach((o,k)=>{ const b=el("button","choice"); b.textContent=o; b.onclick=()=>{ if(sel.locked)return; sel.choice=k; doSubmit(sc,opts); }; box.appendChild(b); });
   g.appendChild(box);
 }
-function submitManners(sc,k,box){
-  if(round._answered)return; round._answered=true; const ms=performance.now()-round._show;
-  const btns=[...box.querySelectorAll('.choice')]; btns.forEach(b=>{b.onclick=null; b.classList.add('dim');});
-  const correct=k===sc.a;
-  btns[k].classList.remove('dim'); btns[k].classList.add(correct?'right':'wrong');
-  if(!correct){btns[sc.a].classList.remove('dim'); btns[sc.a].classList.add('right');}
-  $("#feed").innerHTML=(correct?"Right. ":"Not quite. ")+sc.why;
-  afterAnswer(correct,ms,sc.kind);
-}
 
-function afterAnswer(correct,ms,kind){
-  round.attempted++; if(correct)round.firstRight++;
-  recordKind(kind,correct,ms);
-  setTimeout(()=>{ round.idx++; if(round.idx>=round.K) finishRound(); else { round._answered=false; renderScenario(); } }, correct?950:1900);
-}
-
-function finishRound(){
-  clearInterval(timerId);
-  const secs=(performance.now()-round.t0)/1000;
-  const acc=Math.round(round.firstRight/round.attempted*100);
-  const clean=acc===100;
-  if(window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode,level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean});
-  if(clean){
-    if(!prog.best[mode][cur.n]||secs<prog.best[mode][cur.n]) prog.best[mode][cur.n]=+secs.toFixed(1);
-    if(cur.n>=prog.unlocked&&cur.n<LEVELS.length) prog.unlocked=cur.n+1;
-    saveProg();
+function doSubmit(sc,opts){
+  if(sel.locked)return;
+  let correct;
+  if(sc.kind==="break"){
+    if(sel.stack==null)return; sel.locked=true; enableSubmit(false);
+    const stacks=[...$("#game").querySelectorAll('.stack')]; stacks.forEach(s=>{s.onclick=null;});
+    correct=sel.stack===sc.stop;
+    stacks[sel.stack].classList.add(correct?'right':'wrong'); if(!correct)stacks[sc.stop].classList.add('right');
+    for(let k=sc.stop+1;k<STACKS;k++) stacks[k].classList.add('counted');   // the tiles counted off, to the right
+    $("#feed").innerHTML=correct
+      ? `Right — count ${sc.tot} from the right and the wall opens there. Those ${sc.tot} stacks (gold) are set aside; East deals from the tiles to the left.`
+      : `Not quite. Counting ${sc.tot} from the right lands on the green stack; the ${sc.tot} stacks to its right are set aside.`;
+  } else if(sc.kind==="deal"){
+    if(sel.seat==null)return; sel.locked=true; enableSubmit(false);
+    const seats=[...$("#game").querySelectorAll('.seat')]; seats.forEach(s=>s.onclick=null);
+    correct=sel.seat===sc.who;
+    seats[sel.seat].classList.add(correct?'right':'wrong'); if(!correct)seats[sc.who].classList.add('right');
+    $("#feed").innerHTML=correct?`Right — the ${ordinal(sc.groupN)} four go to <b>${DEAL[sc.who].replace(" (You)","")}</b>.`:`Not quite — the ${ordinal(sc.groupN)} four go to <b>${DEAL[sc.who].replace(" (You)","")}</b>. The order East &rarr; South &rarr; West &rarr; North just repeats.`;
+  } else {
+    sel.locked=true;
+    const btns=[...$("#game").querySelectorAll('.choice')]; btns.forEach(b=>{b.onclick=null; b.classList.add('dim');});
+    correct=sel.choice===sc.a;
+    btns[sel.choice].classList.remove('dim'); btns[sel.choice].classList.add(correct?'right':'wrong');
+    if(!correct){btns[sc.a].classList.remove('dim'); btns[sc.a].classList.add('right');}
+    $("#feed").innerHTML=(correct?"Right. ":"Not quite. ")+sc.why;
   }
+  if(opts.tut) tutAfter(correct); else gameAfter(correct);
+}
+
+/* ---------- TUTORIAL ---------- */
+function tutData(){
+  return [
+    {sc:{kind:"break",d1:2,d2:3,tot:5,stop:STACKS-5}, text:"<b>Break the wall.</b> East throws the dice and counts that total from the <b>right</b> end of their own wall. Wherever the count stops, that's where the wall opens — the counted tiles get set aside for the end of the game. East rolled 5 here. Tap the stack 5 from the right, then Submit."},
+    {sc:{kind:"deal",groupN:2,who:1}, text:"<b>Deal four at a time.</b> Starting at the break, tiles go four at a time: East, then South (your right), West (across), North (your left), around three times until everyone has 12. Take your own four — in casual play, don't touch other people's tiles. Who takes the 2nd group of four?"},
+    {sc:{kind:"manners",q:"After everyone has 12, how does East end up with 14?",opts:["East takes two more; South, West & North each take one more","East takes four more","Everyone draws two"],a:0,why:"East takes two (the 1st & 3rd) and the other three take one each — East 14, the rest 13. Then play begins."}},
+  ];
+}
+function startTutorial(){ stopTimer(); setPlaying(false); $("#hudTime").textContent="—"; $("#hudAcc").textContent="—"; $("#hudProg").textContent="0 / 0"; tutorial={step:0,list:tutData()}; renderTut(); }
+function renderTut(){ const t=tutorial.list[tutorial.step]; renderScenario(t.sc,{tut:true,hints:true,tutText:t.text,step:(tutorial.step+1)+" of "+tutorial.list.length}); }
+function tutAfter(){ const last=tutorial.step>=tutorial.list.length-1; const sb=$("#game").querySelector('.submitbar')||$("#game"); const nxt=el("button","btn"); nxt.textContent=last?"Got it — let me play ▶":"Next ▶"; nxt.onclick=()=>{ if(last){ prog.tutDone=true; saveProg(); showStart(); } else { tutorial.step++; renderTut(); } }; const bar=$("#game").querySelector('.submitbar'); if(bar){bar.innerHTML="";bar.appendChild(nxt);} else {const w=el("div","submitbar"); w.appendChild(nxt); $("#game").appendChild(w);} }
+
+/* ---------- START / PLAY / STOP ---------- */
+function setPlaying(on){ playing=on; const t=$("#toggleBtn"); if(t){ t.innerHTML=on?"Stop &#9632;":"Play &#9654;"; t.classList.toggle("ghost",false); } }
+function showStart(){
+  stopTimer(); setPlaying(false);
+  const g=$("#game");
+  const timeNote = timed()?"The clock starts when you press Play.":"Table Manners isn't timed — just answer each one.";
+  g.innerHTML=`<div class="banner flash"><div class="lead">Ready to play — ${MODES_LABEL[mode]}</div>
+    <div class="ask" style="font-size:1.1rem;">${MODE_BLURB[mode]}</div>
+    <div class="why">${timeNote}</div></div>
+    <div class="startwrap"><button id="playBig" class="btn big">Play ▶</button>
+    <button id="tutBig" class="btn ghost" style="margin-left:10px;">How to play</button></div>`;
+  $("#playBig").onclick=()=>startRound();
+  $("#tutBig").onclick=()=>startTutorial();
+  $("#hudTime").textContent=timed()?"0.0s":"—"; $("#hudAcc").textContent="—"; $("#hudProg").textContent="0 / 0";
+  updateBest();
+}
+const MODES_LABEL={break:"Break the Wall",deal:"Deal Order",manners:"Table Manners"};
+const MODE_BLURB={break:"Roll the dice, count from the right, and tap where the wall breaks.",deal:"Four tiles at a time — say who takes each group, East to South to West to North.",manners:"A few questions on how the open of the game is handled, and where tables differ."};
+
+function startRound(){
+  stopTimer();
+  const used=new Set(); const seq=[]; for(let i=0;i<K;i++)seq.push(makeOne(used));
+  round={seq,idx:0,K,firstRight:0,attempted:0,started:false,t0:null,_show:null};
+  setPlaying(true);
+  $("#hudTime").textContent=timed()?"0.0s":"—";
+  nextScenario();
+}
+function nextScenario(){ const sc=round.seq[round.idx]; round._show=performance.now(); if(timed())startClock(); renderScenario(sc,{}); updateHud(); }
+function gameAfter(correct){
+  const ms=performance.now()-round._show;
+  round.attempted++; if(correct)round.firstRight++;
+  setTimeout(()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else nextScenario(); }, correct?900:1700);
+}
+function startClock(){ if(!round.started){round.started=true; round.t0=performance.now(); timerId=setInterval(()=>{if(round.t0)$("#hudTime").textContent=((performance.now()-round.t0)/1000).toFixed(1)+"s";},100);} }
+function stopTimer(){ clearInterval(timerId); timerId=null; }
+function updateHud(){
+  const acc=round&&round.attempted?Math.round(round.firstRight/round.attempted*100):null;
+  $("#hudAcc").textContent=acc==null?"—":acc+"%";
+  $("#hudProg").textContent=round?(round.idx+" / "+round.K):"0 / 0";
+  updateBest();
+}
+function updateBest(){
+  $("#levelTag").textContent=cur.title; $("#nextLevel").disabled=!(prog.unlocked[mode]>cur.n);
+  if(timed()){ const b=prog.best[mode]&&prog.best[mode][cur.n]; $("#hudBest").textContent=b?b.toFixed(1)+"s":"—"; }
+  else $("#hudBest").textContent = prog.unlocked.manners>1?"✓ cleared":"—";
+}
+function finishRound(){
+  stopTimer();
+  const acc=Math.round(round.firstRight/round.attempted*100), clean=acc===100;
+  const secs=timed()&&round.t0?(performance.now()-round.t0)/1000:0;
+  if(window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode,level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean});
+  if(clean){ if(timed()){ if(!prog.best[mode][cur.n]||secs<prog.best[mode][cur.n])prog.best[mode][cur.n]=+secs.toFixed(1);} if(cur.n>=prog.unlocked[mode]&&cur.n<LEVELS.length)prog.unlocked[mode]=cur.n+1; saveProg(); }
+  setPlaying(false);
   $("#cardTitle").textContent=clean?"Clean sweep.":"Round cleared.";
-  $("#cardVerdict").textContent=clean
-    ?(cur.n<LEVELS.length?"Every one, first try. The next level is open to you.":"You can open the game cold — roll, count, break, deal.")
-    :`${round.firstRight} of ${round.attempted} right on the first try. Run it again until it's clean.`;
-  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s";
-  $("#cardNext").disabled=!(clean&&cur.n<LEVELS.length);
+  $("#cardVerdict").textContent=clean?(cur.n<LEVELS.length?"Every one, first try. The next level is open to you.":"You can open the game cold — roll, count, break, deal."):`${round.firstRight} of ${round.attempted} right on the first try. Run it again until it's clean.`;
+  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=timed()?secs.toFixed(1)+"s":"—"; $("#cardNext").disabled=!(clean&&cur.n<LEVELS.length);
   $("#scrim").classList.add("show");
-  updateHud();
 }
-
-/* ---------- round lifecycle ---------- */
-function deal(){
-  clearInterval(timerId);
-  const seq=[]; for(let i=0;i<K;i++) seq.push(makeScenario());
-  round={seq,idx:0,K,firstRight:0,attempted:0,handle:{},started:false,t0:null,_show:null,_answered:false};
-  $("#hudTime").textContent="0.0s";
-  renderScenario();
-}
-function gotoLevel(n){cur=LEVELS[n-1]; deal();}
-function setMode(m){mode=m; document.querySelectorAll(".modepill").forEach(p=>p.classList.toggle("on",p.dataset.mode===m)); deal();}
-
-document.querySelectorAll(".modepill").forEach(p=>p.addEventListener("click",()=>setMode(p.dataset.mode)));
-$("#newRound").onclick=()=>deal();
-$("#nextLevel").onclick=()=>{if(prog.unlocked>cur.n)gotoLevel(cur.n+1);};
-$("#cardAgain").onclick=()=>{$("#scrim").classList.remove("show"); deal();};
-$("#cardNext").onclick=()=>{$("#scrim").classList.remove("show"); if(cur.n<LEVELS.length)gotoLevel(cur.n+1);};
-$("#resetAll").onclick=()=>{if(confirm("Reset all progress and best times?")){localStorage.removeItem(LS); prog=loadProg(); prog.unlocked=1; prog.best={break:{},deal:{},manners:{}}; prog.kinds={}; saveProg(); cur=LEVELS[0]; setMode("break");}};
-$("#stopBtn").onclick=()=>{
-  clearInterval(timerId);
-  const secs=(round&&round.t0)?(performance.now()-round.t0)/1000:0;
+function stopRound(){
+  stopTimer();
   const acc=(round&&round.attempted)?Math.round(round.firstRight/round.attempted*100):0;
-  if(secs>0&&window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode,level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean:false});
-  $("#cardTitle").textContent="Stopped."; $("#cardVerdict").textContent="You ended the round early. Pick up wherever you like.";
-  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s";
-  $("#cardNext").disabled=!(prog.unlocked>cur.n); $("#scrim").classList.add("show");
-};
-$("#cardChoose").onclick=()=>{ $("#scrim").classList.remove("show"); window.scrollTo({top:0,behavior:'smooth'}); const mb=document.querySelector('.modebar'); if(mb&&mb.animate) mb.animate([{filter:'brightness(1)'},{filter:'brightness(1.18)'},{filter:'brightness(1)'}],{duration:800}); };
-$("#cardDone").onclick=()=>{ $("#scrim").classList.remove("show"); showSummary(); };
-function showSummary(){
-  clearInterval(timerId);
-  let rows='';
-  ['break','deal','manners'].forEach(m=>{for(let L=1;L<=3;L++){const b=prog.best[m]&&prog.best[m][L]; if(b)rows+=`<tr><td>${MODES[m]}</td><td>Level ${L}</td><td>${b.toFixed(1)}s</td></tr>`;}});
-  if(!rows) rows=`<tr><td colspan="3" style="color:var(--ink-soft); font-style:italic;">No clean rounds yet — clear one at 100% to set a best time.</td></tr>`;
-  const kinds=Object.entries(prog.kinds||{}).filter(([n,f])=>f.seen>0);
-  const reps=kinds.reduce((s,[,f])=>s+f.seen,0);
-  $("#game").innerHTML=`<div class="summary">
-    <h2>Your practice so far</h2>
-    <table><thead><tr><th>Mode</th><th>Level</th><th>Best (100%)</th></tr></thead><tbody>${rows}</tbody></table>
-    <p class="note">${reps} questions practiced.</p>
-    ${(window.OOTT&&window.OOTT.user)?`<p class="note">You're signed in — your progress and best times are saved to your account.</p>`:`<p class="note">These stats live on this device. If you haven't made a free account yet, create one to keep your record across devices and climb the leaderboard — we'll never sell your information.</p><button class="btn" onclick="window.OOTT&&window.OOTT.openAuth&&window.OOTT.openAuth()">Create a free account</button>`}
-    <button class="btn" id="backToPlay">Back to practice</button>
-  </div>`;
-  $("#backToPlay").onclick=()=>deal();
+  const secs=(timed()&&round&&round.t0)?(performance.now()-round.t0)/1000:0;
+  if(round&&round.attempted&&window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode,level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean:false});
+  setPlaying(false);
+  $("#cardTitle").textContent="Stopped."; $("#cardVerdict").textContent="You ended the round early. Press Play whenever you're ready to go again.";
+  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=timed()?secs.toFixed(1)+"s":"—"; $("#cardNext").disabled=!(prog.unlocked[mode]>cur.n);
+  $("#scrim").classList.add("show");
 }
+function closeModalToStart(){ $("#scrim").classList.remove("show"); showStart(); }   // closing the modal never auto-restarts the clock
 
-deal();
+/* ---------- wiring ---------- */
+document.querySelectorAll(".modepill").forEach(p=>p.addEventListener("click",()=>{ mode=p.dataset.mode; document.querySelectorAll(".modepill").forEach(x=>x.classList.toggle("on",x===p)); cur=LEVELS[Math.min(prog.unlocked[mode]||1,1)-1]||LEVELS[0]; cur=LEVELS[0]; showStart(); }));
+$("#toggleBtn").onclick=()=>{ if(playing)stopRound(); else startRound(); };
+$("#tutBtn").onclick=()=>startTutorial();
+$("#nextLevel").onclick=()=>{ if(prog.unlocked[mode]>cur.n){ cur=LEVELS[cur.n]; showStart(); } };
+$("#cardAgain").onclick=()=>{ $("#scrim").classList.remove("show"); startRound(); };
+$("#cardNext").onclick=()=>{ $("#scrim").classList.remove("show"); if(cur.n<LEVELS.length){cur=LEVELS[cur.n]; startRound();} };
+$("#cardChoose").onclick=()=>{ $("#scrim").classList.remove("show"); startTutorial(); };
+$("#cardDone").onclick=()=>closeModalToStart();
+$("#resetAll").onclick=()=>{ if(confirm("Reset all progress and best times?")){ localStorage.removeItem(LS); prog=loadProg(); prog.unlocked={break:1,deal:1,manners:1}; prog.best={break:{},deal:{}}; prog.tutDone=false; saveProg(); mode="break"; document.querySelectorAll(".modepill").forEach(x=>x.classList.toggle("on",x.dataset.mode==="break")); cur=LEVELS[0]; startTutorial(); } };
+
+/* first load */
+if(prog.tutDone) showStart(); else startTutorial();
 </script>
 
 <script type="module">
@@ -424,18 +417,10 @@ const q=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const MODE_LABEL={break:'Break the Wall',deal:'Deal Order',manners:'Table Manners'};
 const fmt=s=>{s=Math.round(s); if(s<60)return s+'s'; const m=Math.floor(s/60),r=s%60; if(m<60)return m+'m '+r+'s'; return Math.floor(m/60)+'h '+(m%60)+'m';};
-
-function renderBar(){
-  const st=q("#authStatus"), a=q("#authBtn"), o=q("#logoutBtn");
+function renderBar(){ const st=q("#authStatus"), a=q("#authBtn"), o=q("#logoutBtn");
   if(user){ st.textContent='Signed in as '+(user.user_metadata?.display_name||user.email); a.style.display='none'; o.style.display=''; }
-  else { st.textContent='Playing as guest — scores aren’t saved'; a.style.display=''; o.style.display='none'; }
-}
-function modal(html){
-  const scrim=document.createElement('div'); scrim.className='scrim show';
-  scrim.innerHTML='<div class="card">'+html+'</div>';
-  scrim.addEventListener('click',e=>{if(e.target===scrim)scrim.remove();});
-  document.body.appendChild(scrim); return scrim;
-}
+  else { st.textContent='Playing as guest — scores aren’t saved'; a.style.display=''; o.style.display='none'; } }
+function modal(html){ const scrim=document.createElement('div'); scrim.className='scrim show'; scrim.innerHTML='<div class="card">'+html+'</div>'; scrim.addEventListener('click',e=>{if(e.target===scrim)scrim.remove();}); document.body.appendChild(scrim); return scrim; }
 function openAuth(){
   let signup=false;
   const m=modal(`<h2 id="aTitle">Log in</h2>
@@ -447,7 +432,7 @@ function openAuth(){
       <div class="authmsg" id="aMsg"></div>
       <button class="btn" id="aGo">Log in</button>
       <button class="btn ghost" id="aToggle">New here? Create an account</button>
-      <p class="note" style="font-size:.82rem; color:var(--ink-soft); font-style:italic; margin:6px 0 0;">We never sell your information. Your login only saves your stats and lets you appear on the leaderboard.</p>
+      <p class="note" style="font-size:.82rem; margin:6px 0 0;">We never sell your information. Your login only saves your stats and lets you appear on the leaderboard.</p>
     </div>`);
   const name=m.querySelector('#aName'),email=m.querySelector('#aEmail'),pass=m.querySelector('#aPass'),msg=m.querySelector('#aMsg'),go=m.querySelector('#aGo'),tog=m.querySelector('#aToggle'),title=m.querySelector('#aTitle');
   tog.onclick=()=>{ signup=!signup; name.style.display=signup?'':'none'; title.textContent=signup?'Create account':'Log in'; go.textContent=signup?'Create account':'Log in'; tog.textContent=signup?'Have an account? Log in':'New here? Create an account'; msg.textContent=''; };
@@ -475,37 +460,25 @@ async function openLeaderboard(){
     <div class="modal-actions" style="grid-template-columns:1fr;"><button class="btn ghost" id="lbClose">Close</button></div>`);
   m.querySelector('#lbClose').onclick=()=>m.remove();
   const body=m.querySelector('#lbBody'), t1=m.querySelector('#lbT1'), t2=m.querySelector('#lbT2');
-  async function showTime(){
-    t1.className='btn mini'; t2.className='btn ghost mini'; body.textContent='Loading…';
+  async function showTime(){ t1.className='btn mini'; t2.className='btn ghost mini'; body.textContent='Loading…';
     const {data,error}=await sb.from('lb_time').select('*').limit(25);
     if(error){body.innerHTML='<p class="note">'+esc(error.message)+'</p>';return;}
     if(!data.length){body.innerHTML='<p class="note">No players yet — be the first.</p>';return;}
-    body.innerHTML='<p class="note" style="margin-top:0;">Time played across every Order of the Tile drill.</p>'+
-      '<table class="lbtable"><thead><tr><th>#</th><th>Player</th><th>Time played</th><th>Rounds</th></tr></thead><tbody>'+
-      data.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.display_name)}</td><td>${fmt(r.total_seconds)}</td><td>${r.rounds_played}</td></tr>`).join('')+'</tbody></table>';
-  }
-  async function showHigh(){
-    t2.className='btn mini'; t1.className='btn ghost mini'; body.textContent='Loading…';
+    body.innerHTML='<p class="note" style="margin-top:0;">Time played across every Order of the Tile drill.</p><table class="lbtable"><thead><tr><th>#</th><th>Player</th><th>Time played</th><th>Rounds</th></tr></thead><tbody>'+data.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.display_name)}</td><td>${fmt(r.total_seconds)}</td><td>${r.rounds_played}</td></tr>`).join('')+'</tbody></table>'; }
+  async function showHigh(){ t2.className='btn mini'; t1.className='btn ghost mini'; body.textContent='Loading…';
     const {data,error}=await sb.from('lb_highscores').select('*').eq('game',GAME);
     if(error){body.innerHTML='<p class="note">'+esc(error.message)+'</p>';return;}
     if(!data.length){body.innerHTML='<p class="note">No clean (100%) runs yet — set the first record.</p>';return;}
-    body.innerHTML='<p class="note" style="margin-top:0;">Fastest clean run in <b>Wall-Break</b>.</p>'+
-      '<table class="lbtable"><thead><tr><th>Mode</th><th>Level</th><th>Record holder</th><th>Best</th></tr></thead><tbody>'+
-      data.map(r=>`<tr><td>${MODE_LABEL[r.mode]||r.mode}</td><td>${r.level}</td><td>${esc(r.display_name)}</td><td>${(+r.best_seconds).toFixed(1)}s</td></tr>`).join('')+'</tbody></table>';
-  }
+    body.innerHTML='<p class="note" style="margin-top:0;">Fastest clean run in <b>Wall-Break</b>.</p><table class="lbtable"><thead><tr><th>Mode</th><th>Level</th><th>Record holder</th><th>Best</th></tr></thead><tbody>'+data.map(r=>`<tr><td>${MODE_LABEL[r.mode]||r.mode}</td><td>${r.level}</td><td>${esc(r.display_name)}</td><td>${(+r.best_seconds).toFixed(1)}s</td></tr>`).join('')+'</tbody></table>'; }
   t1.onclick=showTime; t2.onclick=showHigh; showTime();
 }
-window.OOTT={
-  get user(){return user;},
+window.OOTT={ get user(){return user;},
   async logSession(d){ if(!user)return; try{ await sb.from('sessions').insert({user_id:user.id,game:GAME,mode:d.mode,level:d.level,accuracy:d.accuracy,duration_sec:d.duration_sec,clean:!!d.clean}); }catch(e){} },
-  openAuth, openLeaderboard
-};
-q("#authBtn").onclick=openAuth;
-q("#lbBtn").onclick=openLeaderboard;
+  openAuth, openLeaderboard };
+q("#authBtn").onclick=openAuth; q("#lbBtn").onclick=openLeaderboard;
 q("#logoutBtn").onclick=async()=>{ await sb.auth.signOut(); };
 sb.auth.onAuthStateChange((_e,session)=>{ user=session?.user||null; renderBar(); });
-const {data:{session}}=await sb.auth.getSession();
-user=session?.user||null; renderBar();
+const {data:{session}}=await sb.auth.getSession(); user=session?.user||null; renderBar();
 </script>
 </body>
 </html>
