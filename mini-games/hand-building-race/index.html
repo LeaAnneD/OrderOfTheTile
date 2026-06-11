@@ -312,8 +312,8 @@ function showSummary(){clearInterval(timerId); let rows='';
   ['section','line','tworoads'].forEach(m=>{for(let L=1;L<=3;L++){const b=prog.best[m]&&prog.best[m][L]; if(b)rows+=`<tr><td>${MODES[m]}</td><td>Level ${L}</td><td>${b.toFixed(1)}s</td></tr>`;}});
   if(!rows)rows=`<tr><td colspan="3" style="color:var(--ink-soft); font-style:italic;">No clean rounds yet — clear one at 100% to set a best time.</td></tr>`;
   $("#game").innerHTML=`<div class="summary"><h2>Your practice so far</h2><table><thead><tr><th>Mode</th><th>Level</th><th>Best (100%)</th></tr></thead><tbody>${rows}</tbody></table>
-    <p class="note">These stats live only on this device for now. Soon you'll be able to create a free account to save your progress across devices and see how you rank — and we will never sell your information.</p>
-    <button class="btn" id="backToPlay">Back to practice</button></div>`;
+    ${(window.OOTT&&window.OOTT.user)?`<p class="note">You're signed in — your progress and best times are saved to your account.</p>`:`<p class="note">These stats live on this device. If you haven't made a free account yet, create one to keep your record across devices and climb the leaderboard — we'll never sell your information.</p><button class="btn" onclick="window.OOTT&&window.OOTT.openAuth&&window.OOTT.openAuth()">Create a free account</button>`}
+    <button class="btn ghost" id="backToPlay">Back to practice</button></div>`;
   $("#backToPlay").onclick=()=>deal();
 }
 deal();
