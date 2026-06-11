@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Coached Hand — Play One with Prim · Order of the Tile</title>
+<link rel="icon" type="image/png" href="/images/seal.png">
+<link rel="apple-touch-icon" href="/images/seal.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
+    --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
+    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A; --gold-bg:#F6ECCB;
+    --bam:#3C7A4E; --crak:#B5524C; --dot:#3A5C86; --honor:#6B5F54; --flower:#B76E79; --joker:#9A7B1E;
+    --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
+  .wrap{max-width:780px; margin:0 auto; padding:16px 16px 48px;}
+  .gamehdr{display:flex;align-items:center;gap:12px;padding:6px 0 9px;border-bottom:1px solid var(--line);margin-bottom:10px;}
+  .gamehdr .backlink{font-family:"Playfair Display",serif;font-weight:600;color:var(--rose-deep);text-decoration:none;font-size:.95rem;}
+  .backlink:hover{text-decoration:underline;} .gamehdr .brandmark{margin-left:auto;font-family:"Playfair Display",serif;font-weight:700;color:var(--ink);font-size:.92rem;}
+  .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:8px; flex-wrap:wrap;}
+  .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.86rem; font-style:italic;}
+  .btn.mini{font-size:.85rem; padding:6px 12px;}
+  h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.6rem; margin:.1em 0; text-align:center;}
+  .sub{color:var(--ink-soft); font-style:italic; margin:0 0 12px; text-align:center;}
+  button.btn{font-family:"Crimson Text",serif; font-size:1rem; border-radius:11px; padding:10px 18px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer; box-shadow:var(--shadow);}
+  button.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
+  button:disabled{opacity:.45; cursor:not-allowed;}
+  /* Prim coach bubble */
+  .coach{display:flex; gap:12px; align-items:flex-start; background:#fff; border:1px solid var(--line); border-left:4px solid var(--rose); border-radius:14px; padding:13px 16px; box-shadow:var(--shadow); margin:8px 0 14px; min-height:64px;}
+  .coach .ava{flex:0 0 auto; width:42px; height:42px; border-radius:50%; background:var(--rose); color:#fff; display:flex; align-items:center; justify-content:center; font-family:"Playfair Display",serif; font-weight:700; font-size:1.2rem;}
+  .coach .says{flex:1;}
+  .coach .who{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); font-size:.86rem; margin-bottom:1px;}
+  .coach .line{line-height:1.42;}
+  .coach .line b{color:var(--ink);}
+  /* target read card (section+line+rule only — never the pattern) */
+  .target{background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin-bottom:12px;}
+  .target .lead{font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft);}
+  .target .name{font-family:"Playfair Display",serif; font-weight:700; font-size:1.12rem;}
+  .target .val{display:inline-block; font-size:.76rem; color:var(--rose-deep); border:1px solid var(--rose); border-radius:999px; padding:0 8px; margin-left:6px; vertical-align:middle;}
+  .target .rule{font-style:italic; color:var(--ink); font-size:.94rem; margin-top:3px; line-height:1.36;}
+  /* HUD */
+  .hud{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:2px 0 10px;}
+  .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:6px 14px; box-shadow:var(--shadow); min-width:80px; text-align:center;}
+  .stat .k{font-size:.64rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .stat .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.2rem; line-height:1.1;}
+  /* rack */
+  .racklbl{font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); margin:6px 2px 4px; display:flex; justify-content:space-between;}
+  .rack{display:flex; gap:5px; flex-wrap:wrap; justify-content:center; min-height:66px; padding:12px 10px; border:2px solid var(--line); border-radius:14px; background:#fff; touch-action:none;}
+  .tile{position:relative; width:46px; height:60px; border-radius:8px; background:#fff; border:1px solid #E1D6c2; box-shadow:0 2px 5px rgba(0,0,0,.16);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; user-select:none; line-height:1; cursor:grab;}
+  .tile .n{font-family:"Playfair Display",serif; font-weight:700; font-size:1.2rem;}
+  .tile .s{font-size:.55rem; text-transform:uppercase; letter-spacing:.04em; margin-top:3px;}
+  .tile.bam{color:var(--bam);} .tile.crak{color:var(--crak);} .tile.dot{color:var(--dot);} .tile.honor{color:var(--honor);} .tile.flower{color:var(--flower);} .tile.joker{color:var(--joker);}
+  .tile.dragging{transform:translateY(-12px) scale(1.07); box-shadow:0 0 0 2px var(--gold), 0 12px 20px rgba(0,0,0,.3); border-color:var(--gold); cursor:grabbing; z-index:5;}
+  .tile.fresh{outline:2.5px solid var(--gold); outline-offset:1px;}
+  .tile.rec{outline:2.5px dashed var(--rose); outline-offset:1px;}
+  .tile.keep{box-shadow:0 0 0 2px var(--good), 0 2px 5px rgba(0,0,0,.16);}
+  .tile .badge{position:absolute; top:-7px; right:-6px; background:var(--gold); color:#3a2f12; font-size:.54rem; font-weight:700; border-radius:999px; padding:1px 5px;}
+  .controls{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; margin-top:14px;}
+  .hint{color:var(--ink-soft); font-style:italic; font-size:.9rem; text-align:center; min-height:1.3em; margin-top:8px;}
+  /* panels + modal */
+  .panel{background:#fff; border:1px solid var(--line); border-radius:18px; padding:22px 20px; box-shadow:var(--shadow); text-align:center;}
+  .panel h2{font-family:"Playfair Display",serif; margin:.1em 0 .4em;}
+  .panel p{line-height:1.5; color:var(--ink-soft);}
+  .panel .startbtns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px;}
+  .scrim{position:fixed; inset:0; background:rgba(43,38,34,.46); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000;}
+  .scrim.show{display:flex;}
+  .card{background:var(--paper); border-radius:18px; max-width:460px; width:100%; padding:24px 22px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line); max-height:88vh; overflow:auto;}
+  .card h2{font-family:"Playfair Display",serif; margin:.1em 0 .4em; font-size:1.5rem;}
+  .card .verdict{font-style:italic; color:var(--ink-soft); margin-bottom:6px;}
+  .modal-actions{display:grid; grid-template-columns:1fr; gap:10px; margin-top:16px;} .modal-actions .btn{width:100%; padding:11px 10px; margin:0;}
+  .authform{display:flex; flex-direction:column; gap:10px;} .authform input{font-family:inherit; font-size:1rem; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
+  .authmsg{font-size:.9rem; color:var(--bad); min-height:1.2em;} .authmsg.ok{color:var(--good);}
+  .lbtabs{display:flex; gap:8px; margin-bottom:12px;} .lbtable{width:100%; border-collapse:collapse; font-size:.95rem;}
+  .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;} .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .note{font-style:italic; color:var(--ink-soft); font-size:.92rem;}
+  .prim-card h2{color:var(--rose-deep);}
+  .footer-note{margin-top:28px; color:var(--ink-soft); font-size:.82rem; text-align:center;}
+  @media(max-width:560px){ h1{font-size:1.36rem;} .tile{width:40px; height:52px;} .tile .n{font-size:1rem;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="gamehdr"><a class="backlink" href="../preview.html">← All games</a><span class="brandmark">Order of the Tile</span></div>
+  <div class="authbar" id="authbar">
+    <span id="authStatus" class="authstatus">·</span>
+    <button id="lbBtn" class="btn ghost mini">Leaderboard</button>
+    <button id="authBtn" class="btn mini">Log in / Sign up</button>
+    <button id="logoutBtn" class="btn ghost mini" style="display:none;">Log out</button>
+  </div>
+  <h1>Coached Hand</h1>
+  <p class="sub">Play one full hand with Prim at your shoulder — she'll talk you through every choice.</p>
+
+  <div id="stage"></div>
+
+  <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
+  <p class="footer-note">Order of the Tile · a free guided hand · American Mah Jongg (NMJL) · the card stays in your hands, never on the screen · <span id="buildStamp">build —</span></p>
+</div>
+
+<script src="../_data/card2026.js"></script>
+<script src="../_engine/scenario.js"></script>
+<script>
+"use strict";
+const BUILD="v1 · 2026-06-11";
+function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_coach_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_coach_err',JSON.stringify(log.slice(-12)));}catch(_){}}
+window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
+window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
+document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
+
+const CARD=window.OOTT_CARD2026||[];
+const Kit=window.OOTTKit;
+const $=s=>document.querySelector(s), ce=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+const rnd=Math.random, ri=n=>Math.floor(rnd()*n), pick=a=>a[ri(a.length)];
+
+/* ---------- face helpers (faces are codes: 2B,6C,WD,RD,GD,N,E,W,S,F,JK) ---------- */
+function parseHand(str){ const o={}; str.split(' ').forEach(t=>{ if(!t)return; const f=t.slice(0,-1), c=+t.slice(-1); o[f]=(o[f]||0)+c; }); return o; }
+function faceInfo(f){
+  if(/^[1-9][BCD]$/.test(f)){ const n=f[0], s=f[1]; const m={B:['Bam','bam'],C:['Crak','crak'],D:['Dot','dot']}; return {n, sub:m[s][0], cls:m[s][1]}; }
+  if(f==='WD') return {n:'○', sub:'Soap', cls:'honor'};
+  if(f==='RD') return {n:'R', sub:'Dragon', cls:'crak'};
+  if(f==='GD') return {n:'G', sub:'Dragon', cls:'bam'};
+  if(f==='N')  return {n:'N', sub:'Wind', cls:'honor'};
+  if(f==='E')  return {n:'E', sub:'Wind', cls:'honor'};
+  if(f==='W')  return {n:'W', sub:'Wind', cls:'honor'};
+  if(f==='S')  return {n:'S', sub:'Wind', cls:'honor'};
+  if(f==='F')  return {n:'❀', sub:'Flower', cls:'flower'};
+  if(f==='JK') return {n:'J', sub:'Joker', cls:'joker'};
+  return {n:f, sub:'', cls:'honor'};
+}
+function faceLabel(f){ const i=faceInfo(f); return i.n+' '+i.sub; }
+function faceOrder(f){
+  if(/^[1-9]D$/.test(f))return [0,+f[0]];
+  if(/^[1-9]B$/.test(f))return [1,+f[0]];
+  if(/^[1-9]C$/.test(f))return [2,+f[0]];
+  if('NEWS'.indexOf(f)>=0)return [3,'NEWS'.indexOf(f)];
+  if(f==='RD')return[4,0]; if(f==='GD')return[4,1]; if(f==='WD')return[4,2];
+  if(f==='F')return[5,0]; if(f==='JK')return[6,0]; return [7,0];
+}
+const ALLNAT=(function(){ const o=[]; ['D','B','C'].forEach(s=>{for(let r=1;r<=9;r++)o.push(r+s);}); ['N','E','W','S','RD','GD','WD','F'].forEach(f=>o.push(f)); return o; })();
+function countMap(arr){ const o={}; arr.forEach(f=>o[f]=(o[f]||0)+1); return o; }
+
+/* ---------- win check against ONE concrete target hand (joker-aware) ----------
+   Jokers fill shortfalls ONLY where the target needs >=3 of a face (pung/kong/quint),
+   never singles or pairs. Every non-joker tile must belong to the target. */
+function completesHand(rack, target){
+  const rc={}; let jok=0; rack.forEach(f=>{ if(f==='JK')jok++; else rc[f]=(rc[f]||0)+1; });
+  for(const f in rc){ if(!target[f] || rc[f]>target[f]) return false; }
+  let jokerNeed=0;
+  for(const f in target){ const short=target[f]-(rc[f]||0); if(short>0){ if(target[f]<3) return false; jokerNeed+=short; } }
+  return jokerNeed===jok;
+}
+function anyComplete(rack, hands){ for(const h of hands){ if(completesHand(rack, parseHand(h))) return parseHand(h); } return null; }
+/* tiles-away from a target hand, jokers filling 3+ shortfalls */
+function awayFrom(rc, jok, target){
+  let need=0, jokerable=0;
+  for(const f in target){ const short=target[f]-(rc[f]||0); if(short>0){ if(target[f]>=3) jokerable+=short; else need+=short; } }
+  const useJ=Math.min(jok,jokerable);
+  return need + (jokerable-useJ);
+}
+function bestTargetHand(rack, hands){
+  const rc={}; let jok=0; rack.forEach(f=>{ if(f==='JK')jok++; else rc[f]=(rc[f]||0)+1; });
+  let best=99,bh=null; for(const h of hands){ const t=parseHand(h); const a=awayFrom(rc,jok,t); if(a<best){best=a;bh=t;} } return {away:best, target:bh};
+}
+
+/* ---------- choose a teachable target line ---------- */
+function chooseLine(){
+  // flexible-ish lines without quints (quints need jokers and complicate the teach); n>=6
+  const pool=CARD.filter(L=> L.sec!=='Quints' && L.n>=6);
+  return pick(pool.length?pool:CARD);
+}
+
+/* ---------- deal a 13-tile hand leaning toward a target concrete hand ---------- */
+function dealLeaning(seedHand){
+  const tiles=[]; for(const f in seedHand) for(let k=0;k<seedHand[f];k++) tiles.push(f);
+  Kit.shuffle(tiles, rnd);
+  const keep=tiles.slice(0, 7+ri(2)); // keep 7-8 of the 14
+  const rack=keep.slice();
+  // fill to 13 with plausible junk (random naturals + maybe a joker)
+  while(rack.length<13){
+    let f = rnd()<0.10 ? 'JK' : pick(ALLNAT);
+    if(f!=='JK' && rack.filter(x=>x===f).length>=4) continue;
+    if(f==='JK' && rack.filter(x=>x==='JK').length>=2) continue;
+    rack.push(f);
+  }
+  return rack;
+}
+
+/* ===================================================================== */
+/* GAME STATE                                                            */
+/* ===================================================================== */
+let G=null;
+function newGame(){
+  const line=chooseLine();
+  const seedHand=parseHand(pick(line.hands));
+  const rack=sortRack(dealLeaning(seedHand));
+  G={ line, seedHand, rack, draws:0, discards:0, phase:'intro', drawn:null, recIdx:-1, charlestonDone:false };
+}
+function sortRack(arr){ return arr.slice().sort((a,b)=>{ const x=faceOrder(a),y=faceOrder(b); return x[0]-y[0]||x[1]-y[1]; }); }
+
+/* ---------- which held tile is least useful toward the best target ---------- */
+function leastUsefulIndex(){
+  const {target}=bestTargetHand(G.rack, G.line.hands);
+  const used={}; let worst=-1, worstScore=-1;
+  G.rack.forEach((f,i)=>{
+    if(f==='JK') return; // never recommend pitching a joker
+    const need=target[f]||0; const have=used[f]||0;
+    const useful = have<need; // this copy is still needed
+    used[f]=have+1;
+    let score = useful?0:2;             // not-needed tiles score higher (more pitchable)
+    if(f==='F' && !target['F']) score+=1;
+    if((f==='RD'||f==='GD'||f==='WD'||'NEWS'.indexOf(f)>=0) && !need) score+=0.5;
+    if(score>worstScore){ worstScore=score; worst=i; }
+  });
+  return worst;
+}
+/* ---------- what useful tile does the best target still want ---------- */
+function neededFace(){
+  const {target}=bestTargetHand(G.rack, G.line.hands);
+  const rc=countMap(G.rack.filter(f=>f!=='JK'));
+  const wants=[]; for(const f in target){ const short=target[f]-(rc[f]||0); for(let k=0;k<short;k++) wants.push(f); }
+  return wants.length?pick(wants):pick(ALLNAT);
+}
+
+/* ===================================================================== */
+/* RENDER                                                                */
+/* ===================================================================== */
+function tileEl(f, idx){
+  const i=faceInfo(f);
+  const el=ce('div','tile '+i.cls);
+  el.dataset.idx=idx; el.dataset.face=f;
+  el.innerHTML=`<span class="n">${i.n}</span><span class="s">${i.sub}</span>`;
+  return el;
+}
+function renderStage(){
+  const L=G.line;
+  $('#stage').innerHTML=`
+    <div class="coach"><div class="ava">P</div><div class="says"><div class="who">Prim</div><div class="line" id="coachLine">…</div></div></div>
+    <div class="target"><span class="lead">Building toward</span>
+      <div class="name">${L.sec} · Line ${L.line} <span class="val">${L.val}${L.conceal?' · C':''}</span></div>
+      <div class="rule">“${L.rule}”</div></div>
+    <div class="hud">
+      <div class="stat"><div class="k">Tiles</div><div class="v" id="hTiles">${G.rack.length}</div></div>
+      <div class="stat"><div class="k">Draws</div><div class="v" id="hDraws">${G.draws}</div></div>
+      <div class="stat"><div class="k">Away</div><div class="v" id="hAway">—</div></div>
+    </div>
+    <div class="racklbl"><span>Your rack — drag tiles to arrange them</span><span id="rackHint"></span></div>
+    <div class="rack" id="rack"></div>
+    <div class="hint" id="hint"></div>
+    <div class="controls" id="controls"></div>`;
+  renderRack();
+  updateAway();
+}
+function renderRack(){
+  const r=$('#rack'); r.innerHTML='';
+  G.rack.forEach((f,i)=>{ const el=tileEl(f,i); r.appendChild(el); attachTile(el); });
+  // markers
+  if(G.phase==='discard'){
+    if(G.recIdx>=0 && G.rack[G.recIdx]) { const el=r.children[G.recIdx]; if(el)el.classList.add('rec'); }
+    if(G.drawnIdx>=0){ const el=r.children[G.drawnIdx]; if(el){ el.classList.add('fresh'); const b=ce('span','badge'); b.textContent='new'; el.appendChild(b);} }
+  }
+}
+function updateAway(){ const {away}=bestTargetHand(G.rack, G.line.hands); const e=$('#hAway'); if(e)e.textContent=away; if($('#hTiles'))$('#hTiles').textContent=G.rack.length; if($('#hDraws'))$('#hDraws').textContent=G.draws; return away; }
+function say(html){ const e=$('#coachLine'); if(e)e.innerHTML=html; }
+function hint(html){ const e=$('#hint'); if(e)e.innerHTML=html||''; }
+
+/* ---------- drag-to-rearrange (pointer; tap = discard in discard phase) ---------- */
+function attachTile(el){
+  let startX=0,startY=0,dragging=false,moved=false;
+  el.addEventListener('pointerdown',e=>{
+    if(G.phase!=='discard' && G.phase!=='arrange') return;
+    startX=e.clientX; startY=e.clientY; moved=false; dragging=false;
+    el.setPointerCapture(e.pointerId);
+    const move=ev=>{
+      const dx=ev.clientX-startX, dy=ev.clientY-startY;
+      if(!dragging && Math.hypot(dx,dy)>7){ dragging=true; el.classList.add('dragging'); }
+      if(dragging){ moved=true;
+        const under=document.elementFromPoint(ev.clientX,ev.clientY); const t=under&&under.closest&&under.closest('.tile');
+        if(t&&t!==el&&t.parentNode===el.parentNode){
+          const kids=[...el.parentNode.children]; const a=kids.indexOf(el), b=kids.indexOf(t);
+          if(a<b) el.parentNode.insertBefore(el,t.nextSibling); else el.parentNode.insertBefore(el,t);
+        }
+      }
+    };
+    const up=ev=>{
+      el.removeEventListener('pointermove',move); el.removeEventListener('pointerup',up);
+      el.classList.remove('dragging');
+      if(dragging && moved){ commitOrderFromDOM(); }
+      else if(G.phase==='discard'){ doDiscardByFace(el.dataset.face, el); }
+      dragging=false;
+    };
+    el.addEventListener('pointermove',move); el.addEventListener('pointerup',up);
+  });
+}
+function commitOrderFromDOM(){
+  // rebuild rack order from the current DOM (faces only); identity is the face code
+  G.rack=[...$('#rack').children].map(c=>c.dataset.face);
+  renderRack();
+}
+
+/* ===================================================================== */
+/* FLOW                                                                  */
+/* ===================================================================== */
+function startScreen(){
+  $('#stage').innerHTML=`<div class="panel">
+    <h2>One hand, start to finish</h2>
+    <p>Prim deals you thirteen tiles and reads the table for you — which line on the 2026 card your rack is reaching for. Then you play it out together: draw, study, discard, and declare when the hand is whole.</p>
+    <p>She'll tell you what each draw means and nudge the tile she'd let go — but the choice is always yours. This is a <b>teaching</b> hand, so the draws lean your way.</p>
+    <div class="startbtns"><button class="btn" id="dealBtn">Deal me in</button></div>
+  </div>`;
+  $('#dealBtn').onclick=()=>{ newGame(); intro(); };
+}
+
+function intro(){
+  G.phase='intro';
+  renderStage();
+  const away=updateAway();
+  say(`Let's see what we were dealt… You're leaning toward <b>${G.line.sec}, Line ${G.line.line}</b>. That hand wants: <i>${G.line.rule}</i> You're about <b>${away}</b> tiles from there. We'll get the dead weight out first, then draw toward it.`);
+  hint('When you\'re ready, we\'ll do one Charleston pass — give away three you don\'t need.');
+  const c=$('#controls'); c.innerHTML='';
+  const b=ce('button','btn'); b.textContent='Start the Charleston'; b.onclick=charlestonPick; c.appendChild(b);
+}
+
+/* ---- Charleston: Prim pre-selects 3 to pass; player can change, then pass ---- */
+function charlestonPick(){
+  G.phase='charleston';
+  // Prim's 3 suggested pitches = 3 least useful indices
+  const sel=pickThreeLeastUseful();
+  G.charlestonSel=new Set(sel);
+  renderStage();
+  say(`The Charleston — pass three to your right. I'd let these three go (dashed). Tap any tile to add or remove it from the pass, then send them along. Three tiles, no Jokers.`);
+  hint('Pick exactly 3 to pass.');
+  paintCharleston();
+  const c=$('#controls'); c.innerHTML='';
+  const b=ce('button','btn'); b.id='passBtn'; b.textContent='Pass these 3 →'; b.onclick=doCharlestonPass; c.appendChild(b);
+  // rebind tiles for selection toggling
+  [...$('#rack').children].forEach((el,i)=>{
+    el.onpointerdown=null;
+    el.style.cursor='pointer';
+    el.onclick=()=>{ if(G.rack[i]==='JK'){ hint('Jokers can never be passed in the Charleston.'); return; } if(G.charlestonSel.has(i))G.charlestonSel.delete(i); else { if(G.charlestonSel.size>=3){ hint('That\'s already 3 — remove one first.'); return; } G.charlestonSel.add(i);} paintCharleston(); };
+  });
+  updatePassBtn();
+}
+function pickThreeLeastUseful(){
+  const {target}=bestTargetHand(G.rack, G.line.hands);
+  const used={}; const scored=G.rack.map((f,i)=>{
+    if(f==='JK') return {i,score:-99};
+    const need=target[f]||0, have=used[f]||0; used[f]=have+1;
+    let s=(have<need)?0:2; if(f==='F'&&!target['F'])s+=1; if(!need)s+=0.4;
+    return {i,score:s};
+  });
+  scored.sort((a,b)=>b.score-a.score);
+  return scored.slice(0,3).map(x=>x.i);
+}
+function paintCharleston(){
+  [...$('#rack').children].forEach((el,i)=>{ el.classList.toggle('rec', G.charlestonSel.has(i)); });
+  updatePassBtn();
+}
+function updatePassBtn(){ const b=$('#passBtn'); if(b){ b.disabled=G.charlestonSel.size!==3; } hint(`Selected ${G.charlestonSel.size} of 3.`); }
+function doCharlestonPass(){
+  if(G.charlestonSel.size!==3) return;
+  const give=[...G.charlestonSel].sort((a,b)=>b-a);
+  give.forEach(i=>G.rack.splice(i,1));
+  // receive 3: bias toward tiles the target still wants
+  for(let k=0;k<3;k++){ G.rack.push(rnd()<0.6 ? neededFace() : pick(ALLNAT)); }
+  G.rack=sortRack(G.rack); G.charlestonDone=true;
+  renderStage();
+  const away=updateAway();
+  say(`Passed. Look what came back — you're about <b>${away}</b> away now. From here it's draw and discard: I'll feed you tiles, you decide what to keep. Draw when you're ready.`);
+  hint('');
+  beginDrawPhase();
+}
+
+/* ---- main draw/discard loop ---- */
+function beginDrawPhase(){
+  G.phase='draw'; G.drawnIdx=-1; G.recIdx=-1;
+  const c=$('#controls'); c.innerHTML='';
+  const b=ce('button','btn'); b.id='drawBtn'; b.textContent='Draw a tile'; b.onclick=drawTile; c.appendChild(b);
+  // win could already be possible (rare) — check
+  maybeOfferDeclare(true);
+}
+function drawTile(){
+  if(G.phase!=='draw') return;
+  // bias: 68% a needed tile, else random (sometimes a joker)
+  let f;
+  if(rnd()<0.68) f=neededFace();
+  else f = rnd()<0.08 ? 'JK' : pick(ALLNAT);
+  G.rack.push(f); G.draws++;
+  G.rack=sortRack(G.rack);
+  G.drawnIdx=G.rack.indexOf(f);
+  G.phase='discard';
+  // win?
+  const win=anyComplete(G.rack, G.line.hands);
+  renderStage_keepDraw();
+  if(win){ offerDeclare(f); return; }
+  // recommend a discard
+  G.recIdx=leastUsefulIndex();
+  // re-render to show rec + fresh
+  renderRack();
+  const recFace=G.rack[G.recIdx];
+  const away=updateAway();
+  say(drawNarration(f, recFace, away));
+  hint('Tap a tile to discard it — or drag to rearrange first.');
+  const c=$('#controls'); c.innerHTML='';
+  const b=ce('button','ghost btn'); b.textContent='Discard Prim\'s pick'; b.onclick=()=>doDiscardByIndex(G.recIdx); c.appendChild(b);
+}
+function renderStage_keepDraw(){ // light refresh of hud + rack with markers
+  if($('#hTiles'))$('#hTiles').textContent=G.rack.length;
+  if($('#hDraws'))$('#hDraws').textContent=G.draws;
+  renderRack();
+}
+function drawNarration(drawn, rec, away){
+  const dL=faceLabel(drawn), rL=faceLabel(rec);
+  const useful = away< (G.lastAway==null?99:G.lastAway);
+  G.lastAway=away;
+  const open = useful ? `Nice — the <b>${dL}</b> helps.` : `The <b>${dL}</b> doesn't fit our line.`;
+  const tail = `I'd let the <b>${rL}</b> go (dashed) — it isn't doing any work for ${G.line.sec} Line ${G.line.line}. You're <b>${away}</b> away.`;
+  return open+' '+tail;
+}
+function doDiscardByIndex(i){
+  if(G.phase!=='discard'||i<0||i>=G.rack.length) return;
+  if(G.rack[i]==='JK'){ hint('Pitching a Joker? That\'s almost never right — but it\'s your call.'); }
+  G.rack.splice(i,1); G.discards++;
+  G.rack=sortRack(G.rack); G.drawnIdx=-1; G.recIdx=-1;
+  beginDrawPhase();
+  renderRack();            // refresh the rack DOM so the discarded tile leaves immediately
+  const away=updateAway();
+  say(`Down to thirteen. You're <b>${away}</b> from ${G.line.sec} Line ${G.line.line}. Draw again when you're ready.`);
+  hint('');
+}
+function doDiscardByFace(face, el){
+  const i=[...$('#rack').children].indexOf(el);
+  if(i<0) return; doDiscardByIndex(i);
+}
+
+function maybeOfferDeclare(silent){
+  const win=anyComplete(G.rack, G.line.hands);
+  if(win && G.rack.length===14){ offerDeclare(null); return true; }
+  return false;
+}
+function offerDeclare(justDrew){
+  G.phase='declare';
+  G.drawnIdx = justDrew!=null ? G.rack.indexOf(justDrew) : -1;
+  G.recIdx=-1;
+  renderRack();
+  updateAway();
+  say(`That's it — your rack is <b>whole</b>. Fourteen tiles, every one part of <b>${G.line.sec} Line ${G.line.line}</b>. Don't discard. <b>Declare Mahjong!</b>`);
+  hint('');
+  const c=$('#controls'); c.innerHTML='';
+  const b=ce('button','btn'); b.textContent='Declare Mahjong!'; b.onclick=winHand; c.appendChild(b);
+  const b2=ce('button','ghost btn'); b2.textContent='Keep playing'; b2.onclick=()=>{ // let them discard anyway (rare)
+    G.phase='discard'; G.recIdx=leastUsefulIndex(); renderRack(); hint('Tap a tile to discard.'); c.innerHTML=''; const x=ce('button','ghost btn'); x.textContent='Discard Prim\'s pick'; x.onclick=()=>doDiscardByIndex(G.recIdx); c.appendChild(x); };
+  c.appendChild(b2);
+}
+function winHand(){
+  G.phase='won';
+  try{ if(Kit&&Kit.confetti)Kit.confetti(); }catch(_){}
+  const closing = primClosing();
+  const scrim=ce('div','scrim show');
+  scrim.innerHTML=`<div class="card prim-card"><h2>Mahjong.</h2>
+    <p class="verdict">${closing}</p>
+    <p style="margin:.4em 0 0;">You completed <b>${G.line.sec} · Line ${G.line.line}</b> in <b>${G.draws}</b> draws.</p>
+    <div class="modal-actions"><button class="btn" id="againBtn">Play another hand</button><button class="btn ghost" id="lb2">Leaderboard</button></div></div>`;
+  document.body.appendChild(scrim);
+  scrim.querySelector('#againBtn').onclick=()=>{ scrim.remove(); startScreen(); };
+  scrim.querySelector('#lb2').onclick=()=>{ if(window.OOTT&&window.OOTT.openLeaderboard)window.OOTT.openLeaderboard(); };
+  try{ if(window.OOTT&&window.OOTT.logSession){ window.OOTT.logSession({mode:'coached',level:G.line.line,accuracy:100,duration_sec:G.draws,clean:true}); } }catch(_){}
+}
+function primClosing(){
+  const bits=[
+    `You held your line and let the strangers go — that's the whole game, really.`,
+    `See how it came together once you stopped chasing every pretty tile? Discipline wins hands.`,
+    `That's a clean build. You read the rack, you trusted the line, you finished it.`
+  ];
+  return pick(bits);
+}
+
+/* boot */
+function boot(){
+  if(!CARD.length||!Kit){ showErr('Data or engine failed to load (card2026.js / scenario.js).'); return; }
+  startScreen();
+}
+boot();
+</script>
+<script>
+  window.OOTT_GAME      = "coached-hand";
+  window.OOTT_GAME_NAME = "Coached Hand";
+  window.OOTT_REDIRECT  = "https://www.orderofthetile.com/mini-games/coached-hand/";
+</script>
+<script type="module" src="../_engine/leaderboard.js"></script>
+</body>
+</html>

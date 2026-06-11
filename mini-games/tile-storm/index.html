@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Tile Storm — Order of the Tile</title>
+<link rel="icon" type="image/png" href="/images/seal.png">
+<link rel="apple-touch-icon" href="/images/seal.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
+    --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
+    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A;
+    --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
+  .wrap{max-width:640px; margin:0 auto; padding:16px 16px 44px;}
+  .gamehdr{display:flex;align-items:center;gap:12px;padding:6px 0 9px;border-bottom:1px solid var(--line);margin-bottom:10px;}
+  .gamehdr .backlink{font-family:"Playfair Display",serif;font-weight:600;color:var(--rose-deep);text-decoration:none;font-size:.95rem;}
+  .backlink:hover{text-decoration:underline;} .gamehdr .brandmark{margin-left:auto;font-family:"Playfair Display",serif;font-weight:700;color:var(--ink);font-size:.92rem;}
+  .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:8px; flex-wrap:wrap;}
+  .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.86rem; font-style:italic;}
+  .btn.mini{font-size:.85rem; padding:6px 12px;}
+  h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.7rem; margin:.1em 0; text-align:center;}
+  .sub{color:var(--ink-soft); font-style:italic; margin:0 0 12px; text-align:center;}
+  button.btn{font-family:"Crimson Text",serif; font-size:1rem; border-radius:11px; padding:10px 18px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer; box-shadow:var(--shadow);}
+  button.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
+  button:disabled{opacity:.45; cursor:not-allowed;}
+  /* HUD */
+  .hud{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin:6px 0 14px;}
+  .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:7px 14px; box-shadow:var(--shadow); min-width:78px; text-align:center;}
+  .stat .k{font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .stat .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; line-height:1.1;}
+  .strikes{letter-spacing:2px; font-size:1.1rem;}
+  .eye{cursor:pointer; border:none; background:none; font-size:.78rem; color:var(--ink-soft); text-decoration:underline; padding:0; margin-top:2px;}
+  /* quiz card */
+  .qcard{background:#fff; border:1px solid var(--line); border-radius:18px; padding:20px 18px; box-shadow:var(--shadow); min-height:240px; display:flex; flex-direction:column;}
+  .qprompt{flex:1;}
+  .qlead{font-family:"Playfair Display",serif; font-weight:600; font-size:1.16rem; line-height:1.3; text-align:center; margin-bottom:6px;}
+  .qtiles{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin:14px 0 4px;}
+  .qpicktile{display:inline-block; border-radius:9px; padding:2px;}
+  .qpicktile:hover{outline:2px solid var(--rose); outline-offset:1px;}
+  .qchoices{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
+  .qbtn{font-family:"Crimson Text",serif; font-size:1.02rem; padding:13px 12px; border:1px solid var(--line); border-radius:12px; background:var(--paper); color:var(--ink); cursor:pointer; transition:transform .06s;}
+  .qbtn:hover{border-color:var(--rose);} .qbtn:active{transform:translateY(1px);}
+  .qbtn.right{background:var(--good-bg); border-color:var(--good); color:var(--good);}
+  .qbtn.wrong{background:var(--bad-bg); border-color:var(--bad); color:var(--bad);}
+  .qbtn.dim{opacity:.5;}
+  .feedback{margin-top:14px; text-align:center; min-height:1.4em; font-style:italic; color:var(--ink-soft);}
+  .feedback.good{color:var(--good);} .feedback.bad{color:var(--bad);}
+  .actionbar{display:flex; justify-content:center; margin-top:14px;}
+  /* start / tutorial screen */
+  .panel{background:#fff; border:1px solid var(--line); border-radius:18px; padding:22px 20px; box-shadow:var(--shadow); text-align:center;}
+  .panel h2{font-family:"Playfair Display",serif; margin:.1em 0 .4em;}
+  .panel p{line-height:1.5; color:var(--ink-soft);}
+  .panel .startbtns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px;}
+  .toggle{margin-top:10px; font-size:.9rem; color:var(--ink-soft);}
+  /* modal */
+  .scrim{position:fixed; inset:0; background:rgba(43,38,34,.46); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000;}
+  .scrim.show{display:flex;}
+  .card{background:var(--paper); border-radius:18px; max-width:440px; width:100%; padding:24px 22px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line);}
+  .card h2{font-family:"Playfair Display",serif; margin:.1em 0 .4em; font-size:1.5rem;}
+  .card .verdict{font-style:italic; color:var(--ink-soft); margin-bottom:6px;}
+  .scoreline{display:flex; gap:12px; margin:14px 0;} .scoreline .stat{flex:1;}
+  .modal-actions{display:grid; grid-template-columns:1fr; gap:10px; margin-top:16px;} .modal-actions .btn{width:100%; padding:11px 10px; margin:0;}
+  .authform{display:flex; flex-direction:column; gap:10px;} .authform input{font-family:inherit; font-size:1rem; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
+  .authmsg{font-size:.9rem; color:var(--bad); min-height:1.2em;} .authmsg.ok{color:var(--good);}
+  .lbtabs{display:flex; gap:8px; margin-bottom:12px;} .lbtable{width:100%; border-collapse:collapse; font-size:.95rem;}
+  .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;} .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .note{font-style:italic; color:var(--ink-soft); font-size:.92rem;}
+  .prim-card h2{color:var(--rose-deep);}
+  .footer-note{margin-top:28px; color:var(--ink-soft); font-size:.82rem; text-align:center;}
+  @media(max-width:560px){ h1{font-size:1.4rem;} .qchoices{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="gamehdr"><a class="backlink" href="../preview.html">← All games</a><span class="brandmark">Order of the Tile</span></div>
+  <div class="authbar" id="authbar">
+    <span id="authStatus" class="authstatus">·</span>
+    <button id="lbBtn" class="btn ghost mini">Leaderboard</button>
+    <button id="authBtn" class="btn mini">Log in / Sign up</button>
+    <button id="logoutBtn" class="btn ghost mini" style="display:none;">Log out</button>
+  </div>
+  <h1>Tile Storm</h1>
+  <p class="sub">Answer as many as you can in three minutes. Three misses and the storm's over.</p>
+
+  <div class="hud" id="hud" style="display:none;">
+    <div class="stat"><div class="k">Score</div><div class="v" id="hScore">0</div></div>
+    <div class="stat"><div class="k">Strikes</div><div class="v strikes" id="hStrikes">○○○</div></div>
+    <div class="stat"><div class="k">Time</div><div class="v" id="hTime">3:00</div><button class="eye" id="eyeBtn">hide</button></div>
+    <div class="stat"><div class="k">Best</div><div class="v" id="hBest">—</div></div>
+  </div>
+
+  <div id="stage"></div>
+
+  <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
+  <p class="footer-note">Order of the Tile · a free speed drill · American Mah Jongg (NMJL) · <span id="buildStamp">build —</span></p>
+</div>
+
+<script src="../_engine/scenario.js"></script>
+<script src="../_engine/microquiz.js"></script>
+<script>
+"use strict";
+const BUILD="v1 · 2026-06-11";
+function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_storm_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_storm_err',JSON.stringify(log.slice(-12)));}catch(_){}}
+window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
+window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
+document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
+
+const $=s=>document.querySelector(s), ce=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+const DURATION=180; // seconds
+const MAX_STRIKES=3;
+let state=null, timerHidden=localStorage.getItem('ott_timer_hidden')==='1';
+let clockInt=null, endAt=0;
+
+function bestScore(){ return +(localStorage.getItem('oott_storm_best')||0); }
+function setBest(v){ localStorage.setItem('oott_storm_best',String(v)); }
+
+/* ---------- screens ---------- */
+function startScreen(){
+  $('#hud').style.display='none';
+  $('#stage').innerHTML=`<div class="panel">
+    <h2>Ready for the storm?</h2>
+    <p>You'll get a fast stream of quick questions — name a tile, read the table, know the rule. Each correct answer is a point and the questions get tougher as you climb.</p>
+    <p><b>Three minutes. Three strikes.</b> A wrong answer stops the clock so you can see why — then you keep going until your third miss or time runs out.</p>
+    <div class="toggle">⏱ Timer: <b id="tstate">${timerHidden?'Off':'On'}</b> <button class="eye" id="preEye">${timerHidden?'show it':'hide it'}</button></div>
+    <div class="startbtns"><button class="btn" id="playBtn">Start the storm</button></div>
+    <p class="note" style="margin-top:14px;">Best so far: <b>${bestScore()||'—'}</b></p>
+  </div>`;
+  $('#playBtn').onclick=startGame;
+  $('#preEye').onclick=()=>{ timerHidden=!timerHidden; localStorage.setItem('ott_timer_hidden',timerHidden?'1':'0'); $('#tstate').textContent=timerHidden?'Off':'On'; $('#preEye').textContent=timerHidden?'show it':'hide it'; };
+}
+
+function startGame(){
+  state={score:0, strikes:0, level:1, current:null, locked:false, answered:0};
+  $('#hud').style.display='flex';
+  $('#hBest').textContent=bestScore()||'—';
+  endAt=Date.now()+DURATION*1000;
+  startClock();
+  nextPuzzle();
+}
+
+function startClock(){ stopClock(); clockInt=setInterval(()=>{ const left=Math.max(0,Math.round((endAt-Date.now())/1000)); renderTime(left); if(left<=0){ endGame('time'); } },250); renderTime(DURATION); }
+function stopClock(){ if(clockInt){ clearInterval(clockInt); clockInt=null; } }
+function renderTime(left){ const m=Math.floor(left/60), s=left%60; $('#hTime').textContent = timerHidden?'hidden':(m+':'+(s<10?'0':'')+s); $('#eyeBtn').textContent=timerHidden?'show':'hide'; }
+function fmtClock(left){ const m=Math.floor(left/60),s=left%60; return m+':'+(s<10?'0':'')+s; }
+
+function renderHUD(){
+  $('#hScore').textContent=state.score;
+  $('#hStrikes').textContent = '●'.repeat(state.strikes)+'○'.repeat(MAX_STRIKES-state.strikes);
+}
+
+function levelFor(){ return state.score>=12?3 : state.score>=5?2 : 1; }
+
+function nextPuzzle(){
+  if(!state) return;
+  state.level=levelFor(); state.locked=false;
+  const p=window.OOTTMICRO.gen(state.level, Math.random);
+  state.current=p;
+  renderHUD();
+  $('#stage').innerHTML=`<div class="qcard"><div id="qbody"></div><div class="feedback" id="fb"></div><div class="actionbar" id="ab"></div></div>`;
+  window.OOTTMICRO.renderInto($('#qbody'), p, onPick);
+}
+
+function onPick(i){
+  if(!state||state.locked) return;
+  state.locked=true; state.answered++;
+  const p=state.current, correct=(i===p.answer);
+  // mark buttons (only for choice-style; tile-pick has no buttons)
+  const btns=[...document.querySelectorAll('.qbtn')];
+  if(btns.length){ btns.forEach((b,idx)=>{ if(idx===p.answer)b.classList.add('right'); else if(idx===i)b.classList.add('wrong'); else b.classList.add('dim'); b.disabled=true; }); }
+  else { document.querySelectorAll('.qpicktile').forEach(s=>s.onclick=null); }
+  const fb=$('#fb');
+  if(correct){
+    state.score++; renderHUD();
+    fb.className='feedback good'; fb.innerHTML='✓ '+p.explain;
+    // speed game: brief auto-advance on CORRECT (the rush). Wrong answers stop for study.
+    setTimeout(()=>{ if(state && state.locked) nextPuzzle(); }, 480);
+  } else {
+    state.strikes++; renderHUD();
+    fb.className='feedback bad'; fb.innerHTML='✗ '+p.explain;
+    if(state.strikes>=MAX_STRIKES){
+      const ab=$('#ab'); const b=ce('button','btn'); b.textContent='See your score ▶'; b.onclick=()=>endGame('strikes'); ab.appendChild(b);
+    } else {
+      const ab=$('#ab'); const b=ce('button','btn'); b.textContent='Continue ▶'; b.onclick=()=>nextPuzzle(); ab.appendChild(b);
+    }
+  }
+}
+
+function endGame(reason){
+  if(!state) return;
+  stopClock();
+  const score=state.score, answered=state.answered;
+  const isBest=score>bestScore(); if(isBest)setBest(score);
+  const left=Math.max(0,Math.round((endAt-Date.now())/1000));
+  const why = reason==='time'?'Time!' : 'Three strikes.';
+  state=null;
+  $('#hud').style.display='none';
+  $('#stage').innerHTML=`<div class="panel">
+    <h2>${why}</h2>
+    <p class="verdict">${score===0?"Everyone starts somewhere — the wall doesn't move, you will.":isBest?"A new personal best. The table noticed.":"Good run. Catch your breath and go again."}</p>
+    <div class="scoreline">
+      <div class="stat"><div class="k">Score</div><div class="v">${score}</div></div>
+      <div class="stat"><div class="k">Answered</div><div class="v">${answered}</div></div>
+      <div class="stat"><div class="k">Best</div><div class="v">${bestScore()}</div></div>
+    </div>
+    <div class="startbtns"><button class="btn" id="againBtn">Play again</button><button class="btn ghost" id="lb2">Leaderboard</button></div>
+  </div>`;
+  $('#againBtn').onclick=startScreen;
+  $('#lb2').onclick=()=>{ if(window.OOTT&&window.OOTT.openLeaderboard)window.OOTT.openLeaderboard(); };
+  if(isBest && score>0){ try{Kit_confetti();}catch(_){} primNote(score); }
+  try{ if(window.OOTT&&window.OOTT.logSession){ window.OOTT.logSession({mode:'storm',level:score,accuracy:answered?Math.round((score/answered)*100):0,duration_sec:DURATION-left,clean:false}); } }catch(_){}
+}
+function Kit_confetti(){ if(window.OOTTKit&&window.OOTTKit.confetti)window.OOTTKit.confetti(); }
+function primNote(score){
+  const scrim=ce('div','scrim show'); scrim.innerHTML=`<div class="card prim-card"><h2>Prim sees you.</h2><p class="verdict">A personal best of <b>${score}</b>. Speed is just recognition you don't have to think about yet — and yours is getting quick. Run it back?</p><div class="modal-actions"><button class="btn" id="pgo">Again</button></div></div>`;
+  document.body.appendChild(scrim); scrim.querySelector('#pgo').onclick=()=>{ scrim.remove(); startScreen(); };
+}
+
+$('#eyeBtn').onclick=()=>{ timerHidden=!timerHidden; localStorage.setItem('ott_timer_hidden',timerHidden?'1':'0'); const left=Math.max(0,Math.round((endAt-Date.now())/1000)); renderTime(left); };
+
+/* boot */
+function boot(){ if(!window.OOTTKit||!window.OOTTMICRO){ showErr('Engine failed to load (scenario.js / microquiz.js).'); return; } startScreen(); }
+boot();
+</script>
+<script>
+  window.OOTT_GAME      = "tile-storm";
+  window.OOTT_GAME_NAME = "Tile Storm";
+  window.OOTT_REDIRECT  = "https://www.orderofthetile.com/mini-games/tile-storm/";
+</script>
+<script type="module" src="../_engine/leaderboard.js"></script>
+</body>
+</html>

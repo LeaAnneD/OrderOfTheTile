@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>The Daily Tile — Order of the Tile</title>
+<link rel="icon" type="image/png" href="/images/seal.png">
+<link rel="apple-touch-icon" href="/images/seal.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
+    --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
+    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A; --gold-bg:#F6ECCB;
+    --bam:#3C7A4E; --crak:#B5524C; --dot:#3A5C86; --honor:#6B5F54; --flower:#B76E79;
+    --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
+  .wrap{max-width:720px; margin:0 auto; padding:16px 16px 44px;}
+  .gamehdr{display:flex;align-items:center;gap:12px;padding:6px 0 9px;border-bottom:1px solid var(--line);margin-bottom:10px;}
+  .gamehdr .backlink{font-family:"Playfair Display",serif;font-weight:600;color:var(--rose-deep);text-decoration:none;font-size:.95rem;}
+  .backlink:hover{text-decoration:underline;} .gamehdr .brandmark{margin-left:auto;font-family:"Playfair Display",serif;font-weight:700;color:var(--ink);font-size:.92rem;}
+  .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:8px; flex-wrap:wrap;}
+  .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.86rem; font-style:italic;}
+  .btn.mini{font-size:.85rem; padding:6px 12px;}
+  h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.7rem; margin:.1em 0; text-align:center;}
+  .sub{color:var(--ink-soft); font-style:italic; margin:0 0 6px; text-align:center;}
+  .datestrip{display:flex; align-items:center; justify-content:center; gap:14px; margin:8px 0 14px; flex-wrap:wrap;}
+  .datestrip .d{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep);}
+  .streak{display:inline-flex; align-items:center; gap:4px; background:var(--gold-bg); border:1px solid var(--gold); border-radius:999px; padding:3px 12px; font-size:.9rem; color:#7a5a16;}
+  .streak b{font-style:normal;}
+  /* rack */
+  .rackwrap{background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:var(--shadow); margin-bottom:8px;}
+  .racklbl{font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); margin-bottom:8px; text-align:center;}
+  .rack{display:flex; gap:5px; flex-wrap:wrap; justify-content:center; align-content:flex-start;}
+  .tile{width:44px; height:58px; border-radius:8px; background:#fff; border:1px solid #E1D6c2; box-shadow:0 2px 5px rgba(0,0,0,.16);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; user-select:none; line-height:1;}
+  .tile .n{font-family:"Playfair Display",serif; font-weight:700; font-size:1.18rem;}
+  .tile .s{font-size:.56rem; text-transform:uppercase; letter-spacing:.04em; margin-top:3px;}
+  .tile.bam{color:var(--bam);} .tile.crak{color:var(--crak);} .tile.dot{color:var(--dot);} .tile.honor{color:var(--honor);} .tile.flower{color:var(--flower);}
+  .tile.fit{outline:2.5px solid var(--good); outline-offset:1px;}
+  .tile.sm{width:30px; height:40px; border-radius:5px;} .tile.sm .n{font-size:.85rem;} .tile.sm .s{font-size:.46rem;}
+  /* guess controls */
+  .guessrow{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; justify-content:center; margin:6px 0 4px;}
+  .field{display:flex; flex-direction:column; gap:3px;}
+  .field label{font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  select{font-family:inherit; font-size:1rem; padding:9px 10px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink); min-width:150px;}
+  button.btn{font-family:"Crimson Text",serif; font-size:1rem; border-radius:11px; padding:10px 18px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer; box-shadow:var(--shadow);}
+  button.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
+  button:disabled{opacity:.45; cursor:not-allowed;}
+  .triesline{text-align:center; color:var(--ink-soft); font-size:.9rem; font-style:italic; margin:4px 0 12px;}
+  /* board of guesses */
+  .board{display:flex; flex-direction:column; gap:8px; margin:6px 0;}
+  .guess{display:flex; align-items:center; gap:12px; padding:10px 14px; border:1px solid var(--line); border-radius:12px; background:#fff; box-shadow:var(--shadow);}
+  .guess .sq{font-size:1.4rem; line-height:1;}
+  .guess .gname{font-family:"Playfair Display",serif; font-weight:600; font-size:1.02rem;}
+  .guess .gmeta{font-size:.86rem; color:var(--ink-soft);}
+  .guess .gright{margin-left:auto; text-align:right; font-size:.84rem;}
+  .guess.warm{border-color:var(--gold); background:var(--gold-bg);}
+  .guess.cold{}
+  .guess.hit{border-color:var(--good); background:var(--good-bg);}
+  .tick{color:var(--good); font-weight:700;}
+  .secok{display:inline-block; background:var(--sage); color:#fff; border-radius:999px; padding:1px 8px; font-size:.72rem; margin-left:6px; vertical-align:middle;}
+  /* answer reveal */
+  .reveal{margin-top:14px; border:1px solid var(--line); border-radius:16px; background:var(--paper-2); padding:16px 18px; box-shadow:var(--shadow);}
+  .reveal .lead{font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft);}
+  .reveal .ans{font-family:"Playfair Display",serif; font-weight:700; font-size:1.35rem; margin:2px 0 2px;}
+  .reveal .val{display:inline-block; font-size:.8rem; color:var(--rose-deep); border:1px solid var(--rose); border-radius:999px; padding:1px 9px; margin-left:6px; vertical-align:middle;}
+  .reveal .rule{font-style:italic; color:var(--ink); margin:8px 0 4px; line-height:1.4;}
+  .reveal .flex{font-size:.88rem; color:var(--ink-soft);}
+  .reveal h4{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin:14px 0 6px;}
+  .sharebtns{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+  .countdown{text-align:center; color:var(--ink-soft); font-style:italic; margin-top:10px;}
+  /* modal */
+  .scrim{position:fixed; inset:0; background:rgba(43,38,34,.46); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000;}
+  .scrim.show{display:flex;}
+  .card{background:var(--paper); border-radius:18px; max-width:460px; width:100%; padding:24px 22px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line); max-height:88vh; overflow:auto;}
+  .card h2{font-family:"Playfair Display",serif; margin:.1em 0 .4em; font-size:1.5rem;}
+  .card p{line-height:1.5;}
+  .card .verdict{font-style:italic; color:var(--ink-soft);}
+  .modal-actions{display:grid; grid-template-columns:1fr; gap:10px; margin-top:16px;}
+  .modal-actions .btn{width:100%; padding:11px 10px; margin:0;}
+  .statsgrid{display:flex; gap:8px; margin:12px 0; text-align:center;}
+  .statsgrid .s{flex:1; background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px 4px;}
+  .statsgrid .s .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.4rem;}
+  .statsgrid .s .k{font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft);}
+  .authform{display:flex; flex-direction:column; gap:10px;} .authform input{font-family:inherit; font-size:1rem; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
+  .authmsg{font-size:.9rem; color:var(--bad); min-height:1.2em;} .authmsg.ok{color:var(--good);}
+  .lbtabs{display:flex; gap:8px; margin-bottom:12px;} .lbtable{width:100%; border-collapse:collapse; font-size:.95rem;}
+  .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;} .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .note{font-style:italic; color:var(--ink-soft); font-size:.92rem;}
+  .legend{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:6px 0 2px; font-size:.84rem; color:var(--ink-soft);}
+  .legend span b{font-style:normal; color:var(--ink);}
+  .footer-note{margin-top:28px; color:var(--ink-soft); font-size:.82rem; text-align:center;}
+  .prim-card h2{color:var(--rose-deep);}
+  @media(max-width:560px){ h1{font-size:1.4rem;} .tile{width:38px; height:50px;} .tile .n{font-size:1rem;} select{min-width:42vw;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="gamehdr"><a class="backlink" href="../preview.html">← All games</a><span class="brandmark">Order of the Tile</span></div>
+
+  <div class="authbar" id="authbar">
+    <span id="authStatus" class="authstatus">·</span>
+    <button id="lbBtn" class="btn ghost mini">Leaderboard</button>
+    <button id="authBtn" class="btn mini">Log in / Sign up</button>
+    <button id="logoutBtn" class="btn ghost mini" style="display:none;">Log out</button>
+  </div>
+
+  <h1>The Daily Tile</h1>
+  <p class="sub">One rack. One puzzle. Everyone plays the same hand today.</p>
+  <div class="datestrip">
+    <span class="d" id="dateLbl">—</span>
+    <span class="streak" id="streakPill" style="display:none;">🔥 <b id="streakN">0</b>‑day streak</span>
+    <button class="btn ghost mini" id="howBtn">How to play</button>
+  </div>
+
+  <div class="rackwrap">
+    <div class="racklbl">Your rack today · 13 tiles</div>
+    <div class="rack" id="rack"></div>
+  </div>
+  <div class="legend">
+    <span>🟩 <b>found it</b></span><span>🟨 <b>warm</b> (close)</span><span>⬛ <b>cold</b></span><span class="secok">right section</span>
+  </div>
+
+  <div id="play">
+    <p class="triesline">Which line on the 2026 card is this rack <b>closest</b> to becoming? Name the section &amp; line. <span id="triesLeft"></span></p>
+    <div class="guessrow">
+      <div class="field"><label>Section</label><select id="selSection"></select></div>
+      <div class="field"><label>Line</label><select id="selLine"></select></div>
+      <div class="field"><label>&nbsp;</label><button id="guessBtn" class="btn">Guess</button></div>
+    </div>
+  </div>
+
+  <div class="board" id="board"></div>
+  <div id="resultArea"></div>
+
+  <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
+  <p class="footer-note">Order of the Tile · a free daily puzzle · American Mah Jongg (NMJL) · the card stays in your hands, never on the screen · <span id="buildStamp">build —</span></p>
+</div>
+
+<!-- How to play -->
+<div class="scrim" id="howScrim">
+  <div class="card">
+    <h2>How the Daily Tile works</h2>
+    <p>Every day, everyone gets the <b>same 13‑tile rack</b>. Your job: figure out which <b>line on the 2026 card</b> this rack is closest to completing — name its <b>section</b> and <b>line number</b>.</p>
+    <p>You get <b>5 guesses</b>. After each one Prim tells you:</p>
+    <p>• how many tiles that line still needs from your rack,<br>
+       • <span class="secok">right section</span> if you picked the correct section,<br>
+       • 🟨 <b>warm</b> if you're within a tile of the best line, ⬛ <b>cold</b> if it's far.</p>
+    <p>Find the closest line and your <b>streak</b> grows. Share your result grid — it gives nothing away.</p>
+    <p class="note">The card is never shown on screen — read your own rack, just like at the table.</p>
+    <div class="modal-actions"><button class="btn" id="howClose">Play today's hand</button></div>
+  </div>
+</div>
+
+<script src="../_data/card2026.js"></script>
+<script>
+"use strict";
+const BUILD="v1 · 2026-06-11";
+function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_daily_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_daily_err',JSON.stringify(log.slice(-12)));}catch(_){}}
+window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
+window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
+document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
+
+const CARD = window.OOTT_CARD2026 || [];
+const $=s=>document.querySelector(s), ce=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+const MAX_GUESS=5;
+
+/* ---------- tile face helpers ---------- */
+function parseHand(str){ const o={}; str.split(' ').forEach(t=>{ if(!t)return; const f=t.slice(0,-1), c=+t.slice(-1); o[f]=(o[f]||0)+c; }); return o; }
+function countMap(arr){ const o={}; arr.forEach(f=>o[f]=(o[f]||0)+1); return o; }
+function faceInfo(f){
+  if(/^[1-9][BCD]$/.test(f)){ const n=f[0], s=f[1]; const m={B:['Bam','bam'],C:['Crak','crak'],D:['Dot','dot']}; return {n, sub:m[s][0], cls:m[s][1]}; }
+  if(f==='WD') return {n:'○', sub:'Soap', cls:'honor'};
+  if(f==='RD') return {n:'R', sub:'Dragon', cls:'crak'};
+  if(f==='GD') return {n:'G', sub:'Dragon', cls:'bam'};
+  if(f==='N')  return {n:'N', sub:'Wind', cls:'honor'};
+  if(f==='E')  return {n:'E', sub:'Wind', cls:'honor'};
+  if(f==='W')  return {n:'W', sub:'Wind', cls:'honor'};
+  if(f==='S')  return {n:'S', sub:'Wind', cls:'honor'};
+  if(f==='F')  return {n:'❀', sub:'Flower', cls:'flower'};
+  return {n:f, sub:'', cls:'honor'};
+}
+function tileHTML(f, extra){ const i=faceInfo(f); return `<div class="tile ${i.cls}${extra?(' '+extra):''}"><span class="n">${i.n}</span><span class="s">${i.sub}</span></div>`; }
+function faceOrder(f){
+  if(/^[1-9]D$/.test(f))return [0,+f[0]];
+  if(/^[1-9]B$/.test(f))return [1,+f[0]];
+  if(/^[1-9]C$/.test(f))return [2,+f[0]];
+  if('NEWS'.indexOf(f)>=0)return [3,'NEWS'.indexOf(f)];
+  if(f==='RD')return[4,0]; if(f==='GD')return[4,1]; if(f==='WD')return[4,2];
+  if(f==='F')return[5,0]; return [6,0];
+}
+function sortRack(arr){ return arr.slice().sort((a,b)=>{ const x=faceOrder(a),y=faceOrder(b); return x[0]-y[0]||x[1]-y[1]; }); }
+
+/* ---------- closeness ---------- */
+function tilesAway(rc, target){ let a=0; for(const f in target){ a+=Math.max(0,target[f]-(rc[f]||0)); } return a; }
+function lineBestAway(rc, line){ let best=99; for(const h of line.hands){ const a=tilesAway(rc, parseHand(h)); if(a<best)best=a; } return best; }
+function bestHandForLine(rc, line){ let best=99,bh=null; for(const h of line.hands){ const t=parseHand(h); const a=tilesAway(rc,t); if(a<best){best=a;bh=t;} } return {away:best,hand:bh}; }
+
+/* ---------- deterministic daily puzzle ---------- */
+function rng(seed){ let s=seed>>>0||1; return ()=>{ s^=s<<13;s^=s>>>17;s^=s<<5;s>>>=0; return s/4294967296; }; }
+function shuffle(a,rand){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const ALLFACES=(function(){ const o=[]; ['D','B','C'].forEach(s=>{for(let r=1;r<=9;r++)o.push(r+s);}); ['N','E','W','S','RD','GD','WD','F'].forEach(f=>o.push(f)); return o; })();
+function pad(n){return (n<10?'0':'')+n;}
+function dateInfo(d){ return {str:`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, seed:d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate()}; }
+
+function buildDaily(seed){
+  const rand=rng(seed*2654435761 % 4294967291 + 17);
+  let fallback=null;
+  for(let attempt=0; attempt<600; attempt++){
+    const line=CARD[Math.floor(rand()*CARD.length)];
+    const hand=parseHand(line.hands[Math.floor(rand()*line.hands.length)]);
+    let tiles=[]; for(const f in hand) for(let k=0;k<hand[f];k++) tiles.push(f);
+    shuffle(tiles,rand);
+    const keepN=[9,10,11][Math.floor(rand()*3)];
+    let rack=tiles.slice(0,keepN);
+    while(rack.length<13){
+      const f=ALLFACES[Math.floor(rand()*ALLFACES.length)];
+      if(rack.filter(x=>x===f).length>=4) continue;
+      rack.push(f);
+    }
+    const rc=countMap(rack);
+    const aways=CARD.map(L=>lineBestAway(rc,L));
+    let minA=99; for(const a of aways) if(a<minA)minA=a;
+    const winners=aways.filter(a=>a===minA).length;
+    const ansIdx=aways.indexOf(minA);
+    if(winners===1 && minA>=2 && minA<=6){
+      // also require a little separation so the puzzle isn't a coin-flip
+      const second=Math.min(...aways.filter((a,i)=>i!==ansIdx));
+      const cand={rack:sortRack(rack), ansIdx, away:minA, gap:second-minA};
+      if(cand.gap>=1) return cand;
+      if(!fallback) fallback=cand;
+    }
+  }
+  if(fallback) return fallback;
+  // ultra-safe fallback: 13 random tiles, answer = unique-ish closest
+  const rand2=rng(seed+999); let rack=[]; while(rack.length<13){ const f=ALLFACES[Math.floor(rand2()*ALLFACES.length)]; if(rack.filter(x=>x===f).length<4)rack.push(f); }
+  const rc=countMap(rack); const aways=CARD.map(L=>lineBestAway(rc,L)); let minA=Math.min(...aways);
+  return {rack:sortRack(rack), ansIdx:aways.indexOf(minA), away:minA, gap:0};
+}
+
+/* ---------- state ---------- */
+const today=dateInfo(new Date());
+const daily=buildDaily(today.seed);
+const ANSWER=CARD[daily.ansIdx];
+let guesses=[];     // {sec,line,away,color,secMatch,hit}
+let finished=false;
+const LS='oott_daily_v1';
+function loadStore(){ try{ return JSON.parse(localStorage.getItem(LS)||'{}'); }catch(_){ return {}; } }
+function saveStore(o){ try{ localStorage.setItem(LS,JSON.stringify(o)); }catch(_){} }
+
+/* ---------- rendering ---------- */
+function renderRack(fitSet){
+  const r=$('#rack'); r.innerHTML=daily.rack.map(f=> tileHTML(f, fitSet&&fitSet.has(f)?'fit':'')).join('');
+}
+function fillSectionSelect(){
+  const secs=[]; CARD.forEach(L=>{ if(secs.indexOf(L.sec)<0)secs.push(L.sec); });
+  $('#selSection').innerHTML='<option value="">— pick —</option>'+secs.map(s=>`<option>${s}</option>`).join('');
+  $('#selSection').onchange=fillLineSelect; fillLineSelect();
+}
+function fillLineSelect(){
+  const sec=$('#selSection').value;
+  const lines=CARD.filter(L=>L.sec===sec).map(L=>L.line);
+  $('#selLine').innerHTML = sec? lines.map(n=>`<option value="${n}">Line ${n}</option>`).join('') : '<option value="">—</option>';
+}
+function updateTries(){ $('#triesLeft').textContent = finished?'' : `(${MAX_GUESS-guesses.length} ${MAX_GUESS-guesses.length===1?'guess':'guesses'} left)`; }
+function squareFor(g){ return g.hit?'🟩':(g.color==='warm'?'🟨':'⬛'); }
+function renderBoard(){
+  $('#board').innerHTML=guesses.map(g=>{
+    const cls=g.hit?'hit':(g.color==='warm'?'warm':'cold');
+    const sec=g.secMatch?'<span class="secok">right section</span>':'';
+    const right=g.hit?'<span class="tick">found it ✓</span>':`<span class="gmeta">${g.away} tiles to finish</span>`;
+    return `<div class="guess ${cls}"><span class="sq">${squareFor(g)}</span>
+      <span><span class="gname">${g.sec} · Line ${g.line}</span>${sec}</span>
+      <span class="gright">${right}</span></div>`;
+  }).join('');
+}
+
+/* ---------- guess handling ---------- */
+function doGuess(){
+  if(finished) return;
+  const sec=$('#selSection').value, line=+$('#selLine').value;
+  if(!sec||!line){ return; }
+  if(guesses.some(g=>g.sec===sec&&g.line===line)){ flash('You already tried that line.'); return; }
+  const L=CARD.find(x=>x.sec===sec&&x.line===line);
+  const rc=countMap(daily.rack);
+  const away=lineBestAway(rc,L);
+  const hit=(L===ANSWER);
+  const color = hit?'hit' : (away<=daily.away+1?'warm':'cold');
+  const secMatch=(sec===ANSWER.sec);
+  guesses.push({sec,line,away,color,secMatch,hit});
+  renderBoard(); updateTries();
+  if(hit){ endGame(true); }
+  else if(guesses.length>=MAX_GUESS){ endGame(false); }
+}
+let flashT=null;
+function flash(msg){ const e=$('#triesLeft'); const old=e.textContent; e.textContent=msg; clearTimeout(flashT); flashT=setTimeout(updateTries,1600); }
+
+/* ---------- end + reveal ---------- */
+function endGame(won){
+  finished=true;
+  $('#play').style.display='none';
+  // streak bookkeeping
+  const st=loadStore();
+  const stats=st.stats||{played:0,wins:0,streak:0,maxStreak:0,lastSolved:null,dist:{}};
+  stats.played++; if(won)stats.wins++;
+  if(won){
+    const y=new Date(); y.setDate(y.getDate()-1); const ystr=dateInfo(y).str;
+    stats.streak = (stats.lastSolved===ystr)? stats.streak+1 : 1;
+    stats.lastSolved=today.str;
+    if(stats.streak>stats.maxStreak)stats.maxStreak=stats.streak;
+    const g=guesses.length; stats.dist[g]=(stats.dist[g]||0)+1;
+  } else { stats.streak=0; stats.dist['X']=(stats.dist['X']||0)+1; }
+  st.stats=stats;
+  st.last={date:today.str, won, guesses, ansIdx:daily.ansIdx};
+  saveStore(st);
+  renderStreak(stats);
+  // highlight the fitting tiles
+  const {hand}=bestHandForLine(countMap(daily.rack),ANSWER);
+  const fitSet=new Set(); const need={}; if(hand){ for(const f in hand)need[f]=hand[f]; const have={}; daily.rack.forEach(f=>{ if(need[f] && (have[f]||0)<need[f]){ fitSet.add(f); have[f]=(have[f]||0)+1; } }); }
+  renderRack(fitSet);
+  renderReveal(won, stats);
+  // celebrate
+  if(won){ confetti(); if(stats.streak===1 || stats.streak%5===0) setTimeout(()=>primNote(stats),500); }
+  // log to leaderboard if signed in
+  try{ if(window.OOTT&&window.OOTT.logSession){ window.OOTT.logSession({mode:'daily',level:guesses.length,accuracy:won?100:0,duration_sec:guesses.length,clean:won}); } }catch(_){}
+}
+function renderStreak(stats){ if(stats.streak>0){ $('#streakPill').style.display=''; $('#streakN').textContent=stats.streak; } }
+function fitDescription(){
+  const {hand}=bestHandForLine(countMap(daily.rack),ANSWER);
+  if(!hand) return '';
+  // count tiles held that fit + tiles still needed (described generically, no pattern)
+  const have={}; let held=0; const need=[];
+  const rc=countMap(daily.rack);
+  for(const f in hand){ const h=Math.min(rc[f]||0,hand[f]); held+=h; const miss=hand[f]-h; for(let k=0;k<miss;k++) need.push(f); }
+  const needTxt = need.length? sortRack(need).map(f=>{const i=faceInfo(f); return i.n+' '+i.sub;}).join(', ') : 'nothing — it was almost there';
+  return `You're already holding <b>${held}</b> of the 14 tiles for this line. To finish it you'd still want: <b>${needTxt}</b>.`;
+}
+function renderReveal(won, stats){
+  const A=ANSWER;
+  const head = won
+    ? `<span class="lead">You found it in ${guesses.length}/${MAX_GUESS}</span>`
+    : `<span class="lead">Out of guesses — today's answer</span>`;
+  const concealNote = A.conceal? ' · <b>concealed</b> hand' : '';
+  $('#resultArea').innerHTML = `
+    <div class="reveal">
+      ${head}
+      <div class="ans">${A.sec} · Line ${A.line} <span class="val">${A.val}${A.conceal?' · C':''}</span></div>
+      <div class="rule">“${A.rule}”</div>
+      <div class="flex">This line has <b>${A.n}</b> legal hands on the 2026 card${concealNote}.</div>
+      <h4>Why this rack</h4>
+      <p style="margin:.2em 0 0;">${fitDescription()}</p>
+      <div class="sharebtns">
+        <button class="btn" id="shareBtn">Share result</button>
+        <button class="btn ghost" id="statsBtn">My stats</button>
+      </div>
+      <div class="countdown" id="countdown"></div>
+    </div>`;
+  $('#shareBtn').onclick=share;
+  $('#statsBtn').onclick=()=>openStats(stats);
+  tickCountdown();
+}
+function shareGrid(){ return guesses.map(squareFor).join(''); }
+function share(){
+  const st=loadStore().stats||{};
+  const won=loadStore().last&&loadStore().last.won;
+  const head=`Order of the Tile — Daily Tile · ${today.str}`;
+  const score=won?`Found the line in ${guesses.length}/${MAX_GUESS}`:`Missed it (X/${MAX_GUESS})`;
+  const streak=st.streak>0?`  🔥${st.streak}`:'';
+  const txt=`${head}\n${score}${streak}\n${shareGrid()}\nplay → orderofthetile.com/mini-games/daily-tile/`;
+  if(navigator.share){ navigator.share({text:txt}).catch(()=>copy(txt)); }
+  else copy(txt);
+}
+function copy(txt){ try{ navigator.clipboard.writeText(txt).then(()=>flashShare('Copied — paste it anywhere.'),()=>fallbackCopy(txt)); }catch(_){ fallbackCopy(txt); } }
+function fallbackCopy(txt){ const ta=ce('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); flashShare('Copied — paste it anywhere.');}catch(_){ flashShare('Copy this:\n'+txt);} ta.remove(); }
+function flashShare(m){ const c=$('#countdown'); if(c){ const old=c.textContent; c.textContent=m; setTimeout(tickCountdown,2200); } }
+function tickCountdown(){ const c=$('#countdown'); if(!c)return; const now=new Date(); const mid=new Date(now); mid.setHours(24,0,0,0); const ms=mid-now; const h=Math.floor(ms/3.6e6), m=Math.floor(ms%3.6e6/6e4); c.textContent=`Next tile in ${h}h ${m}m — come back tomorrow.`; }
+
+/* ---------- stats + Prim modals ---------- */
+function openStats(stats){
+  const dist=stats.dist||{}; const maxd=Math.max(1,...[1,2,3,4,5].map(k=>dist[k]||0));
+  const bars=[1,2,3,4,5].map(k=>{ const v=dist[k]||0; const w=Math.round((v/maxd)*100); return `<div style="display:flex;align-items:center;gap:8px;margin:3px 0;"><span style="width:1.2em;color:var(--ink-soft);">${k}</span><div style="flex:1;background:#fff;border:1px solid var(--line);border-radius:6px;height:18px;overflow:hidden;"><div style="height:100%;width:${w}%;background:var(--rose);"></div></div><span style="width:1.6em;text-align:right;">${v}</span></div>`; }).join('');
+  const win=stats.played?Math.round(stats.wins/stats.played*100):0;
+  const m=modal(`<h2>Your Daily Tile</h2>
+    <div class="statsgrid">
+      <div class="s"><div class="v">${stats.played||0}</div><div class="k">Played</div></div>
+      <div class="s"><div class="v">${win}%</div><div class="k">Win rate</div></div>
+      <div class="s"><div class="v">${stats.streak||0}</div><div class="k">Streak</div></div>
+      <div class="s"><div class="v">${stats.maxStreak||0}</div><div class="k">Best</div></div>
+    </div>
+    <h4 style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin:6px 0;">Guesses to solve</h4>
+    ${bars}
+    <div class="modal-actions"><button class="btn" id="stClose">Close</button></div>`);
+  m.querySelector('#stClose').onclick=()=>m.remove();
+}
+function primNote(stats){
+  const msg = stats.streak>1
+    ? `That's <b>${stats.streak}</b> days running. You're not guessing anymore — you're reading the table. Come find me again tomorrow.`
+    : `You read the rack and found the line it wanted. That's the whole game in miniature. Same time tomorrow?`;
+  const scrim=ce('div','scrim show'); scrim.innerHTML=`<div class="card prim-card"><h2>Prim sees you.</h2><p class="verdict">${msg}</p><div class="modal-actions"><button class="btn" id="pgo">Keep my streak</button></div></div>`;
+  document.body.appendChild(scrim); scrim.querySelector('#pgo').onclick=()=>scrim.remove();
+}
+function modal(html){ const s=ce('div','scrim show'); s.innerHTML='<div class="card">'+html+'</div>'; s.addEventListener('click',e=>{if(e.target===s)s.remove();}); document.body.appendChild(s); return s; }
+
+/* ---------- confetti (matches suite) ---------- */
+function confetti(){
+  let c=document.getElementById('cfx');
+  if(!c){c=ce('canvas'); c.id='cfx'; c.style.cssText='position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:3000;'; document.body.appendChild(c);}
+  c.width=innerWidth; c.height=innerHeight; const ctx=c.getContext('2d');
+  const COLORS=['#B76E79','#C9A24A','#7E8A6F','#9A5662','#E2B33C','#5DCAA5','#D4537E'];
+  let P=[]; const cx=innerWidth/2, cy=innerHeight*0.32;
+  for(let i=0;i<160;i++){const a=Math.random()*Math.PI*2,s=3+Math.random()*8;P.push({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s-3,g:0.14,rot:Math.random()*6,vr:(Math.random()-.5)*.4,sz:5+Math.random()*7,c:COLORS[i%COLORS.length],life:130});}
+  function tick(){ctx.clearRect(0,0,c.width,c.height); P.forEach(p=>{p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life--; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.globalAlpha=Math.max(0,Math.min(1,p.life/30)); ctx.fillStyle=p.c; ctx.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz*.6); ctx.restore();}); P=P.filter(p=>p.life>0&&p.y<c.height+40); if(P.length)requestAnimationFrame(tick); else ctx.clearRect(0,0,c.width,c.height);}
+  tick();
+}
+
+/* ---------- restore today's completed game ---------- */
+function restoreIfPlayed(){
+  const st=loadStore();
+  if(st.last && st.last.date===today.str){
+    guesses=st.last.guesses||[]; finished=true;
+    renderBoard(); $('#play').style.display='none';
+    renderStreak(st.stats||{streak:0});
+    const {hand}=bestHandForLine(countMap(daily.rack),ANSWER);
+    const fitSet=new Set(); if(hand){ const have={}; daily.rack.forEach(f=>{ if(hand[f] && (have[f]||0)<hand[f]){ fitSet.add(f); have[f]=(have[f]||0)+1; } }); }
+    renderRack(fitSet);
+    renderReveal(st.last.won, st.stats||{});
+    return true;
+  }
+  return false;
+}
+
+/* ---------- boot ---------- */
+function boot(){
+  if(!CARD.length){ showErr('Card data failed to load (../_data/card2026.js).'); return; }
+  $('#dateLbl').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+  fillSectionSelect();
+  renderRack(null);
+  $('#guessBtn').onclick=doGuess;
+  $('#howBtn').onclick=()=>$('#howScrim').classList.add('show');
+  $('#howClose').onclick=()=>$('#howScrim').classList.remove('show');
+  $('#howScrim').addEventListener('click',e=>{ if(e.target===$('#howScrim'))$('#howScrim').classList.remove('show'); });
+  const st=loadStore(); renderStreak(st.stats||{streak:0});
+  if(!restoreIfPlayed()){
+    // first visit ever → show how-to
+    if(!st.seen){ $('#howScrim').classList.add('show'); st.seen=true; saveStore(st); }
+  }
+  updateTries();
+}
+boot();
+</script>
+
+<!-- shared auth + leaderboard -->
+<script>
+  window.OOTT_GAME      = "daily-tile";
+  window.OOTT_GAME_NAME = "The Daily Tile";
+  window.OOTT_REDIRECT  = "https://www.orderofthetile.com/mini-games/daily-tile/";
+</script>
+<script type="module" src="../_engine/leaderboard.js"></script>
+</body>
+</html>

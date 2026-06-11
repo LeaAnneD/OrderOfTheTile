@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Your First Night at the Table — Order of the Tile</title>
+<link rel="icon" type="image/png" href="/images/seal.png">
+<link rel="apple-touch-icon" href="/images/seal.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
+    --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
+    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A; --gold-bg:#F6ECCB;
+    --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
+  .wrap{max-width:680px; margin:0 auto; padding:16px 16px 48px;}
+  .gamehdr{display:flex;align-items:center;gap:12px;padding:6px 0 9px;border-bottom:1px solid var(--line);margin-bottom:10px;}
+  .gamehdr .backlink{font-family:"Playfair Display",serif;font-weight:600;color:var(--rose-deep);text-decoration:none;font-size:.95rem;}
+  .backlink:hover{text-decoration:underline;} .gamehdr .brandmark{margin-left:auto;font-family:"Playfair Display",serif;font-weight:700;color:var(--ink);font-size:.92rem;}
+  .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:8px; flex-wrap:wrap;}
+  .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.86rem; font-style:italic;}
+  .btn.mini{font-size:.85rem; padding:6px 12px;}
+  h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.6rem; margin:.1em 0; text-align:center;}
+  .sub{color:var(--ink-soft); font-style:italic; margin:0 0 14px; text-align:center;}
+  button.btn{font-family:"Crimson Text",serif; font-size:1rem; border-radius:11px; padding:10px 18px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer; box-shadow:var(--shadow);}
+  button.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
+  button:disabled{opacity:.45; cursor:not-allowed;}
+  /* level map */
+  .map{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:10px 0 18px;}
+  .node{display:flex; flex-direction:column; align-items:center; gap:4px; width:84px; text-decoration:none; color:inherit;}
+  .node .dot{width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:"Playfair Display",serif; font-weight:700; font-size:1.2rem; border:2px solid var(--line); background:#fff; color:var(--ink-soft);}
+  .node .cap{font-size:.7rem; text-align:center; color:var(--ink-soft); line-height:1.15;}
+  .node.done .dot{background:var(--good-bg); border-color:var(--good); color:var(--good);}
+  .node.current .dot{background:var(--rose); border-color:var(--rose-deep); color:#fff; box-shadow:0 0 0 4px var(--gold-bg); cursor:pointer;}
+  .node.current{cursor:pointer;}
+  .node.locked{opacity:.45;}
+  /* scene */
+  .scene{background:#fff; border:1px solid var(--line); border-radius:18px; padding:20px 18px; box-shadow:var(--shadow);}
+  .chapter{font-size:.72rem; text-transform:uppercase; letter-spacing:.12em; color:var(--rose-deep); text-align:center;}
+  .scene h2{font-family:"Playfair Display",serif; font-weight:700; text-align:center; margin:.1em 0 .5em;}
+  .coach{display:flex; gap:12px; align-items:flex-start; margin:6px 0 4px;}
+  .coach .ava{flex:0 0 auto; width:40px; height:40px; border-radius:50%; background:var(--rose); color:#fff; display:flex; align-items:center; justify-content:center; font-family:"Playfair Display",serif; font-weight:700;}
+  .coach .says{flex:1;} .coach .who{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); font-size:.84rem;}
+  .coach .line{line-height:1.5;}
+  /* interaction */
+  .qwrap{margin-top:16px;}
+  .qlead{font-family:"Playfair Display",serif; font-weight:600; font-size:1.12rem; line-height:1.3; text-align:center; margin-bottom:6px;}
+  .qtiles{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin:14px 0 4px;}
+  .qpicktile{display:inline-block; border-radius:9px; padding:2px;} .qpicktile:hover{outline:2px solid var(--rose); outline-offset:1px;}
+  .qchoices{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
+  .qbtn{font-family:"Crimson Text",serif; font-size:1.02rem; padding:13px 12px; border:1px solid var(--line); border-radius:12px; background:var(--paper); color:var(--ink); cursor:pointer;}
+  .qbtn:hover{border-color:var(--rose);}
+  .qbtn.right{background:var(--good-bg); border-color:var(--good); color:var(--good);}
+  .qbtn.wrong{background:var(--bad-bg); border-color:var(--bad); color:var(--bad);}
+  .qbtn.dim{opacity:.5;}
+  .feedback{margin-top:14px; text-align:center; min-height:1.4em; font-style:italic; color:var(--ink-soft);}
+  .feedback.good{color:var(--good);} .feedback.bad{color:var(--bad);}
+  .actionbar{display:flex; justify-content:center; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  /* finale links */
+  .glinks{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;}
+  .glink{display:block; text-decoration:none; color:inherit; border:1px solid var(--line); border-radius:12px; padding:12px 14px; background:#fff; box-shadow:var(--shadow);}
+  .glink:hover{border-color:var(--rose);}
+  .glink b{font-family:"Playfair Display",serif; color:var(--rose-deep);}
+  .glink span{display:block; font-size:.85rem; color:var(--ink-soft);}
+  .scrim{position:fixed; inset:0; background:rgba(43,38,34,.46); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000;}
+  .scrim.show{display:flex;}
+  .card{background:var(--paper); border-radius:18px; max-width:460px; width:100%; padding:24px 22px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line);}
+  .card h2{font-family:"Playfair Display",serif; margin:.1em 0 .4em; font-size:1.5rem;} .prim-card h2{color:var(--rose-deep);}
+  .card .verdict{font-style:italic; color:var(--ink-soft);}
+  .modal-actions{display:grid; grid-template-columns:1fr; gap:10px; margin-top:16px;} .modal-actions .btn{width:100%; padding:11px 10px; margin:0;}
+  .authform{display:flex; flex-direction:column; gap:10px;} .authform input{font-family:inherit; font-size:1rem; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
+  .authmsg{font-size:.9rem; color:var(--bad); min-height:1.2em;} .authmsg.ok{color:var(--good);}
+  .lbtabs{display:flex; gap:8px; margin-bottom:12px;} .lbtable{width:100%; border-collapse:collapse; font-size:.95rem;}
+  .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;} .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .note{font-style:italic; color:var(--ink-soft); font-size:.92rem;}
+  .footer-note{margin-top:28px; color:var(--ink-soft); font-size:.82rem; text-align:center;}
+  @media(max-width:560px){ h1{font-size:1.34rem;} .qchoices{grid-template-columns:1fr;} .glinks{grid-template-columns:1fr;} .node{width:72px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="gamehdr"><a class="backlink" href="../preview.html">← All games</a><span class="brandmark">Order of the Tile</span></div>
+  <div class="authbar" id="authbar">
+    <span id="authStatus" class="authstatus">·</span>
+    <button id="lbBtn" class="btn ghost mini">Leaderboard</button>
+    <button id="authBtn" class="btn mini">Log in / Sign up</button>
+    <button id="logoutBtn" class="btn ghost mini" style="display:none;">Log out</button>
+  </div>
+  <h1>Your First Night at the Table</h1>
+  <p class="sub">A short story in seven beats. Prim sits beside you and teaches you the game, one moment at a time.</p>
+
+  <div class="map" id="map"></div>
+  <div id="stage"></div>
+
+  <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
+  <p class="footer-note">Order of the Tile · a free guided story · American Mah Jongg (NMJL) · <span id="buildStamp">build —</span></p>
+</div>
+
+<script src="../_engine/scenario.js"></script>
+<script src="../_engine/microquiz.js"></script>
+<script>
+"use strict";
+const BUILD="v1 · 2026-06-11";
+function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_story_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_story_err',JSON.stringify(log.slice(-12)));}catch(_){}}
+window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
+window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
+document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
+
+const $=s=>document.querySelector(s), ce=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+const Kit=window.OOTTKit, Micro=window.OOTTMICRO;
+const LS='oott_story_progress_v1';
+function loadProg(){ return Math.max(0, +(localStorage.getItem(LS)||0)); }   // = highest completed level (0..7)
+function saveProg(n){ localStorage.setItem(LS, String(n)); }
+
+/* ---------- custom vocab puzzle (group sizes) ---------- */
+function pVocab(){
+  const items=[
+    {q:"Three identical tiles together are called a…", a:"Pung", o:["Pair","Pung","Kong","Quint"], e:"Three of a kind is a <b>pung</b>."},
+    {q:"Four identical tiles together are called a…", a:"Kong", o:["Pair","Pung","Kong","Quint"], e:"Four of a kind is a <b>kong</b>."},
+    {q:"Two identical tiles together are a…", a:"Pair", o:["Pair","Pung","Kong","Quint"], e:"Two of a kind is a <b>pair</b>."},
+    {q:"Five identical tiles (you'll need a Joker) make a…", a:"Quint", o:["Pair","Pung","Kong","Quint"], e:"Five of a kind is a <b>quint</b> — and since only four of each tile exist, it always needs a Joker."}
+  ];
+  const it=items[Math.floor(Math.random()*items.length)];
+  const choices=it.o.slice();
+  return { kind:'vocab', promptHTML:`<div class="qlead">${it.q}</div>`, choices, answer:choices.indexOf(it.a), explain:it.e };
+}
+
+/* ---------- the seven beats ---------- */
+const LEVELS=[
+  { title:"Sit Down", cap:"Meet the tiles",
+    scene:"You pull out a chair. The tiles are already humming on the table — three suits and a handful of honors. Let's make sure you can name what you're looking at.",
+    kind:'name', payoff:"You've got the suits. Bam, Crak, Dot — that's the whole spine of the game." },
+  { title:"Point to It", cap:"Find the tile",
+    scene:"Good. Now the other direction — when someone says a tile's name, your eyes should go straight to it. No hunting.",
+    kind:'find', payoff:"Fast eyes. That's half of being quick at this table." },
+  { title:"Groups", cap:"Pung, kong, pair",
+    scene:"Tiles like to travel in groups. A pair, a pung, a kong, a quint — learn the words and the whole card opens up.",
+    kind:'vocab', payoff:"Pair, pung, kong, quint. Now the card reads like a sentence." },
+  { title:"What the Numbers Want", cap:"Read a section",
+    scene:"The card is grouped by ideas — even numbers, odd numbers, runs, threes. Look at a few tiles and you can feel which family they belong to.",
+    kind:'section', payoff:"That's pattern-sense. It's what turns a messy rack into a plan." },
+  { title:"Whose Turn", cap:"Turn order",
+    scene:"The hand moves around the table to the right. When a tile is discarded and nobody calls it, play just keeps flowing.",
+    kind:'turn', payoff:"You'll never be the one asking 'wait, is it me?' again." },
+  { title:"Counting the Wall", cap:"What's left",
+    scene:"Every tile you can see tells you what's still out there. Late in a hand, that math is the difference between hoping and knowing.",
+    kind:'remaining', payoff:"Four of everything (eight Flowers and Jokers). Subtract what you see — that's defense." },
+  { title:"Your First Hand", cap:"Play it",
+    scene:"That's everything you need for one real hand. Names, groups, sections, turns, the wall. Come sit with me and we'll build a hand together — start to finish.",
+    kind:'finale', payoff:"" }
+];
+
+/* ---------- render the map ---------- */
+function renderMap(){
+  const done=loadProg(); const m=$('#map'); m.innerHTML='';
+  LEVELS.forEach((lv,i)=>{
+    const state = i<done?'done' : i===done?'current':'locked';
+    const node=ce('a','node '+state);
+    node.innerHTML=`<div class="dot">${i<done?'✓':(i+1)}</div><div class="cap">${lv.cap}</div>`;
+    if(state==='current'){ node.onclick=()=>playLevel(i); }
+    m.appendChild(node);
+  });
+}
+
+/* ---------- scene + interaction ---------- */
+let cur=null;
+function startScreen(){
+  renderMap();
+  const done=loadProg();
+  if(done>=LEVELS.length){ finaleScreen(true); return; }
+  $('#stage').innerHTML=`<div class="scene" style="text-align:center;">
+    <div class="chapter">${done===0?'A new player':'Chapter '+(done+1)}</div>
+    <h2>${done===0?'Welcome to the table':'Welcome back'}</h2>
+    <p class="note">${done===0?'Seven short beats and you\'ll have played your first hand. Ready?':'You\'re '+done+' of '+LEVELS.length+' beats in.'}</p>
+    <div class="actionbar"><button class="btn" id="beginBtn">${done===0?'Begin':'Continue the night'}</button></div>
+  </div>`;
+  $('#beginBtn').onclick=()=>playLevel(done);
+}
+
+function playLevel(i){
+  const lv=LEVELS[i]; cur={i, tries:0};
+  renderMap();
+  if(lv.kind==='finale'){ finaleScreen(false); return; }
+  renderScene(lv, ()=>renderInteraction(lv, i));
+}
+function renderScene(lv, then){
+  $('#stage').innerHTML=`<div class="scene">
+    <div class="chapter">Chapter ${cur.i+1} · ${lv.cap}</div>
+    <h2>${lv.title}</h2>
+    <div class="coach"><div class="ava">P</div><div class="says"><div class="who">Prim</div><div class="line">${lv.scene}</div></div></div>
+    <div class="qwrap" id="qwrap"></div>
+  </div>`;
+  then();
+}
+function newPuzzle(kind){
+  if(kind==='vocab') return pVocab();
+  // map level kinds to a generator level
+  const lvl = kind==='remaining'||kind==='section'?2 : 1;
+  let p, guard=0;
+  do{ p=Micro.gen(lvl, Math.random); guard++; }while(p.kind!==kind && guard<40);
+  if(p.kind!==kind){ // fallback to any
+    p=Micro.gen(lvl, Math.random);
+  }
+  return p;
+}
+function renderInteraction(lv, i){
+  const p=newPuzzle(lv.kind); cur.p=p;
+  const w=$('#qwrap');
+  w.innerHTML=`<div id="qbody"></div><div class="feedback" id="fb"></div><div class="actionbar" id="ab"></div>`;
+  Micro.renderInto($('#qbody'), p, idx=>onPick(idx, lv, i));
+}
+function onPick(idx, lv, i){
+  const p=cur.p; const correct=(idx===p.answer);
+  const btns=[...document.querySelectorAll('.qbtn')];
+  if(btns.length){ btns.forEach((b,k)=>{ if(k===p.answer)b.classList.add('right'); else if(k===idx)b.classList.add('wrong'); else b.classList.add('dim'); b.disabled=true; }); }
+  else { document.querySelectorAll('.qpicktile').forEach(s=>s.onclick=null); }
+  const fb=$('#fb'), ab=$('#ab'); ab.innerHTML='';
+  if(correct){
+    fb.className='feedback good'; fb.innerHTML='✓ '+p.explain;
+    const b=ce('button','btn'); b.textContent=(i===LEVELS.length-2?'Finish the night ▶':'Next beat ▶');
+    b.onclick=()=>{ if(loadProg()<i+1) saveProg(i+1); advance(i+1); }; ab.appendChild(b);
+    primPayoff(lv);
+  } else {
+    cur.tries++;
+    fb.className='feedback bad'; fb.innerHTML='✗ '+p.explain;
+    const b=ce('button','btn ghost'); b.textContent='Try once more'; b.onclick=()=>renderInteraction(lv,i); ab.appendChild(b);
+  }
+}
+function primPayoff(lv){
+  const line=document.querySelector('.coach .line');
+  if(line && lv.payoff) line.innerHTML=lv.payoff;
+}
+function advance(n){
+  if(n>=LEVELS.length-1){ playLevel(LEVELS.length-1); return; } // go to finale beat
+  playLevel(n);
+}
+
+/* ---------- finale ---------- */
+function finaleScreen(replay){
+  saveProg(LEVELS.length);
+  renderMap();
+  if(!replay){ try{ if(Kit&&Kit.confetti)Kit.confetti(); }catch(_){} }
+  $('#stage').innerHTML=`<div class="scene">
+    <div class="chapter">Chapter 7 · Your first hand</div>
+    <h2>You're a player now</h2>
+    <div class="coach"><div class="ava">P</div><div class="says"><div class="who">Prim</div><div class="line">${LEVELS[6].scene}</div></div></div>
+    <p class="note" style="text-align:center; margin-top:14px;">Pick where to go next — each one builds on the night you just had.</p>
+    <div class="glinks">
+      <a class="glink" href="../coached-hand/"><b>Coached Hand →</b><span>Play a full hand with me narrating every move.</span></a>
+      <a class="glink" href="../daily-tile/"><b>The Daily Tile →</b><span>Today's puzzle. One rack, find the line. Build a streak.</span></a>
+      <a class="glink" href="../the-run/"><b>The Run →</b><span>Keep a streak alive, no clock, your pace.</span></a>
+      <a class="glink" href="../tile-storm/"><b>Tile Storm →</b><span>Three minutes, three strikes. Go fast.</span></a>
+      <a class="glink" href="../preview.html"><b>All the drills →</b><span>The full practice table — every skill, its own game.</span></a>
+    </div>
+    <div class="actionbar" style="margin-top:16px;"><button class="btn ghost" id="replayBtn">Read the night again</button></div>
+  </div>`;
+  $('#replayBtn').onclick=()=>{ saveProg(0); startScreen(); };
+  try{ if(window.OOTT&&window.OOTT.logSession){ window.OOTT.logSession({mode:'story',level:7,accuracy:100,duration_sec:7,clean:true}); } }catch(_){}
+}
+
+function boot(){ if(!Kit||!Micro){ showErr('Engine failed to load (scenario.js / microquiz.js).'); return; } startScreen(); }
+boot();
+</script>
+<script>
+  window.OOTT_GAME      = "story-mode";
+  window.OOTT_GAME_NAME = "Your First Night at the Table";
+  window.OOTT_REDIRECT  = "https://www.orderofthetile.com/mini-games/story-mode/";
+</script>
+<script type="module" src="../_engine/leaderboard.js"></script>
+</body>
+</html>
