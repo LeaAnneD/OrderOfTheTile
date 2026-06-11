@@ -113,7 +113,7 @@
 <script src="../_engine/tiles.js"></script>
 <script>
 "use strict";
-const BUILD="v1.1 · 2026-06-11";
+const BUILD="v1.2 · 2026-06-11";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_coach_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_coach_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -186,49 +186,65 @@ function dealLeaning(seedHand){
   const tiles=[]; for(const f in seedHand) for(let k=0;k<seedHand[f];k++) tiles.push(f);
   Kit.shuffle(tiles, rnd);
   const keep=tiles.slice(0, 7+ri(2)); // keep 7-8 of the 14
-  const rack=keep.slice();
+  const faces=keep.slice();
   // fill to 13 with plausible junk (random naturals + maybe a joker)
-  while(rack.length<13){
+  while(faces.length<13){
     let f = rnd()<0.10 ? 'JK' : pick(ALLNAT);
-    if(f!=='JK' && rack.filter(x=>x===f).length>=4) continue;
-    if(f==='JK' && rack.filter(x=>x==='JK').length>=2) continue;
-    rack.push(f);
+    if(f!=='JK' && faces.filter(x=>x===f).length>=4) continue;
+    if(f==='JK' && faces.filter(x=>x==='JK').length>=2) continue;
+    faces.push(f);
   }
-  return rack;
+  return faces.map(mkTile);
 }
 
 /* ===================================================================== */
 /* GAME STATE                                                            */
-/* ===================================================================== */
-let G=null;
+/* ---------------------------------------------------------------------
+   The rack is an array of tile OBJECTS {c:faceCode, id:uid} — a STABLE id
+   per physical tile (so duplicates never get confused during a drag, the
+   same identity model the other games use). rackFaces() flattens to the
+   face-code array the win/closeness helpers expect.
+   ===================================================================== */
+let G=null, UID=1;
+const uid=()=>UID++, mkTile=c=>({c, id:uid()});
+function rackFaces(){ return G.rack.map(t=>t.c); }
 function newGame(){
   const line=chooseLine();
   const seedHand=parseHand(pick(line.hands));
   const rack=sortRack(dealLeaning(seedHand));
-  G={ line, seedHand, rack, draws:0, discards:0, phase:'intro', drawn:null, recIdx:-1, charlestonDone:false };
+  G={ line, seedHand, rack, draws:0, discards:0, phase:'intro', recId:null, drawnId:null, charlestonDone:false, charlestonSel:null };
 }
-function sortRack(arr){ return arr.slice().sort((a,b)=>{ const x=faceOrder(a),y=faceOrder(b); return x[0]-y[0]||x[1]-y[1]; }); }
+function sortRack(arr){ return arr.slice().sort((a,b)=>{ const x=faceOrder(a.c),y=faceOrder(b.c); return x[0]-y[0]||x[1]-y[1]; }); }
 
-/* ---------- which held tile is least useful toward the best target ---------- */
-function leastUsefulIndex(){
-  const {target}=bestTargetHand(G.rack, G.line.hands);
-  const used={}; let worst=-1, worstScore=-1;
-  G.rack.forEach((f,i)=>{
-    if(f==='JK') return; // never recommend pitching a joker
-    const need=target[f]||0; const have=used[f]||0;
-    const useful = have<need; // this copy is still needed
-    used[f]=have+1;
-    let score = useful?0:2;             // not-needed tiles score higher (more pitchable)
-    if(f==='F' && !target['F']) score+=1;
-    if((f==='RD'||f==='GD'||f==='WD'||'NEWS'.indexOf(f)>=0) && !need) score+=0.5;
-    if(score>worstScore){ worstScore=score; worst=i; }
+/* ---------- how many Jokers the best target can still use (shortfalls in 3+ groups only) ---------- */
+function targetJokerNeed(){
+  const {target}=bestTargetHand(rackFaces(), G.line.hands);
+  const rc=countMap(rackFaces().filter(f=>f!=='JK'));
+  let need=0; for(const f in target){ if(target[f]>=3){ const short=target[f]-(rc[f]||0); if(short>0) need+=short; } }
+  return need;
+}
+/* ---------- which held tile is least useful toward the best target (returns its id) ---------- */
+function leastUsefulId(){
+  const {target}=bestTargetHand(rackFaces(), G.line.hands);
+  const jokNeed=targetJokerNeed();
+  const used={}; let jUsed=0; let worst=null, worstScore=-1;
+  G.rack.forEach(t=>{
+    const f=t.c; let score;
+    if(f==='JK'){ const useful=jUsed<jokNeed; jUsed++; score=useful?0:3; } // a Joker the line can't place is the deadest weight there is
+    else {
+      const need=target[f]||0; const have=used[f]||0; const useful=have<need; used[f]=have+1;
+      score = useful?0:2;
+      if(f==='F' && !target['F']) score+=1;
+      if((f==='RD'||f==='GD'||f==='WD'||'NEWS'.indexOf(f)>=0) && !need) score+=0.5;
+    }
+    if(score>worstScore){ worstScore=score; worst=t.id; }
   });
   return worst;
 }
 /* ---------- what useful tile does the best target still want ---------- */
 function neededFace(){
-  const {target}=bestTargetHand(G.rack, G.line.hands);
-  const rc=countMap(G.rack.filter(f=>f!=='JK'));
+  const {target}=bestTargetHand(rackFaces(), G.line.hands);
+  const rc=countMap(rackFaces().filter(f=>f!=='JK'));
   const wants=[]; for(const f in target){ const short=target[f]-(rc[f]||0); for(let k=0;k<short;k++) wants.push(f); }
   return wants.length?pick(wants):pick(ALLNAT);
 }
@@ -236,10 +252,10 @@ function neededFace(){
 /* ===================================================================== */
 /* RENDER                                                                */
 /* ===================================================================== */
-function tileEl(f, idx){
+function tileEl(t){
   const el=ce('div','tile img');
-  el.dataset.idx=idx; el.dataset.face=f;
-  el.innerHTML=window.OOTTTILES.img(f);
+  el.dataset.id=t.id; el.dataset.face=t.c;
+  el.innerHTML=window.OOTTTILES.img(t.c);
   return el;
 }
 function renderStage(){
@@ -262,50 +278,54 @@ function renderStage(){
   updateAway();
 }
 function renderRack(){
-  const r=$('#rack'); r.innerHTML='';
-  G.rack.forEach((f,i)=>{ const el=tileEl(f,i); r.appendChild(el); attachTile(el); });
-  // markers
-  if(G.phase==='discard'){
-    if(G.recIdx>=0 && G.rack[G.recIdx]) { const el=r.children[G.recIdx]; if(el)el.classList.add('rec'); }
-    if(G.drawnIdx>=0){ const el=r.children[G.drawnIdx]; if(el){ el.classList.add('fresh'); const b=ce('span','badge'); b.textContent='new'; el.appendChild(b);} }
+  const r=$('#rack'); if(!r) return; r.innerHTML='';
+  G.rack.forEach(t=>{ r.appendChild(tileEl(t)); });
+  const byId=id=>[...r.children].find(c=>+c.dataset.id===id);
+  // recommended-discard + freshly-drawn markers (by stable id)
+  if((G.phase==='discard'||G.phase==='declare')){
+    if(G.recId!=null){ const el=byId(G.recId); if(el)el.classList.add('rec'); }
+    if(G.drawnId!=null){ const el=byId(G.drawnId); if(el){ el.classList.add('fresh'); const b=ce('span','badge'); b.textContent='new'; el.appendChild(b); } }
   }
+  // Charleston: dashed = tiles selected to pass
+  if(G.phase==='charleston' && G.charlestonSel){
+    [...r.children].forEach(el=>{ el.classList.toggle('rec', G.charlestonSel.has(+el.dataset.id)); });
+  }
+  attachRackDnD();
 }
-function updateAway(){ const {away}=bestTargetHand(G.rack, G.line.hands); const e=$('#hAway'); if(e)e.textContent=away; if($('#hTiles'))$('#hTiles').textContent=G.rack.length; if($('#hDraws'))$('#hDraws').textContent=G.draws; return away; }
+function updateAway(){ const {away}=bestTargetHand(rackFaces(), G.line.hands); const e=$('#hAway'); if(e)e.textContent=away; if($('#hTiles'))$('#hTiles').textContent=G.rack.length; if($('#hDraws'))$('#hDraws').textContent=G.draws; return away; }
 function say(html){ const e=$('#coachLine'); if(e)e.innerHTML=html; }
 function hint(html){ const e=$('#hint'); if(e)e.innerHTML=html||''; }
 
-/* ---------- drag-to-rearrange (pointer; tap = discard in discard phase) ---------- */
-function attachTile(el){
-  let startX=0,startY=0,dragging=false,moved=false;
-  el.addEventListener('pointerdown',e=>{
-    if(G.phase!=='discard' && G.phase!=='arrange') return;
-    startX=e.clientX; startY=e.clientY; moved=false; dragging=false;
-    el.setPointerCapture(e.pointerId);
-    const move=ev=>{
-      const dx=ev.clientX-startX, dy=ev.clientY-startY;
-      if(!dragging && Math.hypot(dx,dy)>7){ dragging=true; el.classList.add('dragging'); }
-      if(dragging){ moved=true;
-        const under=document.elementFromPoint(ev.clientX,ev.clientY); const t=under&&under.closest&&under.closest('.tile');
-        if(t&&t!==el&&t.parentNode===el.parentNode){
-          const kids=[...el.parentNode.children]; const a=kids.indexOf(el), b=kids.indexOf(t);
-          if(a<b) el.parentNode.insertBefore(el,t.nextSibling); else el.parentNode.insertBefore(el,t);
-        }
-      }
-    };
-    const up=ev=>{
-      el.removeEventListener('pointermove',move); el.removeEventListener('pointerup',up);
-      el.classList.remove('dragging');
-      if(dragging && moved){ commitOrderFromDOM(); }
-      else if(G.phase==='discard'){ doDiscardByFace(el.dataset.face, el); }
-      dragging=false;
-    };
-    el.addEventListener('pointermove',move); el.addEventListener('pointerup',up);
+/* ---------- drag-to-rearrange + tap, the shared pattern (Solo-Mahj / Hand-Sorting) ----------
+   ONE set of listeners on the rack CONTAINER, pointer captured on the container,
+   tiles tracked by stable data-id, the MODEL array spliced and repainted live so
+   the grabbed tile slides onto the target and the rest shift. A move = reorder
+   (any phase, so you can organize whenever); a tap = discard / Charleston-select. */
+function attachRackDnD(){
+  const rack=$('#rack'); if(!rack || rack.__dnd) return; rack.__dnd=true;
+  let drag=null;
+  const markDrag=()=>{ const e=[...rack.children].find(ch=>+ch.dataset.id===drag.id); if(e)e.classList.add('dragging'); };
+  rack.addEventListener('pointerdown',e=>{
+    const tile=e.target.closest('.tile'); if(!tile) return;
+    drag={ id:+tile.dataset.id, x:e.clientX, y:e.clientY, moved:false };
+    try{ rack.setPointerCapture(e.pointerId); }catch(_){}
   });
+  rack.addEventListener('pointermove',e=>{
+    if(!drag) return;
+    if(!drag.moved){ if(Math.abs(e.clientX-drag.x)<6 && Math.abs(e.clientY-drag.y)<6) return; drag.moved=true; markDrag(); }
+    const u=document.elementFromPoint(e.clientX,e.clientY); const tile=u&&u.closest&&u.closest('.tile');
+    if(!tile || tile.parentElement!==rack) return;
+    const tId=+tile.dataset.id; if(tId===drag.id) return;
+    const from=G.rack.findIndex(t=>t.id===drag.id), to=G.rack.findIndex(t=>t.id===tId);
+    if(from<0||to<0) return;
+    const t=G.rack.splice(from,1)[0]; G.rack.splice(to,0,t); renderRack(); markDrag();
+  });
+  const end=()=>{ if(!drag) return; const wasDrag=drag.moved, id=drag.id; drag=null; if(wasDrag) renderRack(); else onTapTile(id); };
+  rack.addEventListener('pointerup',end); rack.addEventListener('pointercancel',end);
 }
-function commitOrderFromDOM(){
-  // rebuild rack order from the current DOM (faces only); identity is the face code
-  G.rack=[...$('#rack').children].map(c=>c.dataset.face);
-  renderRack();
+function onTapTile(id){
+  if(G.phase==='discard'){ doDiscardById(id); }
+  else if(G.phase==='charleston'){ toggleCharlestonId(id); }
 }
 
 /* ===================================================================== */
@@ -334,124 +354,108 @@ function intro(){
 /* ---- Charleston: Prim pre-selects 3 to pass; player can change, then pass ---- */
 function charlestonPick(){
   G.phase='charleston';
-  // Prim's 3 suggested pitches = 3 least useful indices
-  const sel=pickThreeLeastUseful();
-  G.charlestonSel=new Set(sel);
+  G.charlestonSel=new Set(pickThreeLeastUsefulIds()); // Prim's 3 suggested pitches
   renderStage();
-  say(`The Charleston — pass three to your right. I'd let these three go (dashed). Tap any tile to add or remove it from the pass, then send them along. Three tiles, no Jokers.`);
-  hint('Pick exactly 3 to pass.');
-  paintCharleston();
+  say(`The Charleston — pass three to your right. I'd let these three go (dashed). Tap any tile to add or remove it from the pass — or drag tiles to organize your rack first. Three tiles, no Jokers.`);
   const c=$('#controls'); c.innerHTML='';
   const b=ce('button','btn'); b.id='passBtn'; b.textContent='Pass these 3 →'; b.onclick=doCharlestonPass; c.appendChild(b);
-  // rebind tiles for selection toggling
-  [...$('#rack').children].forEach((el,i)=>{
-    el.onpointerdown=null;
-    el.style.cursor='pointer';
-    el.onclick=()=>{ if(G.rack[i]==='JK'){ hint('Jokers can never be passed in the Charleston.'); return; } if(G.charlestonSel.has(i))G.charlestonSel.delete(i); else { if(G.charlestonSel.size>=3){ hint('That\'s already 3 — remove one first.'); return; } G.charlestonSel.add(i);} paintCharleston(); };
-  });
   updatePassBtn();
 }
-function pickThreeLeastUseful(){
-  const {target}=bestTargetHand(G.rack, G.line.hands);
-  const used={}; const scored=G.rack.map((f,i)=>{
-    if(f==='JK') return {i,score:-99};
+function pickThreeLeastUsefulIds(){
+  const {target}=bestTargetHand(rackFaces(), G.line.hands);
+  const used={}; const scored=G.rack.map(t=>{
+    const f=t.c; if(f==='JK') return {id:t.id,score:-99};
     const need=target[f]||0, have=used[f]||0; used[f]=have+1;
     let s=(have<need)?0:2; if(f==='F'&&!target['F'])s+=1; if(!need)s+=0.4;
-    return {i,score:s};
+    return {id:t.id,score:s};
   });
   scored.sort((a,b)=>b.score-a.score);
-  return scored.slice(0,3).map(x=>x.i);
+  return scored.slice(0,3).map(x=>x.id);
 }
-function paintCharleston(){
-  [...$('#rack').children].forEach((el,i)=>{ el.classList.toggle('rec', G.charlestonSel.has(i)); });
-  updatePassBtn();
+function toggleCharlestonId(id){
+  const t=G.rack.find(x=>x.id===id); if(!t) return;
+  if(t.c==='JK'){ hint('Jokers can never be passed in the Charleston.'); return; }
+  if(G.charlestonSel.has(id)) G.charlestonSel.delete(id);
+  else { if(G.charlestonSel.size>=3){ hint('That\'s already three — tap one to take it back first.'); return; } G.charlestonSel.add(id); }
+  renderRack(); updatePassBtn();
 }
-function updatePassBtn(){ const b=$('#passBtn'); if(b){ b.disabled=G.charlestonSel.size!==3; } hint(`Selected ${G.charlestonSel.size} of 3.`); }
+function updatePassBtn(){ const b=$('#passBtn'); if(b){ b.disabled=G.charlestonSel.size!==3; } hint(`Selected ${G.charlestonSel.size} of 3 to pass.`); }
 function doCharlestonPass(){
   if(G.charlestonSel.size!==3) return;
-  const give=[...G.charlestonSel].sort((a,b)=>b-a);
-  give.forEach(i=>G.rack.splice(i,1));
+  G.rack=G.rack.filter(t=>!G.charlestonSel.has(t.id));
   // receive 3: bias toward tiles the target still wants
-  for(let k=0;k<3;k++){ G.rack.push(rnd()<0.6 ? neededFace() : pick(ALLNAT)); }
-  G.rack=sortRack(G.rack); G.charlestonDone=true;
+  for(let k=0;k<3;k++){ G.rack.push(mkTile(rnd()<0.6 ? neededFace() : pick(ALLNAT))); }
+  G.rack=sortRack(G.rack); G.charlestonDone=true; G.charlestonSel=null;
   renderStage();
   const away=updateAway();
   say(`Passed. Look what came back — you're about <b>${away}</b> away now. From here it's draw and discard: I'll feed you tiles, you decide what to keep. Draw when you're ready.`);
-  hint('');
+  hint('Drag tiles any time to organize your rack.');
   beginDrawPhase();
 }
 
 /* ---- main draw/discard loop ---- */
 function beginDrawPhase(){
-  G.phase='draw'; G.drawnIdx=-1; G.recIdx=-1;
+  G.phase='draw'; G.drawnId=null; G.recId=null;
   const c=$('#controls'); c.innerHTML='';
   const b=ce('button','btn'); b.id='drawBtn'; b.textContent='Draw a tile'; b.onclick=drawTile; c.appendChild(b);
-  // win could already be possible (rare) — check
-  maybeOfferDeclare(true);
+  maybeOfferDeclare();
 }
 function drawTile(){
   if(G.phase!=='draw') return;
-  // bias: 68% a needed tile, else random (sometimes a joker)
+  // bias: 68% a needed tile, else random — but only feed a Joker the line can actually use
   let f;
   if(rnd()<0.68) f=neededFace();
-  else f = rnd()<0.08 ? 'JK' : pick(ALLNAT);
-  G.rack.push(f); G.draws++;
+  else {
+    const canJoker = targetJokerNeed() > rackFaces().filter(x=>x==='JK').length;
+    f = (rnd()<0.10 && canJoker) ? 'JK' : pick(ALLNAT);
+  }
+  const t=mkTile(f); G.rack.push(t); G.draws++;
   G.rack=sortRack(G.rack);
-  G.drawnIdx=G.rack.indexOf(f);
+  G.drawnId=t.id;
   G.phase='discard';
   // win?
-  const win=anyComplete(G.rack, G.line.hands);
-  renderStage_keepDraw();
-  if(win){ offerDeclare(f); return; }
+  if(anyComplete(rackFaces(), G.line.hands)){ offerDeclare(t.id); return; }
   // recommend a discard
-  G.recIdx=leastUsefulIndex();
-  // re-render to show rec + fresh
+  G.recId=leastUsefulId();
   renderRack();
-  const recFace=G.rack[G.recIdx];
-  const away=updateAway();
-  say(drawNarration(f, recFace, away));
-  hint('Tap a tile to discard it — or drag to rearrange first.');
-  const c=$('#controls'); c.innerHTML='';
-  const b=ce('button','ghost btn'); b.textContent='Discard Prim\'s pick'; b.onclick=()=>doDiscardByIndex(G.recIdx); c.appendChild(b);
-}
-function renderStage_keepDraw(){ // light refresh of hud + rack with markers
   if($('#hTiles'))$('#hTiles').textContent=G.rack.length;
   if($('#hDraws'))$('#hDraws').textContent=G.draws;
-  renderRack();
+  const recFace=(G.rack.find(x=>x.id===G.recId)||{}).c;
+  const away=updateAway();
+  say(drawNarration(f, recFace, away));
+  hint('Tap a tile to discard it — or drag any tile to rearrange your rack.');
+  const c=$('#controls'); c.innerHTML='';
+  const b=ce('button','ghost btn'); b.textContent='Discard Prim\'s pick'; b.onclick=()=>doDiscardById(G.recId); c.appendChild(b);
 }
 function drawNarration(drawn, rec, away){
-  const dL=faceLabel(drawn), rL=faceLabel(rec);
+  const dL=faceLabel(drawn), rL=rec?faceLabel(rec):'a stray tile';
   const useful = away< (G.lastAway==null?99:G.lastAway);
   G.lastAway=away;
   const open = useful ? `Nice — the <b>${dL}</b> helps.` : `The <b>${dL}</b> doesn't fit our line.`;
   const tail = `I'd let the <b>${rL}</b> go (dashed) — it isn't doing any work for ${G.line.sec} Line ${G.line.line}. You're <b>${away}</b> away.`;
   return open+' '+tail;
 }
+function doDiscardById(id){ const i=G.rack.findIndex(t=>t.id===id); if(i>=0) doDiscardByIndex(i); }
 function doDiscardByIndex(i){
   if(G.phase!=='discard'||i<0||i>=G.rack.length) return;
-  if(G.rack[i]==='JK'){ hint('Pitching a Joker? That\'s almost never right — but it\'s your call.'); }
+  if(G.rack[i].c==='JK'){ hint('Pitching a Joker? That\'s almost never right — but it\'s your call.'); }
   G.rack.splice(i,1); G.discards++;
-  G.rack=sortRack(G.rack); G.drawnIdx=-1; G.recIdx=-1;
+  G.rack=sortRack(G.rack);
   beginDrawPhase();
   renderRack();            // refresh the rack DOM so the discarded tile leaves immediately
   const away=updateAway();
   say(`Down to thirteen. You're <b>${away}</b> from ${G.line.sec} Line ${G.line.line}. Draw again when you're ready.`);
-  hint('');
-}
-function doDiscardByFace(face, el){
-  const i=[...$('#rack').children].indexOf(el);
-  if(i<0) return; doDiscardByIndex(i);
+  hint('Drag tiles to organize while you think.');
 }
 
-function maybeOfferDeclare(silent){
-  const win=anyComplete(G.rack, G.line.hands);
-  if(win && G.rack.length===14){ offerDeclare(null); return true; }
+function maybeOfferDeclare(){
+  if(anyComplete(rackFaces(), G.line.hands) && G.rack.length===14){ offerDeclare(null); return true; }
   return false;
 }
-function offerDeclare(justDrew){
+function offerDeclare(justDrewId){
   G.phase='declare';
-  G.drawnIdx = justDrew!=null ? G.rack.indexOf(justDrew) : -1;
-  G.recIdx=-1;
+  G.drawnId = justDrewId!=null ? justDrewId : null;
+  G.recId=null;
   renderRack();
   updateAway();
   say(`That's it — your rack is <b>whole</b>. Fourteen tiles, every one part of <b>${G.line.sec} Line ${G.line.line}</b>. Don't discard. <b>Declare Mahjong!</b>`);
@@ -459,7 +463,7 @@ function offerDeclare(justDrew){
   const c=$('#controls'); c.innerHTML='';
   const b=ce('button','btn'); b.textContent='Declare Mahjong!'; b.onclick=winHand; c.appendChild(b);
   const b2=ce('button','ghost btn'); b2.textContent='Keep playing'; b2.onclick=()=>{ // let them discard anyway (rare)
-    G.phase='discard'; G.recIdx=leastUsefulIndex(); renderRack(); hint('Tap a tile to discard.'); c.innerHTML=''; const x=ce('button','ghost btn'); x.textContent='Discard Prim\'s pick'; x.onclick=()=>doDiscardByIndex(G.recIdx); c.appendChild(x); };
+    G.phase='discard'; G.recId=leastUsefulId(); renderRack(); hint('Tap a tile to discard.'); c.innerHTML=''; const x=ce('button','ghost btn'); x.textContent='Discard Prim\'s pick'; x.onclick=()=>doDiscardById(G.recId); c.appendChild(x); };
   c.appendChild(b2);
 }
 function winHand(){
