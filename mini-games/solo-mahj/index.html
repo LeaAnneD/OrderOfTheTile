@@ -48,6 +48,7 @@
   .tile.ro{cursor:default;}
   .rack.sortable{touch-action:none;}
   .rack.sortable .tile{cursor:grab;}
+  .tile.dragging{transform:translateY(-12px) scale(1.07); box-shadow:0 0 0 2px var(--gold), 0 12px 20px rgba(0,0,0,.3); border-color:var(--gold); cursor:grabbing; z-index:5;}
   .tile .dot{position:absolute; top:3px; right:3px; width:7px; height:7px; border-radius:50%;}
   .tile .dot.work{background:var(--good);} .tile .dot.dead{background:#C8BCa6;}
   .tile.fresh{outline:2px solid var(--gold); outline-offset:1px;}
@@ -219,13 +220,14 @@ function handEl(hints){ const rack=el("div","rack sortable"); rack.id="rackbox";
 function repaintHand(hints){ const rack=$("#rackbox"); if(rack)rack.innerHTML=handTilesHTML(hints); }
 function attachHand(rack,hints){
   let drag=null;
+  const markDrag=()=>{ const e=[...rack.children].find(ch=>+ch.dataset.id===drag.id); if(e)e.classList.add('dragging'); };
   rack.addEventListener('pointerdown',e=>{ const tile=e.target.closest('.tile'); if(!tile)return; drag={id:+tile.dataset.id,x:e.clientX,y:e.clientY,moved:false}; try{rack.setPointerCapture(e.pointerId);}catch(_){ } });
   rack.addEventListener('pointermove',e=>{ if(!drag)return;
-    if(!drag.moved){ if(Math.abs(e.clientX-drag.x)<6 && Math.abs(e.clientY-drag.y)<6) return; drag.moved=true; }
+    if(!drag.moved){ if(Math.abs(e.clientX-drag.x)<6 && Math.abs(e.clientY-drag.y)<6) return; drag.moved=true; markDrag(); }
     const u=document.elementFromPoint(e.clientX,e.clientY); const tile=u&&u.closest&&u.closest('.tile'); if(!tile||tile.parentElement!==rack)return;
     const tId=+tile.dataset.id; if(tId===drag.id)return;
     const from=game.hand.findIndex(t=>t.id===drag.id), to=game.hand.findIndex(t=>t.id===tId); if(from<0||to<0)return;
-    const t=game.hand.splice(from,1)[0]; game.hand.splice(to,0,t); repaintHand(hints);
+    const t=game.hand.splice(from,1)[0]; game.hand.splice(to,0,t); repaintHand(hints); markDrag();
   });
   const end=()=>{ if(!drag)return; const wasDrag=drag.moved, id=drag.id; drag=null; if(wasDrag)repaintHand(hints); else toggleSelId(id,hints); };
   rack.addEventListener('pointerup',end); rack.addEventListener('pointercancel',end);
