@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Hand-Line Solver — Order of the Tile</title>
+<link rel="icon" type="image/png" href="/images/seal.png">
+<link rel="apple-touch-icon" href="/images/seal.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
+    --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
+    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A;
+    --bam:#3C7A4E; --crak:#B5524C; --dot:#3A5C86; --honor:#6B5F54;
+    --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
+  .wrap{max-width:920px; margin:0 auto; padding:18px 16px 40px;}
+  h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.6rem; margin:.1em 0;}
+  .sub{color:var(--ink-soft); font-style:italic; margin:0 0 14px;}
+  .modebar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:4px 0 10px;}
+  .modepill{font-family:"Playfair Display",serif; font-weight:600; font-size:.92rem; cursor:pointer; border:1px solid var(--line); background:#fff; color:var(--ink-soft); border-radius:999px; padding:6px 16px; box-shadow:var(--shadow);}
+  .modepill.on{background:var(--rose); color:#fff; border-color:var(--rose-deep);}
+  .modepill small{display:block; font-family:"Crimson Text",serif; font-weight:400; font-style:italic; font-size:.72rem; opacity:.85;}
+  .leveltag{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); font-size:1.0rem; margin-left:auto;}
+  .hud{display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 14px;}
+  .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px 14px; box-shadow:var(--shadow); min-width:92px;}
+  .stat .k{font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft);}
+  .stat .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; line-height:1.1;}
+  /* pickers */
+  .pickrow{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:10px;}
+  .field{display:flex; flex-direction:column; gap:3px;}
+  .field label{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  select{font-family:inherit; font-size:1rem; padding:8px 10px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink); min-width:150px;}
+  .targetcard{background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:12px;}
+  .targetcard .lead{font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft);}
+  .targetcard .pat{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; letter-spacing:.04em; margin-top:2px;}
+  .targetcard .meta{font-style:italic; color:var(--ink-soft); font-size:.92rem; margin-top:4px;}
+  .targetcard.hidden .pat{filter:blur(7px); user-select:none;}
+  /* rack */
+  .rack{display:flex; gap:5px; flex-wrap:wrap; min-height:64px; padding:10px; border:2px dashed var(--line); border-radius:14px; background:#fff; margin-bottom:4px; align-content:flex-start;}
+  .rackcount{text-align:right; font-size:.82rem; color:var(--ink-soft); font-style:italic; margin:0 4px 12px;}
+  .rackcount b{font-style:normal; color:var(--ink);}
+  /* a tile */
+  .tile{width:42px; height:56px; border-radius:8px; background:#fff; border:1px solid #E1D6c2; box-shadow:0 2px 5px rgba(0,0,0,.16);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; user-select:none; line-height:1;}
+  .tile .n{font-family:"Playfair Display",serif; font-weight:700; font-size:1.12rem;}
+  .tile .s{font-size:.6rem; text-transform:uppercase; letter-spacing:.04em; margin-top:2px;}
+  .tile.bam{color:var(--bam);} .tile.crak{color:var(--crak);} .tile.dot{color:var(--dot);} .tile.honor{color:var(--honor);}
+  .tile.sm{width:34px; height:46px;} .tile.sm .n{font-size:.92rem;} .tile.sm .s{font-size:.52rem;}
+  .tile:active{transform:translateY(1px);}
+  /* palette */
+  .palette{margin-top:8px;}
+  .palgroup{margin-bottom:8px;}
+  .palgroup h4{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin:6px 0 4px;}
+  .palgrid{display:flex; gap:5px; flex-wrap:wrap;}
+  .feedline{text-align:center; font-style:italic; color:var(--ink-soft); min-height:1.4em; margin:10px 0 2px; font-size:.98rem;}
+  .feedline b{font-style:normal; color:var(--ink);}
+  .feedline.good{color:var(--good);} .feedline.bad{color:var(--bad);}
+  .found{margin-top:12px;}
+  .found h4{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin:6px 0;}
+  .foundlist{display:flex; flex-direction:column; gap:6px;}
+  .foundrow{display:flex; gap:4px; flex-wrap:wrap; align-items:center; padding:6px; border:1px solid var(--line); border-radius:10px; background:#fff;}
+  .foundrow.miss{background:var(--bad-bg); border-color:#E6B6B2;}
+  .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; align-items:center;}
+  button.btn{font-family:"Crimson Text",serif; font-size:1rem; border-radius:11px; padding:9px 18px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer; box-shadow:var(--shadow);}
+  button.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
+  button:disabled{opacity:.45; cursor:not-allowed;}
+  .hint{color:var(--ink-soft); font-style:italic; font-size:.9rem;}
+  .scrim{position:fixed; inset:0; background:rgba(43,38,34,.42); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000;}
+  .scrim.show{display:flex;}
+  .card{background:var(--paper); border-radius:18px; max-width:460px; width:100%; padding:26px 24px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line);}
+  .card h2{font-family:"Playfair Display",serif; margin:.1em 0 .3em; font-size:1.5rem;}
+  .card .verdict{font-style:italic; color:var(--ink-soft); margin-bottom:16px;}
+  .scoreline{display:flex; gap:12px; margin:14px 0;}
+  .scoreline .stat{flex:1; text-align:center;}
+  .modal-actions{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px;}
+  .modal-actions .btn{width:100%; padding:11px 10px; font-size:.96rem; margin:0;}
+  .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:8px; flex-wrap:wrap;}
+  .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.9rem; font-style:italic;}
+  .btn.mini{font-size:.85rem; padding:6px 12px;}
+  .authform{display:flex; flex-direction:column; gap:10px;}
+  .authform input{font-family:inherit; font-size:1rem; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
+  .authmsg{font-size:.9rem; color:var(--bad); min-height:1.2em;} .authmsg.ok{color:var(--good);}
+  .lbtabs{display:flex; gap:8px; margin-bottom:12px;}
+  .lbtable{width:100%; border-collapse:collapse; font-size:.95rem;}
+  .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;}
+  .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .note{font-style:italic; color:var(--ink-soft); font-size:.92rem;}
+  .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
+  @media(max-width:560px){ h1{font-size:1.34rem;} .leveltag{margin-left:0; width:100%;} .tile{width:38px; height:50px;} select{min-width:130px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="authbar" id="authbar">
+    <span id="authStatus" class="authstatus">·</span>
+    <button id="lbBtn" class="btn ghost mini">Leaderboard</button>
+    <button id="authBtn" class="btn mini">Log in / Sign up</button>
+    <button id="logoutBtn" class="btn ghost mini" style="display:none;">Log out</button>
+  </div>
+  <h1>Hand-Line Solver</h1>
+  <p class="sub">Pick a line. Build every winning hand it allows, tile by tile. Learn what a line really lets you do.</p>
+
+  <div class="modebar">
+    <div class="modepill on" data-mode="guided">Guided<small>only the tiles this line uses</small></div>
+    <div class="modepill" data-mode="open">Open<small>full tile pool</small></div>
+    <div class="modepill" data-mode="hidden">Hidden<small>pattern blurred — from memory</small></div>
+    <div class="leveltag" id="levelTag">Level 1</div>
+  </div>
+
+  <div class="hud">
+    <div class="stat"><div class="k">Found</div><div class="v" id="hudFound">0 / 0</div></div>
+    <div class="stat"><div class="k">Time</div><div class="v" id="hudTime">0.0s</div></div>
+    <div class="stat"><div class="k">Accuracy</div><div class="v" id="hudAcc">—</div></div>
+    <div class="stat"><div class="k">Best (clean)</div><div class="v" id="hudBest">—</div></div>
+  </div>
+
+  <div class="pickrow">
+    <div class="field"><label>Section</label><select id="selSection"></select></div>
+    <div class="field"><label>Line</label><select id="selLine"></select></div>
+    <div class="field"><label>&nbsp;</label><button id="loadLine" class="btn ghost">Start this line</button></div>
+  </div>
+
+  <div id="game"></div>
+
+  <div class="controls">
+    <button id="checkBtn" class="btn">Check hand</button>
+    <button id="clearRack" class="btn ghost">Clear rack</button>
+    <span class="hint" id="hint">Build a 14-tile hand that matches the line, then Check it.</span>
+    <button id="revealBtn" class="btn ghost" style="margin-left:auto;">Reveal remaining</button>
+    <button id="resetAll" class="btn ghost" style="font-size:.85rem; padding:6px 12px;">Reset progress</button>
+  </div>
+
+  <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
+  <p class="footer-note">Order of the Tile · a free practice drill · American Mah Jongg (NMJL) · <span id="buildStamp">build —</span></p>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="card">
+    <h2 id="cardTitle">Line cleared</h2>
+    <p class="verdict" id="cardVerdict"></p>
+    <div class="scoreline">
+      <div class="stat"><div class="k">Found</div><div class="v" id="cardFound">—</div></div>
+      <div class="stat"><div class="k">Time</div><div class="v" id="cardTime">—</div></div>
+    </div>
+    <div class="modal-actions">
+      <button id="cardAgain" class="btn ghost">Same line again</button>
+      <button id="cardNext" class="btn">Next line</button>
+      <button id="cardChoose" class="btn ghost">Pick a line</button>
+      <button id="cardDone" class="btn ghost">Finished</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const BUILD="v1 · 2026-06-10";
+function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_hls_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_hls_err',JSON.stringify(log.slice(-12)));}catch(_){}}
+window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
+window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
+document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
+
+/* ===== validator-as-data: every legal hand for every 2026 line =====
+   HANDS[section][line] = {pattern,value,conceal,hands:["3x2B 3x0 4x2C 4x6C", ...]}
+   Each hand is a tile multiset. 0 (Soap-as-zero) and WD (White Dragon) are the SAME
+   physical tile, so both normalize to "WD" when matching a built rack.            */
+const HANDS = {"2026":{"1":{"pattern":"222 000 2222 6666","value":"X 25","conceal":"No","hands":["3x2B   3x0   4x2C   4x6C","3x2B   3x0   4x2D   4x6D","3x2C   3x0   4x2B   4x6B","3x2C   3x0   4x2D   4x6D","3x2D   3x0   4x2B   4x6B","3x2D   3x0   4x2C   4x6C"]},"2":{"pattern":"2026 DDD 2222 DDD","value":"X 25","conceal":"No","hands":["1x2B   1x0   1x2B   1x6B   3xGD   4x2C   3xRD","1x2B   1x0   1x2B   1x6B   3xGD   4x6C   3xRD","1x2B   1x0   1x2B   1x6B   3xGD   4x2D   3xWD","1x2B   1x0   1x2B   1x6B   3xGD   4x6D   3xWD","1x2C   1x0   1x2C   1x6C   3xRD   4x2B   3xGD","1x2C   1x0   1x2C   1x6C   3xRD   4x6B   3xGD","1x2C   1x0   1x2C   1x6C   3xRD   4x2D   3xWD","1x2C   1x0   1x2C   1x6C   3xRD   4x6D   3xWD","1x2D   1x0   1x2D   1x6D   3xWD   4x2B   3xGD","1x2D   1x0   1x2D   1x6D   3xWD   4x6B   3xGD","1x2D   1x0   1x2D   1x6D   3xWD   4x2C   3xRD","1x2D   1x0   1x2D   1x6D   3xWD   4x6C   3xRD"]},"3":{"pattern":"FFF 2026 222 6666","value":"X 25","conceal":"No","hands":["3xF   1x2B   1x0   1x2B   1x6B   3x2C   4x6D","3xF   1x2B   1x0   1x2B   1x6B   3x2D   4x6C","3xF   1x2C   1x0   1x2C   1x6C   3x2B   4x6D","3xF   1x2C   1x0   1x2C   1x6C   3x2D   4x6B","3xF   1x2D   1x0   1x2D   1x6D   3x2B   4x6C","3xF   1x2D   1x0   1x2D   1x6D   3x2C   4x6B"]},"4":{"pattern":"22 00 222 666 NEWS","value":"X 30","conceal":"No","hands":["2x2B   2x0   3x2C   3x6C   1xN   1xE   1xW   1xS","2x2B   2x0   3x2D   3x6D   1xN   1xE   1xW   1xS","2x2C   2x0   3x2B   3x6B   1xN   1xE   1xW   1xS","2x2C   2x0   3x2D   3x6D   1xN   1xE   1xW   1xS","2x2D   2x0   3x2B   3x6B   1xN   1xE   1xW   1xS","2x2D   2x0   3x2C   3x6C   1xN   1xE   1xW   1xS"]}},"2468":{"1":{"pattern":"222 444 6666 8888","value":"X 25","conceal":"No","hands":["3x2B   3x4B   4x6B   4x8B","3x2C   3x4C   4x6C   4x8C","3x2D   3x4D   4x6D   4x8D","3x2B   3x4B   4x6C   4x8C","3x2B   3x4B   4x6D   4x8D","3x2C   3x4C   4x6B   4x8B","3x2C   3x4C   4x6D   4x8D","3x2D   3x4D   4x6B   4x8B","3x2D   3x4D   4x6C   4x8C"]},"2":{"pattern":"FF 2222 44 66 8888","value":"X 30","conceal":"No","hands":["2xF   4x2B   2x4C   2x6C   4x8B","2xF   4x2B   2x4D   2x6D   4x8B","2xF   4x2C   2x4B   2x6B   4x8C","2xF   4x2C   2x4D   2x6D   4x8C","2xF   4x2D   2x4B   2x6B   4x8D","2xF   4x2D   2x4C   2x6C   4x8D"]},"3":{"pattern":"EE 22 444 666 88 WW","value":"X 30","conceal":"No","hands":["2xE   2x2B   3x4B   3x6B   2x8B   2xW","2xE   2x2C   3x4C   3x6C   2x8C   2xW","2xE   2x2D   3x4D   3x6D   2x8D   2xW"]},"4":{"pattern":"2222 DDD 8888 DDD","value":"X 25","conceal":"No","hands":["4x2B   3xGD   4x8C   3xRD","4x2B   3xGD   4x8D   3xWD","4x2C   3xRD   4x8B   3xGD","4x2C   3xRD   4x8D   3xWD","4x2D   3xWD   4x8B   3xGD","4x2D   3xWD   4x8C   3xRD"]},"5":{"pattern":"FFF 22 44 666 8888","value":"X 25","conceal":"No","hands":["3xF   2x2B   2x4B   3x6B   4x8B","3xF   2x2C   2x4C   3x6C   4x8C","3xF   2x2D   2x4D   3x6D   4x8D"]},"6":{"pattern":"2468 2222 D 2222 D","value":"X 25","conceal":"No","hands":["1x2B   1x4B   1x6B   1x8B   4x2C   1xRD   4x2D   1xWD","1x2B   1x4B   1x6B   1x8B   4x4C   1xRD   4x4D   1xWD","1x2B   1x4B   1x6B   1x8B   4x6C   1xRD   4x6D   1xWD","1x2B   1x4B   1x6B   1x8B   4x8C   1xRD   4x8D   1xWD","1x2C   1x4C   1x6C   1x8C   4x2B   1xGD   4x2D   1xWD","1x2C   1x4C   1x6C   1x8C   4x4B   1xGD   4x4D   1xWD","1x2C   1x4C   1x6C   1x8C   4x6B   1xGD   4x6D   1xWD","1x2C   1x4C   1x6C   1x8C   4x8B   1xGD   4x8D   1xWD","1x2D   1x4D   1x6D   1x8D   4x2B   1xGD   4x2C   1xRD","1x2D   1x4D   1x6D   1x8D   4x4B   1xGD   4x4C   1xRD","1x2D   1x4D   1x6D   1x8D   4x6B   1xGD   4x6C   1xRD","1x2D   1x4D   1x6D   1x8D   4x8B   1xGD   4x8C   1xRD"]},"7":{"pattern":"FFF 2468 FFF 2222","value":"X 30","conceal":"No","hands":["3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x2C","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x4C","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x6C","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x8C","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x2D","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x4D","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x6D","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x8D","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x2B","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x4B","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x6B","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x8B","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x2D","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x4D","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x6D","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x8D","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x2B","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x4B","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x6B","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x8B","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x2C","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x4C","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x6C","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x8C"]},"8":{"pattern":"FF 246 888 246 888","value":"C 30","conceal":"Yes","hands":["2xF   1x2B   1x4B   1x6B   3x8B   1x2C   1x4C   1x6C   3x8C","2xF   1x2B   1x4B   1x6B   3x8B   1x2D   1x4D   1x6D   3x8D","2xF   1x2C   1x4C   1x6C   3x8C   1x2D   1x4D   1x6D   3x8D"]}},"Any Like Numbers":{"1":{"pattern":"1111 FFFFFF 1111","value":"X 30","conceal":"No","hands":["4x1B   6xF   4x1C","4x1B   6xF   4x1D","4x1C   6xF   4x1D","4x2B   6xF   4x2C","4x2B   6xF   4x2D","4x2C   6xF   4x2D","4x3B   6xF   4x3C","4x3B   6xF   4x3D","4x3C   6xF   4x3D","4x4B   6xF   4x4C","4x4B   6xF   4x4D","4x4C   6xF   4x4D","4x5B   6xF   4x5C","4x5B   6xF   4x5D","4x5C   6xF   4x5D","4x6B   6xF   4x6C","4x6B   6xF   4x6D","4x6C   6xF   4x6D","4x7B   6xF   4x7C","4x7B   6xF   4x7D","4x7C   6xF   4x7D","4x8B   6xF   4x8C","4x8B   6xF   4x8D","4x8C   6xF   4x8D","4x9B   6xF   4x9C","4x9B   6xF   4x9D","4x9C   6xF   4x9D"]},"2":{"pattern":"1111 D 111 D 1111 D","value":"X 25","conceal":"No","hands":["4x1B   1xGD   3x1C   1xRD   4x1D   1xWD","4x1B   1xGD   3x1D   1xWD   4x1C   1xRD","4x1C   1xRD   3x1B   1xGD   4x1D   1xWD","4x2B   1xGD   3x2C   1xRD   4x2D   1xWD","4x2B   1xGD   3x2D   1xWD   4x2C   1xRD","4x2C   1xRD   3x2B   1xGD   4x2D   1xWD","4x3B   1xGD   3x3C   1xRD   4x3D   1xWD","4x3B   1xGD   3x3D   1xWD   4x3C   1xRD","4x3C   1xRD   3x3B   1xGD   4x3D   1xWD","4x4B   1xGD   3x4C   1xRD   4x4D   1xWD","4x4B   1xGD   3x4D   1xWD   4x4C   1xRD","4x4C   1xRD   3x4B   1xGD   4x4D   1xWD","4x5B   1xGD   3x5C   1xRD   4x5D   1xWD","4x5B   1xGD   3x5D   1xWD   4x5C   1xRD","4x5C   1xRD   3x5B   1xGD   4x5D   1xWD","4x6B   1xGD   3x6C   1xRD   4x6D   1xWD","4x6B   1xGD   3x6D   1xWD   4x6C   1xRD","4x6C   1xRD   3x6B   1xGD   4x6D   1xWD","4x7B   1xGD   3x7C   1xRD   4x7D   1xWD","4x7B   1xGD   3x7D   1xWD   4x7C   1xRD","4x7C   1xRD   3x7B   1xGD   4x7D   1xWD","4x8B   1xGD   3x8C   1xRD   4x8D   1xWD","4x8B   1xGD   3x8D   1xWD   4x8C   1xRD","4x8C   1xRD   3x8B   1xGD   4x8D   1xWD","4x9B   1xGD   3x9C   1xRD   4x9D   1xWD","4x9B   1xGD   3x9D   1xWD   4x9C   1xRD","4x9C   1xRD   3x9B   1xGD   4x9D   1xWD"]},"3":{"pattern":"FF 1111 11 1111 DD","value":"X 25","conceal":"No","hands":["2xF   4x1B   2x1C   4x1D   2xRD","2xF   4x1B   2x1C   4x1D   2xGD","2xF   4x1B   2x1C   4x1D   2xWD","2xF   4x1B   2x1D   4x1C   2xRD","2xF   4x1B   2x1D   4x1C   2xGD","2xF   4x1B   2x1D   4x1C   2xWD","2xF   4x1C   2x1B   4x1D   2xRD","2xF   4x1C   2x1B   4x1D   2xGD","2xF   4x1C   2x1B   4x1D   2xWD","2xF   4x2B   2x2C   4x2D   2xRD","2xF   4x2B   2x2C   4x2D   2xGD","2xF   4x2B   2x2C   4x2D   2xWD","2xF   4x2B   2x2D   4x2C   2xRD","2xF   4x2B   2x2D   4x2C   2xGD","2xF   4x2B   2x2D   4x2C   2xWD","2xF   4x2C   2x2B   4x2D   2xRD","2xF   4x2C   2x2B   4x2D   2xGD","2xF   4x2C   2x2B   4x2D   2xWD","2xF   4x3B   2x3C   4x3D   2xRD","2xF   4x3B   2x3C   4x3D   2xGD","2xF   4x3B   2x3C   4x3D   2xWD","2xF   4x3B   2x3D   4x3C   2xRD","2xF   4x3B   2x3D   4x3C   2xGD","2xF   4x3B   2x3D   4x3C   2xWD","2xF   4x3C   2x3B   4x3D   2xRD","2xF   4x3C   2x3B   4x3D   2xGD","2xF   4x3C   2x3B   4x3D   2xWD","2xF   4x4B   2x4C   4x4D   2xRD","2xF   4x4B   2x4C   4x4D   2xGD","2xF   4x4B   2x4C   4x4D   2xWD","2xF   4x4B   2x4D   4x4C   2xRD","2xF   4x4B   2x4D   4x4C   2xGD","2xF   4x4B   2x4D   4x4C   2xWD","2xF   4x4C   2x4B   4x4D   2xRD","2xF   4x4C   2x4B   4x4D   2xGD","2xF   4x4C   2x4B   4x4D   2xWD","2xF   4x5B   2x5C   4x5D   2xRD","2xF   4x5B   2x5C   4x5D   2xGD","2xF   4x5B   2x5C   4x5D   2xWD","2xF   4x5B   2x5D   4x5C   2xRD","2xF   4x5B   2x5D   4x5C   2xGD","2xF   4x5B   2x5D   4x5C   2xWD","2xF   4x5C   2x5B   4x5D   2xRD","2xF   4x5C   2x5B   4x5D   2xGD","2xF   4x5C   2x5B   4x5D   2xWD","2xF   4x6B   2x6C   4x6D   2xRD","2xF   4x6B   2x6C   4x6D   2xGD","2xF   4x6B   2x6C   4x6D   2xWD","2xF   4x6B   2x6D   4x6C   2xRD","2xF   4x6B   2x6D   4x6C   2xGD","2xF   4x6B   2x6D   4x6C   2xWD","2xF   4x6C   2x6B   4x6D   2xRD","2xF   4x6C   2x6B   4x6D   2xGD","2xF   4x6C   2x6B   4x6D   2xWD","2xF   4x7B   2x7C   4x7D   2xRD","2xF   4x7B   2x7C   4x7D   2xGD","2xF   4x7B   2x7C   4x7D   2xWD","2xF   4x7B   2x7D   4x7C   2xRD","2xF   4x7B   2x7D   4x7C   2xGD","2xF   4x7B   2x7D   4x7C   2xWD","2xF   4x7C   2x7B   4x7D   2xRD","2xF   4x7C   2x7B   4x7D   2xGD","2xF   4x7C   2x7B   4x7D   2xWD","2xF   4x8B   2x8C   4x8D   2xRD","2xF   4x8B   2x8C   4x8D   2xGD","2xF   4x8B   2x8C   4x8D   2xWD","2xF   4x8B   2x8D   4x8C   2xRD","2xF   4x8B   2x8D   4x8C   2xGD","2xF   4x8B   2x8D   4x8C   2xWD","2xF   4x8C   2x8B   4x8D   2xRD","2xF   4x8C   2x8B   4x8D   2xGD","2xF   4x8C   2x8B   4x8D   2xWD","2xF   4x9B   2x9C   4x9D   2xRD","2xF   4x9B   2x9C   4x9D   2xGD","2xF   4x9B   2x9C   4x9D   2xWD","2xF   4x9B   2x9D   4x9C   2xRD","2xF   4x9B   2x9D   4x9C   2xGD","2xF   4x9B   2x9D   4x9C   2xWD","2xF   4x9C   2x9B   4x9D   2xRD","2xF   4x9C   2x9B   4x9D   2xGD","2xF   4x9C   2x9B   4x9D   2xWD"]}},"Quints":{"1":{"pattern":"11111 1111 11111","value":"X 40","conceal":"No","hands":["5x1B   4x1C   5x1D","5x1B   4x1D   5x1C","5x1C   4x1B   5x1D","5x2B   4x2C   5x2D","5x2B   4x2D   5x2C","5x2C   4x2B   5x2D","5x3B   4x3C   5x3D","5x3B   4x3D   5x3C","5x3C   4x3B   5x3D","5x4B   4x4C   5x4D","5x4B   4x4D   5x4C","5x4C   4x4B   5x4D","5x5B   4x5C   5x5D","5x5B   4x5D   5x5C","5x5C   4x5B   5x5D","5x6B   4x6C   5x6D","5x6B   4x6D   5x6C","5x6C   4x6B   5x6D","5x7B   4x7C   5x7D","5x7B   4x7D   5x7C","5x7C   4x7B   5x7D","5x8B   4x8C   5x8D","5x8B   4x8D   5x8C","5x8C   4x8B   5x8D","5x9B   4x9C   5x9D","5x9B   4x9D   5x9C","5x9C   4x9B   5x9D"]},"2":{"pattern":"FF 11111 22 33333","value":"X 45","conceal":"No","hands":["2xF   5x1B   2x2B   5x3B","2xF   5x2B   2x3B   5x4B","2xF   5x3B   2x4B   5x5B","2xF   5x4B   2x5B   5x6B","2xF   5x5B   2x6B   5x7B","2xF   5x6B   2x7B   5x8B","2xF   5x7B   2x8B   5x9B","2xF   5x1C   2x2C   5x3C","2xF   5x2C   2x3C   5x4C","2xF   5x3C   2x4C   5x5C","2xF   5x4C   2x5C   5x6C","2xF   5x5C   2x6C   5x7C","2xF   5x6C   2x7C   5x8C","2xF   5x7C   2x8C   5x9C","2xF   5x1D   2x2D   5x3D","2xF   5x2D   2x3D   5x4D","2xF   5x3D   2x4D   5x5D","2xF   5x4D   2x5D   5x6D","2xF   5x5D   2x6D   5x7D","2xF   5x6D   2x7D   5x8D","2xF   5x7D   2x8D   5x9D"]},"3":{"pattern":"11111 44444 DDDD","value":"X 40","conceal":"No","hands":["5x1B   5x2B   4xRD","5x1B   5x2B   4xWD","5x1B   5x3B   4xRD","5x1B   5x3B   4xWD","5x1B   5x4B   4xRD","5x1B   5x4B   4xWD","5x1B   5x5B   4xRD","5x1B   5x5B   4xWD","5x1B   5x6B   4xRD","5x1B   5x6B   4xWD","5x1B   5x7B   4xRD","5x1B   5x7B   4xWD","5x1B   5x8B   4xRD","5x1B   5x8B   4xWD","5x1B   5x9B   4xRD","5x1B   5x9B   4xWD","5x2B   5x3B   4xRD","5x2B   5x3B   4xWD","5x2B   5x4B   4xRD","5x2B   5x4B   4xWD","5x2B   5x5B   4xRD","5x2B   5x5B   4xWD","5x2B   5x6B   4xRD","5x2B   5x6B   4xWD","5x2B   5x7B   4xRD","5x2B   5x7B   4xWD","5x2B   5x8B   4xRD","5x2B   5x8B   4xWD","5x2B   5x9B   4xRD","5x2B   5x9B   4xWD","5x3B   5x4B   4xRD","5x3B   5x4B   4xWD","5x3B   5x5B   4xRD","5x3B   5x5B   4xWD","5x3B   5x6B   4xRD","5x3B   5x6B   4xWD","5x3B   5x7B   4xRD","5x3B   5x7B   4xWD","5x3B   5x8B   4xRD","5x3B   5x8B   4xWD","5x3B   5x9B   4xRD","5x3B   5x9B   4xWD","5x4B   5x5B   4xRD","5x4B   5x5B   4xWD","5x4B   5x6B   4xRD","5x4B   5x6B   4xWD","5x4B   5x7B   4xRD","5x4B   5x7B   4xWD","5x4B   5x8B   4xRD","5x4B   5x8B   4xWD","5x4B   5x9B   4xRD","5x4B   5x9B   4xWD","5x5B   5x6B   4xRD","5x5B   5x6B   4xWD","5x5B   5x7B   4xRD","5x5B   5x7B   4xWD","5x5B   5x8B   4xRD","5x5B   5x8B   4xWD","5x5B   5x9B   4xRD","5x5B   5x9B   4xWD","5x6B   5x7B   4xRD","5x6B   5x7B   4xWD","5x6B   5x8B   4xRD","5x6B   5x8B   4xWD","5x6B   5x9B   4xRD","5x6B   5x9B   4xWD","5x7B   5x8B   4xRD","5x7B   5x8B   4xWD","5x7B   5x9B   4xRD","5x7B   5x9B   4xWD","5x8B   5x9B   4xRD","5x8B   5x9B   4xWD","5x1C   5x2C   4xGD","5x1C   5x2C   4xWD","5x1C   5x3C   4xGD","5x1C   5x3C   4xWD","5x1C   5x4C   4xGD","5x1C   5x4C   4xWD","5x1C   5x5C   4xGD","5x1C   5x5C   4xWD","5x1C   5x6C   4xGD","5x1C   5x6C   4xWD","5x1C   5x7C   4xGD","5x1C   5x7C   4xWD","5x1C   5x8C   4xGD","5x1C   5x8C   4xWD","5x1C   5x9C   4xGD","5x1C   5x9C   4xWD","5x2C   5x3C   4xGD","5x2C   5x3C   4xWD","5x2C   5x4C   4xGD","5x2C   5x4C   4xWD","5x2C   5x5C   4xGD","5x2C   5x5C   4xWD","5x2C   5x6C   4xGD","5x2C   5x6C   4xWD","5x2C   5x7C   4xGD","5x2C   5x7C   4xWD","5x2C   5x8C   4xGD","5x2C   5x8C   4xWD","5x2C   5x9C   4xGD","5x2C   5x9C   4xWD","5x3C   5x4C   4xGD","5x3C   5x4C   4xWD","5x3C   5x5C   4xGD","5x3C   5x5C   4xWD","5x3C   5x6C   4xGD","5x3C   5x6C   4xWD","5x3C   5x7C   4xGD","5x3C   5x7C   4xWD","5x3C   5x8C   4xGD","5x3C   5x8C   4xWD","5x3C   5x9C   4xGD","5x3C   5x9C   4xWD","5x4C   5x5C   4xGD","5x4C   5x5C   4xWD","5x4C   5x6C   4xGD","5x4C   5x6C   4xWD","5x4C   5x7C   4xGD","5x4C   5x7C   4xWD","5x4C   5x8C   4xGD","5x4C   5x8C   4xWD","5x4C   5x9C   4xGD","5x4C   5x9C   4xWD","5x5C   5x6C   4xGD","5x5C   5x6C   4xWD","5x5C   5x7C   4xGD","5x5C   5x7C   4xWD","5x5C   5x8C   4xGD","5x5C   5x8C   4xWD","5x5C   5x9C   4xGD","5x5C   5x9C   4xWD","5x6C   5x7C   4xGD","5x6C   5x7C   4xWD","5x6C   5x8C   4xGD","5x6C   5x8C   4xWD","5x6C   5x9C   4xGD","5x6C   5x9C   4xWD","5x7C   5x8C   4xGD","5x7C   5x8C   4xWD","5x7C   5x9C   4xGD","5x7C   5x9C   4xWD","5x8C   5x9C   4xGD","5x8C   5x9C   4xWD","5x1D   5x2D   4xRD","5x1D   5x2D   4xGD","5x1D   5x3D   4xRD","5x1D   5x3D   4xGD","5x1D   5x4D   4xRD","5x1D   5x4D   4xGD","5x1D   5x5D   4xRD","5x1D   5x5D   4xGD","5x1D   5x6D   4xRD","5x1D   5x6D   4xGD","5x1D   5x7D   4xRD","5x1D   5x7D   4xGD","5x1D   5x8D   4xRD","5x1D   5x8D   4xGD","5x1D   5x9D   4xRD","5x1D   5x9D   4xGD","5x2D   5x3D   4xRD","5x2D   5x3D   4xGD","5x2D   5x4D   4xRD","5x2D   5x4D   4xGD","5x2D   5x5D   4xRD","5x2D   5x5D   4xGD","5x2D   5x6D   4xRD","5x2D   5x6D   4xGD","5x2D   5x7D   4xRD","5x2D   5x7D   4xGD","5x2D   5x8D   4xRD","5x2D   5x8D   4xGD","5x2D   5x9D   4xRD","5x2D   5x9D   4xGD","5x3D   5x4D   4xRD","5x3D   5x4D   4xGD","5x3D   5x5D   4xRD","5x3D   5x5D   4xGD","5x3D   5x6D   4xRD","5x3D   5x6D   4xGD","5x3D   5x7D   4xRD","5x3D   5x7D   4xGD","5x3D   5x8D   4xRD","5x3D   5x8D   4xGD","5x3D   5x9D   4xRD","5x3D   5x9D   4xGD","5x4D   5x5D   4xRD","5x4D   5x5D   4xGD","5x4D   5x6D   4xRD","5x4D   5x6D   4xGD","5x4D   5x7D   4xRD","5x4D   5x7D   4xGD","5x4D   5x8D   4xRD","5x4D   5x8D   4xGD","5x4D   5x9D   4xRD","5x4D   5x9D   4xGD","5x5D   5x6D   4xRD","5x5D   5x6D   4xGD","5x5D   5x7D   4xRD","5x5D   5x7D   4xGD","5x5D   5x8D   4xRD","5x5D   5x8D   4xGD","5x5D   5x9D   4xRD","5x5D   5x9D   4xGD","5x6D   5x7D   4xRD","5x6D   5x7D   4xGD","5x6D   5x8D   4xRD","5x6D   5x8D   4xGD","5x6D   5x9D   4xRD","5x6D   5x9D   4xGD","5x7D   5x8D   4xRD","5x7D   5x8D   4xGD","5x7D   5x9D   4xRD","5x7D   5x9D   4xGD","5x8D   5x9D   4xRD","5x8D   5x9D   4xGD"]}},"Consecutive Run":{"1":{"pattern":"11 222 33 444 5555 / 55 666 77 888 9999","value":"X 25","conceal":"No","hands":["2x1B   3x2B   2x3B   3x4B   4x5B","2x1C   3x2C   2x3C   3x4C   4x5C","2x1D   3x2D   2x3D   3x4D   4x5D","2x5B   3x6B   2x7B   3x8B   4x9B","2x5C   3x6C   2x7C   3x8C   4x9C","2x5D   3x6D   2x7D   3x8D   4x9D"]},"2":{"pattern":"FFF 1111 234 5555","value":"X 25","conceal":"No","hands":["3xF   4x1B   1x2B   1x3B   1x4B   4x5B","3xF   4x1C   1x2C   1x3C   1x4C   4x5C","3xF   4x1D   1x2D   1x3D   1x4D   4x5D","3xF   4x1B   1x2C   1x3C   1x4C   4x5B","3xF   4x1B   1x2D   1x3D   1x4D   4x5B","3xF   4x1C   1x2B   1x3B   1x4B   4x5C","3xF   4x1C   1x2D   1x3D   1x4D   4x5C","3xF   4x1D   1x2B   1x3B   1x4B   4x5D","3xF   4x1D   1x2C   1x3C   1x4C   4x5D","3xF   4x2B   1x3B   1x4B   1x5B   4x6B","3xF   4x2C   1x3C   1x4C   1x5C   4x6C","3xF   4x2D   1x3D   1x4D   1x5D   4x6D","3xF   4x2B   1x3C   1x4C   1x5C   4x6B","3xF   4x2B   1x3D   1x4D   1x5D   4x6B","3xF   4x2C   1x3B   1x4B   1x5B   4x6C","3xF   4x2C   1x3D   1x4D   1x5D   4x6C","3xF   4x2D   1x3B   1x4B   1x5B   4x6D","3xF   4x2D   1x3C   1x4C   1x5C   4x6D","3xF   4x3B   1x4B   1x5B   1x6B   4x7B","3xF   4x3C   1x4C   1x5C   1x6C   4x7C","3xF   4x3D   1x4D   1x5D   1x6D   4x7D","3xF   4x3B   1x4C   1x5C   1x6C   4x7B","3xF   4x3B   1x4D   1x5D   1x6D   4x7B","3xF   4x3C   1x4B   1x5B   1x6B   4x7C","3xF   4x3C   1x4D   1x5D   1x6D   4x7C","3xF   4x3D   1x4B   1x5B   1x6B   4x7D","3xF   4x3D   1x4C   1x5C   1x6C   4x7D","3xF   4x4B   1x5B   1x6B   1x7B   4x8B","3xF   4x4C   1x5C   1x6C   1x7C   4x8C","3xF   4x4D   1x5D   1x6D   1x7D   4x8D","3xF   4x4B   1x5C   1x6C   1x7C   4x8B","3xF   4x4B   1x5D   1x6D   1x7D   4x8B","3xF   4x4C   1x5B   1x6B   1x7B   4x8C","3xF   4x4C   1x5D   1x6D   1x7D   4x8C","3xF   4x4D   1x5B   1x6B   1x7B   4x8D","3xF   4x4D   1x5C   1x6C   1x7C   4x8D","3xF   4x5B   1x6B   1x7B   1x8B   4x9B","3xF   4x5C   1x6C   1x7C   1x8C   4x9C","3xF   4x5D   1x6D   1x7D   1x8D   4x9D","3xF   4x5B   1x6C   1x7C   1x8C   4x9B","3xF   4x5B   1x6D   1x7D   1x8D   4x9B","3xF   4x5C   1x6B   1x7B   1x8B   4x9C","3xF   4x5C   1x6D   1x7D   1x8D   4x9C","3xF   4x5D   1x6B   1x7B   1x8B   4x9D","3xF   4x5D   1x6C   1x7C   1x8C   4x9D"]},"3":{"pattern":"11 22 111 222 3333","value":"X 25","conceal":"No","hands":["2x1B   2x2B   3x1C   3x2C   4x3D","2x1B   2x2B   3x1D   3x2D   4x3C","2x1C   2x2C   3x1B   3x2B   4x3D","2x1C   2x2C   3x1D   3x2D   4x3B","2x1D   2x2D   3x1B   3x2B   4x3C","2x1D   2x2D   3x1C   3x2C   4x3B","2x2B   2x3B   3x2C   3x3C   4x4D","2x2B   2x3B   3x2D   3x3D   4x4C","2x2C   2x3C   3x2B   3x3B   4x4D","2x2C   2x3C   3x2D   3x3D   4x4B","2x2D   2x3D   3x2B   3x3B   4x4C","2x2D   2x3D   3x2C   3x3C   4x4B","2x3B   2x4B   3x3C   3x4C   4x5D","2x3B   2x4B   3x3D   3x4D   4x5C","2x3C   2x4C   3x3B   3x4B   4x5D","2x3C   2x4C   3x3D   3x4D   4x5B","2x3D   2x4D   3x3B   3x4B   4x5C","2x3D   2x4D   3x3C   3x4C   4x5B","2x4B   2x5B   3x4C   3x5C   4x6D","2x4B   2x5B   3x4D   3x5D   4x6C","2x4C   2x5C   3x4B   3x5B   4x6D","2x4C   2x5C   3x4D   3x5D   4x6B","2x4D   2x5D   3x4B   3x5B   4x6C","2x4D   2x5D   3x4C   3x5C   4x6B","2x5B   2x6B   3x5C   3x6C   4x7D","2x5B   2x6B   3x5D   3x6D   4x7C","2x5C   2x6C   3x5B   3x6B   4x7D","2x5C   2x6C   3x5D   3x6D   4x7B","2x5D   2x6D   3x5B   3x6B   4x7C","2x5D   2x6D   3x5C   3x6C   4x7B","2x6B   2x7B   3x6C   3x7C   4x8D","2x6B   2x7B   3x6D   3x7D   4x8C","2x6C   2x7C   3x6B   3x7B   4x8D","2x6C   2x7C   3x6D   3x7D   4x8B","2x6D   2x7D   3x6B   3x7B   4x8C","2x6D   2x7D   3x6C   3x7C   4x8B","2x7B   2x8B   3x7C   3x8C   4x9D","2x7B   2x8B   3x7D   3x8D   4x9C","2x7C   2x8C   3x7B   3x8B   4x9D","2x7C   2x8C   3x7D   3x8D   4x9B","2x7D   2x8D   3x7B   3x8B   4x9C","2x7D   2x8D   3x7C   3x8C   4x9B"]},"4":{"pattern":"111 222 3333 4444","value":"X 25","conceal":"No","hands":["3x1B   3x2B   4x3B   4x4B","3x1C   3x2C   4x3C   4x4C","3x1D   3x2D   4x3D   4x4D","3x1B   3x2B   4x3C   4x4C","3x1B   3x2B   4x3D   4x4D","3x1C   3x2C   4x3B   4x4B","3x1C   3x2C   4x3D   4x4D","3x1D   3x2D   4x3B   4x4B","3x1D   3x2D   4x3C   4x4C","3x2B   3x3B   4x4B   4x5B","3x2C   3x3C   4x4C   4x5C","3x2D   3x3D   4x4D   4x5D","3x2B   3x3B   4x4C   4x5C","3x2B   3x3B   4x4D   4x5D","3x2C   3x3C   4x4B   4x5B","3x2C   3x3C   4x4D   4x5D","3x2D   3x3D   4x4B   4x5B","3x2D   3x3D   4x4C   4x5C","3x3B   3x4B   4x5B   4x6B","3x3C   3x4C   4x5C   4x6C","3x3D   3x4D   4x5D   4x6D","3x3B   3x4B   4x5C   4x6C","3x3B   3x4B   4x5D   4x6D","3x3C   3x4C   4x5B   4x6B","3x3C   3x4C   4x5D   4x6D","3x3D   3x4D   4x5B   4x6B","3x3D   3x4D   4x5C   4x6C","3x4B   3x5B   4x6B   4x7B","3x4C   3x5C   4x6C   4x7C","3x4D   3x5D   4x6D   4x7D","3x4B   3x5B   4x6C   4x7C","3x4B   3x5B   4x6D   4x7D","3x4C   3x5C   4x6B   4x7B","3x4C   3x5C   4x6D   4x7D","3x4D   3x5D   4x6B   4x7B","3x4D   3x5D   4x6C   4x7C","3x5B   3x6B   4x7B   4x8B","3x5C   3x6C   4x7C   4x8C","3x5D   3x6D   4x7D   4x8D","3x5B   3x6B   4x7C   4x8C","3x5B   3x6B   4x7D   4x8D","3x5C   3x6C   4x7B   4x8B","3x5C   3x6C   4x7D   4x8D","3x5D   3x6D   4x7B   4x8B","3x5D   3x6D   4x7C   4x8C","3x6B   3x7B   4x8B   4x9B","3x6C   3x7C   4x8C   4x9C","3x6D   3x7D   4x8D   4x9D","3x6B   3x7B   4x8C   4x9C","3x6B   3x7B   4x8D   4x9D","3x6C   3x7C   4x8B   4x9B","3x6C   3x7C   4x8D   4x9D","3x6D   3x7D   4x8B   4x9B","3x6D   3x7D   4x8C   4x9C"]},"5":{"pattern":"FFF 11 22 333 DDDD","value":"X 25","conceal":"No","hands":["3xF   2x1B   2x2B   3x3B   4xGD","3xF   2x1C   2x2C   3x3C   4xRD","3xF   2x1D   2x2D   3x3D   4xWD","3xF   2x1B   2x2C   3x3B   4xRD","3xF   2x1B   2x2D   3x3B   4xWD","3xF   2x1C   2x2B   3x3C   4xGD","3xF   2x1C   2x2D   3x3C   4xWD","3xF   2x1D   2x2B   3x3D   4xGD","3xF   2x1D   2x2C   3x3D   4xRD","3xF   2x2B   2x3B   3x4B   4xGD","3xF   2x2C   2x3C   3x4C   4xRD","3xF   2x2D   2x3D   3x4D   4xWD","3xF   2x2B   2x3C   3x4B   4xRD","3xF   2x2B   2x3D   3x4B   4xWD","3xF   2x2C   2x3B   3x4C   4xGD","3xF   2x2C   2x3D   3x4C   4xWD","3xF   2x2D   2x3B   3x4D   4xGD","3xF   2x2D   2x3C   3x4D   4xRD","3xF   2x3B   2x4B   3x5B   4xGD","3xF   2x3C   2x4C   3x5C   4xRD","3xF   2x3D   2x4D   3x5D   4xWD","3xF   2x3B   2x4C   3x5B   4xRD","3xF   2x3B   2x4D   3x5B   4xWD","3xF   2x3C   2x4B   3x5C   4xGD","3xF   2x3C   2x4D   3x5C   4xWD","3xF   2x3D   2x4B   3x5D   4xGD","3xF   2x3D   2x4C   3x5D   4xRD","3xF   2x4B   2x5B   3x6B   4xGD","3xF   2x4C   2x5C   3x6C   4xRD","3xF   2x4D   2x5D   3x6D   4xWD","3xF   2x4B   2x5C   3x6B   4xRD","3xF   2x4B   2x5D   3x6B   4xWD","3xF   2x4C   2x5B   3x6C   4xGD","3xF   2x4C   2x5D   3x6C   4xWD","3xF   2x4D   2x5B   3x6D   4xGD","3xF   2x4D   2x5C   3x6D   4xRD","3xF   2x5B   2x6B   3x7B   4xGD","3xF   2x5C   2x6C   3x7C   4xRD","3xF   2x5D   2x6D   3x7D   4xWD","3xF   2x5B   2x6C   3x7B   4xRD","3xF   2x5B   2x6D   3x7B   4xWD","3xF   2x5C   2x6B   3x7C   4xGD","3xF   2x5C   2x6D   3x7C   4xWD","3xF   2x5D   2x6B   3x7D   4xGD","3xF   2x5D   2x6C   3x7D   4xRD","3xF   2x6B   2x7B   3x8B   4xGD","3xF   2x6C   2x7C   3x8C   4xRD","3xF   2x6D   2x7D   3x8D   4xWD","3xF   2x6B   2x7C   3x8B   4xRD","3xF   2x6B   2x7D   3x8B   4xWD","3xF   2x6C   2x7B   3x8C   4xGD","3xF   2x6C   2x7D   3x8C   4xWD","3xF   2x6D   2x7B   3x8D   4xGD","3xF   2x6D   2x7C   3x8D   4xRD","3xF   2x7B   2x8B   3x9B   4xGD","3xF   2x7C   2x8C   3x9C   4xRD","3xF   2x7D   2x8D   3x9D   4xWD","3xF   2x7B   2x8C   3x9B   4xRD","3xF   2x7B   2x8D   3x9B   4xWD","3xF   2x7C   2x8B   3x9C   4xGD","3xF   2x7C   2x8D   3x9C   4xWD","3xF   2x7D   2x8B   3x9D   4xGD","3xF   2x7D   2x8C   3x9D   4xRD"]},"6":{"pattern":"1111 FFFFFF 2222","value":"X 30","conceal":"No","hands":["4x1B   6xF   4x2B","4x2B   6xF   4x3B","4x3B   6xF   4x4B","4x4B   6xF   4x5B","4x5B   6xF   4x6B","4x6B   6xF   4x7B","4x7B   6xF   4x8B","4x8B   6xF   4x9B","4x1C   6xF   4x2C","4x2C   6xF   4x3C","4x3C   6xF   4x4C","4x4C   6xF   4x5C","4x5C   6xF   4x6C","4x6C   6xF   4x7C","4x7C   6xF   4x8C","4x8C   6xF   4x9C","4x1D   6xF   4x2D","4x2D   6xF   4x3D","4x3D   6xF   4x4D","4x4D   6xF   4x5D","4x5D   6xF   4x6D","4x6D   6xF   4x7D","4x7D   6xF   4x8D","4x8D   6xF   4x9D"]},"7":{"pattern":"FF 1111 2222 3333","value":"X 30","conceal":"No","hands":["2xF   4x1B   4x2B   4x3B","2xF   4x1C   4x2C   4x3C","2xF   4x1D   4x2D   4x3D","2xF   4x1B   4x2C   4x3D","2xF   4x1B   4x2D   4x3C","2xF   4x1C   4x2B   4x3D","2xF   4x1C   4x2D   4x3B","2xF   4x1D   4x2B   4x3C","2xF   4x1D   4x2C   4x3B","2xF   4x2B   4x3B   4x4B","2xF   4x2C   4x3C   4x4C","2xF   4x2D   4x3D   4x4D","2xF   4x2B   4x3C   4x4D","2xF   4x2B   4x3D   4x4C","2xF   4x2C   4x3B   4x4D","2xF   4x2C   4x3D   4x4B","2xF   4x2D   4x3B   4x4C","2xF   4x2D   4x3C   4x4B","2xF   4x3B   4x4B   4x5B","2xF   4x3C   4x4C   4x5C","2xF   4x3D   4x4D   4x5D","2xF   4x3B   4x4C   4x5D","2xF   4x3B   4x4D   4x5C","2xF   4x3C   4x4B   4x5D","2xF   4x3C   4x4D   4x5B","2xF   4x3D   4x4B   4x5C","2xF   4x3D   4x4C   4x5B","2xF   4x4B   4x5B   4x6B","2xF   4x4C   4x5C   4x6C","2xF   4x4D   4x5D   4x6D","2xF   4x4B   4x5C   4x6D","2xF   4x4B   4x5D   4x6C","2xF   4x4C   4x5B   4x6D","2xF   4x4C   4x5D   4x6B","2xF   4x4D   4x5B   4x6C","2xF   4x4D   4x5C   4x6B","2xF   4x5B   4x6B   4x7B","2xF   4x5C   4x6C   4x7C","2xF   4x5D   4x6D   4x7D","2xF   4x5B   4x6C   4x7D","2xF   4x5B   4x6D   4x7C","2xF   4x5C   4x6B   4x7D","2xF   4x5C   4x6D   4x7B","2xF   4x5D   4x6B   4x7C","2xF   4x5D   4x6C   4x7B","2xF   4x6B   4x7B   4x8B","2xF   4x6C   4x7C   4x8C","2xF   4x6D   4x7D   4x8D","2xF   4x6B   4x7C   4x8D","2xF   4x6B   4x7D   4x8C","2xF   4x6C   4x7B   4x8D","2xF   4x6C   4x7D   4x8B","2xF   4x6D   4x7B   4x8C","2xF   4x6D   4x7C   4x8B","2xF   4x7B   4x8B   4x9B","2xF   4x7C   4x8C   4x9C","2xF   4x7D   4x8D   4x9D","2xF   4x7B   4x8C   4x9D","2xF   4x7B   4x8D   4x9C","2xF   4x7C   4x8B   4x9D","2xF   4x7C   4x8D   4x9B","2xF   4x7D   4x8B   4x9C","2xF   4x7D   4x8C   4x9B"]},"8":{"pattern":"1 22 333 1 22 333 44","value":"X 30","conceal":"No","hands":["1x1B   2x2B   3x3B   1x1C   2x2C   3x3C   2x4D","1x1B   2x2B   3x3B   1x1D   2x2D   3x3D   2x4C","1x1C   2x2C   3x3C   1x1D   2x2D   3x3D   2x4B","1x2B   2x3B   3x4B   1x2C   2x3C   3x4C   2x5D","1x2B   2x3B   3x4B   1x2D   2x3D   3x4D   2x5C","1x2C   2x3C   3x4C   1x2D   2x3D   3x4D   2x5B","1x3B   2x4B   3x5B   1x3C   2x4C   3x5C   2x6D","1x3B   2x4B   3x5B   1x3D   2x4D   3x5D   2x6C","1x3C   2x4C   3x5C   1x3D   2x4D   3x5D   2x6B","1x4B   2x5B   3x6B   1x4C   2x5C   3x6C   2x7D","1x4B   2x5B   3x6B   1x4D   2x5D   3x6D   2x7C","1x4C   2x5C   3x6C   1x4D   2x5D   3x6D   2x7B","1x5B   2x6B   3x7B   1x5C   2x6C   3x7C   2x8D","1x5B   2x6B   3x7B   1x5D   2x6D   3x7D   2x8C","1x5C   2x6C   3x7C   1x5D   2x6D   3x7D   2x8B","1x6B   2x7B   3x8B   1x6C   2x7C   3x8C   2x9D","1x6B   2x7B   3x8B   1x6D   2x7D   3x8D   2x9C","1x6C   2x7C   3x8C   1x6D   2x7D   3x8D   2x9B"]}},"13579":{"1":{"pattern":"11 333 55 777 9999","value":"X 25","conceal":"No","hands":["2x1B   3x3B   2x5B   3x7B   4x9B","2x1C   3x3C   2x5C   3x7C   4x9C","2x1D   3x3D   2x5D   3x7D   4x9D","2x1B   3x3B   2x5C   3x7C   4x9D","2x1B   3x3B   2x5D   3x7D   4x9C","2x1C   3x3C   2x5B   3x7B   4x9D","2x1C   3x3C   2x5D   3x7D   4x9B","2x1D   3x3D   2x5B   3x7B   4x9C","2x1D   3x3D   2x5C   3x7C   4x9B"]},"2":{"pattern":"111 333 3333 5555 / 555 777 7777 9999","value":"X 25","conceal":"No","hands":["3x1B   3x3B   4x3C   4x5C","3x1B   3x3B   4x3D   4x5D","3x1C   3x3C   4x3B   4x5B","3x1C   3x3C   4x3D   4x5D","3x1D   3x3D   4x3B   4x5B","3x1D   3x3D   4x3C   4x5C","3x5B   3x7B   4x7C   4x9C","3x5B   3x7B   4x7D   4x9D","3x5C   3x7C   4x7B   4x9B","3x5C   3x7C   4x7D   4x9D","3x5D   3x7D   4x7B   4x9B","3x5D   3x7D   4x7C   4x9C"]},"3":{"pattern":"NN 1111 33 5555 SS / NN 5555 77 9999 SS","value":"X 30","conceal":"No","hands":["2xN   4x1B   2x3B   4x5B   2xS","2xN   4x1C   2x3C   4x5C   2xS","2xN   4x1D   2x3D   4x5D   2xS","2xN   4x5B   2x7B   4x9B   2xS","2xN   4x5C   2x7C   4x9C   2xS","2xN   4x5D   2x7D   4x9D   2xS"]},"4":{"pattern":"113579 1111 1111","value":"X 25","conceal":"No","hands":["2x1B   1x3B   1x5B   1x7B   1x9B   4x1C   4x1D","2x1C   1x3C   1x5C   1x7C   1x9C   4x1B   4x1D","2x1D   1x3D   1x5D   1x7D   1x9D   4x1B   4x1C","2x3B   1x1B   1x5B   1x7B   1x9B   4x3C   4x3D","2x3C   1x1C   1x5C   1x7C   1x9C   4x3B   4x3D","2x3D   1x1D   1x5D   1x7D   1x9D   4x3B   4x3C","2x5B   1x1B   1x3B   1x7B   1x9B   4x5C   4x5D","2x5C   1x1C   1x3C   1x7C   1x9C   4x5B   4x5D","2x5D   1x1D   1x3D   1x7D   1x9D   4x5B   4x5C","2x7B   1x1B   1x3B   1x5B   1x9B   4x7C   4x7D","2x7C   1x1C   1x3C   1x5C   1x9C   4x7B   4x7D","2x7D   1x1D   1x3D   1x5D   1x9D   4x7B   4x7C","2x9B   1x1B   1x3B   1x5B   1x7B   4x9C   4x9D","2x9C   1x1C   1x3C   1x5C   1x7C   4x9B   4x9D","2x9D   1x1D   1x3D   1x5D   1x7D   4x9B   4x9C"]},"5":{"pattern":"FFF 11 33 555 DDDD / FFF 55 77 999 DDDD","value":"X 25","conceal":"No","hands":["3xF   2x1B   2x3B   3x5B   4xGD","3xF   2x1C   2x3C   3x5C   4xRD","3xF   2x1D   2x3D   3x5D   4xWD","3xF   2x5B   2x7B   3x9B   4xGD","3xF   2x5C   2x7C   3x9C   4xRD","3xF   2x5D   2x7D   3x9D   4xWD"]},"6":{"pattern":"11 33 111 333 5555 / 55 77 555 777 9999","value":"X 25","conceal":"No","hands":["2x1B   2x3B   3x1C   3x3C   4x5D","2x1B   2x3B   3x1D   3x3D   4x5C","2x1C   2x3C   3x1B   3x3B   4x5D","2x1C   2x3C   3x1D   3x3D   4x5B","2x1D   2x3D   3x1B   3x3B   4x5C","2x1D   2x3D   3x1C   3x3C   4x5B","2x5B   2x7B   3x5C   3x7C   4x9D","2x5B   2x7B   3x5D   3x7D   4x9C","2x5C   2x7C   3x5B   3x7B   4x9D","2x5C   2x7C   3x5D   3x7D   4x9B","2x5D   2x7D   3x5B   3x7B   4x9C","2x5D   2x7D   3x5C   3x7C   4x9B"]},"7":{"pattern":"1111 33 55 77 9999","value":"X 30","conceal":"No","hands":["4x1B   2x3B   2x5B   2x7B   4x9B","4x1C   2x3C   2x5C   2x7C   4x9C","4x1D   2x3D   2x5D   2x7D   4x9D","4x1B   2x3C   2x5C   2x7C   4x9B","4x1B   2x3D   2x5D   2x7D   4x9B","4x1C   2x3B   2x5B   2x7B   4x9C","4x1C   2x3D   2x5D   2x7D   4x9C","4x1D   2x3B   2x5B   2x7B   4x9D","4x1D   2x3C   2x5C   2x7C   4x9D"]},"8":{"pattern":"FF 11 33 55 111 111 / FF 55 77 99 555 555","value":"C 35","conceal":"Yes","hands":["2xF   2x1B   2x3B   2x5B   3x1C   3x1D","2xF   2x5B   2x7B   2x9B   3x5C   3x5D","2xF   2x1C   2x3C   2x5C   3x1B   3x1D","2xF   2x5C   2x7C   2x9C   3x5B   3x5D","2xF   2x1D   2x3D   2x5D   3x1B   3x1C","2xF   2x5D   2x7D   2x9D   3x5B   3x5C"]},"9":{"pattern":"FF 135 777 999 DDD","value":"C 30","conceal":"Yes","hands":["2xF   1x1B   1x3B   1x5B   3x7B   3x9B   3xRD","2xF   1x1B   1x3B   1x5B   3x7B   3x9B   3xWD","2xF   1x1C   1x3C   1x5C   3x7C   3x9C   3xGD","2xF   1x1C   1x3C   1x5C   3x7C   3x9C   3xWD","2xF   1x1D   1x3D   1x5D   3x7D   3x9D   3xRD","2xF   1x1D   1x3D   1x5D   3x7D   3x9D   3xGD"]}},"Winds & Dragons":{"1":{"pattern":"NNNN EEE WWW SSSS / NNN EEEE WWWW SSS","value":"X 25","conceal":"No","hands":["4xN   3xE   3xW   4xS","3xN   4xE   4xW   3xS"]},"2":{"pattern":"1234 DDD DDD DDDD","value":"X 25","conceal":"No","hands":["1x1B   1x2B   1x3B   1x4B   3xGD   3xWD   4xRD","1x1B   1x2B   1x3B   1x4B   3xRD   3xWD   4xGD","1x1B   1x2B   1x3B   1x4B   3xRD   3xGD   4xWD","1x2B   1x3B   1x4B   1x5B   3xGD   3xWD   4xRD","1x2B   1x3B   1x4B   1x5B   3xRD   3xWD   4xGD","1x2B   1x3B   1x4B   1x5B   3xRD   3xGD   4xWD","1x3B   1x4B   1x5B   1x6B   3xGD   3xWD   4xRD","1x3B   1x4B   1x5B   1x6B   3xRD   3xWD   4xGD","1x3B   1x4B   1x5B   1x6B   3xRD   3xGD   4xWD","1x4B   1x5B   1x6B   1x7B   3xGD   3xWD   4xRD","1x4B   1x5B   1x6B   1x7B   3xRD   3xWD   4xGD","1x4B   1x5B   1x6B   1x7B   3xRD   3xGD   4xWD","1x5B   1x6B   1x7B   1x8B   3xGD   3xWD   4xRD","1x5B   1x6B   1x7B   1x8B   3xRD   3xWD   4xGD","1x5B   1x6B   1x7B   1x8B   3xRD   3xGD   4xWD","1x6B   1x7B   1x8B   1x9B   3xGD   3xWD   4xRD","1x6B   1x7B   1x8B   1x9B   3xRD   3xWD   4xGD","1x6B   1x7B   1x8B   1x9B   3xRD   3xGD   4xWD","1x1C   1x2C   1x3C   1x4C   3xGD   3xWD   4xRD","1x1C   1x2C   1x3C   1x4C   3xRD   3xWD   4xGD","1x1C   1x2C   1x3C   1x4C   3xRD   3xGD   4xWD","1x2C   1x3C   1x4C   1x5C   3xGD   3xWD   4xRD","1x2C   1x3C   1x4C   1x5C   3xRD   3xWD   4xGD","1x2C   1x3C   1x4C   1x5C   3xRD   3xGD   4xWD","1x3C   1x4C   1x5C   1x6C   3xGD   3xWD   4xRD","1x3C   1x4C   1x5C   1x6C   3xRD   3xWD   4xGD","1x3C   1x4C   1x5C   1x6C   3xRD   3xGD   4xWD","1x4C   1x5C   1x6C   1x7C   3xGD   3xWD   4xRD","1x4C   1x5C   1x6C   1x7C   3xRD   3xWD   4xGD","1x4C   1x5C   1x6C   1x7C   3xRD   3xGD   4xWD","1x5C   1x6C   1x7C   1x8C   3xGD   3xWD   4xRD","1x5C   1x6C   1x7C   1x8C   3xRD   3xWD   4xGD","1x5C   1x6C   1x7C   1x8C   3xRD   3xGD   4xWD","1x6C   1x7C   1x8C   1x9C   3xGD   3xWD   4xRD","1x6C   1x7C   1x8C   1x9C   3xRD   3xWD   4xGD","1x6C   1x7C   1x8C   1x9C   3xRD   3xGD   4xWD","1x1D   1x2D   1x3D   1x4D   3xGD   3xWD   4xRD","1x1D   1x2D   1x3D   1x4D   3xRD   3xWD   4xGD","1x1D   1x2D   1x3D   1x4D   3xRD   3xGD   4xWD","1x2D   1x3D   1x4D   1x5D   3xGD   3xWD   4xRD","1x2D   1x3D   1x4D   1x5D   3xRD   3xWD   4xGD","1x2D   1x3D   1x4D   1x5D   3xRD   3xGD   4xWD","1x3D   1x4D   1x5D   1x6D   3xGD   3xWD   4xRD","1x3D   1x4D   1x5D   1x6D   3xRD   3xWD   4xGD","1x3D   1x4D   1x5D   1x6D   3xRD   3xGD   4xWD","1x4D   1x5D   1x6D   1x7D   3xGD   3xWD   4xRD","1x4D   1x5D   1x6D   1x7D   3xRD   3xWD   4xGD","1x4D   1x5D   1x6D   1x7D   3xRD   3xGD   4xWD","1x5D   1x6D   1x7D   1x8D   3xGD   3xWD   4xRD","1x5D   1x6D   1x7D   1x8D   3xRD   3xWD   4xGD","1x5D   1x6D   1x7D   1x8D   3xRD   3xGD   4xWD","1x6D   1x7D   1x8D   1x9D   3xGD   3xWD   4xRD","1x6D   1x7D   1x8D   1x9D   3xRD   3xWD   4xGD","1x6D   1x7D   1x8D   1x9D   3xRD   3xGD   4xWD"]},"3":{"pattern":"NNN 1111 1111 SSS","value":"X 25","conceal":"No","hands":["3xN   4x1B   4x1C   3xS","3xN   4x1B   4x1D   3xS","3xN   4x1C   4x1D   3xS","3xN   4x3B   4x3C   3xS","3xN   4x3B   4x3D   3xS","3xN   4x3C   4x3D   3xS","3xN   4x5B   4x5C   3xS","3xN   4x5B   4x5D   3xS","3xN   4x5C   4x5D   3xS","3xN   4x7B   4x7C   3xS","3xN   4x7B   4x7D   3xS","3xN   4x7C   4x7D   3xS","3xN   4x9B   4x9C   3xS","3xN   4x9B   4x9D   3xS","3xN   4x9C   4x9D   3xS"]},"4":{"pattern":"EEE 2222 2222 WWW","value":"X 25","conceal":"No","hands":["3xE   4x2B   4x2C   3xW","3xE   4x2B   4x2D   3xW","3xE   4x2C   4x2D   3xW","3xE   4x4B   4x4C   3xW","3xE   4x4B   4x4D   3xW","3xE   4x4C   4x4D   3xW","3xE   4x6B   4x6C   3xW","3xE   4x6B   4x6D   3xW","3xE   4x6C   4x6D   3xW","3xE   4x8B   4x8C   3xW","3xE   4x8B   4x8D   3xW","3xE   4x8C   4x8D   3xW"]},"5":{"pattern":"FFF NNNN FFF DDDD","value":"X 25","conceal":"No","hands":["3xF   4xN   3xF   4xRD","3xF   4xN   3xF   4xGD","3xF   4xN   3xF   4xWD","3xF   4xE   3xF   4xRD","3xF   4xE   3xF   4xGD","3xF   4xE   3xF   4xWD","3xF   4xW   3xF   4xRD","3xF   4xW   3xF   4xGD","3xF   4xW   3xF   4xWD","3xF   4xS   3xF   4xRD","3xF   4xS   3xF   4xGD","3xF   4xS   3xF   4xWD"]},"6":{"pattern":"1 N 2 EE 3 WWW 4 SSSS","value":"X 25","conceal":"No","hands":["1x1B   1xN   1x2B   2xE   1x3B   3xW   1x4B   4xS","1x1C   1xN   1x2C   2xE   1x3C   3xW   1x4C   4xS","1x1D   1xN   1x2D   2xE   1x3D   3xW   1x4D   4xS"]},"7":{"pattern":"FF NNNN SSSS DD DD / FF EEEE WWWW DD DD","value":"X 25","conceal":"No","hands":["2xF   4xN   4xS   2xRD   2xGD","2xF   4xN   4xS   2xRD   2xWD","2xF   4xN   4xS   2xGD   2xWD","2xF   4xE   4xW   2xRD   2xGD","2xF   4xE   4xW   2xRD   2xWD","2xF   4xE   4xW   2xGD   2xWD"]},"8":{"pattern":"NN EEE 2026 WWW SS","value":"C 30","conceal":"Yes","hands":["2xN   3xE   1x2B   1x0   1x2B   1x6B   3xW   2xS","2xN   3xE   1x2C   1x0   1x2C   1x6C   3xW   2xS","2xN   3xE   1x2D   1x0   1x2D   1x6D   3xW   2xS"]}},"369":{"1":{"pattern":"333 666 6666 9999","value":"X 25","conceal":"No","hands":["3x3B   3x6B   4x6C   4x9C","3x3B   3x6B   4x6D   4x9D","3x3C   3x6C   4x6B   4x9B","3x3C   3x6C   4x6D   4x9D","3x3D   3x6D   4x6B   4x9B","3x3D   3x6D   4x6C   4x9C","3x3B   3x6B   4x6C   4x9D","3x3B   3x6B   4x6D   4x9C","3x3C   3x6C   4x6B   4x9D","3x3C   3x6C   4x6D   4x9B","3x3D   3x6D   4x6B   4x9C","3x3D   3x6D   4x6C   4x9B"]},"2":{"pattern":"33 66 333 666 9999","value":"X 25","conceal":"No","hands":["2x3B   2x6B   3x3C   3x6C   4x9D","2x3B   2x6B   3x3D   3x6D   4x9C","2x3C   2x6C   3x3B   3x6B   4x9D","2x3C   2x6C   3x3D   3x6D   4x9B","2x3D   2x6D   3x3B   3x6B   4x9C","2x3D   2x6D   3x3C   3x6C   4x9B"]},"3":{"pattern":"FFF 33 666 99 DDDD","value":"X 25","conceal":"No","hands":["3xF   2x3B   3x6B   2x9B   4xRD","3xF   2x3B   3x6B   2x9B   4xGD","3xF   2x3B   3x6B   2x9B   4xWD","3xF   2x3C   3x6C   2x9C   4xRD","3xF   2x3C   3x6C   2x9C   4xGD","3xF   2x3C   3x6C   2x9C   4xWD","3xF   2x3D   3x6D   2x9D   4xRD","3xF   2x3D   3x6D   2x9D   4xGD","3xF   2x3D   3x6D   2x9D   4xWD"]},"4":{"pattern":"33 66 666 999 NEWS","value":"X 25","conceal":"No","hands":["2x3B   2x6B   3x6C   3x9C   1xN   1xE   1xW   1xS","2x3B   2x6B   3x6D   3x9D   1xN   1xE   1xW   1xS","2x3C   2x6C   3x6B   3x9B   1xN   1xE   1xW   1xS","2x3C   2x6C   3x6D   3x9D   1xN   1xE   1xW   1xS","2x3D   2x6D   3x6B   3x9B   1xN   1xE   1xW   1xS","2x3D   2x6D   3x6C   3x9C   1xN   1xE   1xW   1xS"]},"5":{"pattern":"FF 3369 3333 3333","value":"X 25","conceal":"No","hands":["2xF   2x3B   1x6B   1x9B   4x3C   4x3D","2xF   2x3C   1x6C   1x9C   4x3B   4x3D","2xF   2x3D   1x6D   1x9D   4x3B   4x3C","2xF   2x6B   1x3B   1x9B   4x6C   4x6D","2xF   2x6C   1x3C   1x9C   4x6B   4x6D","2xF   2x6D   1x3D   1x9D   4x6B   4x6C","2xF   2x9B   1x3B   1x6B   4x9C   4x9D","2xF   2x9C   1x3C   1x6C   4x9B   4x9D","2xF   2x9D   1x3D   1x6D   4x9B   4x9C"]},"6":{"pattern":"FF 333 666 999 369","value":"C 30","conceal":"Yes","hands":["2xF   3x3B   3x6B   3x9B   1x3C   1x6C   1x9C","2xF   3x3B   3x6B   3x9B   1x3D   1x6D   1x9D","2xF   3x3C   3x6C   3x9C   1x3B   1x6B   1x9B","2xF   3x3C   3x6C   3x9C   1x3D   1x6D   1x9D","2xF   3x3D   3x6D   3x9D   1x3B   1x6B   1x9B","2xF   3x3D   3x6D   3x9D   1x3C   1x6C   1x9C"]}},"Singles & Pairs":{"1":{"pattern":"NN EE WW SS 1D 1D 1D","value":"C 50","conceal":"Yes","hands":["2xN   2xE   2xW   2xS   1x1B   1xGD   1x1C   1xRD   1x1D   1xWD","2xN   2xE   2xW   2xS   1x2B   1xGD   1x2C   1xRD   1x2D   1xWD","2xN   2xE   2xW   2xS   1x3B   1xGD   1x3C   1xRD   1x3D   1xWD","2xN   2xE   2xW   2xS   1x4B   1xGD   1x4C   1xRD   1x4D   1xWD","2xN   2xE   2xW   2xS   1x5B   1xGD   1x5C   1xRD   1x5D   1xWD","2xN   2xE   2xW   2xS   1x6B   1xGD   1x6C   1xRD   1x6D   1xWD","2xN   2xE   2xW   2xS   1x7B   1xGD   1x7C   1xRD   1x7D   1xWD","2xN   2xE   2xW   2xS   1x8B   1xGD   1x8C   1xRD   1x8D   1xWD","2xN   2xE   2xW   2xS   1x9B   1xGD   1x9C   1xRD   1x9D   1xWD"]},"2":{"pattern":"2 4 66 88 2 4 66 88 88","value":"C 50","conceal":"Yes","hands":["1x2C   1x4C   2x6C   2x8C   1x2D   1x4D   2x6D   2x8D   2x8B","1x2B   1x4B   2x6B   2x8B   1x2D   1x4D   2x6D   2x8D   2x8C","1x2B   1x4B   2x6B   2x8B   1x2C   1x4C   2x6C   2x8C   2x8D"]},"3":{"pattern":"FF 3369 3669 3699","value":"C 50","conceal":"Yes","hands":["2xF   2x3B   1x6B   1x9B   1x3C   2x6C   1x9C   1x3D   1x6D   2x9D","2xF   2x3B   1x6B   1x9B   1x3D   2x6D   1x9D   1x3C   1x6C   2x9C","2xF   2x3C   1x6C   1x9C   1x3B   2x6B   1x9B   1x3D   1x6D   2x9D","2xF   2x3C   1x6C   1x9C   1x3D   2x6D   1x9D   1x3B   1x6B   2x9B","2xF   2x3D   1x6D   1x9D   1x3B   2x6B   1x9B   1x3C   1x6C   2x9C","2xF   2x3D   1x6D   1x9D   1x3C   2x6C   1x9C   1x3B   1x6B   2x9B"]},"4":{"pattern":"11 22 33 44 55 66 77","value":"C 50","conceal":"Yes","hands":["2x1B   2x2B   2x3B   2x4B   2x5B   2x6B   2x7B","2x2B   2x3B   2x4B   2x5B   2x6B   2x7B   2x8B","2x3B   2x4B   2x5B   2x6B   2x7B   2x8B   2x9B","2x1C   2x2C   2x3C   2x4C   2x5C   2x6C   2x7C","2x2C   2x3C   2x4C   2x5C   2x6C   2x7C   2x8C","2x3C   2x4C   2x5C   2x6C   2x7C   2x8C   2x9C","2x1D   2x2D   2x3D   2x4D   2x5D   2x6D   2x7D","2x2D   2x3D   2x4D   2x5D   2x6D   2x7D   2x8D","2x3D   2x4D   2x5D   2x6D   2x7D   2x8D   2x9D"]},"5":{"pattern":"11 357 99 11 357 99","value":"C 50","conceal":"Yes","hands":["2x1B   1x3B   1x5B   1x7B   2x9B   2x1C   1x3C   1x5C   1x7C   2x9C","2x1B   1x3B   1x5B   1x7B   2x9B   2x1D   1x3D   1x5D   1x7D   2x9D","2x1C   1x3C   1x5C   1x7C   2x9C   2x1D   1x3D   1x5D   1x7D   2x9D"]},"6":{"pattern":"FF 2026 2026 2026","value":"C 75","conceal":"Yes","hands":["2xF   1x2B   1x0   1x2B   1x6B   1x2C   1x0   1x2C   1x6C   1x2D   1x0   1x2D   1x6D"]}}};
+
+/* ---------- tile vocabulary ---------- */
+const SUIT={B:"Bam",C:"Crak",D:"Dot"};
+const SUITCLASS={B:"bam",C:"crak",D:"dot"};
+const HONOR={E:["E","East"],S:["S","South"],W:["W","West"],N:["N","North"],RD:["RD","Red"],GD:["GD","Green"],WD:["WD","Soap"],F:["F","Flower"]};
+function normCode(c){return c==="0"?"WD":c;}                       // Soap-as-zero == White Dragon physically
+function tileLabel(code){
+  code=normCode(code);
+  if(/^[1-9][BCD]$/.test(code)) return {n:code[0],s:SUIT[code[1]],cls:SUITCLASS[code[1]]};
+  const h=HONOR[code]; if(h) return {n:h[0],s:h[1],cls:"honor"};
+  return {n:code,s:"",cls:"honor"};
+}
+function tileEl(code,small){const t=tileLabel(code); const e=document.createElement('div'); e.className="tile "+t.cls+(small?" sm":""); e.innerHTML=`<div class="n">${t.n}</div><div class="s">${t.s}</div>`; e.dataset.code=normCode(code); return e;}
+// parse "3x2B 3x0 ..." -> sorted multiset key + count map (normalized)
+function parseHand(compact){
+  const map={}; let total=0;
+  compact.split(/\s+/).filter(Boolean).forEach(tok=>{const m=tok.match(/(\d+)x(.+)/); if(!m)return; const c=normCode(m[2]); const n=+m[1]; map[c]=(map[c]||0)+n; total+=n;});
+  return {map,total};
+}
+function keyOf(map){return Object.keys(map).sort().map(k=>k+map[k]).join("|");}
+
+/* full tile palette (physical tiles) */
+const PALETTE=[
+  {h:"Bam", codes:["1B","2B","3B","4B","5B","6B","7B","8B","9B"]},
+  {h:"Crak",codes:["1C","2C","3C","4C","5C","6C","7C","8C","9C"]},
+  {h:"Dot", codes:["1D","2D","3D","4D","5D","6D","7D","8D","9D"]},
+  {h:"Winds & Dragons", codes:["E","S","W","N","RD","GD","WD"]},
+  {h:"Flower", codes:["F"]},
+];
+const SOAP_NOTE="Soap = White Dragon (also stands in for 0 in the 2026 hands).";
+
+/* ---------- progress ---------- */
+const LS="oott_handsolver_v1";
+function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
+function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
+let prog=loadProg(); prog.best=prog.best||{}; prog.cleared=prog.cleared||{};
+
+const LEVELS=[{n:1,need:1,title:"Level 1 — Find one"},{n:2,need:3,title:"Level 2 — Find three"},{n:3,need:5,title:"Level 3 — Find five"}];
+const MODES={guided:"Guided",open:"Open",hidden:"Hidden"};
+let mode="guided", cur=LEVELS[0];
+let state=null, timerId=null;
+const $=s=>document.querySelector(s);
+
+/* ---------- pickers ---------- */
+function fillSections(){
+  const ss=$("#selSection"); ss.innerHTML="";
+  Object.keys(HANDS).forEach(sec=>{const o=document.createElement('option'); o.value=sec; o.textContent=sec; ss.appendChild(o);});
+  fillLines();
+}
+function fillLines(){
+  const sec=$("#selSection").value, sl=$("#selLine"); sl.innerHTML="";
+  Object.keys(HANDS[sec]).sort((a,b)=>+a-+b).forEach(ln=>{
+    const d=HANDS[sec][ln]; const o=document.createElement('option'); o.value=ln;
+    o.textContent="Line "+ln+" ("+d.hands.length+(d.hands.length===1?" hand":" hands")+")"; sl.appendChild(o);
+  });
+}
+$("#selSection")&&($("#selSection").onchange=fillLines);
+
+/* ---------- start a line ---------- */
+function startLine(sec,ln){
+  const d=HANDS[sec][ln];
+  const legal={}; d.hands.forEach(h=>{const p=parseHand(h); legal[keyOf(p.map)]=p.map;});
+  const need=Math.min(cur.need, d.hands.length);
+  state={sec,ln,d,legal,need,found:new Set(),rack:{},attempts:0,bad:0,t0:null,started:false};
+  $("#hudTime").textContent="0.0s"; clearInterval(timerId);
+  renderGame();
+}
+function renderGame(){
+  const g=$("#game"); g.innerHTML="";
+  const d=state.d;
+  const tc=document.createElement('div'); tc.className="targetcard"+(mode==="hidden"?" hidden":"");
+  tc.innerHTML=`<div class="lead">${state.sec} · Line ${state.ln}${mode==="hidden"?" · hidden":""}</div>
+    <div class="pat">${d.pattern}</div>
+    <div class="meta">${d.value.replace('X','Exposed').replace('C','Concealed')} · ${d.hands.length} legal hand${d.hands.length===1?"":"s"} · find ${state.need} to clear</div>`;
+  g.appendChild(tc);
+  // rack
+  const rack=document.createElement('div'); rack.className="rack"; rack.id="rack"; g.appendChild(rack);
+  const rc=document.createElement('div'); rc.className="rackcount"; rc.id="rackcount"; g.appendChild(rc);
+  // palette
+  const pal=document.createElement('div'); pal.className="palette";
+  const allow=allowedCodes();
+  PALETTE.forEach(grp=>{
+    const codes=grp.codes.filter(c=>mode!=="guided"||allow.has(normCode(c)));
+    if(!codes.length)return;
+    const gd=document.createElement('div'); gd.className="palgroup";
+    gd.innerHTML=`<h4>${grp.h}</h4>`;
+    const grid=document.createElement('div'); grid.className="palgrid";
+    codes.forEach(c=>{const t=tileEl(c,false); t.onclick=()=>addTile(normCode(c)); grid.appendChild(t);});
+    gd.appendChild(grid); pal.appendChild(gd);
+  });
+  g.appendChild(pal);
+  const fb=document.createElement('div'); fb.className="feedline"; fb.id="feed";
+  if(mode==="guided") fb.innerHTML=`<span class="note">Guided: the pool shows only tiles this line uses. ${state.sec==="2026"||hasSoap()?SOAP_NOTE:""}</span>`;
+  g.appendChild(fb);
+  // found list
+  const fd=document.createElement('div'); fd.className="found"; fd.id="foundbox"; g.appendChild(fd);
+  drawRack(); drawFound(); updateHud();
+}
+function hasSoap(){return [...allowedCodes()].includes("WD");}
+function allowedCodes(){const s=new Set(); state.d.hands.forEach(h=>parseHand(h).total&&h.split(/\s+/).forEach(tok=>{const m=tok.match(/\d+x(.+)/); if(m)s.add(normCode(m[1]));})); return s;}
+
+function addTile(code){
+  startClock();
+  const tot=Object.values(state.rack).reduce((a,b)=>a+b,0);
+  if(tot>=14){flash("That's 14 tiles already — Check it, or Clear to start over.");return;}
+  // can't exceed physical supply: 4 of any number tile, 8 flowers, jokers n/a here
+  const cap = code==="F"?8 : (/^[1-9][BCD]$/.test(code)?4 : (["E","S","W","N","RD","GD","WD"].includes(code)?4:4));
+  if((state.rack[code]||0)>=cap){flash("Only "+cap+" of that tile exist.");return;}
+  state.rack[code]=(state.rack[code]||0)+1; drawRack();
+}
+function removeTile(code){ if(!state.rack[code])return; state.rack[code]--; if(!state.rack[code])delete state.rack[code]; drawRack(); }
+function drawRack(){
+  const r=$("#rack"); r.innerHTML="";
+  const order=Object.keys(state.rack).sort();
+  let tot=0;
+  order.forEach(c=>{for(let i=0;i<state.rack[c];i++){const t=tileEl(c,false); t.onclick=()=>removeTile(c); r.appendChild(t); tot++;}});
+  if(!tot) r.innerHTML='<span class="note" style="align-self:center;">Tap tiles below to build your hand…</span>';
+  $("#rackcount").innerHTML=`<b>${tot}</b> / 14 tiles`;
+}
+function flash(msg,cls){const f=$("#feed"); if(f){f.className="feedline"+(cls?" "+cls:""); f.innerHTML=msg;}}
+
+function checkHand(){
+  if(!state){return;}
+  const tot=Object.values(state.rack).reduce((a,b)=>a+b,0);
+  if(tot!==14){flash("A hand is 14 tiles — you have "+tot+".","bad");return;}
+  startClock(); state.attempts++;
+  const k=keyOf(state.rack);
+  if(state.legal[k]){
+    if(state.found.has(k)){flash("You already found that one — try a different combination.","");return;}
+    state.found.add(k);
+    flash("That's a legal hand for this line. ✓","good");
+    state.rack={}; drawRack(); drawFound(); updateHud();
+    if(state.found.size>=state.need) finishLine();
+  } else {
+    state.bad++;
+    flash("Not a legal hand for this line. Check the suits, numbers, and dragons.","bad");
+    updateHud();
+  }
+}
+function drawFound(){
+  const box=$("#foundbox"); if(!box)return;
+  let html=`<h4>Found ${state.found.size} / ${state.d.hands.length}</h4><div class="foundlist">`;
+  [...state.found].forEach(k=>{ html+=`<div class="foundrow">${rowTiles(state.legal[k])}</div>`; });
+  html+=`</div>`;
+  box.innerHTML=state.found.size?html:"";
+}
+function rowTiles(map){ return Object.keys(map).sort().map(c=>{ let h=""; for(let i=0;i<map[c];i++){const t=tileLabel(c); h+=`<span class="tile sm ${t.cls}"><span class="n">${t.n}</span><span class="s">${t.s}</span></span>`;} return h;}).join(""); }
+
+function reveal(){
+  if(!state)return;
+  const box=$("#foundbox"); const missing=Object.keys(state.legal).filter(k=>!state.found.has(k));
+  let html=`<h4>Found ${state.found.size} / ${state.d.hands.length}</h4><div class="foundlist">`;
+  [...state.found].forEach(k=>html+=`<div class="foundrow">${rowTiles(state.legal[k])}</div>`);
+  missing.slice(0,40).forEach(k=>html+=`<div class="foundrow miss">${rowTiles(state.legal[k])}</div>`);
+  html+=`</div>`+(missing.length>40?`<p class="note">…and ${missing.length-40} more.</p>`:"");
+  box.innerHTML=html;
+  flash("Revealed the rest in red. Study them, then try again.","");
+}
+
+function startClock(){if(!state.started){state.started=true; state.t0=performance.now(); timerId=setInterval(()=>{if(state.t0)$("#hudTime").textContent=((performance.now()-state.t0)/1000).toFixed(1)+"s";},100);}}
+function updateHud(){
+  $("#hudFound").textContent=state.found.size+" / "+state.need;
+  const acc=state.attempts?Math.round((state.attempts-state.bad)/state.attempts*100):null;
+  $("#hudAcc").textContent=acc==null?"—":acc+"%";
+  const bk=state.sec+"|"+state.ln+"|"+cur.n, best=prog.best[bk];
+  $("#hudBest").textContent=best?best.toFixed(1)+"s":"—";
+  $("#levelTag").textContent=cur.title;
+}
+function finishLine(){
+  clearInterval(timerId);
+  const secs=(performance.now()-state.t0)/1000;
+  const clean=state.bad===0;
+  const bk=state.sec+"|"+state.ln+"|"+cur.n;
+  prog.cleared[bk]=true;
+  if(clean&&(!prog.best[bk]||secs<prog.best[bk])) prog.best[bk]=+secs.toFixed(1);
+  saveProg();
+  if(window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode,level:cur.n,accuracy:state.attempts?Math.round((state.attempts-state.bad)/state.attempts*100):100,duration_sec:+secs.toFixed(2),clean});
+  $("#cardTitle").textContent=clean?"Clean — no wrong tries.":"Line cleared.";
+  $("#cardVerdict").textContent=clean
+    ? `You built ${state.need} legal hand${state.need===1?"":"s"} for ${state.sec} Line ${state.ln} without a single misstep.`
+    : `You found ${state.need}, with ${state.bad} combination${state.bad===1?"":"s"} that don't play on this line. Run it clean to set a best time.`;
+  $("#cardFound").textContent=state.found.size+" / "+state.d.hands.length;
+  $("#cardTime").textContent=secs.toFixed(1)+"s";
+  $("#scrim").classList.add("show");
+}
+
+/* ---------- wiring ---------- */
+$("#loadLine").onclick=()=>{ cur=LEVELS[Math.min(cur.n,3)-1]; startLine($("#selSection").value,$("#selLine").value); };
+$("#checkBtn").onclick=checkHand;
+$("#clearRack").onclick=()=>{ if(state){state.rack={}; drawRack(); flash("Rack cleared.");} };
+$("#revealBtn").onclick=reveal;
+$("#resetAll").onclick=()=>{ if(confirm("Reset all progress and best times?")){localStorage.removeItem(LS); prog=loadProg(); prog.best={}; prog.cleared={}; saveProg(); flash("Progress reset.");} };
+document.querySelectorAll(".modepill").forEach(p=>p.addEventListener("click",()=>{ mode=p.dataset.mode; document.querySelectorAll(".modepill").forEach(x=>x.classList.toggle("on",x===p)); if(state)renderGame(); }));
+function setLevel(n){cur=LEVELS[n-1]; if(state){state.need=Math.min(cur.need,state.d.hands.length); renderGame();}}
+$("#cardAgain").onclick=()=>{$("#scrim").classList.remove("show"); startLine(state.sec,state.ln);};
+$("#cardNext").onclick=()=>{$("#scrim").classList.remove("show"); const sl=$("#selLine"); if(sl.selectedIndex<sl.options.length-1){sl.selectedIndex++;} else {const ss=$("#selSection"); if(ss.selectedIndex<ss.options.length-1){ss.selectedIndex++; fillLines();}} startLine($("#selSection").value,$("#selLine").value);};
+$("#cardChoose").onclick=()=>{$("#scrim").classList.remove("show"); window.scrollTo({top:0,behavior:'smooth'});};
+$("#cardDone").onclick=()=>{$("#scrim").classList.remove("show");};
+
+// level pills via keyboard-free: reuse leveltag click to cycle
+$("#levelTag").style.cursor="pointer";
+$("#levelTag").title="Click to change how many hands clear the line";
+$("#levelTag").onclick=()=>setLevel(cur.n%3+1);
+
+fillSections();
+startLine(Object.keys(HANDS)[0], Object.keys(HANDS[Object.keys(HANDS)[0]])[0]);
+</script>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL="https://avltolzpzxcdmgrjnsfa.supabase.co";
+const SB_KEY="sb_publishable_zI6klteA7Kz4wbBoMCfOng_sb1Dz-pK";
+const GAME="hand-line-solver";
+const REDIRECT="https://www.orderofthetile.com/mini-games/hand-line-solver/";
+const sb = createClient(SB_URL, SB_KEY);
+let user=null;
+const q=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MODE_LABEL={guided:'Guided',open:'Open',hidden:'Hidden'};
+const fmt=s=>{s=Math.round(s); if(s<60)return s+'s'; const m=Math.floor(s/60),r=s%60; if(m<60)return m+'m '+r+'s'; return Math.floor(m/60)+'h '+(m%60)+'m';};
+function renderBar(){ const st=q("#authStatus"), a=q("#authBtn"), o=q("#logoutBtn");
+  if(user){ st.textContent='Signed in as '+(user.user_metadata?.display_name||user.email); a.style.display='none'; o.style.display=''; }
+  else { st.textContent='Playing as guest — scores aren’t saved'; a.style.display=''; o.style.display='none'; } }
+function modal(html){ const scrim=document.createElement('div'); scrim.className='scrim show'; scrim.innerHTML='<div class="card">'+html+'</div>'; scrim.addEventListener('click',e=>{if(e.target===scrim)scrim.remove();}); document.body.appendChild(scrim); return scrim; }
+function openAuth(){
+  let signup=false;
+  const m=modal(`<h2 id="aTitle">Log in</h2>
+    <p class="verdict">Save your progress and join the leaderboard.</p>
+    <div class="authform">
+      <input id="aName" type="text" placeholder="Display name (shown on leaderboard)" style="display:none;">
+      <input id="aEmail" type="email" placeholder="Email" autocomplete="email">
+      <input id="aPass" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
+      <div class="authmsg" id="aMsg"></div>
+      <button class="btn" id="aGo">Log in</button>
+      <button class="btn ghost" id="aToggle">New here? Create an account</button>
+      <p class="note" style="font-size:.82rem; margin:6px 0 0;">We never sell your information. Your login only saves your stats and lets you appear on the leaderboard.</p>
+    </div>`);
+  const name=m.querySelector('#aName'),email=m.querySelector('#aEmail'),pass=m.querySelector('#aPass'),msg=m.querySelector('#aMsg'),go=m.querySelector('#aGo'),tog=m.querySelector('#aToggle'),title=m.querySelector('#aTitle');
+  tog.onclick=()=>{ signup=!signup; name.style.display=signup?'':'none'; title.textContent=signup?'Create account':'Log in'; go.textContent=signup?'Create account':'Log in'; tog.textContent=signup?'Have an account? Log in':'New here? Create an account'; msg.textContent=''; };
+  go.onclick=async()=>{
+    msg.className='authmsg'; msg.textContent='Working…'; go.disabled=true;
+    try{
+      if(signup){
+        const {data,error}=await sb.auth.signUp({email:email.value.trim(),password:pass.value,options:{emailRedirectTo:REDIRECT,data:{display_name:name.value.trim()||email.value.split('@')[0]}}});
+        if(error)throw error;
+        if(data.session){ msg.className='authmsg ok'; msg.textContent='Account created — you’re in.'; setTimeout(()=>m.remove(),700); }
+        else { msg.className='authmsg ok'; msg.innerHTML='Almost there — we sent a confirmation link to <b>'+esc(email.value.trim())+'</b>. Click it, then come back and log in.'; }
+      }else{
+        const {error}=await sb.auth.signInWithPassword({email:email.value.trim(),password:pass.value});
+        if(error)throw error;
+        msg.className='authmsg ok'; msg.textContent='Welcome back.'; setTimeout(()=>m.remove(),500);
+      }
+    }catch(err){ msg.className='authmsg'; msg.textContent=(err&&err.message)||String(err); }
+    go.disabled=false;
+  };
+}
+async function openLeaderboard(){
+  const m=modal(`<h2>Leaderboard</h2>
+    <div class="lbtabs"><button class="btn mini" id="lbT1">Most time played</button><button class="btn ghost mini" id="lbT2">High scores</button></div>
+    <div id="lbBody">Loading…</div>
+    <div class="modal-actions" style="grid-template-columns:1fr;"><button class="btn ghost" id="lbClose">Close</button></div>`);
+  m.querySelector('#lbClose').onclick=()=>m.remove();
+  const body=m.querySelector('#lbBody'), t1=m.querySelector('#lbT1'), t2=m.querySelector('#lbT2');
+  async function showTime(){ t1.className='btn mini'; t2.className='btn ghost mini'; body.textContent='Loading…';
+    const {data,error}=await sb.from('lb_time').select('*').limit(25);
+    if(error){body.innerHTML='<p class="note">'+esc(error.message)+'</p>';return;}
+    if(!data.length){body.innerHTML='<p class="note">No players yet — be the first.</p>';return;}
+    body.innerHTML='<p class="note" style="margin-top:0;">Time played across every Order of the Tile drill.</p><table class="lbtable"><thead><tr><th>#</th><th>Player</th><th>Time played</th><th>Rounds</th></tr></thead><tbody>'+data.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.display_name)}</td><td>${fmt(r.total_seconds)}</td><td>${r.rounds_played}</td></tr>`).join('')+'</tbody></table>'; }
+  async function showHigh(){ t2.className='btn mini'; t1.className='btn ghost mini'; body.textContent='Loading…';
+    const {data,error}=await sb.from('lb_highscores').select('*').eq('game',GAME);
+    if(error){body.innerHTML='<p class="note">'+esc(error.message)+'</p>';return;}
+    if(!data.length){body.innerHTML='<p class="note">No clean runs yet — set the first record.</p>';return;}
+    body.innerHTML='<p class="note" style="margin-top:0;">Fastest clean run in <b>Hand-Line Solver</b>.</p><table class="lbtable"><thead><tr><th>Mode</th><th>Level</th><th>Record holder</th><th>Best</th></tr></thead><tbody>'+data.map(r=>`<tr><td>${MODE_LABEL[r.mode]||r.mode}</td><td>${r.level}</td><td>${esc(r.display_name)}</td><td>${(+r.best_seconds).toFixed(1)}s</td></tr>`).join('')+'</tbody></table>'; }
+  t1.onclick=showTime; t2.onclick=showHigh; showTime();
+}
+window.OOTT={ get user(){return user;},
+  async logSession(d){ if(!user)return; try{ await sb.from('sessions').insert({user_id:user.id,game:GAME,mode:d.mode,level:d.level,accuracy:d.accuracy,duration_sec:d.duration_sec,clean:!!d.clean}); }catch(e){} },
+  openAuth, openLeaderboard };
+q("#authBtn").onclick=openAuth; q("#lbBtn").onclick=openLeaderboard;
+q("#logoutBtn").onclick=async()=>{ await sb.auth.signOut(); };
+sb.auth.onAuthStateChange((_e,session)=>{ user=session?.user||null; renderBar(); });
+const {data:{session}}=await sb.auth.getSession(); user=session?.user||null; renderBar();
+</script>
+</body>
+</html>
