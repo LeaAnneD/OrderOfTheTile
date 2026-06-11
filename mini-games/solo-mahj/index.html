@@ -46,6 +46,8 @@
   .tile.bam{color:var(--bam);} .tile.crak{color:var(--crak);} .tile.dot{color:var(--dot);} .tile.honor{color:var(--honor);}
   .tile.sel{transform:translateY(-8px); box-shadow:0 0 0 2px var(--rose), 0 6px 12px rgba(0,0,0,.2); border-color:var(--rose);}
   .tile.ro{cursor:default;}
+  .rack.sortable{touch-action:none;}
+  .rack.sortable .tile{cursor:grab;}
   .tile .dot{position:absolute; top:3px; right:3px; width:7px; height:7px; border-radius:50%;}
   .tile .dot.work{background:var(--good);} .tile .dot.dead{background:#C8BCa6;}
   .tile.fresh{outline:2px solid var(--gold); outline-offset:1px;}
@@ -158,11 +160,12 @@ SECTIONS.forEach(sec=>{PARSED[sec]={}; Object.keys(HANDS[sec]).forEach(ln=>{PARS
 function matched(rack,hand){let s=0; for(const c in hand) s+=Math.min(rack[c]||0,hand[c]); return s;}
 function sectionClose(rack,sec){let best=0; Object.keys(PARSED[sec]).forEach(ln=>{ PARSED[sec][ln].forEach(h=>{const m=matched(rack,h); if(m>best)best=m;}); }); return best;}
 function rankSections(rack){return SECTIONS.map(sec=>({sec,score:sectionClose(rack,sec)})).sort((a,b)=>b.score-a.score);}
-function rackMap(arr){const m={}; arr.forEach(c=>m[c]=(m[c]||0)+1); return m;}
+function rackMap(arr){const m={}; arr.forEach(t=>{const c=(t&&t.c!==undefined)?t.c:t; m[c]=(m[c]||0)+1;}); return m;}
 function bestOf(arr){return rankSections(rackMap(arr))[0];}
 function bestScore(arr){return bestOf(arr).score;}
 // a tile is "working" if removing it lowers the best-section closeness
 function isWorking(arr,idx){ const base=bestScore(arr); const a2=arr.slice(); a2.splice(idx,1); return base-bestScore(a2) > 0; }
+function isWorkingId(id){ const i=game.hand.findIndex(t=>t.id===id); return i>=0 && isWorking(game.hand,i); }
 
 const SET=[];
 "123456789".split("").forEach(n=>["B","C","D"].forEach(s=>{for(let i=0;i<4;i++)SET.push(n+s);}));
@@ -171,8 +174,9 @@ const SET=[];
 for(let i=0;i<8;i++)SET.push("F");
 const rnd=n=>Math.floor(Math.random()*n);
 const cap=c=>c==="F"?8:4;
-function deal(n){ const arr=[]; const m={}; let g=0; while(arr.length<n && g++<800){ const c=SET[rnd(SET.length)]; if((m[c]||0)<cap(c)){m[c]=(m[c]||0)+1; arr.push(c);} } return arr; }
-function drawIn(arr,n){ const m=rackMap(arr); const out=[]; let g=0; while(out.length<n && g++<800){ const c=SET[rnd(SET.length)]; if((m[c]||0)<cap(c)){m[c]=(m[c]||0)+1; out.push(c);} } return out; }
+let _uid=0;
+function deal(n){ const arr=[]; const m={}; let g=0; while(arr.length<n && g++<800){ const c=SET[rnd(SET.length)]; if((m[c]||0)<cap(c)){m[c]=(m[c]||0)+1; arr.push({c,id:_uid++});} } return arr; }
+function drawIn(arr,n){ const m=rackMap(arr); const out=[]; let g=0; while(out.length<n && g++<800){ const c=SET[rnd(SET.length)]; if((m[c]||0)<cap(c)){m[c]=(m[c]||0)+1; out.push({c,id:_uid++});} } return out; }
 
 const FIRST=[{dir:"right",txt:"to your right"},{dir:"across",txt:"across the table"},{dir:"left",txt:"to your left"}];
 const SECOND=[{dir:"left",txt:"to your left"},{dir:"across",txt:"across the table"},{dir:"right",txt:"to your right"}];
@@ -203,46 +207,52 @@ function renderPass(pass,opts){
     `<div class="lead">${game.stepLabel}</div><div class="ask">Pass 3 tiles ${pass.txt}.</div>
      <div class="why">Pick the three you least want — your dead weight — then pass them. You'll take 3 back.</div>`;
   g.appendChild(b);
-  const rh=el("div","rackhead"); rh.innerHTML=`<span class="lbl">your hand · pick 3 to pass</span>`; g.appendChild(rh);
+  const rh=el("div","rackhead"); rh.innerHTML=`<span class="lbl">your hand · drag to organize · tap 3 to pass</span>`; g.appendChild(rh);
   g.appendChild(handEl(hints));
   if(hints) g.appendChild(Object.assign(el("div","legend"),{innerHTML:`<b>● green</b> = a tile your strongest hand is using (think before passing it). grey = dead weight, safe to pass.`}));
   const ab=el("div","actionbar"); const go=el("button","btn"); go.id="passBtn"; go.textContent=`Pass these 3 ${pass.dir} ▶`; go.disabled=true; go.onclick=()=>doPass(opts); ab.appendChild(go); g.appendChild(ab);
   const feed=el("div","feedline"); feed.id="feed"; g.appendChild(feed);
   updateHud();
 }
-function handEl(hints){
-  const rack=el("div","rack"); rack.id="rackbox";
-  game.hand.forEach((c,idx)=>{
-    const t=tileLabel(c); const e=el("div","tile "+t.cls+(game.sel.has(idx)?" sel":"")+(game.fresh&&game.fresh.has(idx)?" fresh":""));
-    let dot=""; if(hints) dot=`<span class="dot ${isWorking(game.hand,idx)?'work':'dead'}"></span>`;
-    e.innerHTML=`${dot}<div class="n">${t.n}</div><div class="s">${t.s}</div>`;
-    e.onclick=()=>toggleSel(idx,hints); rack.appendChild(e);
+function handTilesHTML(hints){ return game.hand.map(t=>{ const lab=tileLabel(t.c); const dot=hints?`<span class="dot ${isWorkingId(t.id)?'work':'dead'}"></span>`:""; return `<div class="tile ${lab.cls}${game.sel.has(t.id)?' sel':''}${game.fresh&&game.fresh.has(t.id)?' fresh':''}" data-id="${t.id}">${dot}<div class="n">${lab.n}</div><div class="s">${lab.s}</div></div>`; }).join(""); }
+function handEl(hints){ const rack=el("div","rack sortable"); rack.id="rackbox"; rack.innerHTML=handTilesHTML(hints); attachHand(rack,hints); return rack; }
+function repaintHand(hints){ const rack=$("#rackbox"); if(rack)rack.innerHTML=handTilesHTML(hints); }
+function attachHand(rack,hints){
+  let drag=null;
+  rack.addEventListener('pointerdown',e=>{ const tile=e.target.closest('.tile'); if(!tile)return; drag={id:+tile.dataset.id,x:e.clientX,y:e.clientY,moved:false}; try{rack.setPointerCapture(e.pointerId);}catch(_){ } });
+  rack.addEventListener('pointermove',e=>{ if(!drag)return;
+    if(!drag.moved){ if(Math.abs(e.clientX-drag.x)<6 && Math.abs(e.clientY-drag.y)<6) return; drag.moved=true; }
+    const u=document.elementFromPoint(e.clientX,e.clientY); const tile=u&&u.closest&&u.closest('.tile'); if(!tile||tile.parentElement!==rack)return;
+    const tId=+tile.dataset.id; if(tId===drag.id)return;
+    const from=game.hand.findIndex(t=>t.id===drag.id), to=game.hand.findIndex(t=>t.id===tId); if(from<0||to<0)return;
+    const t=game.hand.splice(from,1)[0]; game.hand.splice(to,0,t); repaintHand(hints);
   });
-  return rack;
+  const end=()=>{ if(!drag)return; const wasDrag=drag.moved, id=drag.id; drag=null; if(wasDrag)repaintHand(hints); else toggleSelId(id,hints); };
+  rack.addEventListener('pointerup',end); rack.addEventListener('pointercancel',end);
 }
-function toggleSel(idx,hints){
-  if(game.sel.has(idx)) game.sel.delete(idx);
-  else { if(game.sel.size>=3){flash("That's three already — pass them, or tap one to deselect."); return;} game.sel.add(idx); }
-  const old=$("#rackbox"); if(old)old.replaceWith(handEl(hints));
-  const pb=$("#passBtn"); if(pb)pb.disabled=game.sel.size!==3;
+function toggleSelId(id,hints){
+  if(game.sel.has(id)) game.sel.delete(id);
+  else { if(game.sel.size>=3){flash("That's three already — pass them, or tap one to deselect."); return;} game.sel.add(id); }
+  repaintHand(hints);
+  const pb=$("#passBtn"); if(pb)pb.disabled=(game.phase!=="courtesy") && game.sel.size!==3;
 }
 function flash(m){const f=$("#feed"); if(f)f.textContent=m;}
 
 function doPass(opts){
   if(game.sel.size!==3)return;
-  const idxs=[...game.sel].sort((a,b)=>b-a);
+  const selIds=[...game.sel];
   // grade: how many passed tiles were dead weight (good) vs working (risky)?
-  let dead=0; const passedCodes=[];
-  idxs.forEach(i=>{ if(!isWorking(game.hand,i))dead++; passedCodes.push(game.hand[i]); });
+  let dead=0; selIds.forEach(id=>{ const i=game.hand.findIndex(t=>t.id===id); if(i>=0 && !isWorking(game.hand,i))dead++; });
   const sound = dead===3;
   game.total++; if(sound)game.good++;
   // remove passed, draw 3 in
-  idxs.forEach(i=>game.hand.splice(i,1));
+  game.hand=game.hand.filter(t=>!game.sel.has(t.id));
   const incoming=drawIn(game.hand,3);
-  game.fresh=new Set(); incoming.forEach(c=>{ game.hand.push(c); game.fresh.add(game.hand.length-1); });
+  game.fresh=new Set(); incoming.forEach(t=>{ game.hand.push(t); game.fresh.add(t.id); });
+  game.sel=new Set();
   // feedback
   const g=$("#game"); $("#rackbox").replaceWith(handEl(opts&&opts.tut?true:cur.hints));
-  $("#passBtn").remove();
+  const pb=$("#passBtn"); if(pb)pb.remove();
   flash(sound?"Sound pass — all three were dead weight. ✓":`${dead} of 3 were dead weight; the rest your strongest hand wanted.`);
   const coach=el("div","coach"); coach.innerHTML=`<div class="h">Prim's note</div><div class="b">${sound?"Nice — you let go of tiles no hand of yours needed and kept your shape. The gold-outlined tiles are the three you just drew.":"Careful — passing a tile your best line is using sets you back. When two tiles are equally useless, pass those first. The gold-outlined tiles are your three new ones."}</div>`; g.appendChild(coach);
   const w=el("div","actionbar"); const go=el("button","btn"); go.textContent="Continue ▶"; go.onclick=()=>advance(opts); w.appendChild(go); g.appendChild(w);
@@ -303,9 +313,9 @@ function renderCourtesy(){
   updateHud();
 }
 function doCourtesy(){
-  const idxs=[...game.sel].sort((a,b)=>b-a);
-  if(idxs.length){ let dead=0; idxs.forEach(i=>{ if(!isWorking(game.hand,i))dead++; }); game.total++; if(dead===idxs.length)game.good++;
-    idxs.forEach(i=>game.hand.splice(i,1)); const incoming=drawIn(game.hand,idxs.length); incoming.forEach(c=>game.hand.push(c));
+  const selIds=[...game.sel];
+  if(selIds.length){ let dead=0; selIds.forEach(id=>{ const i=game.hand.findIndex(t=>t.id===id); if(i>=0 && !isWorking(game.hand,i))dead++; }); game.total++; if(dead===selIds.length)game.good++;
+    game.hand=game.hand.filter(t=>!game.sel.has(t.id)); const incoming=drawIn(game.hand,selIds.length); incoming.forEach(t=>game.hand.push(t));
   }
   finish();
 }
