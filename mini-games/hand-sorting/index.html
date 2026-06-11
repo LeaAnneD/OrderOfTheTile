@@ -270,8 +270,11 @@ function commit(sc,sec,btn,opts){
   $("#feed").innerHTML=correct?`Strong call — this rack is closest to <b>${sc.bestSec}</b>.`:`The strongest fit here is <b>${sc.bestSec}</b> — see the longest bar. Commit where you have the most tiles already.`;
   const coach=el("div","coach"); coach.innerHTML=`<div class="h">Prim's defense note</div><div class="b">${COACH[rnd(COACH.length)]}</div>`; $("#game").appendChild(coach);
   if(opts&&opts.tut){ const w=el("div","actionbar"); const go=el("button","btn"); go.textContent="Got it — let me play ▶"; go.onclick=()=>{ prog.tutDone=true; saveProg(); showStart(); }; w.appendChild(go); $("#game").appendChild(w); return; }
-  round.attempted++; if(correct)round.firstRight++;
-  setTimeout(()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else { round._locked=false; renderOrganize(round.seq[round.idx],{}); updateHud(); } }, correct?1600:2300);
+  round.attempted++; if(correct)round.firstRight++; updateHud();
+  const w=el("div","actionbar"); const go=el("button","btn");
+  go.textContent = round.idx>=round.K-1 ? "See your results ▶" : "Continue ▶";
+  go.onclick=()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else { round._locked=false; renderOrganize(round.seq[round.idx],{}); updateHud(); } };
+  w.appendChild(go); $("#game").appendChild(w);
 }
 
 /* ---------- start / play ---------- */
