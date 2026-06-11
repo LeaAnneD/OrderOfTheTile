@@ -46,6 +46,9 @@
   .tile.bam{color:var(--bam);} .tile.crak{color:var(--crak);} .tile.dot{color:var(--dot);} .tile.honor{color:var(--honor);}
   .tile.lift{transform:translateY(-8px); box-shadow:0 0 0 2px var(--rose), 0 6px 12px rgba(0,0,0,.2); border-color:var(--rose);}
   .tile.ro{cursor:default;}
+  .rack.sortable{touch-action:none;}
+  .rack.sortable .tile{cursor:grab;}
+  .rack.sortable .tile.lift{cursor:grabbing;}
   .choices{display:flex; flex-direction:column; gap:9px; max-width:580px; margin:6px auto;}
   .choice{font-family:"Crimson Text",serif; font-size:1rem; text-align:left; padding:11px 15px; border-radius:11px; border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer; box-shadow:var(--shadow); display:flex; justify-content:space-between; gap:10px; align-items:center;}
   .choice:hover{border-color:var(--rose);}
@@ -217,29 +220,33 @@ function updateHud(){
 }
 
 /* ---------- render: stage 1 organize, stage 2 commit ---------- */
-function renderTiles(sc,interactive){
-  const rack=el("div","rack"); rack.id="rackbox";
-  sc.arr.forEach((c,idx)=>{ const t=tileLabel(c); const e=el("div","tile "+t.cls+(interactive?"":" ro")+(lifted===idx?" lift":"")); e.innerHTML=`<div class="n">${t.n}</div><div class="s">${t.s}</div>`; if(interactive)e.onclick=()=>tapTile(sc,idx); rack.appendChild(e); });
+function tilesHTML(sc){ return sc.arr.map(c=>{const t=tileLabel(c); return `<div class="tile ${t.cls}"><div class="n">${t.n}</div><div class="s">${t.s}</div></div>`;}).join(""); }
+function buildRack(sc,interactive){
+  const rack=el("div","rack"+(interactive?" sortable":"")); rack.id="rackbox";
+  rack.innerHTML=interactive?tilesHTML(sc):sc.arr.map(c=>{const t=tileLabel(c); return `<div class="tile ${t.cls} ro"><div class="n">${t.n}</div><div class="s">${t.s}</div></div>`;}).join("");
+  if(interactive) attachDrag(rack,sc);
   return rack;
 }
-function reRack(sc){ const old=$("#rackbox"); if(old)old.replaceWith(renderTiles(sc,stage==="organize")); }
-function tapTile(sc,idx){
-  if(lifted===null){ lifted=idx; reRack(sc); return; }
-  if(lifted===idx){ lifted=null; reRack(sc); return; }
-  const t=sc.arr.splice(lifted,1)[0]; let tgt=idx; if(lifted<idx)tgt--; sc.arr.splice(tgt,0,t); lifted=null; reRack(sc);
+function paintTiles(sc){ const rack=$("#rackbox"); if(rack)rack.innerHTML=tilesHTML(sc); }
+function attachDrag(rack,sc){
+  let drag=null;
+  rack.addEventListener('pointerdown',e=>{ const tile=e.target.closest('.tile'); if(!tile)return; const idx=[...rack.children].indexOf(tile); if(idx<0)return; drag={cur:idx}; try{rack.setPointerCapture(e.pointerId);}catch(_){ } rack.children[idx].classList.add('lift'); e.preventDefault(); });
+  rack.addEventListener('pointermove',e=>{ if(!drag)return; const u=document.elementFromPoint(e.clientX,e.clientY); const tile=u&&u.closest&&u.closest('.tile'); if(!tile||tile.parentElement!==rack)return; const j=[...rack.children].indexOf(tile); if(j<0||j===drag.cur)return; const t=sc.arr.splice(drag.cur,1)[0]; sc.arr.splice(j,0,t); paintTiles(sc); if(rack.children[j])rack.children[j].classList.add('lift'); drag.cur=j; });
+  const end=()=>{ if(!drag)return; drag=null; paintTiles(sc); };
+  rack.addEventListener('pointerup',end); rack.addEventListener('pointercancel',end);
 }
 function renderOrganize(sc,opts){
-  lifted=null; stage="organize";
+  stage="organize";
   const g=$("#game"); g.innerHTML="";
   const b=el("div","banner flash");
   b.innerHTML=(opts&&opts.tut?`<span class="tuttag">Tutorial · step 1</span>`:"")+
-    `<div class="lead">Step 1 — organize your rack</div><div class="ask">Sort these 13 tiles so you can read them.</div>
-     <div class="why">Tap a tile to lift it, tap where you want it to go — or press <b>Sort</b> to group by suit. Then commit.</div>`;
+    `<div class="lead">Step 1 — organize your rack</div><div class="ask">Arrange these 13 tiles so you can read them.</div>
+     <div class="why">Grab a tile and drag it into the order you want — or press <b>Sort by suit</b> to group them for you. Then commit.</div>`;
   g.appendChild(b);
-  const rh=el("div","rackhead"); rh.innerHTML=`<span class="lbl">your rack</span>`;
-  const sb=el("button","btn ghost tiny"); sb.textContent="Sort by suit"; sb.onclick=()=>{ sc.arr=sc.arr.slice().sort((x,y)=>SORTKEY(x)-SORTKEY(y)); lifted=null; reRack(sc); }; rh.appendChild(sb);
+  const rh=el("div","rackhead"); rh.innerHTML=`<span class="lbl">your rack — drag to reorder</span>`;
+  const sb=el("button","btn ghost tiny"); sb.textContent="Sort by suit"; sb.onclick=()=>{ sc.arr=sc.arr.slice().sort((x,y)=>SORTKEY(x)-SORTKEY(y)); paintTiles(sc); }; rh.appendChild(sb);
   g.appendChild(rh);
-  g.appendChild(renderTiles(sc,true));
+  g.appendChild(buildRack(sc,true));
   const ab=el("div","actionbar"); const go=el("button","btn"); go.textContent="I've organized it — commit ▶"; go.onclick=()=>renderCommit(sc,opts); ab.appendChild(go); g.appendChild(ab);
 }
 function renderCommit(sc,opts){
@@ -249,7 +256,7 @@ function renderCommit(sc,opts){
   b.innerHTML=(opts&&opts.tut?`<span class="tuttag">Tutorial · step 2</span>`:"")+
     `<div class="lead">Step 2 — commit</div><div class="ask">Which section would you build this rack toward?</div>`;
   g.appendChild(b);
-  g.appendChild(renderTiles(sc,false));
+  g.appendChild(buildRack(sc,false));
   const box=el("div","choices"); box.id="choices";
   sc.ranked.map(r=>r.sec).slice().sort(()=>Math.random()-.5).forEach(sec=>{ const bn=el("button","choice"); const pct=Math.round(sc.ranked.find(r=>r.sec===sec).score/14*100); bn.innerHTML=`<span>${sec}</span><span class="bar"><i style="width:${pct}%"></i></span>`; bn.onclick=()=>commit(sc,sec,bn,opts); box.appendChild(bn); });
   g.appendChild(box);
