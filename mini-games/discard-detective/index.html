@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Discard Detective — Order of the Tile</title>
+<link rel="icon" type="image/png" href="/images/seal.png">
+<link rel="apple-touch-icon" href="/images/seal.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
+    --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
+    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A;
+    --felt:#5C7A66; --felt-2:#4E6A58;
+    --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
+  .wrap{max-width:920px; margin:0 auto; padding:18px 16px 40px;}
+  h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.6rem; margin:.1em 0;}
+  .sub{color:var(--ink-soft); font-style:italic; margin:0 0 14px;}
+  .toprow{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:4px 0 10px;}
+  .leveltag{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); font-size:1.0rem;}
+  .toprow .btn.mini{margin-left:auto;}
+  .hud{display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 16px;}
+  .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px 14px; box-shadow:var(--shadow); min-width:100px;}
+  .stat .k{font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft);}
+  .stat .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; line-height:1.1;}
+  .banner{background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:14px; text-align:center;}
+  .banner .lead{font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft);}
+  .banner .ask{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; margin-top:2px; line-height:1.25;}
+  .banner .why{font-style:italic; color:var(--ink-soft); font-size:.92rem; margin-top:6px; line-height:1.35;}
+  @keyframes flashpulse{0%,100%{box-shadow:var(--shadow);} 50%{box-shadow:0 0 0 3px var(--gold), var(--shadow); background:#FBEFD4;}}
+  .banner.flash{animation:flashpulse .9s ease 2;}
+  .tuttag{display:inline-block; font-family:"Playfair Display",serif; font-weight:700; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:#fff; background:var(--sage); border-radius:999px; padding:3px 12px; margin-bottom:8px;}
+  /* table */
+  .tablewrap{display:flex; justify-content:center; margin-bottom:8px;}
+  .table{position:relative; width:420px; height:420px; max-width:92vw; max-height:92vw;}
+  .felt{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:118px; height:118px; border-radius:14px;
+    background:radial-gradient(circle at 50% 40%, var(--felt) 0%, var(--felt-2) 100%);
+    box-shadow:inset 0 2px 10px rgba(0,0,0,.25), var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#fff; text-align:center; padding:8px;}
+  .felt .fhint{font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; opacity:.85; line-height:1.2;}
+  .felt .fwind{font-family:"Playfair Display",serif; font-weight:700; font-size:.95rem;}
+  .seat{position:absolute; width:150px; padding:8px 8px 9px; border-radius:13px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow);
+    display:flex; flex-direction:column; align-items:center; gap:5px; text-align:center; transition:border-color .12s, background .12s, box-shadow .12s;}
+  .seat .nm{font-family:"Playfair Display",serif; font-weight:600; font-size:.92rem; line-height:1.05;}
+  .seat .you{font-size:.62rem; color:var(--rose-deep); font-weight:600; text-transform:uppercase; letter-spacing:.06em;}
+  .seat .pilelab{font-size:.6rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .seat .pile{display:flex; flex-wrap:wrap; gap:3px; justify-content:center; min-height:40px; align-items:center;}
+  .seat .reveal{font-size:.66rem; font-style:italic; color:var(--good); font-weight:600; min-height:1em;}
+  .seat.b{left:50%; bottom:0; transform:translateX(-50%);}
+  .seat.t{left:50%; top:0; transform:translateX(-50%);}
+  .seat.l{left:0; top:50%; transform:translateY(-50%);}
+  .seat.r{right:0; top:50%; transform:translateY(-50%);}
+  .seat.ask{border-color:var(--rose); box-shadow:0 0 0 2px var(--rose) inset, var(--shadow); background:#FBF1EF;}
+  .seat.dim{opacity:.5;}
+  .askchip{display:inline-block; font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#fff; background:var(--rose); border-radius:999px; padding:1px 8px;}
+  /* answer choices */
+  .choices{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:8px 0 2px;}
+  .choicegrp{background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px 12px 10px; box-shadow:var(--shadow);}
+  .choicegrp .ghead{font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:6px; text-align:center;}
+  .choicegrp .ghead b{color:var(--rose-deep); font-style:normal;}
+  .opts{display:flex; gap:7px; flex-wrap:wrap; justify-content:center;}
+  .opt{font-family:"Playfair Display",serif; font-size:.98rem; padding:8px 16px; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); cursor:pointer; box-shadow:0 1px 3px rgba(43,38,34,.1);}
+  .opt:hover{border-color:var(--rose);}
+  .opt.sel{background:#F6E9E6; border-color:var(--rose); box-shadow:0 0 0 2px var(--rose) inset;}
+  .opt.right{background:var(--good-bg); border-color:var(--good); box-shadow:0 0 0 2px var(--good) inset;}
+  .opt.wrong{background:var(--bad-bg); border-color:var(--bad); box-shadow:0 0 0 2px var(--bad) inset;}
+  .submitbar{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin:12px 0 2px;}
+  .feedline{text-align:center; font-style:italic; color:var(--ink-soft); min-height:1.4em; margin-top:8px; font-size:.96rem;}
+  .feedline b{font-style:normal; color:var(--ink);}
+  .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; align-items:center;}
+  button.btn{font-family:"Crimson Text",serif; font-size:1rem; border-radius:11px; padding:9px 18px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer; box-shadow:var(--shadow);}
+  button.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
+  button:disabled{opacity:.45; cursor:not-allowed;}
+  .hint{color:var(--ink-soft); font-style:italic; font-size:.92rem;}
+  .startwrap{text-align:center;}
+  .startwrap .big{font-size:1.15rem; padding:13px 34px;}
+  .scrim{position:fixed; inset:0; background:rgba(43,38,34,.42); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000;}
+  .scrim.show{display:flex;}
+  .card{background:var(--paper); border-radius:18px; max-width:440px; width:100%; padding:26px 24px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line);}
+  .card h2{font-family:"Playfair Display",serif; margin:.1em 0 .3em; font-size:1.5rem;}
+  .card .verdict{font-style:italic; color:var(--ink-soft); margin-bottom:16px;}
+  .scoreline{display:flex; gap:12px; margin:14px 0;}
+  .scoreline .stat{flex:1; text-align:center;}
+  .slow{font-size:.92rem; color:var(--ink-soft); margin:10px 0 4px;} .slow b{color:var(--ink); font-style:normal;}
+  .modal-actions{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px;}
+  .modal-actions .btn{width:100%; padding:11px 10px; font-size:.96rem; margin:0;}
+  .summary{background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); padding:18px;}
+  .summary h2{font-family:"Playfair Display",serif; margin:.1em 0 .5em;}
+  .summary table{width:100%; border-collapse:collapse; font-size:.95rem; margin-bottom:6px;}
+  .summary td,.summary th{text-align:left; padding:5px 8px; border-bottom:1px solid var(--line);}
+  .summary th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .summary .note{font-style:italic; color:var(--ink-soft); margin:12px 0; font-size:.92rem;}
+  .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:8px; flex-wrap:wrap;}
+  .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.9rem; font-style:italic;}
+  .btn.mini{font-size:.85rem; padding:6px 12px;}
+  .authform{display:flex; flex-direction:column; gap:10px;}
+  .authform input{font-family:inherit; font-size:1rem; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
+  .authmsg{font-size:.9rem; color:var(--bad); min-height:1.2em;} .authmsg.ok{color:var(--good);}
+  .lbtabs{display:flex; gap:8px; margin-bottom:12px;}
+  .lbtable{width:100%; border-collapse:collapse; font-size:.95rem;}
+  .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;}
+  .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
+  @media(max-width:620px){
+    h1{font-size:1.34rem;} .banner .ask{font-size:1.1rem;}
+    .table{width:340px; height:340px;}
+    .felt{width:96px; height:96px;}
+    .seat{width:118px; padding:6px;}
+    .seat .nm{font-size:.82rem;}
+    .seat.l{left:-6px;} .seat.r{right:-6px;}
+  }
+  @media(max-width:380px){
+    .table{width:300px; height:300px;}
+    .seat{width:104px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="authbar" id="authbar">
+    <span id="authStatus" class="authstatus">·</span>
+    <button id="lbBtn" class="btn ghost mini">Leaderboard</button>
+    <button id="authBtn" class="btn mini">Log in / Sign up</button>
+    <button id="logoutBtn" class="btn ghost mini" style="display:none;">Log out</button>
+  </div>
+  <h1>Discard Detective</h1>
+  <p class="sub">A player's discards reveal what they're <i>not</i> building. Read the piles, deduce the hand.</p>
+
+  <div class="toprow">
+    <div class="leveltag" id="levelTag">Level 1</div>
+    <button id="tutBtn" class="btn ghost mini">How to play</button>
+  </div>
+
+  <div class="hud">
+    <div class="stat"><div class="k">Accuracy</div><div class="v" id="hudAcc">—</div></div>
+    <div class="stat"><div class="k">Time</div><div class="v" id="hudTime">0.0s</div></div>
+    <div class="stat"><div class="k">Answered</div><div class="v" id="hudProg">0 / 0</div></div>
+    <div class="stat"><div class="k">Best (100%)</div><div class="v" id="hudBest">—</div></div>
+  </div>
+
+  <div id="game"></div>
+
+  <div class="controls">
+    <button id="newRound" class="btn ghost">New round</button>
+    <button id="nextLevel" class="btn" disabled>Next level</button>
+    <span class="hint" id="hint">Clear a round at 100% on the first try to open the next level.</span>
+    <button id="stopBtn" class="btn ghost" style="margin-left:auto;">Stop</button>
+    <button id="resetAll" class="btn ghost" style="font-size:.85rem; padding:6px 12px;">Reset progress</button>
+  </div>
+
+  <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
+  <p class="footer-note">Order of the Tile · a free practice drill · American Mah Jongg (NMJL) · <span id="buildStamp">build —</span></p>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="card">
+    <h2 id="cardTitle">Round cleared</h2>
+    <p class="verdict" id="cardVerdict"></p>
+    <div class="scoreline">
+      <div class="stat"><div class="k">Accuracy</div><div class="v" id="cardAcc">—</div></div>
+      <div class="stat"><div class="k">Time</div><div class="v" id="cardTime">—</div></div>
+    </div>
+    <div class="slow" id="cardSlow"></div>
+    <div class="modal-actions">
+      <button id="cardAgain" class="btn ghost">Play again</button>
+      <button id="cardNext" class="btn" disabled>Next level</button>
+      <button id="cardChoose" class="btn ghost">How to play</button>
+      <button id="cardDone" class="btn ghost">Finished</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.OOTT_GAME="discard-detective"; window.OOTT_GAME_NAME="Discard Detective";
+  window.OOTT_REDIRECT="https://www.orderofthetile.com/mini-games/discard-detective/";
+</script>
+<script src="../_engine/scenario.js"></script>
+<script>
+const BUILD="v1 · 2026-06-11";
+function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_dd_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_dd_err',JSON.stringify(log.slice(-12)));}catch(_){}}
+window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
+window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
+document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
+
+const K=OOTTKit;
+/* ---------- seat geometry (same as the template's table) ----------
+   East = You, bottom.  South = right.  West = across (top).  North = left. */
+const POS=['b','r','t','l'];
+const WINDS=["East","South","West","North"];
+const SUITS=["dot","bam","crak"];               // engine families
+const SUITLABEL={dot:"Dots",bam:"Bams",crak:"Craks"};
+const $=s=>document.querySelector(s);
+const el=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+
+const LEVELS=[
+  {n:1,title:"Level 1 — Clear Signal",  turns:24, ask:1, pace:900},   // strong lean, lots of discards
+  {n:2,title:"Level 2 — Subtler Reads", turns:16, ask:1, pace:900},   // fewer discards
+  {n:3,title:"Level 3 — Two Seats, Fast",turns:18, ask:2, pace:650},  // ask about 2 seats, faster
+];
+const LS="oott_discarddetective_v1";
+function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
+function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
+let prog=loadProg(); prog.unlocked=prog.unlocked||1; prog.best=prog.best||{}; prog.kinds=prog.kinds||{}; prog.tutDone=prog.tutDone||false;
+let cur=LEVELS[0], round=null, timerId=null, tutorial=null;
+const QPR=6; // questions per round
+
+/* ===========================================================================
+   ANSWER-KEY CORE (pure; also exercised by the node self-test)
+   ---------------------------------------------------------------------------
+   suitCounts(pile) -> {dot,bam,crak} count of the three SUIT families in a pile.
+   For a seat whose secret target is T:
+     - "collecting" answer  = T   (the suit it discards LEAST: 0-1 in pile)
+     - "not building" answer= suit it discards MOST.
+   We RESAMPLE simulateDiscards until every asked seat has a clear margin:
+     the target suit appears 0-1 times AND some other suit appears >=2 times,
+     so both question types have one unambiguous answer.
+   =========================================================================== */
+function suitCounts(pile){
+  const c={dot:0,bam:0,crak:0};
+  pile.forEach(t=>{ if(c[t.fam]!==undefined) c[t.fam]++; });
+  return c;
+}
+// does this seat have a clean, readable margin?  target<=1 and a clear max elsewhere.
+function seatReadable(pile,target){
+  const c=suitCounts(pile);
+  if(c[target]>1) return false;                  // they "discarded" their own suit too much
+  // the most-discarded suit must be clearly > target AND unique (one "not building" answer)
+  let max=-1, maxSuit=null, ties=0;
+  SUITS.forEach(s=>{ if(c[s]>max){max=c[s]; maxSuit=s; ties=1;} else if(c[s]===max) ties++; });
+  if(max<2) return false;                         // need >=2 of some suit for a clear NOT-building read
+  if(ties!==1) return false;                      // unique maximum — "not building" has one answer
+  if(maxSuit===target) return false;              // the most-discarded can't be the target
+  // collecting answer must be the unique least suit (== target)
+  let min=Infinity, minSuit=null, mties=0;
+  SUITS.forEach(s=>{ if(c[s]<min){min=c[s]; minSuit=s; mties=1;} else if(c[s]===min) mties++; });
+  if(minSuit!==target || mties!==1) return false; // target must be the single least-discarded suit
+  return true;
+}
+// the "clearly NOT building" answer = unique most-discarded suit
+function notBuildingAnswer(pile){
+  const c=suitCounts(pile);
+  let max=-1, maxSuit=null;
+  SUITS.forEach(s=>{ if(c[s]>max){max=c[s]; maxSuit=s;} });
+  return maxSuit;
+}
+// the "most likely COLLECTING" answer = the secret target (== unique least-discarded suit)
+function collectingAnswer(pile){
+  const c=suitCounts(pile);
+  let min=Infinity, minSuit=null;
+  SUITS.forEach(s=>{ if(c[s]<min){min=c[s]; minSuit=s;} });
+  return minSuit;
+}
+/* Build a fully-readable simulation: resample until the chosen asked-seats are clean.
+   askSeats: array of seat indices we will quiz.  Returns {targets,discardsBySeat,askSeats}. */
+function buildSim(turns, askSeats, rand){
+  for(let tries=0; tries<50; tries++){
+    const sim=K.simulateDiscards(turns,rand);
+    const ok=askSeats.every(s=>seatReadable(sim.discardsBySeat[s], sim.targets[s]));
+    if(ok) return {targets:sim.targets, discardsBySeat:sim.discardsBySeat, askSeats};
+  }
+  return null; // caller resamples askSeats / falls back
+}
+
+/* ---------- build one question scenario ---------- */
+function makeScenario(){
+  const askN=cur.ask;
+  // pick askN distinct seats; resample seat choice if the sim won't cooperate
+  for(let outer=0; outer<40; outer++){
+    const order=K.shuffle([0,1,2,3].slice());
+    const askSeats=order.slice(0,askN);
+    const sim=buildSim(cur.turns, askSeats);
+    if(!sim) continue;
+    // for each asked seat choose a question type (a=collecting, b=not-building)
+    const subs=askSeats.map(seat=>{
+      const type=K.pick(["collecting","notbuilding"]);
+      const pile=sim.discardsBySeat[seat];
+      const answer = type==="collecting" ? collectingAnswer(pile) : notBuildingAnswer(pile);
+      return {seat,type,answer};
+    });
+    return {targets:sim.targets, discardsBySeat:sim.discardsBySeat, subs,
+            kind: askN>1 ? "Two seats" : (subs[0].type==="collecting"?"Collecting":"Not building")};
+  }
+  return null;
+}
+
+/* ---------- prompt wording ---------- */
+function subPrompt(sub){
+  if(sub.type==="collecting") return `Which suit is <b>${WINDS[sub.seat]}</b> most likely <b>collecting</b>?`;
+  return `Which suit is <b>${WINDS[sub.seat]}</b> clearly <b>NOT</b> building?`;
+}
+
+/* ---------- shared renderer (used by tutorial AND game) ---------- */
+let sel; // {seat -> suit chosen}, plus locked flag
+function renderQuestion(sc,opts){
+  opts=opts||{}; sel={picks:{},locked:false};
+  const g=$("#game"); g.innerHTML="";
+  const banner=el("div","banner flash");
+  const askSeatSet=new Set(sc.subs.map(s=>s.seat));
+  const head = sc.subs.length>1
+    ? "Read both spotlighted seats from their discards."
+    : subPrompt(sc.subs[0]);
+  banner.innerHTML=(opts.tut?`<span class="tuttag">Tutorial${opts.step?" · "+opts.step:""}</span>`:"")+
+    (opts.tutText?`<div class="why" style="margin:0 0 8px; font-style:normal; color:var(--ink);">${opts.tutText}</div>`:"")+
+    `<div class="lead">Follow the discards</div><div class="ask">${head}</div>`+
+    `<div class="why">A seat discards <i>away</i> from its hand — the suit it throws least is the one it wants.</div>`;
+  g.appendChild(banner);
+
+  const tw=el("div","tablewrap"); const table=el("div","table");
+  const felt=el("div","felt"); felt.innerHTML=`<div class="fwind">The Table</div><div class="fhint">East is you<br>· play moves right ·</div>`; table.appendChild(felt);
+  POS.forEach((p,i)=>{
+    const isAsk=askSeatSet.has(i);
+    const s=el("div","seat "+p+(isAsk?" ask":(askSeatSet.size?" dim":"")));
+    s.dataset.seat=i;
+    const pileHTML=sc.discardsBySeat[i].length
+      ? sc.discardsBySeat[i].map(t=>K.tileChip(t,'sm')).join("")
+      : `<span class="pilelab">no discards</span>`;
+    s.innerHTML=`<div class="nm">${WINDS[i]}${isAsk?` <span class="askchip">read me</span>`:""}</div>`+
+      (i===0?`<div class="you">You</div>`:"")+
+      `<div class="pilelab">discard pile</div>`+
+      `<div class="pile">${pileHTML}</div>`+
+      `<div class="reveal" data-rev="${i}"></div>`;
+    table.appendChild(s);
+  });
+  tw.appendChild(table); g.appendChild(tw);
+
+  // one choice group per asked seat
+  const choices=el("div","choices");
+  sc.subs.forEach((sub,si)=>{
+    const grp=el("div","choicegrp");
+    const label = sub.type==="collecting"
+      ? `<b>${WINDS[sub.seat]}</b> is collecting…`
+      : `<b>${WINDS[sub.seat]}</b> is NOT building…`;
+    grp.innerHTML=`<div class="ghead">${label}</div>`;
+    const opts2=el("div","opts");
+    SUITS.forEach(suit=>{
+      const o=el("button","opt"); o.textContent=SUITLABEL[suit]; o.dataset.seat=sub.seat; o.dataset.suit=suit;
+      o.onclick=()=>onPick(sub.seat,suit,grp);
+      opts2.appendChild(o);
+    });
+    grp.appendChild(opts2); choices.appendChild(grp);
+  });
+  g.appendChild(choices);
+
+  const sb=el("div","submitbar");
+  const sub=el("button","btn"); sub.id="submitBtn"; sub.textContent=opts.tut?"Submit":"Submit answer"; sub.disabled=true; sub.onclick=()=>doSubmit(sc,opts); sb.appendChild(sub);
+  g.appendChild(sb);
+  const feed=el("div","feedline"); feed.id="feed"; g.appendChild(feed);
+  if(!opts.tut) updateHud();
+}
+function onPick(seat,suit,grp){
+  if(sel.locked)return;
+  sel.picks[seat]=suit;
+  grp.querySelectorAll('.opt').forEach(o=>o.classList.toggle('sel',o.dataset.suit===suit));
+  refreshSubmit();
+}
+function refreshSubmit(){ const need=curSubsCount(); const s=$("#submitBtn"); if(s)s.disabled=Object.keys(sel.picks).length<need; }
+let _curSubs=0; function curSubsCount(){return _curSubs;}
+
+function doSubmit(sc,opts){
+  const need=sc.subs.length;
+  if(sel.locked || Object.keys(sel.picks).length<need)return;
+  sel.locked=true; $("#submitBtn").disabled=true;
+  let allRight=true;
+  sc.subs.forEach(sub=>{
+    const chosen=sel.picks[sub.seat];
+    const correct=chosen===sub.answer;
+    if(!correct)allRight=false;
+    // mark the option buttons for this seat
+    document.querySelectorAll(`.opt[data-seat="${sub.seat}"]`).forEach(o=>{
+      if(o.dataset.suit===sub.answer)o.classList.add('right');
+      else if(o.dataset.suit===chosen)o.classList.add('wrong');
+    });
+  });
+  // reveal every seat's true target
+  POS.forEach((p,i)=>{ const r=document.querySelector(`.reveal[data-rev="${i}"]`); if(r)r.textContent="building "+SUITLABEL[sc.targets[i]]; });
+  const parts=sc.subs.map(sub=>{
+    const verb=sub.type==="collecting"?"collecting":"avoiding";
+    return `<b>${WINDS[sub.seat]}</b>: ${SUITLABEL[sub.answer]} (${verb})`;
+  });
+  $("#feed").innerHTML=(allRight?"Right. ":"Not quite. ")+parts.join(" · ")+".";
+  if(opts.tut) tutAfter(allRight); else gameAfter(sc,allRight);
+}
+
+/* ---------- TUTORIAL ---------- */
+// authored, fixed scenarios so the lesson is crisp (still satisfy readability)
+function tutDot(){return K.suitTile("dot",K.ri(9)+1);}
+function tutBam(){return K.suitTile("bam",K.ri(9)+1);}
+function tutCrak(){return K.suitTile("crak",K.ri(9)+1);}
+function fixedSeatPiles(piles){ // piles: array length 4 of arrays of tiles
+  return piles;
+}
+let TUT=null;
+function buildTut(){
+  // Seat South (1) discards lots of Dots+Craks, zero Bams -> collecting Bams.
+  const southPile=[tutDot(),tutCrak(),tutDot(),tutCrak(),tutDot()];
+  // Seat West (2) discards lots of Craks, few others -> NOT building Craks.
+  const westPile=[tutCrak(),tutCrak(),tutCrak(),tutDot(),tutBam()];
+  const piles1=[[tutCrak(),tutBam()],southPile,[tutDot()],[tutBam(),tutDot()]];
+  const piles2=[[tutBam()],[tutDot(),tutBam()],westPile,[tutDot()]];
+  TUT=[
+    { sc:{targets:["dot","bam","crak","dot"], discardsBySeat:piles1,
+          subs:[{seat:1,type:"collecting",answer:"bam"}], kind:"Collecting"},
+      text:"<b>Discards point away from the hand.</b> A player throws the suits they <i>don't</i> need. Look at <b>South</b>: piles of Dots and Craks, but no Bams. The suit they keep is the one they're building." },
+    { sc:{targets:["bam","dot","crak","dot"], discardsBySeat:piles2,
+          subs:[{seat:2,type:"notbuilding",answer:"crak"}], kind:"Not building"},
+      text:"<b>The flip side:</b> the suit a seat throws <i>most</i> is the one they're clearly NOT building. <b>West</b> keeps dumping Craks — so Craks are out of their plan." },
+    { sc:(makeScenario()||{targets:["dot","bam","crak","dot"],discardsBySeat:piles1,subs:[{seat:1,type:"collecting",answer:"bam"}],kind:"Collecting"}),
+      text:"<b>Your turn.</b> Read the spotlighted seat, pick the suit, and Submit. After you answer, every seat reveals what it was really building." },
+  ];
+}
+function startTutorial(){
+  clearInterval(timerId); $("#hudTime").textContent="0.0s"; $("#hudAcc").textContent="—"; $("#hudProg").textContent="0 / 0";
+  buildTut(); tutorial={step:0,right:0};
+  renderTut();
+}
+function renderTut(){
+  const t=TUT[tutorial.step];
+  _curSubs=t.sc.subs.length;
+  renderQuestion(t.sc,{tut:true,tutText:t.text,step:(tutorial.step+1)+" of "+TUT.length});
+}
+function tutAfter(correct){
+  if(correct)tutorial.right++;
+  const last=tutorial.step>=TUT.length-1;
+  const sb=document.querySelector('.submitbar');
+  const nxt=el("button","btn"); nxt.textContent=last?"Start playing ▶":"Next ▶";
+  nxt.onclick=()=>{ if(last){ prog.tutDone=true; saveProg(); showStart(); } else { tutorial.step++; renderTut(); } };
+  sb.innerHTML=""; sb.appendChild(nxt);
+}
+
+/* ---------- START / PLAY ---------- */
+function showStart(){
+  clearInterval(timerId);
+  const g=$("#game");
+  g.innerHTML=`<div class="banner flash"><div class="lead">Ready to play</div>
+    <div class="ask" style="font-size:1.15rem;">Read the table by following the discards.</div>
+    <div class="why"><b>East is you</b>, at the bottom. South to your right, West across, North to your left. The suit a seat throws least is the one it wants. The clock starts when you press Play.</div></div>
+    <div class="startwrap"><button id="playBtn" class="btn big">Play ▶</button>
+    <button id="tut2" class="btn ghost" style="margin-left:10px;">See the tutorial</button></div>`;
+  $("#playBtn").onclick=()=>deal();
+  $("#tut2").onclick=()=>startTutorial();
+  updateHud();
+}
+
+/* ---------- GAME ---------- */
+function startClock(){ if(!round.started){round.started=true; round.t0=performance.now(); timerId=setInterval(()=>{if(round.t0)$("#hudTime").textContent=((performance.now()-round.t0)/1000).toFixed(1)+"s";},100);} }
+function updateHud(){
+  const acc=round&&round.attempted?Math.round(round.firstRight/round.attempted*100):null;
+  $("#hudAcc").textContent=acc==null?"—":acc+"%";
+  $("#hudProg").textContent=round?(round.idx+" / "+round.K):"0 / 0";
+  const best=prog.best[cur.n]; $("#hudBest").textContent=best?best.toFixed(1)+"s":"—";
+  $("#levelTag").textContent=cur.title; $("#nextLevel").disabled=!(prog.unlocked>cur.n);
+}
+function deal(){
+  clearInterval(timerId);
+  const seq=[]; for(let i=0;i<QPR;i++){ let s=null,guard=0; while(!s&&guard++<8)s=makeScenario(); if(!s){ showErr("could not build a readable scenario"); return; } seq.push(s); }
+  round={seq,idx:0,K:QPR,firstRight:0,attempted:0,handle:{},started:false,t0:null};
+  $("#hudTime").textContent="0.0s";
+  renderPlay();
+}
+function renderPlay(){ const sc=round.seq[round.idx]; _curSubs=sc.subs.length; round._show=performance.now(); startClock(); renderQuestion(sc,{}); }
+function recordKind(kind,correct,ms){const f=prog.kinds[kind]||{seen:0,right:0,ms:0,n:0}; f.seen++; if(correct)f.right++; f.ms+=ms; f.n++; prog.kinds[kind]=f; round.handle[kind]=Math.max(round.handle[kind]||0,ms); saveProg();}
+function gameAfter(sc,correct){
+  const ms=performance.now()-round._show;
+  round.attempted++; if(correct)round.firstRight++; recordKind(sc.kind,correct,ms);
+  setTimeout(()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else renderPlay(); }, correct?cur.pace:Math.max(cur.pace+700,1500));
+}
+function finishRound(){
+  clearInterval(timerId);
+  const secs=(performance.now()-round.t0)/1000, acc=Math.round(round.firstRight/round.attempted*100), clean=acc===100;
+  if(window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode:"detective",level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean});
+  if(clean){ if(!prog.best[cur.n]||secs<prog.best[cur.n])prog.best[cur.n]=+secs.toFixed(1); if(cur.n>=prog.unlocked&&cur.n<LEVELS.length)prog.unlocked=cur.n+1; saveProg(); }
+  const allCleared = prog.unlocked>LEVELS.length || (prog.best[1]&&prog.best[2]&&prog.best[3]);
+  if(clean && cur.n===LEVELS.length && allCleared && !prog.celebrated){
+    prog.celebrated=true; saveProg();
+    K.primCongrats(`<p class="verdict">You can read a table by its leavings — the quietest suit in a player's discards is the one they're chasing. That's detective work most players never learn. Beautiful eyes, friend.</p>`, ()=>{});
+  }
+  const slow=Object.entries(round.handle).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([n,ms])=>`<b>${n}</b> ${(ms/1000).toFixed(1)}s`).join(" · ");
+  $("#cardTitle").textContent=clean?"Case closed.":"Round cleared.";
+  $("#cardVerdict").textContent=clean?(cur.n<LEVELS.length?"Every read, first try. The next level is open to you.":"You read every seat cold — collecting and avoiding alike. The table has no secrets from you now."):`${round.firstRight} of ${round.attempted} right on the first try. Run it again until it's clean.`;
+  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s"; $("#cardSlow").innerHTML=slow?"Where you hesitated: "+slow:"";
+  $("#cardNext").disabled=!(clean&&cur.n<LEVELS.length); $("#scrim").classList.add("show"); updateHud();
+}
+
+/* ---------- wiring ---------- */
+function gotoLevel(n){cur=LEVELS[n-1]; showStart();}
+$("#tutBtn").onclick=()=>startTutorial();
+$("#newRound").onclick=()=>showStart();
+$("#nextLevel").onclick=()=>{if(prog.unlocked>cur.n)gotoLevel(cur.n+1);};
+$("#cardAgain").onclick=()=>{$("#scrim").classList.remove("show"); deal();};
+$("#cardNext").onclick=()=>{$("#scrim").classList.remove("show"); if(cur.n<LEVELS.length)gotoLevel(cur.n+1);};
+$("#cardChoose").onclick=()=>{$("#scrim").classList.remove("show"); startTutorial(); window.scrollTo({top:0,behavior:'smooth'});};
+$("#cardDone").onclick=()=>{$("#scrim").classList.remove("show"); showSummary();};
+$("#resetAll").onclick=()=>{if(confirm("Reset all progress and best times?")){localStorage.removeItem(LS); prog=loadProg(); prog.unlocked=1; prog.best={}; prog.kinds={}; prog.tutDone=false; prog.celebrated=false; saveProg(); cur=LEVELS[0]; startTutorial();}};
+$("#stopBtn").onclick=()=>{
+  clearInterval(timerId);
+  const secs=(round&&round.t0)?(performance.now()-round.t0)/1000:0, acc=(round&&round.attempted)?Math.round(round.firstRight/round.attempted*100):0;
+  if(secs>0&&window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode:"detective",level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean:false});
+  $("#cardTitle").textContent="Stopped."; $("#cardVerdict").textContent="You ended the round early. Pick up wherever you like.";
+  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s"; $("#cardSlow").innerHTML="";
+  $("#cardNext").disabled=!(prog.unlocked>cur.n); $("#scrim").classList.add("show");
+};
+function showSummary(){
+  clearInterval(timerId); let rows='';
+  for(let L=1;L<=3;L++){const b=prog.best[L]; if(b)rows+=`<tr><td>Level ${L}</td><td>${b.toFixed(1)}s</td></tr>`;}
+  if(!rows)rows=`<tr><td colspan="2" style="color:var(--ink-soft); font-style:italic;">No clean rounds yet — clear one at 100% to set a best time.</td></tr>`;
+  const kinds=Object.entries(prog.kinds||{}).filter(([n,f])=>f.seen>0);
+  const reps=kinds.reduce((s,[,f])=>s+f.seen,0);
+  const work=kinds.map(([n,f])=>({n,acc:f.right/f.seen,ms:f.ms/f.n})).sort((a,b)=>a.acc-b.acc||b.ms-a.ms).slice(0,3).map(x=>`<b>${x.n}</b> ${Math.round(x.acc*100)}%`).join(' · ');
+  $("#game").innerHTML=`<div class="summary"><h2>Your detective work so far</h2>
+    <table><thead><tr><th>Level</th><th>Best (100%)</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="note">${reps} reads practiced${work?` · spots to work on: ${work}`:''}</p>
+    ${(window.OOTT&&window.OOTT.user)?`<p class="note">You're signed in — your progress and best times are saved to your account.</p>`:`<p class="note">These stats live on this device. If you haven't made a free account yet, create one to keep your record across devices and climb the leaderboard — we'll never sell your information.</p><button class="btn" onclick="window.OOTT&&window.OOTT.openAuth&&window.OOTT.openAuth()">Create a free account</button>`}
+    <button class="btn ghost" id="backToPlay">Back to play</button></div>`;
+  $("#backToPlay").onclick=()=>showStart();
+}
+
+/* first load: tutorial for newcomers, otherwise the Play screen */
+if(prog.tutDone) showStart(); else startTutorial();
+</script>
+<script type="module" src="../_engine/leaderboard.js"></script>
+</body>
+</html>

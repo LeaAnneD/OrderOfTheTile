@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Penalty Identifier — Order of the Tile</title>
+<link rel="icon" type="image/png" href="/images/seal.png">
+<link rel="apple-touch-icon" href="/images/seal.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
+    --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
+    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A;
+    --felt:#5C7A66; --felt-2:#4E6A58;
+    --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
+  .wrap{max-width:920px; margin:0 auto; padding:18px 16px 40px;}
+  h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.6rem; margin:.1em 0;}
+  .sub{color:var(--ink-soft); font-style:italic; margin:0 0 14px;}
+  .toprow{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:4px 0 10px;}
+  .leveltag{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); font-size:1.0rem;}
+  .toprow .btn.mini{margin-left:auto;}
+  .hud{display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 16px;}
+  .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px 14px; box-shadow:var(--shadow); min-width:100px;}
+  .stat .k{font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft);}
+  .stat .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; line-height:1.1;}
+  .banner{background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:14px 18px; margin-bottom:14px;}
+  .banner .lead{font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft);}
+  .banner .ask{font-family:"Playfair Display",serif; font-weight:700; font-size:1.18rem; margin-top:4px; line-height:1.32;}
+  .banner .why{font-style:italic; color:var(--ink-soft); font-size:.92rem; margin-top:8px; line-height:1.35;}
+  .banner .tiles{margin-top:10px;}
+  @keyframes flashpulse{0%,100%{box-shadow:var(--shadow);} 50%{box-shadow:0 0 0 3px var(--gold), var(--shadow); background:#FBEFD4;}}
+  .banner.flash{animation:flashpulse .9s ease 2;}
+  .tuttag{display:inline-block; font-family:"Playfair Display",serif; font-weight:700; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:#fff; background:var(--sage); border-radius:999px; padding:3px 12px; margin-bottom:8px;}
+  /* verdict buttons */
+  .choices{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:6px 0 2px;}
+  .choice{flex:1 1 160px; max-width:240px; font-family:"Playfair Display",serif; font-weight:700; font-size:1.05rem; padding:16px 14px; border-radius:13px; border:1.5px solid var(--line); background:#fff; color:var(--ink); cursor:pointer; box-shadow:var(--shadow); text-align:center; transition:border-color .12s, background .12s, transform .08s, box-shadow .12s;}
+  .choice .em{display:block; font-size:1.4rem; margin-bottom:4px;}
+  .choice:hover{border-color:var(--rose);}
+  .choice.sel{border-color:var(--rose); background:#F6E9E6; box-shadow:0 0 0 2px var(--rose) inset, var(--shadow);}
+  .choice.right{border-color:var(--good); background:var(--good-bg); box-shadow:0 0 0 2px var(--good) inset, var(--shadow);}
+  .choice.wrong{border-color:var(--bad); background:var(--bad-bg); box-shadow:0 0 0 2px var(--bad) inset, var(--shadow);}
+  .choice:disabled{cursor:default;}
+  /* follow-up rule picker */
+  .followup{margin-top:14px; background:#fff; border:1px solid var(--line); border-radius:13px; padding:14px 16px; box-shadow:var(--shadow);}
+  .followup .fh{font-family:"Playfair Display",serif; font-weight:700; font-size:1.0rem; margin-bottom:10px;}
+  .ruleopt{display:block; width:100%; text-align:left; font-family:"Crimson Text",serif; font-size:.98rem; padding:11px 14px; margin:7px 0; border-radius:10px; border:1px solid var(--line); background:var(--paper); color:var(--ink); cursor:pointer; box-shadow:0 1px 3px rgba(43,38,34,.08); transition:border-color .12s, background .12s;}
+  .ruleopt:hover{border-color:var(--rose);}
+  .ruleopt.sel{border-color:var(--rose); background:#F6E9E6;}
+  .ruleopt.right{border-color:var(--good); background:var(--good-bg);}
+  .ruleopt.wrong{border-color:var(--bad); background:var(--bad-bg);}
+  .ruleopt:disabled{cursor:default;}
+  .submitbar{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin:14px 0 2px;}
+  .feedline{text-align:center; font-style:italic; color:var(--ink-soft); min-height:1.4em; margin-top:10px; font-size:.96rem; line-height:1.4;}
+  .feedline b{font-style:normal; color:var(--ink);}
+  .feedline .rule{font-style:normal; font-family:"Playfair Display",serif; font-weight:700; color:var(--rose-deep);}
+  .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; align-items:center;}
+  button.btn{font-family:"Crimson Text",serif; font-size:1rem; border-radius:11px; padding:9px 18px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer; box-shadow:var(--shadow);}
+  button.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
+  button:disabled{opacity:.45; cursor:not-allowed;}
+  .hint{color:var(--ink-soft); font-style:italic; font-size:.92rem;}
+  .startwrap{text-align:center;}
+  .startwrap .big{font-size:1.15rem; padding:13px 34px;}
+  .scrim{position:fixed; inset:0; background:rgba(43,38,34,.42); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000;}
+  .scrim.show{display:flex;}
+  .card{background:var(--paper); border-radius:18px; max-width:440px; width:100%; padding:26px 24px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line);}
+  .card h2{font-family:"Playfair Display",serif; margin:.1em 0 .3em; font-size:1.5rem;}
+  .card .verdict{font-style:italic; color:var(--ink-soft); margin-bottom:16px;}
+  .scoreline{display:flex; gap:12px; margin:14px 0;}
+  .scoreline .stat{flex:1; text-align:center;}
+  .slow{font-size:.92rem; color:var(--ink-soft); margin:10px 0 4px;} .slow b{color:var(--ink); font-style:normal;}
+  .modal-actions{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px;}
+  .modal-actions .btn{width:100%; padding:11px 10px; font-size:.96rem; margin:0;}
+  .prim-card p{line-height:1.5;}
+  .summary{background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); padding:18px;}
+  .summary h2{font-family:"Playfair Display",serif; margin:.1em 0 .5em;}
+  .summary table{width:100%; border-collapse:collapse; font-size:.95rem; margin-bottom:6px;}
+  .summary td,.summary th{text-align:left; padding:5px 8px; border-bottom:1px solid var(--line);}
+  .summary th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .summary .note{font-style:italic; color:var(--ink-soft); margin:12px 0; font-size:.92rem;}
+  .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:8px; flex-wrap:wrap;}
+  .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.9rem; font-style:italic;}
+  .btn.mini{font-size:.85rem; padding:6px 12px;}
+  .authform{display:flex; flex-direction:column; gap:10px;}
+  .authform input{font-family:inherit; font-size:1rem; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
+  .authmsg{font-size:.9rem; color:var(--bad); min-height:1.2em;} .authmsg.ok{color:var(--good);}
+  .lbtabs{display:flex; gap:8px; margin-bottom:12px;}
+  .lbtable{width:100%; border-collapse:collapse; font-size:.95rem;}
+  .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;}
+  .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
+  @media(max-width:560px){ h1{font-size:1.34rem;} .banner .ask{font-size:1.06rem;} .choice{font-size:.98rem; padding:13px 10px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="authbar" id="authbar">
+    <span id="authStatus" class="authstatus">·</span>
+    <button id="lbBtn" class="btn ghost mini">Leaderboard</button>
+    <button id="authBtn" class="btn mini">Log in / Sign up</button>
+    <button id="logoutBtn" class="btn ghost mini" style="display:none;">Log out</button>
+  </div>
+  <h1>Penalty Identifier</h1>
+  <p class="sub">A play just happened at the table. Legal — or a violation? And if it's a violation, which rule was broken? Learn to spot the trouble before it costs a hand.</p>
+
+  <div class="toprow">
+    <div class="leveltag" id="levelTag">Level 1</div>
+    <button id="tutBtn" class="btn ghost mini">How to play</button>
+  </div>
+
+  <div class="hud">
+    <div class="stat"><div class="k">Accuracy</div><div class="v" id="hudAcc">—</div></div>
+    <div class="stat"><div class="k">Time</div><div class="v" id="hudTime">0.0s</div></div>
+    <div class="stat"><div class="k">Answered</div><div class="v" id="hudProg">0 / 0</div></div>
+    <div class="stat"><div class="k">Best (100%)</div><div class="v" id="hudBest">—</div></div>
+  </div>
+
+  <div id="game"></div>
+
+  <div class="controls">
+    <button id="newRound" class="btn ghost">New round</button>
+    <button id="nextLevel" class="btn" disabled>Next level</button>
+    <span class="hint" id="hint">Clear a round at 100% on the first try to open the next level.</span>
+    <button id="stopBtn" class="btn ghost" style="margin-left:auto;">Stop</button>
+    <button id="resetAll" class="btn ghost" style="font-size:.85rem; padding:6px 12px;">Reset progress</button>
+  </div>
+
+  <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
+  <p class="footer-note">Order of the Tile · a free practice drill · American Mah Jongg (NMJL) · <span id="buildStamp">build —</span></p>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="card">
+    <h2 id="cardTitle">Round cleared</h2>
+    <p class="verdict" id="cardVerdict"></p>
+    <div class="scoreline">
+      <div class="stat"><div class="k">Accuracy</div><div class="v" id="cardAcc">—</div></div>
+      <div class="stat"><div class="k">Time</div><div class="v" id="cardTime">—</div></div>
+    </div>
+    <div class="slow" id="cardSlow"></div>
+    <div class="modal-actions">
+      <button id="cardAgain" class="btn ghost">Play again</button>
+      <button id="cardNext" class="btn" disabled>Next level</button>
+      <button id="cardChoose" class="btn ghost">How to play</button>
+      <button id="cardDone" class="btn ghost">Finished</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.OOTT_GAME="penalty-identifier"; window.OOTT_GAME_NAME="Penalty Identifier";
+  window.OOTT_REDIRECT="https://www.orderofthetile.com/mini-games/penalty-identifier/";
+</script>
+<script src="../_engine/scenario.js"></script>
+<script>
+const BUILD="v1 · 2026-06-11";
+function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_pi_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_pi_err',JSON.stringify(log.slice(-12)));}catch(_){}}
+window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
+window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
+document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
+
+const K=window.OOTTKit;
+const $=s=>document.querySelector(s);
+const el=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+
+/* ---------- the rule library (the follow-up multiple-choice options) ----------
+   Every violation scenario names exactly ONE of these as its broken rule.        */
+const RULES={
+  PICK_AHEAD:   {label:"Picking ahead", short:"Picking ahead"},
+  OUT_OF_TURN:  {label:"Picking / calling out of turn", short:"Out of turn"},
+  MISNAME:      {label:"Calling a tile that wasn't correctly named", short:"Tile not named"},
+  WINDOW:       {label:"Calling after the window closed", short:"Window closed"},
+  BAD_EXPOSURE: {label:"Incorrect exposure (not a like-tile Pung/Kong/etc.)", short:"Bad exposure"},
+  JOKER:        {label:"Illegal Joker use or exchange", short:"Joker rule"},
+  WRONG_WALL:   {label:"Picking from the wrong wall or wrong end", short:"Wrong wall"},
+  DOUBLE:       {label:"Wrong tile taken on a rapid double-discard", short:"Double-discard"},
+  COMMIT:       {label:"A claimed tile must go on top of the rack / you're committed once placed", short:"Rack commit"},
+};
+/* the fixed set of options shown on every follow-up (stable order) */
+const RULE_ORDER=["PICK_AHEAD","OUT_OF_TURN","MISNAME","WINDOW","BAD_EXPOSURE","JOKER","WRONG_WALL","DOUBLE","COMMIT"];
+
+/* ---------- helpers to drop a tile chip or two into a scenario ---------- */
+function chip(t){ return K.tileChip(t,'sm'); }
+const T={
+  dot:r=>K.suitTile('dot',r), bam:r=>K.suitTile('bam',r), crak:r=>K.suitTile('crak',r),
+  wind:w=>K.windTile(w), red:()=>K.dragonTile('R'), green:()=>K.dragonTile('G'),
+  soap:()=>K.dragonTile('0'), flower:()=>K.flowerTile(), joker:()=>K.jokerTile()
+};
+
+/* ==========================================================================
+   AUTHORED SCENARIO BANK
+   Each item:
+     id, level, text (1-3 sentences), tiles? (HTML for chips),
+     legal (true=legal / false=violation),
+     rule (RULES key, only if violation),
+     why (one-line Prim explanation for the feedback),
+     sure (false => flagged as "verify with Lea Anne")
+   Source of truth: "Mahjong Made Easy". Lea Anne is the final authority.
+   ========================================================================== */
+const BANK=[
+  /* ---------- LEVEL 1 — clear-cut ---------- */
+  {id:"L1-legal-flow", level:1, legal:true,
+   text:"North discards a tile and names it. Nobody calls it, so East — the player to North's right — draws from the wall and takes their turn.",
+   why:"Textbook flow. Play moves to the right, and an un-called discard simply passes the turn to the next seat."},
+
+  {id:"L1-pick-ahead", level:1, legal:false, rule:"PICK_AHEAD",
+   text:"It's South's turn. South throws a discard onto the table <em>before</em> ever drawing a tile from the wall.",
+   why:"Discarding before you've drawn is 'picking ahead' — your hand is dead."},
+
+  {id:"L1-out-of-turn", level:1, legal:false, rule:"OUT_OF_TURN",
+   text:"It is West's turn to draw. North reaches over, takes a tile from the wall, and racks it before West has done anything.",
+   why:"Drawing when it isn't your turn is picking out of turn — and once it's racked, the hand stays dead."},
+
+  {id:"L1-single-call", level:1, legal:false, rule:"BAD_EXPOSURE",
+   text:"East discards a 5 Bam. West says 'Call!' and exposes it sitting alone on top of her rack, planning to pair it later.",
+   tiles:[T.bam(5)],
+   why:"You can only call a discard to complete a Pung, Kong, Quint or Sextet of like tiles — never to hold a single."},
+
+  {id:"L1-legal-pung", level:1, legal:true,
+   text:"South discards a Green Dragon. East already holds two Green Dragons, calls the discard, and exposes all three together on top of the rack.",
+   tiles:[T.green(),T.green(),T.green()],
+   why:"A discard called to complete a Pung of three like tiles is a clean, legal exposure."},
+
+  {id:"L1-wrong-wall", level:1, legal:false, rule:"WRONG_WALL",
+   text:"On her turn, South ignores the live wall in front of the discarder and instead helps herself to a tile from the far end of a different wall.",
+   why:"Tiles must come from the correct wall and end. Picking from the wrong wall kills the hand."},
+
+  {id:"L1-east-14", level:1, legal:true,
+   text:"At the very start of the hand, East holds 14 tiles while everyone else holds 13, and East makes the game's first discard without drawing.",
+   why:"Correct. East is dealt 14 and opens with the first discard; the other three start with 13."},
+
+  {id:"L1-legal-passrack", level:1, legal:true,
+   text:"West discards a tile and names it. East, to West's right, picks from the wall, racks her tile, and discards. Normal turn — nobody called anything.",
+   why:"Nothing illegal here. This is just one ordinary turn passing to the right."},
+
+  /* ---------- LEVEL 2 — calling window + naming ---------- */
+  {id:"L2-misname-call", level:2, legal:false, rule:"MISNAME",
+   text:"East discards a tile but calls it 'West' when it is actually a North. South takes it on that name and exposes a Pung. The tile was never correctly named.",
+   tiles:[T.wind('N')],
+   why:"A discard can't be claimed until it's correctly named. Exposing on a mis-named tile kills the caller's hand (the mis-namer isn't penalized)."},
+
+  {id:"L2-window-closed", level:2, legal:false, rule:"WINDOW",
+   text:"East discards. South (to East's right) has already drawn from the wall and racked her tile. Only now does North shout to call East's discard.",
+   why:"The calling window shut the moment the player after the discarder drew and racked. North is too late."},
+
+  {id:"L2-window-open", level:2, legal:true,
+   text:"East discards a Soap. Before South has drawn anything from the wall, North calls the Soap for a Kong. The call lands inside the open window.",
+   tiles:[T.soap()],
+   why:"The window is still open until the player to the discarder's right draws and racks — so North's call is good."},
+
+  {id:"L2-during-joker-exchange", level:2, legal:false, rule:"WINDOW",
+   text:"West is in the middle of swapping a natural tile for a Joker in another player's exposure. While that's happening, South tries to call the last discard.",
+   why:"You may not call a discard while another player is doing a Joker exchange — the table is mid-transaction."},
+
+  {id:"L2-after-mahjong", level:2, legal:false, rule:"WINDOW",
+   text:"North lays down a complete hand and declares Mah Jongg. A beat later, East says she wants to call the tile that was just discarded.",
+   why:"Once Mah Jongg is declared, the hand is over. No further calls are allowed."},
+
+  {id:"L2-commit-onrack", level:2, legal:true,
+   text:"South calls a discard, places it on top of her rack and exposes her Pung. She then realizes she'd rather have passed — but she leaves the exposure up and plays on.",
+   why:"Right call. A claimed tile goes on top of the rack and you're committed the instant you place and expose it."},
+
+  {id:"L2-took-into-hand", level:2, legal:false, rule:"COMMIT",
+   text:"East calls a discard, but instead of exposing it on top of the rack she slides the tile down into her concealed hand with the others.",
+   why:"A called tile must sit on top of the rack as part of the exposure — it can't be buried in the hand."},
+
+  {id:"L2-preference-exposed", level:2, legal:true,
+   text:"A tile is discarded. The very next player in turn wants it for an exposure — but a different player, who has ALREADY exposed tiles, also calls it. The already-exposed player is given the tile.",
+   why:"Calling preference goes to the next player in turn EXCEPT against someone who has already exposed; the exposed player wins it.",
+   sure:false},
+
+  {id:"L2-legal-correct-name", level:2, legal:true,
+   text:"South discards and clearly names it 'Three Crak'. West, who needs exactly that, calls it and completes her Kong of Three Craks on top of the rack.",
+   tiles:[T.crak(3),T.crak(3),T.crak(3),T.crak(3)],
+   why:"Correctly named, correctly claimed, exposed as a like-tile Kong — all clean."},
+
+  {id:"L2-mahjong-beats-call", level:2, legal:true,
+   text:"East discards. South calls it for an exposure, but at the same moment North declares the same tile completes her hand for Mah Jongg. North is awarded the tile.",
+   why:"Mah Jongg always beats a call for exposure — the win takes the tile."},
+
+  /* ---------- LEVEL 3 — subtle ---------- */
+  {id:"L3-joker-pair", level:3, legal:false, rule:"JOKER",
+   text:"West is building a pair and tries to use a Joker as the second tile of that pair, exposing the Joker as if it counts.",
+   tiles:[T.joker()],
+   why:"A Joker can never stand in for a single or a pair — only for tiles inside a Pung, Kong, Quint or Sextet."},
+
+  {id:"L3-joker-redeem-own", level:3, legal:true,
+   text:"On her own turn, after she has drawn and racked, North swaps the matching natural Bam into another player's exposure and takes back the Joker.",
+   tiles:[T.bam(6)],
+   why:"A Joker in an exposure may be redeemed with the matching natural tile on your own turn — done correctly here."},
+
+  {id:"L3-joker-early-swap", level:3, legal:false, rule:"JOKER",
+   text:"Before she has drawn and racked her tile for the turn (and without calling and exposing), South reaches in to exchange a natural tile for a Joker in an exposure.",
+   tiles:[T.joker()],
+   why:"A Joker exchange is only legal once you've picked and racked, or called and exposed. Swapping early kills the hand."},
+
+  {id:"L3-double-discard", level:3, legal:false, rule:"DOUBLE",
+   text:"Two identical 7 Dots are discarded in rapid succession by two players. A caller reaches in and snaps up the FIRST of the two for her exposure.",
+   tiles:[T.dot(7),T.dot(7)],
+   why:"On a rapid double-discard, the caller must take the SECOND identical tile, not the first."},
+
+  {id:"L3-double-correct", level:3, legal:true,
+   text:"Two identical West winds hit the table back-to-back. The caller takes the SECOND of the two and exposes her Pung.",
+   tiles:[T.wind('W'),T.wind('W')],
+   why:"Correct — when two like tiles are discarded in quick succession, the caller takes the second one."},
+
+  {id:"L3-news-exposure", level:3, legal:false, rule:"BAD_EXPOSURE",
+   text:"East calls a discard and exposes North, East, West, South together as a 'NEWS' group on top of her rack.",
+   tiles:[T.wind('N'),T.wind('E'),T.wind('W'),T.wind('S')],
+   why:"An exposure must be like tiles (a Pung, Kong, etc.). A NEWS group of four different winds isn't a legal exposure."},
+
+  {id:"L3-year-exposure", level:3, legal:false, rule:"BAD_EXPOSURE",
+   text:"South calls a discard and exposes a string of non-identical 'year' tiles together as one group.",
+   why:"A year grouping is made of different tiles, so it can't be exposed — an exposure must be like tiles only."},
+
+  {id:"L3-misname-mahjong", level:3, legal:false, rule:"MISNAME",
+   text:"North discards and calls it 'Soap', but it's actually a One Bam. East declares Mah Jongg on that mis-named tile.",
+   tiles:[T.bam(1)],
+   why:"Mah Jongg wrongly declared on a mis-named tile makes the mis-caller pay the claimant — the special case of the naming rule.",
+   sure:false},
+
+  {id:"L3-legal-quint-joker", level:3, legal:true,
+   text:"West calls a discard to complete a Quint of five like tiles, using two Jokers and the natural tiles together in the exposure.",
+   tiles:[T.dot(5),T.dot(5),T.joker(),T.dot(5),T.joker()],
+   why:"Jokers are fine inside a Pung/Kong/Quint/Sextet — a Quint exposure with Jokers is perfectly legal."},
+
+  {id:"L3-legal-late-no-call", level:3, legal:true,
+   text:"East discards. South, the next seat, draws and racks. The window has closed — and nobody tries to call. Play simply continues with South's discard.",
+   why:"No violation: the window closed normally and no one attempted a late call. The turn just rolls on."},
+];
+
+/* answer-key sanity is enforced in the self-test below */
+
+/* ---------- levels ---------- */
+const LEVELS=[
+  {n:1,title:"Level 1 — Clear-Cut Fouls"},
+  {n:2,title:"Level 2 — The Calling Window"},
+  {n:3,title:"Level 3 — The Subtle Stuff"},
+];
+const LS="oott_penalty_v1";
+function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
+function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
+let prog=loadProg(); prog.unlocked=prog.unlocked||1; prog.best=prog.best||{}; prog.kinds=prog.kinds||{}; prog.tutDone=prog.tutDone||false; prog.fullDone=prog.fullDone||false;
+let cur=LEVELS[0], round=null, timerId=null, tutorial=null;
+const QPR=6; // questions per round
+
+/* ---------- pick K scenarios for a level (roughly balanced legal/violation) ---------- */
+function dealBank(level){
+  const pool=BANK.filter(b=>b.level===level);
+  const legal=K.shuffle(pool.filter(b=>b.legal).slice());
+  const viol =K.shuffle(pool.filter(b=>!b.legal).slice());
+  const want=QPR, half=Math.floor(want/2);
+  const seq=[];
+  for(let i=0;i<half;i++){ if(legal.length)seq.push(legal[i%legal.length]); }
+  for(let i=0;i<want-half;i++){ if(viol.length)seq.push(viol[i%viol.length]); }
+  // if a category was short, top up from the whole pool
+  const all=K.shuffle(pool.slice());
+  let ai=0; while(seq.length<want && all.length){ seq.push(all[ai%all.length]); ai++; }
+  return K.shuffle(seq).slice(0,want);
+}
+
+/* ---------- render one scenario (used by tutorial + game) ---------- */
+let sel={verdict:null,rule:null,phase:"verdict",locked:false};
+function renderScenario(sc,opts){
+  opts=opts||{}; sel={verdict:null,rule:null,phase:"verdict",locked:false};
+  const g=$("#game"); g.innerHTML="";
+  const banner=el("div","banner flash");
+  banner.innerHTML=(opts.tut?`<span class="tuttag">Tutorial${opts.step?" · "+opts.step:""}</span>`:"")+
+    (opts.tutText?`<div class="why" style="margin:0 0 8px; font-style:normal; color:var(--ink);">${opts.tutText}</div>`:"")+
+    `<div class="lead">At the table</div><div class="ask">${sc.text}</div>`+
+    (sc.tiles?`<div class="tiles">${K.tileRow(sc.tiles,'sm')}</div>`:"")+
+    `<div class="why">Legal play, or a violation?</div>`;
+  g.appendChild(banner);
+
+  const choices=el("div","choices");
+  const cl=el("button","choice"); cl.id="chLegal"; cl.dataset.v="legal";
+  cl.innerHTML=`<span class="em">✓</span>Legal`;
+  const cv=el("button","choice"); cv.id="chViol"; cv.dataset.v="violation";
+  cv.innerHTML=`<span class="em">⚠</span>Violation`;
+  cl.onclick=()=>onVerdict(sc,opts,"legal");
+  cv.onclick=()=>onVerdict(sc,opts,"violation");
+  choices.appendChild(cl); choices.appendChild(cv);
+  g.appendChild(choices);
+
+  const fuWrap=el("div"); fuWrap.id="fuWrap"; g.appendChild(fuWrap);
+
+  const sb=el("div","submitbar");
+  const sub=el("button","btn"); sub.id="submitBtn"; sub.textContent="Submit answer"; sub.disabled=true; sub.onclick=()=>doSubmit(sc,opts); sb.appendChild(sub);
+  g.appendChild(sb);
+  const feed=el("div","feedline"); feed.id="feed"; g.appendChild(feed);
+  if(!opts.tut) updateHud();
+}
+function onVerdict(sc,opts,v){
+  if(sel.locked)return;
+  sel.verdict=v;
+  $("#chLegal").classList.toggle('sel',v==="legal");
+  $("#chViol").classList.toggle('sel',v==="violation");
+  // show / hide the follow-up rule picker
+  const fu=$("#fuWrap");
+  if(v==="violation"){
+    fu.innerHTML="";
+    const box=el("div","followup");
+    box.innerHTML=`<div class="fh">Which rule was broken?</div>`;
+    RULE_ORDER.forEach(rk=>{
+      const b=el("button","ruleopt"); b.dataset.r=rk; b.textContent=RULES[rk].label;
+      b.onclick=()=>onRule(rk); box.appendChild(b);
+    });
+    fu.appendChild(box);
+    sel.rule=null;
+  } else { fu.innerHTML=""; sel.rule=null; }
+  refreshSubmit();
+}
+function onRule(rk){
+  if(sel.locked)return;
+  sel.rule=rk;
+  [...document.querySelectorAll('.ruleopt')].forEach(b=>b.classList.toggle('sel',b.dataset.r===rk));
+  refreshSubmit();
+}
+function refreshSubmit(){
+  const s=$("#submitBtn"); if(!s)return;
+  if(sel.verdict==="legal") s.disabled=false;
+  else if(sel.verdict==="violation") s.disabled=!sel.rule;
+  else s.disabled=true;
+}
+
+/* ---------- grade ---------- */
+function gradeScenario(sc,pick){
+  // pick = {verdict, rule}
+  if(sc.legal) return {correct: pick.verdict==="legal", labelRight:pick.verdict==="legal", ruleRight:true};
+  // violation: need verdict==violation AND correct rule
+  const labelRight = pick.verdict==="violation";
+  const ruleRight  = labelRight && pick.rule===sc.rule;
+  return {correct: labelRight && ruleRight, labelRight, ruleRight};
+}
+
+function doSubmit(sc,opts){
+  if(sel.locked)return;
+  if(sel.verdict==null)return;
+  if(sel.verdict==="violation" && !sel.rule)return;
+  sel.locked=true;
+  const g=gradeScenario(sc,{verdict:sel.verdict,rule:sel.rule});
+  $("#submitBtn").disabled=true;
+  // paint verdict buttons
+  const truthV=sc.legal?"legal":"violation";
+  ["#chLegal","#chViol"].forEach(id=>{ const b=$(id); b.disabled=true; b.classList.remove('sel');
+    if(b.dataset.v===truthV) b.classList.add('right');
+    else if(b.dataset.v===sel.verdict) b.classList.add('wrong'); });
+  // paint rule options if shown
+  if(sel.verdict==="violation"){
+    [...document.querySelectorAll('.ruleopt')].forEach(b=>{ b.disabled=true; b.classList.remove('sel');
+      if(!sc.legal && b.dataset.r===sc.rule) b.classList.add('right');
+      else if(b.dataset.r===sel.rule) b.classList.add('wrong'); });
+  }
+  // feedback line
+  let msg;
+  if(sc.legal){
+    msg=(g.correct?"Right — ":"Not quite — ")+"<b>this is legal play.</b> "+sc.why;
+  } else {
+    const rn=`<span class="rule">${RULES[sc.rule].short}</span>`;
+    if(g.correct) msg=`Right — <b>violation</b>: ${rn}. ${sc.why}`;
+    else if(g.labelRight) msg=`A violation, yes — but the rule is ${rn}. ${sc.why}`;
+    else msg=`Actually a <b>violation</b> — ${rn}. ${sc.why}`;
+  }
+  $("#feed").innerHTML=msg;
+  if(opts.tut) tutAfter(g.correct); else gameAfter(sc,g.correct);
+}
+
+/* ---------- TUTORIAL ---------- */
+const TUT=[
+  {sc:{legal:false,rule:"PICK_AHEAD",text:"It's South's turn. South tosses a discard onto the table before drawing any tile from the wall.",why:"Discarding before you draw is 'picking ahead' — the hand is dead."},
+   text:"<b>First, judge the play: Legal or a violation?</b> Read the situation, then tap your verdict. This one is a violation — try tapping <b>Violation</b>."},
+  {sc:{legal:false,rule:"PICK_AHEAD",text:"It's South's turn. South tosses a discard onto the table before drawing any tile from the wall.",why:"Discarding before you draw is 'picking ahead' — the hand is dead."},
+   text:"<b>If it's a violation, a follow-up appears: which rule?</b> Pick the broken rule from the list, then Submit. Here the answer is <b>Picking ahead</b>."},
+  {sc:{legal:true,text:"North discards and names the tile. Nobody calls it, so East — to North's right — draws from the wall and plays on.",why:"A clean, ordinary turn. Play moves to the right."},
+   text:"<b>Plenty of plays are perfectly legal.</b> When nothing's wrong, just tap <b>Legal</b> and Submit — no follow-up needed. Try it."},
+];
+function startTutorial(){
+  clearInterval(timerId); $("#hudTime").textContent="0.0s"; $("#hudAcc").textContent="—"; $("#hudProg").textContent="0 / 0";
+  tutorial={step:0,right:0};
+  renderTut();
+}
+function renderTut(){
+  const t=TUT[tutorial.step];
+  renderScenario(t.sc,{tut:true,tutText:t.text,step:(tutorial.step+1)+" of "+TUT.length});
+}
+function tutAfter(correct){
+  if(correct)tutorial.right++;
+  const last=tutorial.step>=TUT.length-1;
+  const sb=document.querySelector('.submitbar');
+  const nxt=el("button","btn"); nxt.textContent=last?"Start playing ▶":"Next ▶";
+  nxt.onclick=()=>{ if(last){ prog.tutDone=true; saveProg(); showStart(); } else { tutorial.step++; renderTut(); } };
+  sb.innerHTML=""; sb.appendChild(nxt);
+}
+
+/* ---------- START / PLAY ---------- */
+function showStart(){
+  clearInterval(timerId);
+  const g=$("#game");
+  g.innerHTML=`<div class="banner flash"><div class="lead">Ready to play</div>
+    <div class="ask" style="font-size:1.1rem;">${QPR} table situations — legal play and violations, mixed.</div>
+    <div class="why">For each one: <b>Legal or Violation?</b> If it's a violation, name the rule that was broken. The clock starts when you press Play.</div></div>
+    <div class="startwrap"><button id="playBtn" class="btn big">Play ▶</button>
+    <button id="tut2" class="btn ghost" style="margin-left:10px;">See the tutorial</button></div>`;
+  $("#playBtn").onclick=()=>deal();
+  $("#tut2").onclick=()=>startTutorial();
+  updateHud();
+}
+
+/* ---------- GAME ---------- */
+function startClock(){ if(!round.started){round.started=true; round.t0=performance.now(); timerId=setInterval(()=>{if(round.t0)$("#hudTime").textContent=((performance.now()-round.t0)/1000).toFixed(1)+"s";},100);} }
+function updateHud(){
+  const acc=round&&round.attempted?Math.round(round.firstRight/round.attempted*100):null;
+  $("#hudAcc").textContent=acc==null?"—":acc+"%";
+  $("#hudProg").textContent=round?(round.idx+" / "+round.K):"0 / 0";
+  const best=prog.best[cur.n]; $("#hudBest").textContent=best?best.toFixed(1)+"s":"—";
+  $("#levelTag").textContent=cur.title; $("#nextLevel").disabled=!(prog.unlocked>cur.n);
+}
+function deal(){
+  clearInterval(timerId);
+  const seq=dealBank(cur.n);
+  round={seq,idx:0,K:seq.length,firstRight:0,attempted:0,handle:{},started:false,t0:null};
+  $("#hudTime").textContent="0.0s";
+  renderPlay();
+}
+function renderPlay(){ const sc=round.seq[round.idx]; round._show=performance.now(); startClock(); renderScenario(sc,{}); }
+function kindOf(sc){ return sc.legal?"Legal play":RULES[sc.rule].short; }
+function recordKind(kind,correct,ms){const f=prog.kinds[kind]||{seen:0,right:0,ms:0,n:0}; f.seen++; if(correct)f.right++; f.ms+=ms; f.n++; prog.kinds[kind]=f; round.handle[kind]=Math.max(round.handle[kind]||0,ms); saveProg();}
+function gameAfter(sc,correct){
+  const ms=performance.now()-round._show;
+  round.attempted++; if(correct)round.firstRight++; recordKind(kindOf(sc),correct,ms);
+  setTimeout(()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else renderPlay(); }, correct?1000:2100);
+}
+function finishRound(){
+  clearInterval(timerId);
+  const secs=(performance.now()-round.t0)/1000, acc=Math.round(round.firstRight/round.attempted*100), clean=acc===100;
+  if(window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode:"penalty",level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean});
+  if(clean){ if(!prog.best[cur.n]||secs<prog.best[cur.n])prog.best[cur.n]=+secs.toFixed(1); if(cur.n>=prog.unlocked&&cur.n<LEVELS.length)prog.unlocked=cur.n+1; saveProg(); }
+  const slow=Object.entries(round.handle).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([n,ms])=>`<b>${n}</b> ${(ms/1000).toFixed(1)}s`).join(" · ");
+  $("#cardTitle").textContent=clean?"Clean ruling.":"Round cleared.";
+  $("#cardVerdict").textContent=clean?(cur.n<LEVELS.length?"Every call correct, first try. The next level is open to you.":"Every violation spotted and named, first try. You can referee a table cold."):`${round.firstRight} of ${round.attempted} right on the first try. Run it again until it's clean.`;
+  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s"; $("#cardSlow").innerHTML=slow?"Where you hesitated: "+slow:"";
+  $("#cardNext").disabled=!(clean&&cur.n<LEVELS.length); $("#scrim").classList.add("show"); updateHud();
+  // first full completion (all 3 levels clean) -> Prim congrats
+  if(clean && cur.n===LEVELS.length && prog.unlocked>=LEVELS.length && !prog.fullDone){
+    prog.fullDone=true; saveProg();
+    setTimeout(()=>{ $("#scrim").classList.remove("show");
+      K.primCongrats(`<p>Look at you — three levels of table law, clean through. You don't just play the game now, you can <i>protect</i> it. When a tile gets called out of turn or a Joker walks where it shouldn't, you'll be the calm voice that knows the ruling.</p><p>Keep that gift gentle. The rules are there to keep the table fair, not to win arguments. Proud of you.</p><p style="text-align:right;margin-bottom:0;">— Prim</p>`,
+      ()=>{ $("#scrim").classList.add("show"); });
+    }, 700);
+  }
+}
+
+/* ---------- wiring ---------- */
+function gotoLevel(n){cur=LEVELS[n-1]; showStart();}
+$("#tutBtn").onclick=()=>startTutorial();
+$("#newRound").onclick=()=>showStart();
+$("#nextLevel").onclick=()=>{if(prog.unlocked>cur.n)gotoLevel(cur.n+1);};
+$("#cardAgain").onclick=()=>{$("#scrim").classList.remove("show"); deal();};
+$("#cardNext").onclick=()=>{$("#scrim").classList.remove("show"); if(cur.n<LEVELS.length)gotoLevel(cur.n+1);};
+$("#cardChoose").onclick=()=>{$("#scrim").classList.remove("show"); startTutorial(); window.scrollTo({top:0,behavior:'smooth'});};
+$("#cardDone").onclick=()=>{$("#scrim").classList.remove("show"); showSummary();};
+$("#resetAll").onclick=()=>{if(confirm("Reset all progress and best times?")){localStorage.removeItem(LS); prog=loadProg(); prog.unlocked=1; prog.best={}; prog.kinds={}; prog.tutDone=false; prog.fullDone=false; saveProg(); cur=LEVELS[0]; startTutorial();}};
+$("#stopBtn").onclick=()=>{
+  clearInterval(timerId);
+  const secs=(round&&round.t0)?(performance.now()-round.t0)/1000:0, acc=(round&&round.attempted)?Math.round(round.firstRight/round.attempted*100):0;
+  if(secs>0&&window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode:"penalty",level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean:false});
+  $("#cardTitle").textContent="Stopped."; $("#cardVerdict").textContent="You ended the round early. Pick up wherever you like.";
+  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s"; $("#cardSlow").innerHTML="";
+  $("#cardNext").disabled=!(prog.unlocked>cur.n); $("#scrim").classList.add("show");
+};
+function showSummary(){
+  clearInterval(timerId); let rows='';
+  for(let L=1;L<=3;L++){const b=prog.best[L]; if(b)rows+=`<tr><td>${LEVELS[L-1].title.split(' — ')[1]||('Level '+L)}</td><td>${b.toFixed(1)}s</td></tr>`;}
+  if(!rows)rows=`<tr><td colspan="2" style="color:var(--ink-soft); font-style:italic;">No clean rounds yet — clear one at 100% to set a best time.</td></tr>`;
+  const kinds=Object.entries(prog.kinds||{}).filter(([n,f])=>f.seen>0);
+  const reps=kinds.reduce((s,[,f])=>s+f.seen,0);
+  const work=kinds.map(([n,f])=>({n,acc:f.right/f.seen,ms:f.ms/f.n})).sort((a,b)=>a.acc-b.acc||b.ms-a.ms).slice(0,3).map(x=>`<b>${x.n}</b> ${Math.round(x.acc*100)}%`).join(' · ');
+  $("#game").innerHTML=`<div class="summary"><h2>Your practice so far</h2>
+    <table><thead><tr><th>Level</th><th>Best (100%)</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="note">${reps} situations judged${work?` · spots to work on: ${work}`:''}</p>
+    ${(window.OOTT&&window.OOTT.user)?`<p class="note">You're signed in — your progress and best times are saved to your account.</p>`:`<p class="note">These stats live on this device. If you haven't made a free account yet, create one to keep your record across devices and climb the leaderboard — we'll never sell your information.</p><button class="btn" onclick="window.OOTT&&window.OOTT.openAuth&&window.OOTT.openAuth()">Create a free account</button>`}
+    <button class="btn ghost" id="backToPlay">Back to play</button></div>`;
+  $("#backToPlay").onclick=()=>showStart();
+}
+
+/* first load: tutorial for newcomers, otherwise the Play screen */
+if(prog.tutDone) showStart(); else startTutorial();
+</script>
+<script type="module" src="../_engine/leaderboard.js"></script>
+</body>
+</html>

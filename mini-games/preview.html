@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Order of the Tile — Game Previews (internal)</title>
+<link rel="icon" type="image/png" href="/images/seal.png">
+<link rel="apple-touch-icon" href="/images/seal.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
+    --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
+    --good:#5E7D5A; --gold:#C9A24A;
+    --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif;}
+  .wrap{max-width:1040px; margin:0 auto; padding:30px 18px 60px;}
+  .seal{display:block; width:54px; height:54px; margin:0 auto 6px;}
+  h1{font-family:"Playfair Display",serif; font-weight:700; font-size:2rem; text-align:center; margin:.1em 0;}
+  .sub{color:var(--ink-soft); font-style:italic; text-align:center; margin:0 auto 6px; max-width:620px;}
+  .note{background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 16px; max-width:680px; margin:14px auto 30px; text-align:center; font-size:.9rem; color:var(--ink-soft);}
+  .note b{color:var(--ink); font-style:normal;}
+  .secttitle{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); font-size:1.15rem; margin:28px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line);}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px;}
+  a.card{display:flex; flex-direction:column; gap:6px; text-decoration:none; color:inherit;
+    background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px 18px; box-shadow:var(--shadow);
+    transition:transform .1s ease, box-shadow .1s ease, border-color .1s ease; position:relative;}
+  a.card:hover{transform:translateY(-2px); box-shadow:0 6px 18px rgba(43,38,34,.16); border-color:var(--rose);}
+  .card .num{font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft);}
+  .card .name{font-family:"Playfair Display",serif; font-weight:700; font-size:1.18rem; line-height:1.15;}
+  .card .desc{font-size:.95rem; color:var(--ink-soft); line-height:1.35;}
+  .card .skill{margin-top:2px; font-size:.78rem; color:var(--sage); font-weight:600;}
+  .card .go{margin-top:8px; font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); font-size:.9rem;}
+  .ribbon{position:absolute; top:12px; right:12px; background:var(--gold); color:#3a2f12; font-family:"Playfair Display",serif;
+    font-weight:700; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; padding:3px 9px; border-radius:999px;}
+  .soon{opacity:.62;}
+  .soon .name{color:var(--ink-soft);}
+  ul.soonlist{list-style:none; padding:0; margin:8px 0 0; display:flex; flex-wrap:wrap; gap:8px;}
+  ul.soonlist li{background:#fff; border:1px dashed var(--line); border-radius:999px; padding:6px 14px; font-size:.88rem; color:var(--ink-soft);}
+  .footer{margin-top:40px; text-align:center; color:var(--ink-soft); font-size:.82rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img class="seal" src="/images/seal.png" alt="Order of the Tile">
+  <h1>The Practice Table</h1>
+  <p class="sub">Free American Mah Jongg skill drills — every one a small game that teaches one piece of the table.</p>
+  <div class="note"><b>Internal preview hub.</b> Unlinked &amp; noindex — for review, not public yet. Each game plays as a guest; sign in to save progress and rank. Best on the device you'll really play on.</div>
+
+  <div class="secttitle">Foundations</div>
+  <div class="grid">
+    <a class="card" href="tile-matching/">
+      <div class="num">Drill 1</div><div class="name">Tile Matching</div>
+      <div class="desc">Sort, hunt, and name every tile until the whole wall is second nature.</div>
+      <div class="skill">Tile recognition</div><div class="go">Play →</div>
+    </a>
+    <a class="card" href="wall-break/">
+      <div class="num">Drill 7</div><div class="name">Wall-Break Simulator</div>
+      <div class="desc">Roll the dice, break the wall in the right spot, and deal in order.</div>
+      <div class="skill">Procedure &amp; etiquette</div><div class="go">Play →</div>
+    </a>
+    <a class="card" href="whose-turn/">
+      <div class="num">Drill 11</div><div class="name">Whose Turn?</div>
+      <div class="desc">Find the next rack every time — including when a call jumps the turn.</div>
+      <div class="skill">Turn order</div><div class="go">Play →</div>
+    </a>
+    <a class="card" href="four-charleston/">
+      <span class="ribbon">New</span>
+      <div class="num">Drill 4</div><div class="name">Four-Player Charleston</div>
+      <div class="desc">Trace where your three tiles travel as the passes ripple around the table.</div>
+      <div class="skill">Charleston &amp; passing</div><div class="go">Play →</div>
+    </a>
+  </div>
+
+  <div class="secttitle">Reading the table</div>
+  <div class="grid">
+    <a class="card" href="discard-detective/">
+      <span class="ribbon">New</span>
+      <div class="num">Drill 6</div><div class="name">Discard Detective</div>
+      <div class="desc">Follow the discards to deduce what each player is quietly building.</div>
+      <div class="skill">Defensive reading</div><div class="go">Play →</div>
+    </a>
+    <a class="card" href="tile-frequency/">
+      <span class="ribbon">New</span>
+      <div class="num">Drill 12</div><div class="name">Tile-Frequency Tracker</div>
+      <div class="desc">Count what's already on the table and know exactly what's left to draw.</div>
+      <div class="skill">Wall awareness</div><div class="go">Play →</div>
+    </a>
+    <a class="card" href="hand-building-race/">
+      <div class="num">Drill 8</div><div class="name">Hand-Building Race</div>
+      <div class="desc">Read a messy rack at a glance and name the section it's closest to.</div>
+      <div class="skill">Pattern recognition</div><div class="go">Play →</div>
+    </a>
+    <a class="card" href="hand-sorting/">
+      <div class="num">Drill 5</div><div class="name">Hand Sorting</div>
+      <div class="desc">Organize a fresh rack, commit to a direction, and stay unreadable.</div>
+      <div class="skill">Organization &amp; defense</div><div class="go">Play →</div>
+    </a>
+  </div>
+
+  <div class="secttitle">Hands &amp; rules</div>
+  <div class="grid">
+    <a class="card" href="hand-line-solver/">
+      <div class="num">Drill 2</div><div class="name">Hand-Line Solver</div>
+      <div class="desc">Build every winning combination for a chosen line on the card.</div>
+      <div class="skill">Hand construction</div><div class="go">Play →</div>
+    </a>
+    <a class="card" href="penalty-identifier/">
+      <span class="ribbon">New</span>
+      <div class="num">Drill 9</div><div class="name">Penalty Identifier</div>
+      <div class="desc">Spot whether a play is legal — and if not, name the rule that was broken.</div>
+      <div class="skill">Rules enforcement</div><div class="go">Play →</div>
+    </a>
+  </div>
+
+  <div class="secttitle">In the works</div>
+  <ul class="soonlist">
+    <li>Drill 10 · Winning-Hand Calculator</li>
+    <li>Drill 3 · Solo Mahj</li>
+    <li>Messy Mahj · Siamese 2-player game</li>
+  </ul>
+
+  <p class="footer">Order of the Tile · American Mah Jongg (NMJL) · internal preview · 2026-06-11</p>
+</div>
+</body>
+</html>
