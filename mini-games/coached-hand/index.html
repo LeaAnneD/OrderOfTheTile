@@ -63,6 +63,7 @@
   .tile.dragging{transform:translateY(-12px) scale(1.07); box-shadow:0 0 0 2px var(--gold), 0 12px 20px rgba(0,0,0,.3); border-color:var(--gold); cursor:grabbing; z-index:5;}
   .tile.img.rec{outline:2.5px dashed var(--rose); outline-offset:2px; border-radius:8px;}
   .tile.img.fresh{outline:2.5px solid var(--gold); outline-offset:2px; border-radius:8px;}
+  .tile.img.sel{outline:3px solid var(--rose-deep); outline-offset:2px; border-radius:8px;}
   .tile.fresh{outline:2.5px solid var(--gold); outline-offset:1px;}
   .tile.rec{outline:2.5px dashed var(--rose); outline-offset:1px;}
   .tile.keep{box-shadow:0 0 0 2px var(--good), 0 2px 5px rgba(0,0,0,.16);}
@@ -113,7 +114,7 @@
 <script src="../_engine/tiles.js"></script>
 <script>
 "use strict";
-const BUILD="v1.2 · 2026-06-11";
+const BUILD="v1.3 · 2026-06-11";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_coach_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_coach_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -212,7 +213,7 @@ function newGame(){
   const line=chooseLine();
   const seedHand=parseHand(pick(line.hands));
   const rack=sortRack(dealLeaning(seedHand));
-  G={ line, seedHand, rack, draws:0, discards:0, phase:'intro', recId:null, drawnId:null, charlestonDone:false, charlestonSel:null };
+  G={ line, seedHand, rack, draws:0, discards:0, phase:'intro', pendingId:null, byAdvice:false, drawnId:null, charlestonDone:false, charlestonSel:null };
 }
 function sortRack(arr){ return arr.slice().sort((a,b)=>{ const x=faceOrder(a.c),y=faceOrder(b.c); return x[0]-y[0]||x[1]-y[1]; }); }
 
@@ -248,6 +249,14 @@ function neededFace(){
   const wants=[]; for(const f in target){ const short=target[f]-(rc[f]||0); for(let k=0;k<short;k++) wants.push(f); }
   return wants.length?pick(wants):pick(ALLNAT);
 }
+/* ---------- is discarding THIS tile a good idea? (good = dead weight) ---------- */
+function discardVerdict(id){
+  const t=G.rack.find(x=>x.id===id); if(!t) return {good:true};
+  const f=t.c; const {target}=bestTargetHand(rackFaces(), G.line.hands);
+  if(f==='JK'){ const jok=rackFaces().filter(x=>x==='JK').length; return {good: jok>targetJokerNeed(), joker:true}; }
+  const need=target[f]||0; const have=rackFaces().filter(x=>x===f).length;
+  return {good: have>need}; // an extra copy beyond what the line needs (or a face it doesn't want) is safe to pitch
+}
 
 /* ===================================================================== */
 /* RENDER                                                                */
@@ -281,9 +290,9 @@ function renderRack(){
   const r=$('#rack'); if(!r) return; r.innerHTML='';
   G.rack.forEach(t=>{ r.appendChild(tileEl(t)); });
   const byId=id=>[...r.children].find(c=>+c.dataset.id===id);
-  // recommended-discard + freshly-drawn markers (by stable id)
+  // the tile chosen to discard: solid ring if the PLAYER picked it, dashed if it's Prim's suggestion
   if((G.phase==='discard'||G.phase==='declare')){
-    if(G.recId!=null){ const el=byId(G.recId); if(el)el.classList.add('rec'); }
+    if(G.pendingId!=null){ const el=byId(G.pendingId); if(el)el.classList.add(G.byAdvice?'rec':'sel'); }
     if(G.drawnId!=null){ const el=byId(G.drawnId); if(el){ el.classList.add('fresh'); const b=ce('span','badge'); b.textContent='new'; el.appendChild(b); } }
   }
   // Charleston: dashed = tiles selected to pass
@@ -324,7 +333,7 @@ function attachRackDnD(){
   rack.addEventListener('pointerup',end); rack.addEventListener('pointercancel',end);
 }
 function onTapTile(id){
-  if(G.phase==='discard'){ doDiscardById(id); }
+  if(G.phase==='discard'){ selectForDiscard(id, false); }
   else if(G.phase==='charleston'){ toggleCharlestonId(id); }
 }
 
@@ -354,11 +363,18 @@ function intro(){
 /* ---- Charleston: Prim pre-selects 3 to pass; player can change, then pass ---- */
 function charlestonPick(){
   G.phase='charleston';
-  G.charlestonSel=new Set(pickThreeLeastUsefulIds()); // Prim's 3 suggested pitches
+  G.charlestonSel=new Set();   // start empty — the player chooses
   renderStage();
-  say(`The Charleston — pass three to your right. I'd let these three go (dashed). Tap any tile to add or remove it from the pass — or drag tiles to organize your rack first. Three tiles, no Jokers.`);
+  say(`The Charleston — you pass three to your right. Which three are <b>dead weight</b> for ${G.line.sec} Line ${G.line.line}? Tap the three you'd let go. (Drag to organize; no Jokers.)`);
   const c=$('#controls'); c.innerHTML='';
   const b=ce('button','btn'); b.id='passBtn'; b.textContent='Pass these 3 →'; b.onclick=doCharlestonPass; c.appendChild(b);
+  const help=ce('button','ghost btn'); help.textContent='I\'m not sure — show me'; help.onclick=charlestonAdvice; c.appendChild(help);
+  updatePassBtn();
+}
+function charlestonAdvice(){
+  G.charlestonSel=new Set(pickThreeLeastUsefulIds());
+  renderRack();
+  hint('The three I\'d pass are dashed — keep them or swap in your own, then send them along.');
   updatePassBtn();
 }
 function pickThreeLeastUsefulIds(){
@@ -382,20 +398,26 @@ function toggleCharlestonId(id){
 function updatePassBtn(){ const b=$('#passBtn'); if(b){ b.disabled=G.charlestonSel.size!==3; } hint(`Selected ${G.charlestonSel.size} of 3 to pass.`); }
 function doCharlestonPass(){
   if(G.charlestonSel.size!==3) return;
+  // grade THEIR picks before the tiles leave: how many were genuinely dead weight?
+  let dead=0; [...G.charlestonSel].forEach(id=>{ if(discardVerdict(id).good) dead++; });
   G.rack=G.rack.filter(t=>!G.charlestonSel.has(t.id));
   // receive 3: bias toward tiles the target still wants
   for(let k=0;k<3;k++){ G.rack.push(mkTile(rnd()<0.6 ? neededFace() : pick(ALLNAT))); }
   G.rack=sortRack(G.rack); G.charlestonDone=true; G.charlestonSel=null;
   renderStage();
   const away=updateAway();
-  say(`Passed. Look what came back — you're about <b>${away}</b> away now. From here it's draw and discard: I'll feed you tiles, you decide what to keep. Draw when you're ready.`);
+  const grade = dead===3 ? `All three were dead weight — that's exactly the read.`
+              : dead===2 ? `Two of those were good to pass; one was still doing a little work for you.`
+              : dead===1 ? `One clean pass there — a couple of those were actually helping your hand.`
+              : `Bold — most of those were working tiles. We'll build it back.`;
+  say(`${grade} Look what came back: you're about <b>${away}</b> away now. From here it's draw and discard — draw when you're ready.`);
   hint('Drag tiles any time to organize your rack.');
   beginDrawPhase();
 }
 
 /* ---- main draw/discard loop ---- */
 function beginDrawPhase(){
-  G.phase='draw'; G.drawnId=null; G.recId=null;
+  G.phase='draw'; G.drawnId=null; G.pendingId=null; G.byAdvice=false;
   const c=$('#controls'); c.innerHTML='';
   const b=ce('button','btn'); b.id='drawBtn'; b.textContent='Draw a tile'; b.onclick=drawTile; c.appendChild(b);
   maybeOfferDeclare();
@@ -411,30 +433,53 @@ function drawTile(){
   }
   const t=mkTile(f); G.rack.push(t); G.draws++;
   G.rack=sortRack(G.rack);
-  G.drawnId=t.id;
+  G.drawnId=t.id; G.pendingId=null; G.byAdvice=false;
   G.phase='discard';
   // win?
   if(anyComplete(rackFaces(), G.line.hands)){ offerDeclare(t.id); return; }
-  // recommend a discard
-  G.recId=leastUsefulId();
   renderRack();
   if($('#hTiles'))$('#hTiles').textContent=G.rack.length;
   if($('#hDraws'))$('#hDraws').textContent=G.draws;
-  const recFace=(G.rack.find(x=>x.id===G.recId)||{}).c;
   const away=updateAway();
-  say(drawNarration(f, recFace, away));
-  hint('Tap a tile to discard it — or drag any tile to rearrange your rack.');
+  // gradual release: narrate the draw, then hand the decision to the player — no recommendation yet
+  say(drawPrompt(f, away));
+  hint(G.draws<=2 ? 'Tap a tile to choose it — I\'ll tell you what I think before you commit. Drag any tile to organize.' : 'Tap your discard, then confirm. Drag to organize.');
   const c=$('#controls'); c.innerHTML='';
-  const b=ce('button','ghost btn'); b.textContent='Discard Prim\'s pick'; b.onclick=()=>doDiscardById(G.recId); c.appendChild(b);
+  const help=ce('button','ghost btn'); help.textContent='I\'m not sure — show me'; help.onclick=onShowAdvice; c.appendChild(help);
 }
-function drawNarration(drawn, rec, away){
-  const dL=faceLabel(drawn), rL=rec?faceLabel(rec):'a stray tile';
-  const useful = away< (G.lastAway==null?99:G.lastAway);
-  G.lastAway=away;
-  const open = useful ? `Nice — the <b>${dL}</b> helps.` : `The <b>${dL}</b> doesn't fit our line.`;
-  const tail = `I'd let the <b>${rL}</b> go (dashed) — it isn't doing any work for ${G.line.sec} Line ${G.line.line}. You're <b>${away}</b> away.`;
-  return open+' '+tail;
+function drawPrompt(drawn, away){
+  const dL=faceLabel(drawn);
+  const useful = away < (G.lastAway==null?99:G.lastAway); G.lastAway=away;
+  const open = useful ? `You drew the <b>${dL}</b> — that one helps.` : `You drew the <b>${dL}</b> — it doesn't fit ${G.line.sec} Line ${G.line.line}.`;
+  const ask = G.draws<=2
+    ? `Now your turn to read it: which tile is <b>dead weight</b> for this line? Tap the one you'd let go.`
+    : `Your discard — tap the tile you'd let go.`;
+  return open+' '+ask;
 }
+/* ---- player picks a discard, Prim reacts to THEIR choice, player confirms (the "we do" of gradual release) ---- */
+function selectForDiscard(id, fromAdvice){
+  const t=G.rack.find(x=>x.id===id); if(!t) return;
+  G.pendingId=id; G.byAdvice=!!fromAdvice;
+  renderRack();
+  const v=discardVerdict(id); const lbl=faceLabel(t.c);
+  let msg;
+  if(fromAdvice){
+    msg = v.good ? `I'd let the <b>${lbl}</b> go — it isn't doing any work for ${G.line.sec} Line ${G.line.line}. Discard it when you're ready, or pick your own.`
+                 : `Honestly, there's no dead weight left — everything's working. If you must pass one, the <b>${lbl}</b> costs the least.`;
+  } else if(v.good){
+    msg = v.joker ? `Good — that Joker can't help this line, so it's fair to pitch.`
+                  : `Good eye — the <b>${lbl}</b> isn't part of ${G.line.sec} Line ${G.line.line}. Clean discard.`;
+  } else {
+    msg = v.joker ? `I'd hold that Joker — this line can still use it. Sure?`
+                  : `Careful — the <b>${lbl}</b> is working toward your hand. You can let it go, but I'd keep it. Tap another, or discard it anyway.`;
+  }
+  say(msg);
+  const c=$('#controls'); c.innerHTML='';
+  const conf=ce('button','btn'); conf.textContent=`Discard the ${lbl}`; conf.onclick=()=>doDiscardById(G.pendingId); c.appendChild(conf);
+  if(!fromAdvice){ const help=ce('button','ghost btn'); help.textContent='What would you do?'; help.onclick=onShowAdvice; c.appendChild(help); }
+  hint('Tap a different tile to change your mind, or confirm below.');
+}
+function onShowAdvice(){ selectForDiscard(leastUsefulId(), true); }
 function doDiscardById(id){ const i=G.rack.findIndex(t=>t.id===id); if(i>=0) doDiscardByIndex(i); }
 function doDiscardByIndex(i){
   if(G.phase!=='discard'||i<0||i>=G.rack.length) return;
@@ -455,15 +500,17 @@ function maybeOfferDeclare(){
 function offerDeclare(justDrewId){
   G.phase='declare';
   G.drawnId = justDrewId!=null ? justDrewId : null;
-  G.recId=null;
+  G.pendingId=null; G.byAdvice=false;
   renderRack();
   updateAway();
   say(`That's it — your rack is <b>whole</b>. Fourteen tiles, every one part of <b>${G.line.sec} Line ${G.line.line}</b>. Don't discard. <b>Declare Mahjong!</b>`);
   hint('');
   const c=$('#controls'); c.innerHTML='';
   const b=ce('button','btn'); b.textContent='Declare Mahjong!'; b.onclick=winHand; c.appendChild(b);
-  const b2=ce('button','ghost btn'); b2.textContent='Keep playing'; b2.onclick=()=>{ // let them discard anyway (rare)
-    G.phase='discard'; G.recId=leastUsefulId(); renderRack(); hint('Tap a tile to discard.'); c.innerHTML=''; const x=ce('button','ghost btn'); x.textContent='Discard Prim\'s pick'; x.onclick=()=>doDiscardById(G.recId); c.appendChild(x); };
+  const b2=ce('button','ghost btn'); b2.textContent='Keep playing'; b2.onclick=()=>{ // let them keep going (rare)
+    G.phase='discard'; G.pendingId=null; G.byAdvice=false; renderRack();
+    say('Your call — tap the tile you\'d let go.'); hint('Tap your discard, then confirm.');
+    c.innerHTML=''; const help=ce('button','ghost btn'); help.textContent='I\'m not sure — show me'; help.onclick=onShowAdvice; c.appendChild(help); };
   c.appendChild(b2);
 }
 function winHand(){
