@@ -44,7 +44,7 @@
   .ring{position:absolute; inset:64px; border:2px dashed rgba(255,255,255,0); border-radius:50%;}
   .ring.show{border-color:var(--gold);}
   .ring .arrow{position:absolute; color:var(--gold); font-weight:700; font-size:1.1rem;}
-  .felt{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:46%; height:46%; border-radius:14px;
+  .felt{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:120px; height:120px; border-radius:14px;
     background:radial-gradient(circle at 50% 40%, var(--felt) 0%, var(--felt-2) 100%);
     box-shadow:inset 0 2px 10px rgba(0,0,0,.25), var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:#fff;}
   .felt .fhint{font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; opacity:.85;}
@@ -52,8 +52,8 @@
     display:flex; align-items:center; justify-content:center; color:var(--ink); font-family:"Playfair Display",serif; font-weight:700; font-size:.8rem; text-align:center; line-height:1.05; padding:3px;}
   .dtile.spin{animation:drop .4s ease;}
   @keyframes drop{0%{transform:translateY(-14px) scale(.8); opacity:0;}100%{transform:none; opacity:1;}}
-  .seat{position:absolute; width:96px; padding:8px 6px 9px; border-radius:13px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow);
-    display:flex; flex-direction:column; align-items:center; gap:5px; text-align:center; transition:border-color .12s, background .12s, transform .08s, box-shadow .12s;}
+  .seat{position:absolute; width:92px; height:92px; padding:6px; border-radius:13px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center; transition:border-color .12s, background .12s, transform .08s, box-shadow .12s;}
   .seat .nm{font-family:"Playfair Display",serif; font-weight:600; font-size:.95rem; line-height:1.05;}
   .seat .you{font-size:.64rem; color:var(--rose-deep); font-weight:600; text-transform:uppercase; letter-spacing:.06em;}
   .seat .minirack{display:flex; gap:2px;}
@@ -111,7 +111,7 @@
   .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;}
   .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
   .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
-  @media(max-width:560px){ h1{font-size:1.34rem;} .banner .ask{font-size:1.14rem;} .table{width:300px; height:300px;} .seat{width:80px;} .seat .nm{font-size:.84rem;} }
+  @media(max-width:560px){ h1{font-size:1.34rem;} .banner .ask{font-size:1.14rem;} .table{width:300px; height:300px;} .felt{width:100px; height:100px;} .seat{width:76px; height:76px;} .seat .nm{font-size:.82rem;} }
 </style>
 </head>
 <body>
