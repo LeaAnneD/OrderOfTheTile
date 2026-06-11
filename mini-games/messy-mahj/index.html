@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Messy Mahj — Siamese Mahjong Practice — Order of the Tile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
+    --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
+    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A;
+    --bam:#3C7A4E; --crak:#B5524C; --dot:#3A5C86; --honor:#6B5F54; --joker:#9A5662;
+    --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
+  .wrap{max-width:780px; margin:0 auto; padding:16px 14px 60px;}
+  h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.55rem; margin:.1em 0;}
+  .sub{color:var(--ink-soft); font-style:italic; margin:0 0 12px;}
+
+  .stats{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 12px;}
+  .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:7px 12px; box-shadow:var(--shadow); min-width:78px;}
+  .stat .k{font-size:.66rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft);}
+  .stat .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.12rem; line-height:1.15;}
+  .stat.turn .v{color:var(--rose-deep);}
+  .stat.time .k{display:flex; align-items:center; gap:6px;}
+  .stat.time .v.off{color:var(--ink-soft); font-style:italic; font-size:.95rem; font-weight:600;}
+  .eye{font-family:"Crimson Text",serif; font-size:.6rem; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; border:1px solid var(--line); background:#fff; color:var(--rose-deep); border-radius:999px; padding:1px 7px; line-height:1.4;}
+  .eye:hover{border-color:var(--rose);}
+  .tuttoggle{display:flex; align-items:center; gap:10px; background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin:10px 0; font-size:.9rem;}
+  .tuttoggle button{font-family:"Playfair Display",serif; font-weight:600; cursor:pointer; border:1px solid var(--rose-deep); background:#fff; color:var(--rose-deep); border-radius:999px; padding:5px 14px;}
+  .tuttoggle button.on{background:var(--rose); color:#fff;}
+
+  .center{display:flex; gap:14px; align-items:center; justify-content:center; background:var(--paper-2); border:1px solid var(--line); border-radius:16px; padding:12px; margin-bottom:12px; box-shadow:var(--shadow);}
+  .mosh{position:relative; width:64px; height:74px; cursor:default;}
+  .mosh .b{position:absolute; width:42px; height:56px; border-radius:8px; background:#C6B292; border:1px solid #A8946f; box-shadow:inset 0 0 0 3px #BBA888, 0 1px 3px rgba(0,0,0,.2);}
+  .moshcap{text-align:center; font-size:.7rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.07em;}
+  .discwrap{text-align:center;}
+  .discslot{width:54px; height:70px; border-radius:9px; border:2px dashed var(--line); display:flex; align-items:center; justify-content:center;}
+  .discslot.has{border-style:solid; border-color:var(--rose);}
+
+  .seat{border:1px solid var(--line); border-radius:14px; background:#fff; box-shadow:var(--shadow); padding:10px 12px; margin-bottom:10px;}
+  .seat.active{border-color:var(--gold); box-shadow:0 0 0 2px var(--gold), var(--shadow);}
+  .seat.out{opacity:.78; background:var(--good-bg); border-color:var(--good);}
+  .seat .head{display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap;}
+  .seat .nm{font-family:"Playfair Display",serif; font-weight:700; font-size:1rem;}
+  .seat .wind{font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); border:1px solid var(--line); border-radius:999px; padding:2px 9px;}
+  .seat .cnt{font-size:.72rem; color:var(--ink-soft); margin-left:auto;}
+  .badge{font-family:"Playfair Display",serif; font-weight:700; font-size:.72rem; letter-spacing:.06em; color:#fff; background:var(--good); border-radius:999px; padding:3px 11px;}
+  .badge.you{background:var(--rose);}
+
+  .rack{display:flex; gap:4px; flex-wrap:wrap; align-items:flex-start; min-height:60px;}
+  .expo{display:flex; gap:3px; padding:4px 6px; margin:0 6px 4px 0; background:var(--paper-2); border:1px dashed var(--sage); border-radius:9px;}
+  .tile{width:40px; height:54px; border-radius:8px; background:#fff; border:1px solid #E1D6c2; box-shadow:0 2px 5px rgba(0,0,0,.16); display:flex; flex-direction:column; align-items:center; justify-content:center; user-select:none; line-height:1;}
+  .tile .n{font-family:"Playfair Display",serif; font-weight:700; font-size:1.05rem;}
+  .tile .s{font-size:.55rem; text-transform:uppercase; letter-spacing:.04em; margin-top:2px;}
+  .tile.bam{color:var(--bam);} .tile.crak{color:var(--crak);} .tile.dot{color:var(--dot);} .tile.honor{color:var(--honor);}
+  .tile.joker{color:var(--joker); border-color:var(--gold); background:#FBEFD4;}
+  .tile.sel{outline:3px solid var(--rose); outline-offset:1px; transform:translateY(-5px); transition:transform .08s;}
+  .tile.drew{box-shadow:0 0 0 2px var(--gold), 0 2px 5px rgba(0,0,0,.16);}
+  .tile.pick{cursor:pointer;} .tile.pick:hover{transform:translateY(-3px);}
+  .tile.back{background:#C6B292; border-color:#A8946f; box-shadow:inset 0 0 0 3px #BBA888, 0 2px 5px rgba(0,0,0,.16);}
+  .tile.sm{width:30px; height:42px;} .tile.sm .n{font-size:.82rem;} .tile.sm .s{font-size:.46rem;}
+
+  .actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:9px;}
+  .btn{font-family:"Playfair Display",serif; font-weight:600; font-size:.92rem; cursor:pointer; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; border-radius:10px; padding:8px 16px; box-shadow:var(--shadow);}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+  .btn.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
+  .btn.good{background:var(--good); border-color:var(--good);}
+  .btn.tiny{font-size:.76rem; padding:5px 11px;}
+  .instr{font-style:italic; color:var(--rose-deep); margin:0 0 8px; min-height:1.2em;}
+
+  .log{background:#fff; border:1px solid var(--line); border-radius:12px; padding:9px 12px; box-shadow:var(--shadow); font-size:.86rem; color:var(--ink-soft); margin-top:6px;}
+  .log div{padding:2px 0; border-bottom:1px dotted var(--line);} .log div:last-child{border:0; color:var(--ink);}
+
+  .scrim{position:fixed; inset:0; background:rgba(43,38,34,.55); display:flex; align-items:center; justify-content:center; padding:18px; z-index:50;}
+  .card{background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); max-width:520px; width:100%; padding:22px; max-height:88vh; overflow:auto;}
+  .card h2{font-family:"Playfair Display",serif; margin:.1em 0 .4em;}
+  .card p, .card li{font-size:.98rem; line-height:1.5;}
+  .card .lead{color:var(--ink-soft); font-style:italic;}
+  .callopts{display:flex; flex-direction:column; gap:8px; margin-top:12px;}
+  .win{ text-align:center; }
+  .win .big{font-family:"Playfair Display",serif; font-weight:700; font-size:1.5rem; color:var(--rose-deep);}
+
+  .foot{margin-top:20px; font-size:.72rem; color:var(--ink-soft); text-align:center;}
+  #errbar{position:fixed; left:0; right:0; bottom:0; background:var(--bad); color:#fff; font-size:.8rem; padding:7px 12px; display:none; z-index:99; font-family:monospace;}
+
+  /* ---- AI hands: small, face-down, top ---- */
+  .ailbl{font-size:.66rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft); margin:2px 2px 5px;}
+  .aiwrap{display:flex; gap:8px;}
+  .aiseat{flex:1; border:1px solid var(--line); border-radius:11px; background:#F6EFE3; box-shadow:var(--shadow); padding:6px 8px; min-width:0;}
+  .aiseat.turn{border-color:var(--gold); box-shadow:0 0 0 2px var(--gold), var(--shadow);}
+  .aiseat.out{background:var(--good-bg); border-color:var(--good);}
+  .ahead{display:flex; align-items:center; gap:6px; margin-bottom:4px;}
+  .ahead .anm{font-family:"Playfair Display",serif; font-weight:600; font-size:.82rem;}
+  .ahead .wind{font-size:.6rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); border:1px solid var(--line); border-radius:999px; padding:1px 6px;}
+  .ahead .cnt{margin-left:auto; font-size:.72rem; color:var(--ink-soft);}
+  .ahead .badge{margin-left:auto;}
+  .arack{display:flex; gap:2px; flex-wrap:wrap;}
+  .tile.xs{width:18px; height:25px; border-radius:4px; box-shadow:0 1px 2px rgba(0,0,0,.14);}
+  .tile.xs .n{font-size:.6rem;} .tile.xs .s{display:none;}
+  .expo.tiny{padding:2px 3px; margin:0 3px 2px 0;}
+
+  /* ---- your two hands in one box ---- */
+  .youbox{border:1px solid var(--line); border-radius:16px; background:var(--paper-2); box-shadow:var(--shadow); padding:10px; margin-top:4px;}
+  .youlbl{font-size:.72rem; letter-spacing:.03em; color:var(--ink-soft); text-align:center; margin-bottom:8px;}
+  .youact{display:flex; align-items:center; gap:12px; margin-top:10px;}
+  .acthint{font-size:.84rem; font-style:italic; color:var(--ink-soft);}
+  .hhead .eye{margin-left:auto;}
+  .hand{border:1px solid var(--line); border-radius:12px; background:#fff; padding:9px 11px; margin-bottom:9px;}
+  .hand:last-child{margin-bottom:0;}
+  .hand.active{border-color:var(--gold); box-shadow:0 0 0 2px var(--gold);}
+  .hand.out{background:var(--good-bg); border-color:var(--good);}
+  .hhead{display:flex; align-items:center; gap:8px; margin-bottom:7px;}
+  .hhead .nm{font-family:"Playfair Display",serif; font-weight:700; font-size:.98rem;}
+  .hhead .wind{font-size:.66rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); border:1px solid var(--line); border-radius:999px; padding:2px 8px;}
+  .hhead .cnt{margin-left:auto; font-size:.72rem; color:var(--ink-soft);}
+  .hhead .badge{margin-left:auto;}
+  .tw{display:inline-block; cursor:grab;}
+  .tw:active{cursor:grabbing;}
+  .tw.dragover>.tile{outline:2px dashed var(--rose); outline-offset:1px;}
+
+  /* ---- discard pile button + pop-out ---- */
+  .discbtn{font-family:"Playfair Display",serif; font-weight:700; font-size:1rem; cursor:pointer; border:1px solid var(--line); background:#fff; color:var(--rose-deep); border-radius:9px; padding:10px 12px; box-shadow:var(--shadow); min-width:54px;}
+  .discbtn:hover{border-color:var(--rose);}
+  .discpanel{position:fixed; top:0; right:0; height:100%; width:300px; max-width:86vw; background:var(--paper); border-left:1px solid var(--line); box-shadow:-6px 0 24px rgba(43,38,34,.18); z-index:60; overflow:auto; padding:14px; display:none;}
+  .discpanel.open{display:block;}
+  /* always-visible tab so players know the discard pile is over there */
+  .disctab{position:fixed; right:0; top:38%; z-index:45; display:flex; flex-direction:column; align-items:center; gap:3px; background:var(--rose); color:#fff; border:1px solid var(--rose-deep); border-right:none; border-radius:12px 0 0 12px; padding:11px 6px; box-shadow:-3px 2px 10px rgba(43,38,34,.22); cursor:pointer; animation:tabnudge 2.4s ease-in-out 1s 3;}
+  .disctab .dtico{font-size:1.1rem; line-height:1;}
+  .disctab .dtlbl{writing-mode:vertical-rl; font-family:"Playfair Display",serif; font-weight:700; font-size:.6rem; letter-spacing:.14em;}
+  .disctab b{font-family:"Playfair Display",serif; font-size:.92rem; background:rgba(255,255,255,.22); border-radius:6px; padding:0 5px; min-width:18px; text-align:center;}
+  .disctab:hover{background:var(--rose-deep);}
+  .disctab.hidden{display:none;}
+  @keyframes tabnudge{0%,100%{transform:translateX(0);} 50%{transform:translateX(-6px);}}
+  .dphead{display:flex; align-items:center; gap:8px; margin-bottom:4px;}
+  .dphead b{font-family:"Playfair Display",serif; font-size:1.1rem;}
+  .dpcount{font-size:.74rem; color:var(--ink-soft);}
+  .dphead .eye{margin-left:auto;}
+  .dphint{font-size:.8rem; color:var(--ink-soft); font-style:italic; margin:0 0 12px;}
+  .discgroup{margin-bottom:12px;}
+  .dglbl{font-family:"Playfair Display",serif; font-weight:600; font-size:.86rem; margin-bottom:5px; border-bottom:1px solid var(--line); padding-bottom:3px;}
+  .dglbl span{color:var(--ink-soft); font-weight:400; font-size:.76rem;}
+  .dgtiles{display:flex; gap:3px; flex-wrap:wrap;}
+  .dgtiles .empty{color:var(--ink-soft); font-style:italic; font-size:.82rem;}
+
+  @media(max-width:560px){
+    h1{font-size:1.3rem;}
+    .tile{width:34px; height:46px;} .tile .n{font-size:.9rem;} .tile .s{font-size:.46rem;}
+    .tile.sm{width:26px; height:36px;} .tile.xs{width:15px; height:21px;}
+    .center{gap:8px;}
+    .aiwrap{gap:5px;} .aiseat{padding:5px 6px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Messy Mahj</h1>
+  <p class="sub">Siamese Mahjong practice — two hands each, one win. No Charleston, no wall: the tiles just sit face-down in the mess. <b>2026 card.</b></p>
+
+  <div class="stats" id="stats"></div>
+
+  <div id="aiTop"></div>
+
+  <div class="center" id="center"></div>
+
+  <p class="instr" id="instr"></p>
+
+  <div id="you"></div>
+
+  <div class="log" id="log"></div>
+
+  <p class="foot">Messy Mahj · MVP draft · gentle AI · <span id="build"></span></p>
+</div>
+<button id="discTab" class="disctab" aria-label="Open the discard pile">
+  <span class="dtico">🗂</span><span class="dtlbl">DISCARDS</span><b id="discTabN">0</b>
+</button>
+<div id="discPanel" class="discpanel" aria-hidden="true"></div>
+<div id="errbar"></div>
+
+<script>
+/* ---------------- error catcher ---------------- */
+(function(){
+  function show(m){ try{ var b=document.getElementById('errbar'); b.textContent='⚠ '+m; b.style.display='block';
+    var L=JSON.parse(localStorage.getItem('mm_err')||'[]'); L.push({t:Date.now(),m:m}); localStorage.setItem('mm_err',JSON.stringify(L.slice(-30))); }catch(e){} }
+  window.addEventListener('error',function(e){ show((e.message||'error')+' @'+(e.lineno||'?')); });
+  window.addEventListener('unhandledrejection',function(e){ show('promise: '+(e.reason&&e.reason.message||e.reason||'?')); });
+  window.__mmErr=show;
+})();
+document.getElementById('build').textContent='build '+'2026.06.10-mvp1';
+
+/* ---------------- card data (2026 solution key, structured) ---------------- */
+const CARD=/*CARDDATA*/[{"sec":"2026","ln":1,"pat":"222 000 2222 6666","pts":25,"conc":false,"sols":[[["2B",3],["WD",3],["2C",4],["6C",4]],[["2B",3],["WD",3],["2D",4],["6D",4]],[["2C",3],["WD",3],["2B",4],["6B",4]],[["2C",3],["WD",3],["2D",4],["6D",4]],[["2D",3],["WD",3],["2B",4],["6B",4]],[["2D",3],["WD",3],["2C",4],["6C",4]]]},{"sec":"2026","ln":2,"pat":"2026 DDD 2222 DDD","pts":25,"conc":false,"sols":[[["2B",1],["WD",1],["2B",1],["6B",1],["GD",3],["2C",4],["RD",3]],[["2B",1],["WD",1],["2B",1],["6B",1],["GD",3],["6C",4],["RD",3]],[["2B",1],["WD",1],["2B",1],["6B",1],["GD",3],["2D",4],["WD",3]],[["2B",1],["WD",1],["2B",1],["6B",1],["GD",3],["6D",4],["WD",3]],[["2C",1],["WD",1],["2C",1],["6C",1],["RD",3],["2B",4],["GD",3]],[["2C",1],["WD",1],["2C",1],["6C",1],["RD",3],["6B",4],["GD",3]],[["2C",1],["WD",1],["2C",1],["6C",1],["RD",3],["2D",4],["WD",3]],[["2C",1],["WD",1],["2C",1],["6C",1],["RD",3],["6D",4],["WD",3]],[["2D",1],["WD",1],["2D",1],["6D",1],["WD",3],["2B",4],["GD",3]],[["2D",1],["WD",1],["2D",1],["6D",1],["WD",3],["6B",4],["GD",3]],[["2D",1],["WD",1],["2D",1],["6D",1],["WD",3],["2C",4],["RD",3]],[["2D",1],["WD",1],["2D",1],["6D",1],["WD",3],["6C",4],["RD",3]]]},{"sec":"2026","ln":3,"pat":"FFF 2026 222 6666","pts":25,"conc":false,"sols":[[["F",3],["2B",1],["WD",1],["2B",1],["6B",1],["2C",3],["6D",4]],[["F",3],["2B",1],["WD",1],["2B",1],["6B",1],["2D",3],["6C",4]],[["F",3],["2C",1],["WD",1],["2C",1],["6C",1],["2B",3],["6D",4]],[["F",3],["2C",1],["WD",1],["2C",1],["6C",1],["2D",3],["6B",4]],[["F",3],["2D",1],["WD",1],["2D",1],["6D",1],["2B",3],["6C",4]],[["F",3],["2D",1],["WD",1],["2D",1],["6D",1],["2C",3],["6B",4]]]},{"sec":"2026","ln":4,"pat":"22 00 222 666 NEWS","pts":30,"conc":false,"sols":[[["2B",2],["WD",2],["2C",3],["6C",3],["N",1],["E",1],["W",1],["S",1]],[["2B",2],["WD",2],["2D",3],["6D",3],["N",1],["E",1],["W",1],["S",1]],[["2C",2],["WD",2],["2B",3],["6B",3],["N",1],["E",1],["W",1],["S",1]],[["2C",2],["WD",2],["2D",3],["6D",3],["N",1],["E",1],["W",1],["S",1]],[["2D",2],["WD",2],["2B",3],["6B",3],["N",1],["E",1],["W",1],["S",1]],[["2D",2],["WD",2],["2C",3],["6C",3],["N",1],["E",1],["W",1],["S",1]]]},{"sec":"2468","ln":1,"pat":"222 444 6666 8888","pts":25,"conc":false,"sols":[[["2B",3],["4B",3],["6B",4],["8B",4]],[["2C",3],["4C",3],["6C",4],["8C",4]],[["2D",3],["4D",3],["6D",4],["8D",4]],[["2B",3],["4B",3],["6C",4],["8C",4]],[["2B",3],["4B",3],["6D",4],["8D",4]],[["2C",3],["4C",3],["6B",4],["8B",4]],[["2C",3],["4C",3],["6D",4],["8D",4]],[["2D",3],["4D",3],["6B",4],["8B",4]],[["2D",3],["4D",3],["6C",4],["8C",4]]]},{"sec":"2468","ln":2,"pat":"FF 2222 44 66 8888","pts":30,"conc":false,"sols":[[["F",2],["2B",4],["4C",2],["6C",2],["8B",4]],[["F",2],["2B",4],["4D",2],["6D",2],["8B",4]],[["F",2],["2C",4],["4B",2],["6B",2],["8C",4]],[["F",2],["2C",4],["4D",2],["6D",2],["8C",4]],[["F",2],["2D",4],["4B",2],["6B",2],["8D",4]],[["F",2],["2D",4],["4C",2],["6C",2],["8D",4]]]},{"sec":"2468","ln":3,"pat":"EE 22 444 666 88 WW","pts":30,"conc":false,"sols":[[["E",2],["2B",2],["4B",3],["6B",3],["8B",2],["W",2]],[["E",2],["2C",2],["4C",3],["6C",3],["8C",2],["W",2]],[["E",2],["2D",2],["4D",3],["6D",3],["8D",2],["W",2]]]},{"sec":"2468","ln":4,"pat":"2222 DDD 8888 DDD","pts":25,"conc":false,"sols":[[["2B",4],["GD",3],["8C",4],["RD",3]],[["2B",4],["GD",3],["8D",4],["WD",3]],[["2C",4],["RD",3],["8B",4],["GD",3]],[["2C",4],["RD",3],["8D",4],["WD",3]],[["2D",4],["WD",3],["8B",4],["GD",3]],[["2D",4],["WD",3],["8C",4],["RD",3]]]},{"sec":"2468","ln":5,"pat":"FFF 22 44 666 8888","pts":25,"conc":false,"sols":[[["F",3],["2B",2],["4B",2],["6B",3],["8B",4]],[["F",3],["2C",2],["4C",2],["6C",3],["8C",4]],[["F",3],["2D",2],["4D",2],["6D",3],["8D",4]]]},{"sec":"2468","ln":6,"pat":"2468 2222 D 2222 D","pts":25,"conc":false,"sols":[[["2B",1],["4B",1],["6B",1],["8B",1],["2C",4],["RD",1],["2D",4],["WD",1]],[["2B",1],["4B",1],["6B",1],["8B",1],["4C",4],["RD",1],["4D",4],["WD",1]],[["2B",1],["4B",1],["6B",1],["8B",1],["6C",4],["RD",1],["6D",4],["WD",1]],[["2B",1],["4B",1],["6B",1],["8B",1],["8C",4],["RD",1],["8D",4],["WD",1]],[["2C",1],["4C",1],["6C",1],["8C",1],["2B",4],["GD",1],["2D",4],["WD",1]],[["2C",1],["4C",1],["6C",1],["8C",1],["4B",4],["GD",1],["4D",4],["WD",1]],[["2C",1],["4C",1],["6C",1],["8C",1],["6B",4],["GD",1],["6D",4],["WD",1]],[["2C",1],["4C",1],["6C",1],["8C",1],["8B",4],["GD",1],["8D",4],["WD",1]],[["2D",1],["4D",1],["6D",1],["8D",1],["2B",4],["GD",1],["2C",4],["RD",1]],[["2D",1],["4D",1],["6D",1],["8D",1],["4B",4],["GD",1],["4C",4],["RD",1]],[["2D",1],["4D",1],["6D",1],["8D",1],["6B",4],["GD",1],["6C",4],["RD",1]],[["2D",1],["4D",1],["6D",1],["8D",1],["8B",4],["GD",1],["8C",4],["RD",1]]]},{"sec":"2468","ln":7,"pat":"FFF 2468 FFF 2222","pts":30,"conc":false,"sols":[[["F",3],["2B",1],["4B",1],["6B",1],["8B",1],["F",3],["2C",4]],[["F",3],["2B",1],["4B",1],["6B",1],["8B",1],["F",3],["4C",4]],[["F",3],["2B",1],["4B",1],["6B",1],["8B",1],["F",3],["6C",4]],[["F",3],["2B",1],["4B",1],["6B",1],["8B",1],["F",3],["8C",4]],[["F",3],["2B",1],["4B",1],["6B",1],["8B",1],["F",3],["2D",4]],[["F",3],["2B",1],["4B",1],["6B",1],["8B",1],["F",3],["4D",4]],[["F",3],["2B",1],["4B",1],["6B",1],["8B",1],["F",3],["6D",4]],[["F",3],["2B",1],["4B",1],["6B",1],["8B",1],["F",3],["8D",4]],[["F",3],["2C",1],["4C",1],["6C",1],["8C",1],["F",3],["2B",4]],[["F",3],["2C",1],["4C",1],["6C",1],["8C",1],["F",3],["4B",4]],[["F",3],["2C",1],["4C",1],["6C",1],["8C",1],["F",3],["6B",4]],[["F",3],["2C",1],["4C",1],["6C",1],["8C",1],["F",3],["8B",4]],[["F",3],["2C",1],["4C",1],["6C",1],["8C",1],["F",3],["2D",4]],[["F",3],["2C",1],["4C",1],["6C",1],["8C",1],["F",3],["4D",4]],[["F",3],["2C",1],["4C",1],["6C",1],["8C",1],["F",3],["6D",4]],[["F",3],["2C",1],["4C",1],["6C",1],["8C",1],["F",3],["8D",4]],[["F",3],["2D",1],["4D",1],["6D",1],["8D",1],["F",3],["2B",4]],[["F",3],["2D",1],["4D",1],["6D",1],["8D",1],["F",3],["4B",4]],[["F",3],["2D",1],["4D",1],["6D",1],["8D",1],["F",3],["6B",4]],[["F",3],["2D",1],["4D",1],["6D",1],["8D",1],["F",3],["8B",4]],[["F",3],["2D",1],["4D",1],["6D",1],["8D",1],["F",3],["2C",4]],[["F",3],["2D",1],["4D",1],["6D",1],["8D",1],["F",3],["4C",4]],[["F",3],["2D",1],["4D",1],["6D",1],["8D",1],["F",3],["6C",4]],[["F",3],["2D",1],["4D",1],["6D",1],["8D",1],["F",3],["8C",4]]]},{"sec":"2468","ln":8,"pat":"FF 246 888 246 888","pts":30,"conc":true,"sols":[[["F",2],["2B",1],["4B",1],["6B",1],["8B",3],["2C",1],["4C",1],["6C",1],["8C",3]],[["F",2],["2B",1],["4B",1],["6B",1],["8B",3],["2D",1],["4D",1],["6D",1],["8D",3]],[["F",2],["2C",1],["4C",1],["6C",1],["8C",3],["2D",1],["4D",1],["6D",1],["8D",3]]]},{"sec":"Any Like Numbers","ln":1,"pat":"1111 FFFFFF 1111","pts":30,"conc":false,"sols":[[["1B",4],["F",6],["1C",4]],[["1B",4],["F",6],["1D",4]],[["1C",4],["F",6],["1D",4]],[["2B",4],["F",6],["2C",4]],[["2B",4],["F",6],["2D",4]],[["2C",4],["F",6],["2D",4]],[["3B",4],["F",6],["3C",4]],[["3B",4],["F",6],["3D",4]],[["3C",4],["F",6],["3D",4]],[["4B",4],["F",6],["4C",4]],[["4B",4],["F",6],["4D",4]],[["4C",4],["F",6],["4D",4]],[["5B",4],["F",6],["5C",4]],[["5B",4],["F",6],["5D",4]],[["5C",4],["F",6],["5D",4]],[["6B",4],["F",6],["6C",4]],[["6B",4],["F",6],["6D",4]],[["6C",4],["F",6],["6D",4]],[["7B",4],["F",6],["7C",4]],[["7B",4],["F",6],["7D",4]],[["7C",4],["F",6],["7D",4]],[["8B",4],["F",6],["8C",4]],[["8B",4],["F",6],["8D",4]],[["8C",4],["F",6],["8D",4]],[["9B",4],["F",6],["9C",4]],[["9B",4],["F",6],["9D",4]],[["9C",4],["F",6],["9D",4]]]},{"sec":"Any Like Numbers","ln":2,"pat":"1111 D 111 D 1111 D","pts":25,"conc":false,"sols":[[["1B",4],["GD",1],["1C",3],["RD",1],["1D",4],["WD",1]],[["1B",4],["GD",1],["1D",3],["WD",1],["1C",4],["RD",1]],[["1C",4],["RD",1],["1B",3],["GD",1],["1D",4],["WD",1]],[["2B",4],["GD",1],["2C",3],["RD",1],["2D",4],["WD",1]],[["2B",4],["GD",1],["2D",3],["WD",1],["2C",4],["RD",1]],[["2C",4],["RD",1],["2B",3],["GD",1],["2D",4],["WD",1]],[["3B",4],["GD",1],["3C",3],["RD",1],["3D",4],["WD",1]],[["3B",4],["GD",1],["3D",3],["WD",1],["3C",4],["RD",1]],[["3C",4],["RD",1],["3B",3],["GD",1],["3D",4],["WD",1]],[["4B",4],["GD",1],["4C",3],["RD",1],["4D",4],["WD",1]],[["4B",4],["GD",1],["4D",3],["WD",1],["4C",4],["RD",1]],[["4C",4],["RD",1],["4B",3],["GD",1],["4D",4],["WD",1]],[["5B",4],["GD",1],["5C",3],["RD",1],["5D",4],["WD",1]],[["5B",4],["GD",1],["5D",3],["WD",1],["5C",4],["RD",1]],[["5C",4],["RD",1],["5B",3],["GD",1],["5D",4],["WD",1]],[["6B",4],["GD",1],["6C",3],["RD",1],["6D",4],["WD",1]],[["6B",4],["GD",1],["6D",3],["WD",1],["6C",4],["RD",1]],[["6C",4],["RD",1],["6B",3],["GD",1],["6D",4],["WD",1]],[["7B",4],["GD",1],["7C",3],["RD",1],["7D",4],["WD",1]],[["7B",4],["GD",1],["7D",3],["WD",1],["7C",4],["RD",1]],[["7C",4],["RD",1],["7B",3],["GD",1],["7D",4],["WD",1]],[["8B",4],["GD",1],["8C",3],["RD",1],["8D",4],["WD",1]],[["8B",4],["GD",1],["8D",3],["WD",1],["8C",4],["RD",1]],[["8C",4],["RD",1],["8B",3],["GD",1],["8D",4],["WD",1]],[["9B",4],["GD",1],["9C",3],["RD",1],["9D",4],["WD",1]],[["9B",4],["GD",1],["9D",3],["WD",1],["9C",4],["RD",1]],[["9C",4],["RD",1],["9B",3],["GD",1],["9D",4],["WD",1]]]},{"sec":"Any Like Numbers","ln":3,"pat":"FF 1111 11 1111 DD","pts":25,"conc":false,"sols":[[["F",2],["1B",4],["1C",2],["1D",4],["RD",2]],[["F",2],["1B",4],["1C",2],["1D",4],["GD",2]],[["F",2],["1B",4],["1C",2],["1D",4],["WD",2]],[["F",2],["1B",4],["1D",2],["1C",4],["RD",2]],[["F",2],["1B",4],["1D",2],["1C",4],["GD",2]],[["F",2],["1B",4],["1D",2],["1C",4],["WD",2]],[["F",2],["1C",4],["1B",2],["1D",4],["RD",2]],[["F",2],["1C",4],["1B",2],["1D",4],["GD",2]],[["F",2],["1C",4],["1B",2],["1D",4],["WD",2]],[["F",2],["2B",4],["2C",2],["2D",4],["RD",2]],[["F",2],["2B",4],["2C",2],["2D",4],["GD",2]],[["F",2],["2B",4],["2C",2],["2D",4],["WD",2]],[["F",2],["2B",4],["2D",2],["2C",4],["RD",2]],[["F",2],["2B",4],["2D",2],["2C",4],["GD",2]],[["F",2],["2B",4],["2D",2],["2C",4],["WD",2]],[["F",2],["2C",4],["2B",2],["2D",4],["RD",2]],[["F",2],["2C",4],["2B",2],["2D",4],["GD",2]],[["F",2],["2C",4],["2B",2],["2D",4],["WD",2]],[["F",2],["3B",4],["3C",2],["3D",4],["RD",2]],[["F",2],["3B",4],["3C",2],["3D",4],["GD",2]],[["F",2],["3B",4],["3C",2],["3D",4],["WD",2]],[["F",2],["3B",4],["3D",2],["3C",4],["RD",2]],[["F",2],["3B",4],["3D",2],["3C",4],["GD",2]],[["F",2],["3B",4],["3D",2],["3C",4],["WD",2]],[["F",2],["3C",4],["3B",2],["3D",4],["RD",2]],[["F",2],["3C",4],["3B",2],["3D",4],["GD",2]],[["F",2],["3C",4],["3B",2],["3D",4],["WD",2]],[["F",2],["4B",4],["4C",2],["4D",4],["RD",2]],[["F",2],["4B",4],["4C",2],["4D",4],["GD",2]],[["F",2],["4B",4],["4C",2],["4D",4],["WD",2]],[["F",2],["4B",4],["4D",2],["4C",4],["RD",2]],[["F",2],["4B",4],["4D",2],["4C",4],["GD",2]],[["F",2],["4B",4],["4D",2],["4C",4],["WD",2]],[["F",2],["4C",4],["4B",2],["4D",4],["RD",2]],[["F",2],["4C",4],["4B",2],["4D",4],["GD",2]],[["F",2],["4C",4],["4B",2],["4D",4],["WD",2]],[["F",2],["5B",4],["5C",2],["5D",4],["RD",2]],[["F",2],["5B",4],["5C",2],["5D",4],["GD",2]],[["F",2],["5B",4],["5C",2],["5D",4],["WD",2]],[["F",2],["5B",4],["5D",2],["5C",4],["RD",2]],[["F",2],["5B",4],["5D",2],["5C",4],["GD",2]],[["F",2],["5B",4],["5D",2],["5C",4],["WD",2]],[["F",2],["5C",4],["5B",2],["5D",4],["RD",2]],[["F",2],["5C",4],["5B",2],["5D",4],["GD",2]],[["F",2],["5C",4],["5B",2],["5D",4],["WD",2]],[["F",2],["6B",4],["6C",2],["6D",4],["RD",2]],[["F",2],["6B",4],["6C",2],["6D",4],["GD",2]],[["F",2],["6B",4],["6C",2],["6D",4],["WD",2]],[["F",2],["6B",4],["6D",2],["6C",4],["RD",2]],[["F",2],["6B",4],["6D",2],["6C",4],["GD",2]],[["F",2],["6B",4],["6D",2],["6C",4],["WD",2]],[["F",2],["6C",4],["6B",2],["6D",4],["RD",2]],[["F",2],["6C",4],["6B",2],["6D",4],["GD",2]],[["F",2],["6C",4],["6B",2],["6D",4],["WD",2]],[["F",2],["7B",4],["7C",2],["7D",4],["RD",2]],[["F",2],["7B",4],["7C",2],["7D",4],["GD",2]],[["F",2],["7B",4],["7C",2],["7D",4],["WD",2]],[["F",2],["7B",4],["7D",2],["7C",4],["RD",2]],[["F",2],["7B",4],["7D",2],["7C",4],["GD",2]],[["F",2],["7B",4],["7D",2],["7C",4],["WD",2]],[["F",2],["7C",4],["7B",2],["7D",4],["RD",2]],[["F",2],["7C",4],["7B",2],["7D",4],["GD",2]],[["F",2],["7C",4],["7B",2],["7D",4],["WD",2]],[["F",2],["8B",4],["8C",2],["8D",4],["RD",2]],[["F",2],["8B",4],["8C",2],["8D",4],["GD",2]],[["F",2],["8B",4],["8C",2],["8D",4],["WD",2]],[["F",2],["8B",4],["8D",2],["8C",4],["RD",2]],[["F",2],["8B",4],["8D",2],["8C",4],["GD",2]],[["F",2],["8B",4],["8D",2],["8C",4],["WD",2]],[["F",2],["8C",4],["8B",2],["8D",4],["RD",2]],[["F",2],["8C",4],["8B",2],["8D",4],["GD",2]],[["F",2],["8C",4],["8B",2],["8D",4],["WD",2]],[["F",2],["9B",4],["9C",2],["9D",4],["RD",2]],[["F",2],["9B",4],["9C",2],["9D",4],["GD",2]],[["F",2],["9B",4],["9C",2],["9D",4],["WD",2]],[["F",2],["9B",4],["9D",2],["9C",4],["RD",2]],[["F",2],["9B",4],["9D",2],["9C",4],["GD",2]],[["F",2],["9B",4],["9D",2],["9C",4],["WD",2]],[["F",2],["9C",4],["9B",2],["9D",4],["RD",2]],[["F",2],["9C",4],["9B",2],["9D",4],["GD",2]],[["F",2],["9C",4],["9B",2],["9D",4],["WD",2]]]},{"sec":"Quints","ln":1,"pat":"11111 1111 11111","pts":40,"conc":false,"sols":[[["1B",5],["1C",4],["1D",5]],[["1B",5],["1D",4],["1C",5]],[["1C",5],["1B",4],["1D",5]],[["2B",5],["2C",4],["2D",5]],[["2B",5],["2D",4],["2C",5]],[["2C",5],["2B",4],["2D",5]],[["3B",5],["3C",4],["3D",5]],[["3B",5],["3D",4],["3C",5]],[["3C",5],["3B",4],["3D",5]],[["4B",5],["4C",4],["4D",5]],[["4B",5],["4D",4],["4C",5]],[["4C",5],["4B",4],["4D",5]],[["5B",5],["5C",4],["5D",5]],[["5B",5],["5D",4],["5C",5]],[["5C",5],["5B",4],["5D",5]],[["6B",5],["6C",4],["6D",5]],[["6B",5],["6D",4],["6C",5]],[["6C",5],["6B",4],["6D",5]],[["7B",5],["7C",4],["7D",5]],[["7B",5],["7D",4],["7C",5]],[["7C",5],["7B",4],["7D",5]],[["8B",5],["8C",4],["8D",5]],[["8B",5],["8D",4],["8C",5]],[["8C",5],["8B",4],["8D",5]],[["9B",5],["9C",4],["9D",5]],[["9B",5],["9D",4],["9C",5]],[["9C",5],["9B",4],["9D",5]]]},{"sec":"Quints","ln":2,"pat":"FF 11111 22 33333","pts":45,"conc":false,"sols":[[["F",2],["1B",5],["2B",2],["3B",5]],[["F",2],["2B",5],["3B",2],["4B",5]],[["F",2],["3B",5],["4B",2],["5B",5]],[["F",2],["4B",5],["5B",2],["6B",5]],[["F",2],["5B",5],["6B",2],["7B",5]],[["F",2],["6B",5],["7B",2],["8B",5]],[["F",2],["7B",5],["8B",2],["9B",5]],[["F",2],["1C",5],["2C",2],["3C",5]],[["F",2],["2C",5],["3C",2],["4C",5]],[["F",2],["3C",5],["4C",2],["5C",5]],[["F",2],["4C",5],["5C",2],["6C",5]],[["F",2],["5C",5],["6C",2],["7C",5]],[["F",2],["6C",5],["7C",2],["8C",5]],[["F",2],["7C",5],["8C",2],["9C",5]],[["F",2],["1D",5],["2D",2],["3D",5]],[["F",2],["2D",5],["3D",2],["4D",5]],[["F",2],["3D",5],["4D",2],["5D",5]],[["F",2],["4D",5],["5D",2],["6D",5]],[["F",2],["5D",5],["6D",2],["7D",5]],[["F",2],["6D",5],["7D",2],["8D",5]],[["F",2],["7D",5],["8D",2],["9D",5]]]},{"sec":"Quints","ln":3,"pat":"11111 44444 DDDD","pts":40,"conc":false,"sols":[[["1B",5],["2B",5],["RD",4]],[["1B",5],["2B",5],["WD",4]],[["1B",5],["3B",5],["RD",4]],[["1B",5],["3B",5],["WD",4]],[["1B",5],["4B",5],["RD",4]],[["1B",5],["4B",5],["WD",4]],[["1B",5],["5B",5],["RD",4]],[["1B",5],["5B",5],["WD",4]],[["1B",5],["6B",5],["RD",4]],[["1B",5],["6B",5],["WD",4]],[["1B",5],["7B",5],["RD",4]],[["1B",5],["7B",5],["WD",4]],[["1B",5],["8B",5],["RD",4]],[["1B",5],["8B",5],["WD",4]],[["1B",5],["9B",5],["RD",4]],[["1B",5],["9B",5],["WD",4]],[["2B",5],["3B",5],["RD",4]],[["2B",5],["3B",5],["WD",4]],[["2B",5],["4B",5],["RD",4]],[["2B",5],["4B",5],["WD",4]],[["2B",5],["5B",5],["RD",4]],[["2B",5],["5B",5],["WD",4]],[["2B",5],["6B",5],["RD",4]],[["2B",5],["6B",5],["WD",4]],[["2B",5],["7B",5],["RD",4]],[["2B",5],["7B",5],["WD",4]],[["2B",5],["8B",5],["RD",4]],[["2B",5],["8B",5],["WD",4]],[["2B",5],["9B",5],["RD",4]],[["2B",5],["9B",5],["WD",4]],[["3B",5],["4B",5],["RD",4]],[["3B",5],["4B",5],["WD",4]],[["3B",5],["5B",5],["RD",4]],[["3B",5],["5B",5],["WD",4]],[["3B",5],["6B",5],["RD",4]],[["3B",5],["6B",5],["WD",4]],[["3B",5],["7B",5],["RD",4]],[["3B",5],["7B",5],["WD",4]],[["3B",5],["8B",5],["RD",4]],[["3B",5],["8B",5],["WD",4]],[["3B",5],["9B",5],["RD",4]],[["3B",5],["9B",5],["WD",4]],[["4B",5],["5B",5],["RD",4]],[["4B",5],["5B",5],["WD",4]],[["4B",5],["6B",5],["RD",4]],[["4B",5],["6B",5],["WD",4]],[["4B",5],["7B",5],["RD",4]],[["4B",5],["7B",5],["WD",4]],[["4B",5],["8B",5],["RD",4]],[["4B",5],["8B",5],["WD",4]],[["4B",5],["9B",5],["RD",4]],[["4B",5],["9B",5],["WD",4]],[["5B",5],["6B",5],["RD",4]],[["5B",5],["6B",5],["WD",4]],[["5B",5],["7B",5],["RD",4]],[["5B",5],["7B",5],["WD",4]],[["5B",5],["8B",5],["RD",4]],[["5B",5],["8B",5],["WD",4]],[["5B",5],["9B",5],["RD",4]],[["5B",5],["9B",5],["WD",4]],[["6B",5],["7B",5],["RD",4]],[["6B",5],["7B",5],["WD",4]],[["6B",5],["8B",5],["RD",4]],[["6B",5],["8B",5],["WD",4]],[["6B",5],["9B",5],["RD",4]],[["6B",5],["9B",5],["WD",4]],[["7B",5],["8B",5],["RD",4]],[["7B",5],["8B",5],["WD",4]],[["7B",5],["9B",5],["RD",4]],[["7B",5],["9B",5],["WD",4]],[["8B",5],["9B",5],["RD",4]],[["8B",5],["9B",5],["WD",4]],[["1C",5],["2C",5],["GD",4]],[["1C",5],["2C",5],["WD",4]],[["1C",5],["3C",5],["GD",4]],[["1C",5],["3C",5],["WD",4]],[["1C",5],["4C",5],["GD",4]],[["1C",5],["4C",5],["WD",4]],[["1C",5],["5C",5],["GD",4]],[["1C",5],["5C",5],["WD",4]],[["1C",5],["6C",5],["GD",4]],[["1C",5],["6C",5],["WD",4]],[["1C",5],["7C",5],["GD",4]],[["1C",5],["7C",5],["WD",4]],[["1C",5],["8C",5],["GD",4]],[["1C",5],["8C",5],["WD",4]],[["1C",5],["9C",5],["GD",4]],[["1C",5],["9C",5],["WD",4]],[["2C",5],["3C",5],["GD",4]],[["2C",5],["3C",5],["WD",4]],[["2C",5],["4C",5],["GD",4]],[["2C",5],["4C",5],["WD",4]],[["2C",5],["5C",5],["GD",4]],[["2C",5],["5C",5],["WD",4]],[["2C",5],["6C",5],["GD",4]],[["2C",5],["6C",5],["WD",4]],[["2C",5],["7C",5],["GD",4]],[["2C",5],["7C",5],["WD",4]],[["2C",5],["8C",5],["GD",4]],[["2C",5],["8C",5],["WD",4]],[["2C",5],["9C",5],["GD",4]],[["2C",5],["9C",5],["WD",4]],[["3C",5],["4C",5],["GD",4]],[["3C",5],["4C",5],["WD",4]],[["3C",5],["5C",5],["GD",4]],[["3C",5],["5C",5],["WD",4]],[["3C",5],["6C",5],["GD",4]],[["3C",5],["6C",5],["WD",4]],[["3C",5],["7C",5],["GD",4]],[["3C",5],["7C",5],["WD",4]],[["3C",5],["8C",5],["GD",4]],[["3C",5],["8C",5],["WD",4]],[["3C",5],["9C",5],["GD",4]],[["3C",5],["9C",5],["WD",4]],[["4C",5],["5C",5],["GD",4]],[["4C",5],["5C",5],["WD",4]],[["4C",5],["6C",5],["GD",4]],[["4C",5],["6C",5],["WD",4]],[["4C",5],["7C",5],["GD",4]],[["4C",5],["7C",5],["WD",4]],[["4C",5],["8C",5],["GD",4]],[["4C",5],["8C",5],["WD",4]],[["4C",5],["9C",5],["GD",4]],[["4C",5],["9C",5],["WD",4]],[["5C",5],["6C",5],["GD",4]],[["5C",5],["6C",5],["WD",4]],[["5C",5],["7C",5],["GD",4]],[["5C",5],["7C",5],["WD",4]],[["5C",5],["8C",5],["GD",4]],[["5C",5],["8C",5],["WD",4]],[["5C",5],["9C",5],["GD",4]],[["5C",5],["9C",5],["WD",4]],[["6C",5],["7C",5],["GD",4]],[["6C",5],["7C",5],["WD",4]],[["6C",5],["8C",5],["GD",4]],[["6C",5],["8C",5],["WD",4]],[["6C",5],["9C",5],["GD",4]],[["6C",5],["9C",5],["WD",4]],[["7C",5],["8C",5],["GD",4]],[["7C",5],["8C",5],["WD",4]],[["7C",5],["9C",5],["GD",4]],[["7C",5],["9C",5],["WD",4]],[["8C",5],["9C",5],["GD",4]],[["8C",5],["9C",5],["WD",4]],[["1D",5],["2D",5],["RD",4]],[["1D",5],["2D",5],["GD",4]],[["1D",5],["3D",5],["RD",4]],[["1D",5],["3D",5],["GD",4]],[["1D",5],["4D",5],["RD",4]],[["1D",5],["4D",5],["GD",4]],[["1D",5],["5D",5],["RD",4]],[["1D",5],["5D",5],["GD",4]],[["1D",5],["6D",5],["RD",4]],[["1D",5],["6D",5],["GD",4]],[["1D",5],["7D",5],["RD",4]],[["1D",5],["7D",5],["GD",4]],[["1D",5],["8D",5],["RD",4]],[["1D",5],["8D",5],["GD",4]],[["1D",5],["9D",5],["RD",4]],[["1D",5],["9D",5],["GD",4]],[["2D",5],["3D",5],["RD",4]],[["2D",5],["3D",5],["GD",4]],[["2D",5],["4D",5],["RD",4]],[["2D",5],["4D",5],["GD",4]],[["2D",5],["5D",5],["RD",4]],[["2D",5],["5D",5],["GD",4]],[["2D",5],["6D",5],["RD",4]],[["2D",5],["6D",5],["GD",4]],[["2D",5],["7D",5],["RD",4]],[["2D",5],["7D",5],["GD",4]],[["2D",5],["8D",5],["RD",4]],[["2D",5],["8D",5],["GD",4]],[["2D",5],["9D",5],["RD",4]],[["2D",5],["9D",5],["GD",4]],[["3D",5],["4D",5],["RD",4]],[["3D",5],["4D",5],["GD",4]],[["3D",5],["5D",5],["RD",4]],[["3D",5],["5D",5],["GD",4]],[["3D",5],["6D",5],["RD",4]],[["3D",5],["6D",5],["GD",4]],[["3D",5],["7D",5],["RD",4]],[["3D",5],["7D",5],["GD",4]],[["3D",5],["8D",5],["RD",4]],[["3D",5],["8D",5],["GD",4]],[["3D",5],["9D",5],["RD",4]],[["3D",5],["9D",5],["GD",4]],[["4D",5],["5D",5],["RD",4]],[["4D",5],["5D",5],["GD",4]],[["4D",5],["6D",5],["RD",4]],[["4D",5],["6D",5],["GD",4]],[["4D",5],["7D",5],["RD",4]],[["4D",5],["7D",5],["GD",4]],[["4D",5],["8D",5],["RD",4]],[["4D",5],["8D",5],["GD",4]],[["4D",5],["9D",5],["RD",4]],[["4D",5],["9D",5],["GD",4]],[["5D",5],["6D",5],["RD",4]],[["5D",5],["6D",5],["GD",4]],[["5D",5],["7D",5],["RD",4]],[["5D",5],["7D",5],["GD",4]],[["5D",5],["8D",5],["RD",4]],[["5D",5],["8D",5],["GD",4]],[["5D",5],["9D",5],["RD",4]],[["5D",5],["9D",5],["GD",4]],[["6D",5],["7D",5],["RD",4]],[["6D",5],["7D",5],["GD",4]],[["6D",5],["8D",5],["RD",4]],[["6D",5],["8D",5],["GD",4]],[["6D",5],["9D",5],["RD",4]],[["6D",5],["9D",5],["GD",4]],[["7D",5],["8D",5],["RD",4]],[["7D",5],["8D",5],["GD",4]],[["7D",5],["9D",5],["RD",4]],[["7D",5],["9D",5],["GD",4]],[["8D",5],["9D",5],["RD",4]],[["8D",5],["9D",5],["GD",4]]]},{"sec":"Consecutive Run","ln":1,"pat":"11 222 33 444 5555 / 55 666 77 888 9999","pts":25,"conc":false,"sols":[[["1B",2],["2B",3],["3B",2],["4B",3],["5B",4]],[["1C",2],["2C",3],["3C",2],["4C",3],["5C",4]],[["1D",2],["2D",3],["3D",2],["4D",3],["5D",4]],[["5B",2],["6B",3],["7B",2],["8B",3],["9B",4]],[["5C",2],["6C",3],["7C",2],["8C",3],["9C",4]],[["5D",2],["6D",3],["7D",2],["8D",3],["9D",4]]]},{"sec":"Consecutive Run","ln":2,"pat":"FFF 1111 234 5555","pts":25,"conc":false,"sols":[[["F",3],["1B",4],["2B",1],["3B",1],["4B",1],["5B",4]],[["F",3],["1C",4],["2C",1],["3C",1],["4C",1],["5C",4]],[["F",3],["1D",4],["2D",1],["3D",1],["4D",1],["5D",4]],[["F",3],["1B",4],["2C",1],["3C",1],["4C",1],["5B",4]],[["F",3],["1B",4],["2D",1],["3D",1],["4D",1],["5B",4]],[["F",3],["1C",4],["2B",1],["3B",1],["4B",1],["5C",4]],[["F",3],["1C",4],["2D",1],["3D",1],["4D",1],["5C",4]],[["F",3],["1D",4],["2B",1],["3B",1],["4B",1],["5D",4]],[["F",3],["1D",4],["2C",1],["3C",1],["4C",1],["5D",4]],[["F",3],["2B",4],["3B",1],["4B",1],["5B",1],["6B",4]],[["F",3],["2C",4],["3C",1],["4C",1],["5C",1],["6C",4]],[["F",3],["2D",4],["3D",1],["4D",1],["5D",1],["6D",4]],[["F",3],["2B",4],["3C",1],["4C",1],["5C",1],["6B",4]],[["F",3],["2B",4],["3D",1],["4D",1],["5D",1],["6B",4]],[["F",3],["2C",4],["3B",1],["4B",1],["5B",1],["6C",4]],[["F",3],["2C",4],["3D",1],["4D",1],["5D",1],["6C",4]],[["F",3],["2D",4],["3B",1],["4B",1],["5B",1],["6D",4]],[["F",3],["2D",4],["3C",1],["4C",1],["5C",1],["6D",4]],[["F",3],["3B",4],["4B",1],["5B",1],["6B",1],["7B",4]],[["F",3],["3C",4],["4C",1],["5C",1],["6C",1],["7C",4]],[["F",3],["3D",4],["4D",1],["5D",1],["6D",1],["7D",4]],[["F",3],["3B",4],["4C",1],["5C",1],["6C",1],["7B",4]],[["F",3],["3B",4],["4D",1],["5D",1],["6D",1],["7B",4]],[["F",3],["3C",4],["4B",1],["5B",1],["6B",1],["7C",4]],[["F",3],["3C",4],["4D",1],["5D",1],["6D",1],["7C",4]],[["F",3],["3D",4],["4B",1],["5B",1],["6B",1],["7D",4]],[["F",3],["3D",4],["4C",1],["5C",1],["6C",1],["7D",4]],[["F",3],["4B",4],["5B",1],["6B",1],["7B",1],["8B",4]],[["F",3],["4C",4],["5C",1],["6C",1],["7C",1],["8C",4]],[["F",3],["4D",4],["5D",1],["6D",1],["7D",1],["8D",4]],[["F",3],["4B",4],["5C",1],["6C",1],["7C",1],["8B",4]],[["F",3],["4B",4],["5D",1],["6D",1],["7D",1],["8B",4]],[["F",3],["4C",4],["5B",1],["6B",1],["7B",1],["8C",4]],[["F",3],["4C",4],["5D",1],["6D",1],["7D",1],["8C",4]],[["F",3],["4D",4],["5B",1],["6B",1],["7B",1],["8D",4]],[["F",3],["4D",4],["5C",1],["6C",1],["7C",1],["8D",4]],[["F",3],["5B",4],["6B",1],["7B",1],["8B",1],["9B",4]],[["F",3],["5C",4],["6C",1],["7C",1],["8C",1],["9C",4]],[["F",3],["5D",4],["6D",1],["7D",1],["8D",1],["9D",4]],[["F",3],["5B",4],["6C",1],["7C",1],["8C",1],["9B",4]],[["F",3],["5B",4],["6D",1],["7D",1],["8D",1],["9B",4]],[["F",3],["5C",4],["6B",1],["7B",1],["8B",1],["9C",4]],[["F",3],["5C",4],["6D",1],["7D",1],["8D",1],["9C",4]],[["F",3],["5D",4],["6B",1],["7B",1],["8B",1],["9D",4]],[["F",3],["5D",4],["6C",1],["7C",1],["8C",1],["9D",4]]]},{"sec":"Consecutive Run","ln":3,"pat":"11 22 111 222 3333","pts":25,"conc":false,"sols":[[["1B",2],["2B",2],["1C",3],["2C",3],["3D",4]],[["1B",2],["2B",2],["1D",3],["2D",3],["3C",4]],[["1C",2],["2C",2],["1B",3],["2B",3],["3D",4]],[["1C",2],["2C",2],["1D",3],["2D",3],["3B",4]],[["1D",2],["2D",2],["1B",3],["2B",3],["3C",4]],[["1D",2],["2D",2],["1C",3],["2C",3],["3B",4]],[["2B",2],["3B",2],["2C",3],["3C",3],["4D",4]],[["2B",2],["3B",2],["2D",3],["3D",3],["4C",4]],[["2C",2],["3C",2],["2B",3],["3B",3],["4D",4]],[["2C",2],["3C",2],["2D",3],["3D",3],["4B",4]],[["2D",2],["3D",2],["2B",3],["3B",3],["4C",4]],[["2D",2],["3D",2],["2C",3],["3C",3],["4B",4]],[["3B",2],["4B",2],["3C",3],["4C",3],["5D",4]],[["3B",2],["4B",2],["3D",3],["4D",3],["5C",4]],[["3C",2],["4C",2],["3B",3],["4B",3],["5D",4]],[["3C",2],["4C",2],["3D",3],["4D",3],["5B",4]],[["3D",2],["4D",2],["3B",3],["4B",3],["5C",4]],[["3D",2],["4D",2],["3C",3],["4C",3],["5B",4]],[["4B",2],["5B",2],["4C",3],["5C",3],["6D",4]],[["4B",2],["5B",2],["4D",3],["5D",3],["6C",4]],[["4C",2],["5C",2],["4B",3],["5B",3],["6D",4]],[["4C",2],["5C",2],["4D",3],["5D",3],["6B",4]],[["4D",2],["5D",2],["4B",3],["5B",3],["6C",4]],[["4D",2],["5D",2],["4C",3],["5C",3],["6B",4]],[["5B",2],["6B",2],["5C",3],["6C",3],["7D",4]],[["5B",2],["6B",2],["5D",3],["6D",3],["7C",4]],[["5C",2],["6C",2],["5B",3],["6B",3],["7D",4]],[["5C",2],["6C",2],["5D",3],["6D",3],["7B",4]],[["5D",2],["6D",2],["5B",3],["6B",3],["7C",4]],[["5D",2],["6D",2],["5C",3],["6C",3],["7B",4]],[["6B",2],["7B",2],["6C",3],["7C",3],["8D",4]],[["6B",2],["7B",2],["6D",3],["7D",3],["8C",4]],[["6C",2],["7C",2],["6B",3],["7B",3],["8D",4]],[["6C",2],["7C",2],["6D",3],["7D",3],["8B",4]],[["6D",2],["7D",2],["6B",3],["7B",3],["8C",4]],[["6D",2],["7D",2],["6C",3],["7C",3],["8B",4]],[["7B",2],["8B",2],["7C",3],["8C",3],["9D",4]],[["7B",2],["8B",2],["7D",3],["8D",3],["9C",4]],[["7C",2],["8C",2],["7B",3],["8B",3],["9D",4]],[["7C",2],["8C",2],["7D",3],["8D",3],["9B",4]],[["7D",2],["8D",2],["7B",3],["8B",3],["9C",4]],[["7D",2],["8D",2],["7C",3],["8C",3],["9B",4]]]},{"sec":"Consecutive Run","ln":4,"pat":"111 222 3333 4444","pts":25,"conc":false,"sols":[[["1B",3],["2B",3],["3B",4],["4B",4]],[["1C",3],["2C",3],["3C",4],["4C",4]],[["1D",3],["2D",3],["3D",4],["4D",4]],[["1B",3],["2B",3],["3C",4],["4C",4]],[["1B",3],["2B",3],["3D",4],["4D",4]],[["1C",3],["2C",3],["3B",4],["4B",4]],[["1C",3],["2C",3],["3D",4],["4D",4]],[["1D",3],["2D",3],["3B",4],["4B",4]],[["1D",3],["2D",3],["3C",4],["4C",4]],[["2B",3],["3B",3],["4B",4],["5B",4]],[["2C",3],["3C",3],["4C",4],["5C",4]],[["2D",3],["3D",3],["4D",4],["5D",4]],[["2B",3],["3B",3],["4C",4],["5C",4]],[["2B",3],["3B",3],["4D",4],["5D",4]],[["2C",3],["3C",3],["4B",4],["5B",4]],[["2C",3],["3C",3],["4D",4],["5D",4]],[["2D",3],["3D",3],["4B",4],["5B",4]],[["2D",3],["3D",3],["4C",4],["5C",4]],[["3B",3],["4B",3],["5B",4],["6B",4]],[["3C",3],["4C",3],["5C",4],["6C",4]],[["3D",3],["4D",3],["5D",4],["6D",4]],[["3B",3],["4B",3],["5C",4],["6C",4]],[["3B",3],["4B",3],["5D",4],["6D",4]],[["3C",3],["4C",3],["5B",4],["6B",4]],[["3C",3],["4C",3],["5D",4],["6D",4]],[["3D",3],["4D",3],["5B",4],["6B",4]],[["3D",3],["4D",3],["5C",4],["6C",4]],[["4B",3],["5B",3],["6B",4],["7B",4]],[["4C",3],["5C",3],["6C",4],["7C",4]],[["4D",3],["5D",3],["6D",4],["7D",4]],[["4B",3],["5B",3],["6C",4],["7C",4]],[["4B",3],["5B",3],["6D",4],["7D",4]],[["4C",3],["5C",3],["6B",4],["7B",4]],[["4C",3],["5C",3],["6D",4],["7D",4]],[["4D",3],["5D",3],["6B",4],["7B",4]],[["4D",3],["5D",3],["6C",4],["7C",4]],[["5B",3],["6B",3],["7B",4],["8B",4]],[["5C",3],["6C",3],["7C",4],["8C",4]],[["5D",3],["6D",3],["7D",4],["8D",4]],[["5B",3],["6B",3],["7C",4],["8C",4]],[["5B",3],["6B",3],["7D",4],["8D",4]],[["5C",3],["6C",3],["7B",4],["8B",4]],[["5C",3],["6C",3],["7D",4],["8D",4]],[["5D",3],["6D",3],["7B",4],["8B",4]],[["5D",3],["6D",3],["7C",4],["8C",4]],[["6B",3],["7B",3],["8B",4],["9B",4]],[["6C",3],["7C",3],["8C",4],["9C",4]],[["6D",3],["7D",3],["8D",4],["9D",4]],[["6B",3],["7B",3],["8C",4],["9C",4]],[["6B",3],["7B",3],["8D",4],["9D",4]],[["6C",3],["7C",3],["8B",4],["9B",4]],[["6C",3],["7C",3],["8D",4],["9D",4]],[["6D",3],["7D",3],["8B",4],["9B",4]],[["6D",3],["7D",3],["8C",4],["9C",4]]]},{"sec":"Consecutive Run","ln":5,"pat":"FFF 11 22 333 DDDD","pts":25,"conc":false,"sols":[[["F",3],["1B",2],["2B",2],["3B",3],["GD",4]],[["F",3],["1C",2],["2C",2],["3C",3],["RD",4]],[["F",3],["1D",2],["2D",2],["3D",3],["WD",4]],[["F",3],["1B",2],["2C",2],["3B",3],["RD",4]],[["F",3],["1B",2],["2D",2],["3B",3],["WD",4]],[["F",3],["1C",2],["2B",2],["3C",3],["GD",4]],[["F",3],["1C",2],["2D",2],["3C",3],["WD",4]],[["F",3],["1D",2],["2B",2],["3D",3],["GD",4]],[["F",3],["1D",2],["2C",2],["3D",3],["RD",4]],[["F",3],["2B",2],["3B",2],["4B",3],["GD",4]],[["F",3],["2C",2],["3C",2],["4C",3],["RD",4]],[["F",3],["2D",2],["3D",2],["4D",3],["WD",4]],[["F",3],["2B",2],["3C",2],["4B",3],["RD",4]],[["F",3],["2B",2],["3D",2],["4B",3],["WD",4]],[["F",3],["2C",2],["3B",2],["4C",3],["GD",4]],[["F",3],["2C",2],["3D",2],["4C",3],["WD",4]],[["F",3],["2D",2],["3B",2],["4D",3],["GD",4]],[["F",3],["2D",2],["3C",2],["4D",3],["RD",4]],[["F",3],["3B",2],["4B",2],["5B",3],["GD",4]],[["F",3],["3C",2],["4C",2],["5C",3],["RD",4]],[["F",3],["3D",2],["4D",2],["5D",3],["WD",4]],[["F",3],["3B",2],["4C",2],["5B",3],["RD",4]],[["F",3],["3B",2],["4D",2],["5B",3],["WD",4]],[["F",3],["3C",2],["4B",2],["5C",3],["GD",4]],[["F",3],["3C",2],["4D",2],["5C",3],["WD",4]],[["F",3],["3D",2],["4B",2],["5D",3],["GD",4]],[["F",3],["3D",2],["4C",2],["5D",3],["RD",4]],[["F",3],["4B",2],["5B",2],["6B",3],["GD",4]],[["F",3],["4C",2],["5C",2],["6C",3],["RD",4]],[["F",3],["4D",2],["5D",2],["6D",3],["WD",4]],[["F",3],["4B",2],["5C",2],["6B",3],["RD",4]],[["F",3],["4B",2],["5D",2],["6B",3],["WD",4]],[["F",3],["4C",2],["5B",2],["6C",3],["GD",4]],[["F",3],["4C",2],["5D",2],["6C",3],["WD",4]],[["F",3],["4D",2],["5B",2],["6D",3],["GD",4]],[["F",3],["4D",2],["5C",2],["6D",3],["RD",4]],[["F",3],["5B",2],["6B",2],["7B",3],["GD",4]],[["F",3],["5C",2],["6C",2],["7C",3],["RD",4]],[["F",3],["5D",2],["6D",2],["7D",3],["WD",4]],[["F",3],["5B",2],["6C",2],["7B",3],["RD",4]],[["F",3],["5B",2],["6D",2],["7B",3],["WD",4]],[["F",3],["5C",2],["6B",2],["7C",3],["GD",4]],[["F",3],["5C",2],["6D",2],["7C",3],["WD",4]],[["F",3],["5D",2],["6B",2],["7D",3],["GD",4]],[["F",3],["5D",2],["6C",2],["7D",3],["RD",4]],[["F",3],["6B",2],["7B",2],["8B",3],["GD",4]],[["F",3],["6C",2],["7C",2],["8C",3],["RD",4]],[["F",3],["6D",2],["7D",2],["8D",3],["WD",4]],[["F",3],["6B",2],["7C",2],["8B",3],["RD",4]],[["F",3],["6B",2],["7D",2],["8B",3],["WD",4]],[["F",3],["6C",2],["7B",2],["8C",3],["GD",4]],[["F",3],["6C",2],["7D",2],["8C",3],["WD",4]],[["F",3],["6D",2],["7B",2],["8D",3],["GD",4]],[["F",3],["6D",2],["7C",2],["8D",3],["RD",4]],[["F",3],["7B",2],["8B",2],["9B",3],["GD",4]],[["F",3],["7C",2],["8C",2],["9C",3],["RD",4]],[["F",3],["7D",2],["8D",2],["9D",3],["WD",4]],[["F",3],["7B",2],["8C",2],["9B",3],["RD",4]],[["F",3],["7B",2],["8D",2],["9B",3],["WD",4]],[["F",3],["7C",2],["8B",2],["9C",3],["GD",4]],[["F",3],["7C",2],["8D",2],["9C",3],["WD",4]],[["F",3],["7D",2],["8B",2],["9D",3],["GD",4]],[["F",3],["7D",2],["8C",2],["9D",3],["RD",4]]]},{"sec":"Consecutive Run","ln":6,"pat":"1111 FFFFFF 2222","pts":30,"conc":false,"sols":[[["1B",4],["F",6],["2B",4]],[["2B",4],["F",6],["3B",4]],[["3B",4],["F",6],["4B",4]],[["4B",4],["F",6],["5B",4]],[["5B",4],["F",6],["6B",4]],[["6B",4],["F",6],["7B",4]],[["7B",4],["F",6],["8B",4]],[["8B",4],["F",6],["9B",4]],[["1C",4],["F",6],["2C",4]],[["2C",4],["F",6],["3C",4]],[["3C",4],["F",6],["4C",4]],[["4C",4],["F",6],["5C",4]],[["5C",4],["F",6],["6C",4]],[["6C",4],["F",6],["7C",4]],[["7C",4],["F",6],["8C",4]],[["8C",4],["F",6],["9C",4]],[["1D",4],["F",6],["2D",4]],[["2D",4],["F",6],["3D",4]],[["3D",4],["F",6],["4D",4]],[["4D",4],["F",6],["5D",4]],[["5D",4],["F",6],["6D",4]],[["6D",4],["F",6],["7D",4]],[["7D",4],["F",6],["8D",4]],[["8D",4],["F",6],["9D",4]]]},{"sec":"Consecutive Run","ln":7,"pat":"FF 1111 2222 3333","pts":30,"conc":false,"sols":[[["F",2],["1B",4],["2B",4],["3B",4]],[["F",2],["1C",4],["2C",4],["3C",4]],[["F",2],["1D",4],["2D",4],["3D",4]],[["F",2],["1B",4],["2C",4],["3D",4]],[["F",2],["1B",4],["2D",4],["3C",4]],[["F",2],["1C",4],["2B",4],["3D",4]],[["F",2],["1C",4],["2D",4],["3B",4]],[["F",2],["1D",4],["2B",4],["3C",4]],[["F",2],["1D",4],["2C",4],["3B",4]],[["F",2],["2B",4],["3B",4],["4B",4]],[["F",2],["2C",4],["3C",4],["4C",4]],[["F",2],["2D",4],["3D",4],["4D",4]],[["F",2],["2B",4],["3C",4],["4D",4]],[["F",2],["2B",4],["3D",4],["4C",4]],[["F",2],["2C",4],["3B",4],["4D",4]],[["F",2],["2C",4],["3D",4],["4B",4]],[["F",2],["2D",4],["3B",4],["4C",4]],[["F",2],["2D",4],["3C",4],["4B",4]],[["F",2],["3B",4],["4B",4],["5B",4]],[["F",2],["3C",4],["4C",4],["5C",4]],[["F",2],["3D",4],["4D",4],["5D",4]],[["F",2],["3B",4],["4C",4],["5D",4]],[["F",2],["3B",4],["4D",4],["5C",4]],[["F",2],["3C",4],["4B",4],["5D",4]],[["F",2],["3C",4],["4D",4],["5B",4]],[["F",2],["3D",4],["4B",4],["5C",4]],[["F",2],["3D",4],["4C",4],["5B",4]],[["F",2],["4B",4],["5B",4],["6B",4]],[["F",2],["4C",4],["5C",4],["6C",4]],[["F",2],["4D",4],["5D",4],["6D",4]],[["F",2],["4B",4],["5C",4],["6D",4]],[["F",2],["4B",4],["5D",4],["6C",4]],[["F",2],["4C",4],["5B",4],["6D",4]],[["F",2],["4C",4],["5D",4],["6B",4]],[["F",2],["4D",4],["5B",4],["6C",4]],[["F",2],["4D",4],["5C",4],["6B",4]],[["F",2],["5B",4],["6B",4],["7B",4]],[["F",2],["5C",4],["6C",4],["7C",4]],[["F",2],["5D",4],["6D",4],["7D",4]],[["F",2],["5B",4],["6C",4],["7D",4]],[["F",2],["5B",4],["6D",4],["7C",4]],[["F",2],["5C",4],["6B",4],["7D",4]],[["F",2],["5C",4],["6D",4],["7B",4]],[["F",2],["5D",4],["6B",4],["7C",4]],[["F",2],["5D",4],["6C",4],["7B",4]],[["F",2],["6B",4],["7B",4],["8B",4]],[["F",2],["6C",4],["7C",4],["8C",4]],[["F",2],["6D",4],["7D",4],["8D",4]],[["F",2],["6B",4],["7C",4],["8D",4]],[["F",2],["6B",4],["7D",4],["8C",4]],[["F",2],["6C",4],["7B",4],["8D",4]],[["F",2],["6C",4],["7D",4],["8B",4]],[["F",2],["6D",4],["7B",4],["8C",4]],[["F",2],["6D",4],["7C",4],["8B",4]],[["F",2],["7B",4],["8B",4],["9B",4]],[["F",2],["7C",4],["8C",4],["9C",4]],[["F",2],["7D",4],["8D",4],["9D",4]],[["F",2],["7B",4],["8C",4],["9D",4]],[["F",2],["7B",4],["8D",4],["9C",4]],[["F",2],["7C",4],["8B",4],["9D",4]],[["F",2],["7C",4],["8D",4],["9B",4]],[["F",2],["7D",4],["8B",4],["9C",4]],[["F",2],["7D",4],["8C",4],["9B",4]]]},{"sec":"Consecutive Run","ln":8,"pat":"1 22 333 1 22 333 44","pts":30,"conc":false,"sols":[[["1B",1],["2B",2],["3B",3],["1C",1],["2C",2],["3C",3],["4D",2]],[["1B",1],["2B",2],["3B",3],["1D",1],["2D",2],["3D",3],["4C",2]],[["1C",1],["2C",2],["3C",3],["1D",1],["2D",2],["3D",3],["4B",2]],[["2B",1],["3B",2],["4B",3],["2C",1],["3C",2],["4C",3],["5D",2]],[["2B",1],["3B",2],["4B",3],["2D",1],["3D",2],["4D",3],["5C",2]],[["2C",1],["3C",2],["4C",3],["2D",1],["3D",2],["4D",3],["5B",2]],[["3B",1],["4B",2],["5B",3],["3C",1],["4C",2],["5C",3],["6D",2]],[["3B",1],["4B",2],["5B",3],["3D",1],["4D",2],["5D",3],["6C",2]],[["3C",1],["4C",2],["5C",3],["3D",1],["4D",2],["5D",3],["6B",2]],[["4B",1],["5B",2],["6B",3],["4C",1],["5C",2],["6C",3],["7D",2]],[["4B",1],["5B",2],["6B",3],["4D",1],["5D",2],["6D",3],["7C",2]],[["4C",1],["5C",2],["6C",3],["4D",1],["5D",2],["6D",3],["7B",2]],[["5B",1],["6B",2],["7B",3],["5C",1],["6C",2],["7C",3],["8D",2]],[["5B",1],["6B",2],["7B",3],["5D",1],["6D",2],["7D",3],["8C",2]],[["5C",1],["6C",2],["7C",3],["5D",1],["6D",2],["7D",3],["8B",2]],[["6B",1],["7B",2],["8B",3],["6C",1],["7C",2],["8C",3],["9D",2]],[["6B",1],["7B",2],["8B",3],["6D",1],["7D",2],["8D",3],["9C",2]],[["6C",1],["7C",2],["8C",3],["6D",1],["7D",2],["8D",3],["9B",2]]]},{"sec":"13579","ln":1,"pat":"11 333 55 777 9999","pts":25,"conc":false,"sols":[[["1B",2],["3B",3],["5B",2],["7B",3],["9B",4]],[["1C",2],["3C",3],["5C",2],["7C",3],["9C",4]],[["1D",2],["3D",3],["5D",2],["7D",3],["9D",4]],[["1B",2],["3B",3],["5C",2],["7C",3],["9D",4]],[["1B",2],["3B",3],["5D",2],["7D",3],["9C",4]],[["1C",2],["3C",3],["5B",2],["7B",3],["9D",4]],[["1C",2],["3C",3],["5D",2],["7D",3],["9B",4]],[["1D",2],["3D",3],["5B",2],["7B",3],["9C",4]],[["1D",2],["3D",3],["5C",2],["7C",3],["9B",4]]]},{"sec":"13579","ln":2,"pat":"111 333 3333 5555 / 555 777 7777 9999","pts":25,"conc":false,"sols":[[["1B",3],["3B",3],["3C",4],["5C",4]],[["1B",3],["3B",3],["3D",4],["5D",4]],[["1C",3],["3C",3],["3B",4],["5B",4]],[["1C",3],["3C",3],["3D",4],["5D",4]],[["1D",3],["3D",3],["3B",4],["5B",4]],[["1D",3],["3D",3],["3C",4],["5C",4]],[["5B",3],["7B",3],["7C",4],["9C",4]],[["5B",3],["7B",3],["7D",4],["9D",4]],[["5C",3],["7C",3],["7B",4],["9B",4]],[["5C",3],["7C",3],["7D",4],["9D",4]],[["5D",3],["7D",3],["7B",4],["9B",4]],[["5D",3],["7D",3],["7C",4],["9C",4]]]},{"sec":"13579","ln":3,"pat":"NN 1111 33 5555 SS / NN 5555 77 9999 SS","pts":30,"conc":false,"sols":[[["N",2],["1B",4],["3B",2],["5B",4],["S",2]],[["N",2],["1C",4],["3C",2],["5C",4],["S",2]],[["N",2],["1D",4],["3D",2],["5D",4],["S",2]],[["N",2],["5B",4],["7B",2],["9B",4],["S",2]],[["N",2],["5C",4],["7C",2],["9C",4],["S",2]],[["N",2],["5D",4],["7D",2],["9D",4],["S",2]]]},{"sec":"13579","ln":4,"pat":"113579 1111 1111","pts":25,"conc":false,"sols":[[["1B",2],["3B",1],["5B",1],["7B",1],["9B",1],["1C",4],["1D",4]],[["1C",2],["3C",1],["5C",1],["7C",1],["9C",1],["1B",4],["1D",4]],[["1D",2],["3D",1],["5D",1],["7D",1],["9D",1],["1B",4],["1C",4]],[["3B",2],["1B",1],["5B",1],["7B",1],["9B",1],["3C",4],["3D",4]],[["3C",2],["1C",1],["5C",1],["7C",1],["9C",1],["3B",4],["3D",4]],[["3D",2],["1D",1],["5D",1],["7D",1],["9D",1],["3B",4],["3C",4]],[["5B",2],["1B",1],["3B",1],["7B",1],["9B",1],["5C",4],["5D",4]],[["5C",2],["1C",1],["3C",1],["7C",1],["9C",1],["5B",4],["5D",4]],[["5D",2],["1D",1],["3D",1],["7D",1],["9D",1],["5B",4],["5C",4]],[["7B",2],["1B",1],["3B",1],["5B",1],["9B",1],["7C",4],["7D",4]],[["7C",2],["1C",1],["3C",1],["5C",1],["9C",1],["7B",4],["7D",4]],[["7D",2],["1D",1],["3D",1],["5D",1],["9D",1],["7B",4],["7C",4]],[["9B",2],["1B",1],["3B",1],["5B",1],["7B",1],["9C",4],["9D",4]],[["9C",2],["1C",1],["3C",1],["5C",1],["7C",1],["9B",4],["9D",4]],[["9D",2],["1D",1],["3D",1],["5D",1],["7D",1],["9B",4],["9C",4]]]},{"sec":"13579","ln":5,"pat":"FFF 11 33 555 DDDD / FFF 55 77 999 DDDD","pts":25,"conc":false,"sols":[[["F",3],["1B",2],["3B",2],["5B",3],["GD",4]],[["F",3],["1C",2],["3C",2],["5C",3],["RD",4]],[["F",3],["1D",2],["3D",2],["5D",3],["WD",4]],[["F",3],["5B",2],["7B",2],["9B",3],["GD",4]],[["F",3],["5C",2],["7C",2],["9C",3],["RD",4]],[["F",3],["5D",2],["7D",2],["9D",3],["WD",4]]]},{"sec":"13579","ln":6,"pat":"11 33 111 333 5555 / 55 77 555 777 9999","pts":25,"conc":false,"sols":[[["1B",2],["3B",2],["1C",3],["3C",3],["5D",4]],[["1B",2],["3B",2],["1D",3],["3D",3],["5C",4]],[["1C",2],["3C",2],["1B",3],["3B",3],["5D",4]],[["1C",2],["3C",2],["1D",3],["3D",3],["5B",4]],[["1D",2],["3D",2],["1B",3],["3B",3],["5C",4]],[["1D",2],["3D",2],["1C",3],["3C",3],["5B",4]],[["5B",2],["7B",2],["5C",3],["7C",3],["9D",4]],[["5B",2],["7B",2],["5D",3],["7D",3],["9C",4]],[["5C",2],["7C",2],["5B",3],["7B",3],["9D",4]],[["5C",2],["7C",2],["5D",3],["7D",3],["9B",4]],[["5D",2],["7D",2],["5B",3],["7B",3],["9C",4]],[["5D",2],["7D",2],["5C",3],["7C",3],["9B",4]]]},{"sec":"13579","ln":7,"pat":"1111 33 55 77 9999","pts":30,"conc":false,"sols":[[["1B",4],["3B",2],["5B",2],["7B",2],["9B",4]],[["1C",4],["3C",2],["5C",2],["7C",2],["9C",4]],[["1D",4],["3D",2],["5D",2],["7D",2],["9D",4]],[["1B",4],["3C",2],["5C",2],["7C",2],["9B",4]],[["1B",4],["3D",2],["5D",2],["7D",2],["9B",4]],[["1C",4],["3B",2],["5B",2],["7B",2],["9C",4]],[["1C",4],["3D",2],["5D",2],["7D",2],["9C",4]],[["1D",4],["3B",2],["5B",2],["7B",2],["9D",4]],[["1D",4],["3C",2],["5C",2],["7C",2],["9D",4]]]},{"sec":"13579","ln":8,"pat":"FF 11 33 55 111 111 / FF 55 77 99 555 555","pts":35,"conc":true,"sols":[[["F",2],["1B",2],["3B",2],["5B",2],["1C",3],["1D",3]],[["F",2],["5B",2],["7B",2],["9B",2],["5C",3],["5D",3]],[["F",2],["1C",2],["3C",2],["5C",2],["1B",3],["1D",3]],[["F",2],["5C",2],["7C",2],["9C",2],["5B",3],["5D",3]],[["F",2],["1D",2],["3D",2],["5D",2],["1B",3],["1C",3]],[["F",2],["5D",2],["7D",2],["9D",2],["5B",3],["5C",3]]]},{"sec":"13579","ln":9,"pat":"FF 135 777 999 DDD","pts":30,"conc":true,"sols":[[["F",2],["1B",1],["3B",1],["5B",1],["7B",3],["9B",3],["RD",3]],[["F",2],["1B",1],["3B",1],["5B",1],["7B",3],["9B",3],["WD",3]],[["F",2],["1C",1],["3C",1],["5C",1],["7C",3],["9C",3],["GD",3]],[["F",2],["1C",1],["3C",1],["5C",1],["7C",3],["9C",3],["WD",3]],[["F",2],["1D",1],["3D",1],["5D",1],["7D",3],["9D",3],["RD",3]],[["F",2],["1D",1],["3D",1],["5D",1],["7D",3],["9D",3],["GD",3]]]},{"sec":"Winds & Dragons","ln":1,"pat":"NNNN EEE WWW SSSS / NNN EEEE WWWW SSS","pts":25,"conc":false,"sols":[[["N",4],["E",3],["W",3],["S",4]],[["N",3],["E",4],["W",4],["S",3]]]},{"sec":"Winds & Dragons","ln":2,"pat":"1234 DDD DDD DDDD","pts":25,"conc":false,"sols":[[["1B",1],["2B",1],["3B",1],["4B",1],["GD",3],["WD",3],["RD",4]],[["1B",1],["2B",1],["3B",1],["4B",1],["RD",3],["WD",3],["GD",4]],[["1B",1],["2B",1],["3B",1],["4B",1],["RD",3],["GD",3],["WD",4]],[["2B",1],["3B",1],["4B",1],["5B",1],["GD",3],["WD",3],["RD",4]],[["2B",1],["3B",1],["4B",1],["5B",1],["RD",3],["WD",3],["GD",4]],[["2B",1],["3B",1],["4B",1],["5B",1],["RD",3],["GD",3],["WD",4]],[["3B",1],["4B",1],["5B",1],["6B",1],["GD",3],["WD",3],["RD",4]],[["3B",1],["4B",1],["5B",1],["6B",1],["RD",3],["WD",3],["GD",4]],[["3B",1],["4B",1],["5B",1],["6B",1],["RD",3],["GD",3],["WD",4]],[["4B",1],["5B",1],["6B",1],["7B",1],["GD",3],["WD",3],["RD",4]],[["4B",1],["5B",1],["6B",1],["7B",1],["RD",3],["WD",3],["GD",4]],[["4B",1],["5B",1],["6B",1],["7B",1],["RD",3],["GD",3],["WD",4]],[["5B",1],["6B",1],["7B",1],["8B",1],["GD",3],["WD",3],["RD",4]],[["5B",1],["6B",1],["7B",1],["8B",1],["RD",3],["WD",3],["GD",4]],[["5B",1],["6B",1],["7B",1],["8B",1],["RD",3],["GD",3],["WD",4]],[["6B",1],["7B",1],["8B",1],["9B",1],["GD",3],["WD",3],["RD",4]],[["6B",1],["7B",1],["8B",1],["9B",1],["RD",3],["WD",3],["GD",4]],[["6B",1],["7B",1],["8B",1],["9B",1],["RD",3],["GD",3],["WD",4]],[["1C",1],["2C",1],["3C",1],["4C",1],["GD",3],["WD",3],["RD",4]],[["1C",1],["2C",1],["3C",1],["4C",1],["RD",3],["WD",3],["GD",4]],[["1C",1],["2C",1],["3C",1],["4C",1],["RD",3],["GD",3],["WD",4]],[["2C",1],["3C",1],["4C",1],["5C",1],["GD",3],["WD",3],["RD",4]],[["2C",1],["3C",1],["4C",1],["5C",1],["RD",3],["WD",3],["GD",4]],[["2C",1],["3C",1],["4C",1],["5C",1],["RD",3],["GD",3],["WD",4]],[["3C",1],["4C",1],["5C",1],["6C",1],["GD",3],["WD",3],["RD",4]],[["3C",1],["4C",1],["5C",1],["6C",1],["RD",3],["WD",3],["GD",4]],[["3C",1],["4C",1],["5C",1],["6C",1],["RD",3],["GD",3],["WD",4]],[["4C",1],["5C",1],["6C",1],["7C",1],["GD",3],["WD",3],["RD",4]],[["4C",1],["5C",1],["6C",1],["7C",1],["RD",3],["WD",3],["GD",4]],[["4C",1],["5C",1],["6C",1],["7C",1],["RD",3],["GD",3],["WD",4]],[["5C",1],["6C",1],["7C",1],["8C",1],["GD",3],["WD",3],["RD",4]],[["5C",1],["6C",1],["7C",1],["8C",1],["RD",3],["WD",3],["GD",4]],[["5C",1],["6C",1],["7C",1],["8C",1],["RD",3],["GD",3],["WD",4]],[["6C",1],["7C",1],["8C",1],["9C",1],["GD",3],["WD",3],["RD",4]],[["6C",1],["7C",1],["8C",1],["9C",1],["RD",3],["WD",3],["GD",4]],[["6C",1],["7C",1],["8C",1],["9C",1],["RD",3],["GD",3],["WD",4]],[["1D",1],["2D",1],["3D",1],["4D",1],["GD",3],["WD",3],["RD",4]],[["1D",1],["2D",1],["3D",1],["4D",1],["RD",3],["WD",3],["GD",4]],[["1D",1],["2D",1],["3D",1],["4D",1],["RD",3],["GD",3],["WD",4]],[["2D",1],["3D",1],["4D",1],["5D",1],["GD",3],["WD",3],["RD",4]],[["2D",1],["3D",1],["4D",1],["5D",1],["RD",3],["WD",3],["GD",4]],[["2D",1],["3D",1],["4D",1],["5D",1],["RD",3],["GD",3],["WD",4]],[["3D",1],["4D",1],["5D",1],["6D",1],["GD",3],["WD",3],["RD",4]],[["3D",1],["4D",1],["5D",1],["6D",1],["RD",3],["WD",3],["GD",4]],[["3D",1],["4D",1],["5D",1],["6D",1],["RD",3],["GD",3],["WD",4]],[["4D",1],["5D",1],["6D",1],["7D",1],["GD",3],["WD",3],["RD",4]],[["4D",1],["5D",1],["6D",1],["7D",1],["RD",3],["WD",3],["GD",4]],[["4D",1],["5D",1],["6D",1],["7D",1],["RD",3],["GD",3],["WD",4]],[["5D",1],["6D",1],["7D",1],["8D",1],["GD",3],["WD",3],["RD",4]],[["5D",1],["6D",1],["7D",1],["8D",1],["RD",3],["WD",3],["GD",4]],[["5D",1],["6D",1],["7D",1],["8D",1],["RD",3],["GD",3],["WD",4]],[["6D",1],["7D",1],["8D",1],["9D",1],["GD",3],["WD",3],["RD",4]],[["6D",1],["7D",1],["8D",1],["9D",1],["RD",3],["WD",3],["GD",4]],[["6D",1],["7D",1],["8D",1],["9D",1],["RD",3],["GD",3],["WD",4]]]},{"sec":"Winds & Dragons","ln":3,"pat":"NNN 1111 1111 SSS","pts":25,"conc":false,"sols":[[["N",3],["1B",4],["1C",4],["S",3]],[["N",3],["1B",4],["1D",4],["S",3]],[["N",3],["1C",4],["1D",4],["S",3]],[["N",3],["3B",4],["3C",4],["S",3]],[["N",3],["3B",4],["3D",4],["S",3]],[["N",3],["3C",4],["3D",4],["S",3]],[["N",3],["5B",4],["5C",4],["S",3]],[["N",3],["5B",4],["5D",4],["S",3]],[["N",3],["5C",4],["5D",4],["S",3]],[["N",3],["7B",4],["7C",4],["S",3]],[["N",3],["7B",4],["7D",4],["S",3]],[["N",3],["7C",4],["7D",4],["S",3]],[["N",3],["9B",4],["9C",4],["S",3]],[["N",3],["9B",4],["9D",4],["S",3]],[["N",3],["9C",4],["9D",4],["S",3]]]},{"sec":"Winds & Dragons","ln":4,"pat":"EEE 2222 2222 WWW","pts":25,"conc":false,"sols":[[["E",3],["2B",4],["2C",4],["W",3]],[["E",3],["2B",4],["2D",4],["W",3]],[["E",3],["2C",4],["2D",4],["W",3]],[["E",3],["4B",4],["4C",4],["W",3]],[["E",3],["4B",4],["4D",4],["W",3]],[["E",3],["4C",4],["4D",4],["W",3]],[["E",3],["6B",4],["6C",4],["W",3]],[["E",3],["6B",4],["6D",4],["W",3]],[["E",3],["6C",4],["6D",4],["W",3]],[["E",3],["8B",4],["8C",4],["W",3]],[["E",3],["8B",4],["8D",4],["W",3]],[["E",3],["8C",4],["8D",4],["W",3]]]},{"sec":"Winds & Dragons","ln":5,"pat":"FFF NNNN FFF DDDD","pts":25,"conc":false,"sols":[[["F",3],["N",4],["F",3],["RD",4]],[["F",3],["N",4],["F",3],["GD",4]],[["F",3],["N",4],["F",3],["WD",4]],[["F",3],["E",4],["F",3],["RD",4]],[["F",3],["E",4],["F",3],["GD",4]],[["F",3],["E",4],["F",3],["WD",4]],[["F",3],["W",4],["F",3],["RD",4]],[["F",3],["W",4],["F",3],["GD",4]],[["F",3],["W",4],["F",3],["WD",4]],[["F",3],["S",4],["F",3],["RD",4]],[["F",3],["S",4],["F",3],["GD",4]],[["F",3],["S",4],["F",3],["WD",4]]]},{"sec":"Winds & Dragons","ln":6,"pat":"1 N 2 EE 3 WWW 4 SSSS","pts":25,"conc":false,"sols":[[["1B",1],["N",1],["2B",1],["E",2],["3B",1],["W",3],["4B",1],["S",4]],[["1C",1],["N",1],["2C",1],["E",2],["3C",1],["W",3],["4C",1],["S",4]],[["1D",1],["N",1],["2D",1],["E",2],["3D",1],["W",3],["4D",1],["S",4]]]},{"sec":"Winds & Dragons","ln":7,"pat":"FF NNNN SSSS DD DD / FF EEEE WWWW DD DD","pts":25,"conc":false,"sols":[[["F",2],["N",4],["S",4],["RD",2],["GD",2]],[["F",2],["N",4],["S",4],["RD",2],["WD",2]],[["F",2],["N",4],["S",4],["GD",2],["WD",2]],[["F",2],["E",4],["W",4],["RD",2],["GD",2]],[["F",2],["E",4],["W",4],["RD",2],["WD",2]],[["F",2],["E",4],["W",4],["GD",2],["WD",2]]]},{"sec":"Winds & Dragons","ln":8,"pat":"NN EEE 2026 WWW SS","pts":30,"conc":true,"sols":[[["N",2],["E",3],["2B",1],["WD",1],["2B",1],["6B",1],["W",3],["S",2]],[["N",2],["E",3],["2C",1],["WD",1],["2C",1],["6C",1],["W",3],["S",2]],[["N",2],["E",3],["2D",1],["WD",1],["2D",1],["6D",1],["W",3],["S",2]]]},{"sec":"369","ln":1,"pat":"333 666 6666 9999","pts":25,"conc":false,"sols":[[["3B",3],["6B",3],["6C",4],["9C",4]],[["3B",3],["6B",3],["6D",4],["9D",4]],[["3C",3],["6C",3],["6B",4],["9B",4]],[["3C",3],["6C",3],["6D",4],["9D",4]],[["3D",3],["6D",3],["6B",4],["9B",4]],[["3D",3],["6D",3],["6C",4],["9C",4]],[["3B",3],["6B",3],["6C",4],["9D",4]],[["3B",3],["6B",3],["6D",4],["9C",4]],[["3C",3],["6C",3],["6B",4],["9D",4]],[["3C",3],["6C",3],["6D",4],["9B",4]],[["3D",3],["6D",3],["6B",4],["9C",4]],[["3D",3],["6D",3],["6C",4],["9B",4]]]},{"sec":"369","ln":2,"pat":"33 66 333 666 9999","pts":25,"conc":false,"sols":[[["3B",2],["6B",2],["3C",3],["6C",3],["9D",4]],[["3B",2],["6B",2],["3D",3],["6D",3],["9C",4]],[["3C",2],["6C",2],["3B",3],["6B",3],["9D",4]],[["3C",2],["6C",2],["3D",3],["6D",3],["9B",4]],[["3D",2],["6D",2],["3B",3],["6B",3],["9C",4]],[["3D",2],["6D",2],["3C",3],["6C",3],["9B",4]]]},{"sec":"369","ln":3,"pat":"FFF 33 666 99 DDDD","pts":25,"conc":false,"sols":[[["F",3],["3B",2],["6B",3],["9B",2],["RD",4]],[["F",3],["3B",2],["6B",3],["9B",2],["GD",4]],[["F",3],["3B",2],["6B",3],["9B",2],["WD",4]],[["F",3],["3C",2],["6C",3],["9C",2],["RD",4]],[["F",3],["3C",2],["6C",3],["9C",2],["GD",4]],[["F",3],["3C",2],["6C",3],["9C",2],["WD",4]],[["F",3],["3D",2],["6D",3],["9D",2],["RD",4]],[["F",3],["3D",2],["6D",3],["9D",2],["GD",4]],[["F",3],["3D",2],["6D",3],["9D",2],["WD",4]]]},{"sec":"369","ln":4,"pat":"33 66 666 999 NEWS","pts":25,"conc":false,"sols":[[["3B",2],["6B",2],["6C",3],["9C",3],["N",1],["E",1],["W",1],["S",1]],[["3B",2],["6B",2],["6D",3],["9D",3],["N",1],["E",1],["W",1],["S",1]],[["3C",2],["6C",2],["6B",3],["9B",3],["N",1],["E",1],["W",1],["S",1]],[["3C",2],["6C",2],["6D",3],["9D",3],["N",1],["E",1],["W",1],["S",1]],[["3D",2],["6D",2],["6B",3],["9B",3],["N",1],["E",1],["W",1],["S",1]],[["3D",2],["6D",2],["6C",3],["9C",3],["N",1],["E",1],["W",1],["S",1]]]},{"sec":"369","ln":5,"pat":"FF 3369 3333 3333","pts":25,"conc":false,"sols":[[["F",2],["3B",2],["6B",1],["9B",1],["3C",4],["3D",4]],[["F",2],["3C",2],["6C",1],["9C",1],["3B",4],["3D",4]],[["F",2],["3D",2],["6D",1],["9D",1],["3B",4],["3C",4]],[["F",2],["6B",2],["3B",1],["9B",1],["6C",4],["6D",4]],[["F",2],["6C",2],["3C",1],["9C",1],["6B",4],["6D",4]],[["F",2],["6D",2],["3D",1],["9D",1],["6B",4],["6C",4]],[["F",2],["9B",2],["3B",1],["6B",1],["9C",4],["9D",4]],[["F",2],["9C",2],["3C",1],["6C",1],["9B",4],["9D",4]],[["F",2],["9D",2],["3D",1],["6D",1],["9B",4],["9C",4]]]},{"sec":"369","ln":6,"pat":"FF 333 666 999 369","pts":30,"conc":true,"sols":[[["F",2],["3B",3],["6B",3],["9B",3],["3C",1],["6C",1],["9C",1]],[["F",2],["3B",3],["6B",3],["9B",3],["3D",1],["6D",1],["9D",1]],[["F",2],["3C",3],["6C",3],["9C",3],["3B",1],["6B",1],["9B",1]],[["F",2],["3C",3],["6C",3],["9C",3],["3D",1],["6D",1],["9D",1]],[["F",2],["3D",3],["6D",3],["9D",3],["3B",1],["6B",1],["9B",1]],[["F",2],["3D",3],["6D",3],["9D",3],["3C",1],["6C",1],["9C",1]]]},{"sec":"Singles & Pairs","ln":1,"pat":"NN EE WW SS 1D 1D 1D","pts":50,"conc":true,"sols":[[["N",2],["E",2],["W",2],["S",2],["1B",1],["GD",1],["1C",1],["RD",1],["1D",1],["WD",1]],[["N",2],["E",2],["W",2],["S",2],["2B",1],["GD",1],["2C",1],["RD",1],["2D",1],["WD",1]],[["N",2],["E",2],["W",2],["S",2],["3B",1],["GD",1],["3C",1],["RD",1],["3D",1],["WD",1]],[["N",2],["E",2],["W",2],["S",2],["4B",1],["GD",1],["4C",1],["RD",1],["4D",1],["WD",1]],[["N",2],["E",2],["W",2],["S",2],["5B",1],["GD",1],["5C",1],["RD",1],["5D",1],["WD",1]],[["N",2],["E",2],["W",2],["S",2],["6B",1],["GD",1],["6C",1],["RD",1],["6D",1],["WD",1]],[["N",2],["E",2],["W",2],["S",2],["7B",1],["GD",1],["7C",1],["RD",1],["7D",1],["WD",1]],[["N",2],["E",2],["W",2],["S",2],["8B",1],["GD",1],["8C",1],["RD",1],["8D",1],["WD",1]],[["N",2],["E",2],["W",2],["S",2],["9B",1],["GD",1],["9C",1],["RD",1],["9D",1],["WD",1]]]},{"sec":"Singles & Pairs","ln":2,"pat":"2 4 66 88 2 4 66 88 88","pts":50,"conc":true,"sols":[[["2C",1],["4C",1],["6C",2],["8C",2],["2D",1],["4D",1],["6D",2],["8D",2],["8B",2]],[["2B",1],["4B",1],["6B",2],["8B",2],["2D",1],["4D",1],["6D",2],["8D",2],["8C",2]],[["2B",1],["4B",1],["6B",2],["8B",2],["2C",1],["4C",1],["6C",2],["8C",2],["8D",2]]]},{"sec":"Singles & Pairs","ln":3,"pat":"FF 3369 3669 3699","pts":50,"conc":true,"sols":[[["F",2],["3B",2],["6B",1],["9B",1],["3C",1],["6C",2],["9C",1],["3D",1],["6D",1],["9D",2]],[["F",2],["3B",2],["6B",1],["9B",1],["3D",1],["6D",2],["9D",1],["3C",1],["6C",1],["9C",2]],[["F",2],["3C",2],["6C",1],["9C",1],["3B",1],["6B",2],["9B",1],["3D",1],["6D",1],["9D",2]],[["F",2],["3C",2],["6C",1],["9C",1],["3D",1],["6D",2],["9D",1],["3B",1],["6B",1],["9B",2]],[["F",2],["3D",2],["6D",1],["9D",1],["3B",1],["6B",2],["9B",1],["3C",1],["6C",1],["9C",2]],[["F",2],["3D",2],["6D",1],["9D",1],["3C",1],["6C",2],["9C",1],["3B",1],["6B",1],["9B",2]]]},{"sec":"Singles & Pairs","ln":4,"pat":"11 22 33 44 55 66 77","pts":50,"conc":true,"sols":[[["1B",2],["2B",2],["3B",2],["4B",2],["5B",2],["6B",2],["7B",2]],[["2B",2],["3B",2],["4B",2],["5B",2],["6B",2],["7B",2],["8B",2]],[["3B",2],["4B",2],["5B",2],["6B",2],["7B",2],["8B",2],["9B",2]],[["1C",2],["2C",2],["3C",2],["4C",2],["5C",2],["6C",2],["7C",2]],[["2C",2],["3C",2],["4C",2],["5C",2],["6C",2],["7C",2],["8C",2]],[["3C",2],["4C",2],["5C",2],["6C",2],["7C",2],["8C",2],["9C",2]],[["1D",2],["2D",2],["3D",2],["4D",2],["5D",2],["6D",2],["7D",2]],[["2D",2],["3D",2],["4D",2],["5D",2],["6D",2],["7D",2],["8D",2]],[["3D",2],["4D",2],["5D",2],["6D",2],["7D",2],["8D",2],["9D",2]]]},{"sec":"Singles & Pairs","ln":5,"pat":"11 357 99 11 357 99","pts":50,"conc":true,"sols":[[["1B",2],["3B",1],["5B",1],["7B",1],["9B",2],["1C",2],["3C",1],["5C",1],["7C",1],["9C",2]],[["1B",2],["3B",1],["5B",1],["7B",1],["9B",2],["1D",2],["3D",1],["5D",1],["7D",1],["9D",2]],[["1C",2],["3C",1],["5C",1],["7C",1],["9C",2],["1D",2],["3D",1],["5D",1],["7D",1],["9D",2]]]},{"sec":"Singles & Pairs","ln":6,"pat":"FF 2026 2026 2026","pts":75,"conc":true,"sols":[[["F",2],["2B",1],["WD",1],["2B",1],["6B",1],["2C",1],["WD",1],["2C",1],["6C",1],["2D",1],["WD",1],["2D",1],["6D",1]]]}]/*ENDCARD*/;
+
+/* ---------------- tile model ---------------- */
+const SUIT={B:"Bam",C:"Crak",D:"Dot"}, SUITCLASS={B:"bam",C:"crak",D:"dot"};
+const HONOR={E:["E","East"],S:["S","South"],W:["W","West"],N:["N","North"],RD:["RD","Red"],GD:["GD","Green"],WD:["WD","Soap"],F:["F","Flow"],J:["J","Joker"]};
+const normCode=c=>c==="0"?"WD":c;
+function tileLabel(code){code=normCode(code); if(/^[1-9][BCD]$/.test(code))return{n:code[0],s:SUIT[code[1]],cls:SUITCLASS[code[1]]}; const h=HONOR[code]; return h?{n:h[0],s:h[1],cls:(code==='J'?'joker':'honor')}:{n:code,s:"",cls:"honor"};}
+function tileSpan(code,extra){const t=tileLabel(code); return '<span class="tile '+t.cls+(extra||'')+'"><span class="n">'+t.n+'</span><span class="s">'+t.s+'</span></span>';}
+const SORTORDER=["1B","2B","3B","4B","5B","6B","7B","8B","9B","1C","2C","3C","4C","5C","6C","7C","8C","9C","1D","2D","3D","4D","5D","6D","7D","8D","9D","E","S","W","N","RD","GD","WD","F","J"];
+const SORTKEY=c=>{const i=SORTORDER.indexOf(normCode(c)); return i<0?99:i;};
+function sortTiles(arr){return arr.slice().sort((a,b)=>SORTKEY(a)-SORTKEY(b));}
+
+/* full 152-tile set INCLUDING 8 jokers */
+function buildPool(){
+  const p=[];
+  "123456789".split("").forEach(n=>["B","C","D"].forEach(s=>{for(let i=0;i<4;i++)p.push(n+s);}));
+  ["E","S","W","N"].forEach(w=>{for(let i=0;i<4;i++)p.push(w);});
+  ["RD","GD","WD"].forEach(d=>{for(let i=0;i<4;i++)p.push(d);});
+  for(let i=0;i<8;i++)p.push("F");
+  for(let i=0;i<8;i++)p.push("J");
+  return p; // 152
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a;}
+
+/* ---------------- validation (joker rule: jokers only fill groups of 3+) ---------------- */
+function feasible(sol, real, jok){
+  const left=Object.assign({},real); let need=0;
+  for(const g of sol){ if(g[1]<3){ if((left[g[0]]||0)>=g[1]) left[g[0]]-=g[1]; else return false; } }
+  for(const g of sol){ if(g[1]>=3){ const use=Math.min(left[g[0]]||0,g[1]); left[g[0]]=(left[g[0]]||0)-use; need+=g[1]-use; } }
+  for(const t in left){ if(left[t]>0) return false; }
+  return need===jok;
+}
+/* tiles: array of codes incl 'J'. hasExposure: true if hand has any called groups. */
+function validate(tiles, hasExposure){
+  if(tiles.length!==14) return null;
+  let jok=0; const real={};
+  tiles.forEach(c=>{ if(c==='J')jok++; else {c=normCode(c); real[c]=(real[c]||0)+1;} });
+  for(const L of CARD){
+    if(L.conc && hasExposure) continue;
+    for(const sol of L.sols){ if(feasible(sol, real, jok)) return {sec:L.sec, ln:L.ln, pat:L.pat, pts:L.pts, conc:L.conc}; }
+  }
+  return null;
+}
+/* overlap score for AI: how many of 14 slots a hand fills toward a solution (jokers wild for 3+ groups). */
+function overlap(sol, tiles){
+  let jok=0; const left={}; tiles.forEach(c=>{ if(c==='J')jok++; else {c=normCode(c); left[c]=(left[c]||0)+1;} });
+  let score=0;
+  for(const g of sol){ if(g[1]<3){ const u=Math.min(left[g[0]]||0,g[1]); left[g[0]]-=u; score+=u; } }
+  let jp=jok;
+  for(const g of sol){ if(g[1]>=3){ const u=Math.min(left[g[0]]||0,g[1]); left[g[0]]-=u; score+=u; const ju=Math.min(jp,g[1]-u); jp-=ju; score+=ju; } }
+  return score;
+}
+function bestOverlap(tiles){ let best=0; for(const L of CARD) for(const sol of L.sols){ const s=overlap(sol,tiles); if(s>best)best=s; if(best===14)return 14; } return best; }
+
+/* ---------------- game state ---------------- */
+let seats, mosh, currentDiscard, cur, phase, selDiscard, logLines, calledNoDraw, gameOver;
+let discardPile=[], discPanelOpen=false, dragFrom=null;
+
+/* ---- timer (hideable — ADHD-friendly: it keeps running underneath, shown at the end) ---- */
+let gameStartMs=0, gameEndMs=0, timerTick=null;
+let timerHidden = localStorage.getItem('ott_timer_hidden')==='1';   // shared pref across OOTT games
+function elapsedMs(){ return (gameEndMs||Date.now()) - gameStartMs; }
+function fmtTime(ms){ if(ms<0||!gameStartMs)ms=0; const s=Math.floor(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function setTimerHidden(h){ timerHidden=h; localStorage.setItem('ott_timer_hidden', h?'1':'0'); render(); }
+function updateTimeVal(){ const v=document.getElementById('timeVal'); if(v) v.textContent = timerHidden?'hidden':fmtTime(elapsedMs()); }
+function startClock(){ gameStartMs=Date.now(); gameEndMs=0; if(timerTick) clearInterval(timerTick); timerTick=setInterval(()=>{ if(!gameOver) updateTimeVal(); }, 1000); }
+function stopClock(){ gameEndMs=Date.now(); if(timerTick){ clearInterval(timerTick); timerTick=null; } }
+
+function fullHand(s){ return s.concealed.concat.apply(s.concealed, s.exposed); }
+function handCount(s){ let n=s.concealed.length; s.exposed.forEach(g=>n+=g.length); return n; }
+
+function newGame(){
+  mosh=shuffle(buildPool());
+  seats=[
+    {id:'Y1', owner:'you', nm:'You · Hand 1', wind:'East',  concealed:[], exposed:[], out:false},
+    {id:'A1', owner:'ai',  nm:'AI · Hand 1',  wind:'South', concealed:[], exposed:[], out:false},
+    {id:'Y2', owner:'you', nm:'You · Hand 2', wind:'West',  concealed:[], exposed:[], out:false},
+    {id:'A2', owner:'ai',  nm:'AI · Hand 2',  wind:'North', concealed:[], exposed:[], out:false},
+  ];
+  for(let i=0;i<13;i++) seats.forEach(s=>s.concealed.push(mosh.pop()));
+  seats.forEach(s=>s.concealed=sortTiles(s.concealed));
+  currentDiscard=null; selDiscard=null; logLines=[]; calledNoDraw=false; gameOver=false;
+  discardPile=[]; cur=-1;
+  startClock();
+  log("Tiles dealt — 13 to each of the four hands. No Charleston. East leads.");
+}
+
+function log(m){ logLines.push(m); if(logLines.length>6) logLines.shift(); }
+
+/* ---------------- turn engine ---------------- */
+function nextSeatIdx(from){ for(let k=1;k<=4;k++){ const i=(from+k)%4; if(!seats[i].out) return i; } return -1; }
+
+function startSeat(i){
+  if(gameOver) return;
+  cur=i; const s=seats[i]; selDiscard=null;
+  if(!calledNoDraw){
+    if(mosh.length===0){ endGame('tie'); return; }
+    s.concealed.push(mosh.pop());
+  }
+  calledNoDraw=false;
+  if(s.owner==='ai'){ phase='ai'; render(); setTimeout(()=>aiTurn(i),650); }
+  else { phase='you'; render(); }
+}
+
+function doDiscard(originK, tileIdx){
+  if(phase==='wait' || gameOver) return;        // guard against re-entrant clicks
+  const turnSeat = (cur>=0)?cur:originK;        // the discard belongs to the player whose turn it is
+  const tile=seats[originK].concealed.splice(tileIdx,1)[0];   // ...but the tile can come from either of their hands
+  currentDiscard={tile:tile, from:turnSeat};
+  log((seats[turnSeat].owner==='you'?'You':'AI')+" discarded "+plain(tile)+".");
+  selDiscard=null; phase='wait';                   // lock the board until calls resolve
+  render();
+  setTimeout(()=>resolveCalls(turnSeat), seats[turnSeat].owner==='ai'?500:50);
+}
+
+function plain(code){ const t=tileLabel(code); return code==='J'?'a Joker':(t.s?(t.n+' '+t.s):t.n); }
+
+/* who can call the current discard (pung needs 2 matching naturals; mahjong = completes hand) */
+function callOptions(i){
+  if(!currentDiscard) return [];
+  const d=currentDiscard.tile, opts=[];
+  const discarderOwner=seats[i].owner;
+  seats.forEach((s,k)=>{
+    if(s.owner===discarderOwner || s.out) return;   // can't claim your own player's discard
+    const nat = s.concealed.filter(c=>normCode(c)===normCode(d) && c!=='J').length;
+    const can=[];
+    // mahjong: hand(13)+discard => 14 valid
+    const test=fullHand(s).concat([d]);
+    if(test.length===14 && validate(test, s.exposed.length>0)) can.push({type:'mahjong'});
+    if(nat>=2) can.push({type:'pung'});
+    if(can.length) opts.push({k:k, s:s, can:can, nat:nat});
+  });
+  return opts;
+}
+
+function resolveCalls(i){
+  if(gameOver) return;
+  const opts=callOptions(i);
+  const youOpts=opts.filter(o=>o.s.owner==='you');
+  const aiMahjong=opts.find(o=>o.s.owner==='ai' && o.can.some(c=>c.type==='mahjong'));
+
+  if(youOpts.length){ // offer the human first (priority to the learner)
+    showCallModal(i, youOpts, ()=>afterNoHumanCall(i, aiMahjong));
+    return;
+  }
+  afterNoHumanCall(i, aiMahjong);
+}
+
+function afterNoHumanCall(i, aiMahjong){
+  if(aiMahjong){ // gentle AI only ever calls a mahjong
+    const s=aiMahjong.s;
+    s.concealed.push(currentDiscard.tile);
+    log(s.nm+" called Mahjong on "+plain(currentDiscard.tile)+"!");
+    currentDiscard=null;
+    declareSeat(aiMahjong.k, true);
+    return;
+  }
+  // nobody claimed it — the tile goes face-up to the discard pile
+  if(currentDiscard) discardPile.push(currentDiscard.tile);
+  currentDiscard=null;
+  const nx=nextSeatIdx(cur);
+  if(nx<0){ checkEnd(); return; }
+  startSeat(nx);
+}
+
+/* human executes a call */
+function execCall(callerK, type){
+  const s=seats[callerK], d=currentDiscard.tile;
+  if(type==='mahjong'){
+    s.concealed.push(d); currentDiscard=null;
+    log(s.nm+" called Mahjong on "+plain(d)+"!");
+    declareSeat(callerK, true);
+    return;
+  }
+  // pung: expose [d, nat, nat]
+  let moved=0; const keep=[];
+  s.concealed.forEach(c=>{ if(moved<2 && normCode(c)===normCode(d) && c!=='J'){ moved++; } else keep.push(c); });
+  s.concealed=keep;
+  s.exposed.push([d, d, d].map((x,idx)=>idx===0?d:d)); // group of three identical (the called tile + 2 naturals)
+  log(s.nm+" called Pung on "+plain(d)+".");
+  currentDiscard=null;
+  // caller now must discard (no draw)
+  cur=callerK; calledNoDraw=false; phase='you'; selDiscard=null;
+  render();
+}
+
+/* a seat declares mahjong (from its own turn or via call). win=true means already validated/added */
+function declareSeat(k, alreadyWin){
+  const s=seats[k];
+  const res = alreadyWin ? validate(fullHand(s), s.exposed.length>0) : validate(fullHand(s), s.exposed.length>0);
+  if(!res){ // (shouldn't happen for call path) — for self-declare, guard
+    flash(s.nm+" — that hand isn't a legal 2026 line yet.");
+    render(); return;
+  }
+  s.out=true; s.winLine=res;
+  log(s.nm+" went Mahjong! "+res.sec+", Line "+res.ln+" ("+res.pat+").");
+  checkEnd(true, k);
+}
+
+function checkEnd(advanceIfNot, k){
+  const youOut=seats.filter(s=>s.owner==='you' && s.out).length;
+  const aiOut =seats.filter(s=>s.owner==='ai'  && s.out).length;
+  if(youOut===2){ endGame('win'); return; }
+  if(aiOut===2){ endGame('lose'); return; }
+  if(advanceIfNot){
+    // whoever just went out: the turn continues to the next live seat after them
+    const from = (k!=null)?k:cur;
+    const nx=nextSeatIdx(from);
+    if(nx<0){ endGame('tie'); return; }
+    startSeat(nx);
+  }
+}
+
+function endGame(kind){
+  gameOver=true; phase='over'; stopClock(); render();
+  let html;
+  if(kind==='win') html='<div class="win"><div class="big">🀄 You win!</div><p>Both of your hands went Mahjong. That\'s a true Siamese victory — you can\'t win on one alone.</p></div>';
+  else if(kind==='lose') html='<div class="win"><div class="big">The AI finished both hands.</div><p>It completed both of its lines first. Run it back — the mess reshuffles every game.</p></div>';
+  else html='<div class="win"><div class="big">Wall game — it\'s a tie.</div><p>The mess ran out before anyone finished both hands. Nobody wins a wall game.</p></div>';
+  html+='<p class="win" style="margin:6px 0 0;">Your game took <b>'+fmtTime(elapsedMs())+'</b>.</p>';   // always shown, even if hidden during play
+  const m=modal(html+'<div class="actions" style="justify-content:center;margin-top:14px;"><button class="btn" id="again">Play again</button></div>');
+  m.querySelector('#again').onclick=()=>{ m.remove(); newGame(); startSeat(0); };
+}
+
+/* ---------------- gentle AI ---------------- */
+function aiTurn(i){
+  if(gameOver) return;
+  const s=seats[i];
+  // self-pick mahjong?
+  if(handCount(s)===14){
+    const res=validate(fullHand(s), s.exposed.length>0);
+    if(res){ declareSeat(i, true); return; }
+  }
+  // choose discard: remove the concealed tile whose loss least hurts best-overlap; never a joker if avoidable
+  const conc=s.concealed;
+  let bestIdx=-1, bestScore=-1;
+  for(let x=0;x<conc.length;x++){
+    if(conc[x]==='J' && conc.filter(c=>c==='J').length<=needJokers(s)) continue; // keep jokers we likely need
+    const trial=conc.slice(); trial.splice(x,1);
+    const sc=bestOverlap(trial.concat(flat(s.exposed)));
+    if(sc>bestScore){ bestScore=sc; bestIdx=x; }
+  }
+  if(bestIdx<0){ // all jokers / fallback: discard highest sort tile
+    bestIdx=0; let hi=-1; conc.forEach((c,x)=>{ if(c!=='J' && SORTKEY(c)>hi){hi=SORTKEY(c);bestIdx=x;} });
+    if(hi<0) bestIdx=conc.length-1;
+  }
+  doDiscard(i, bestIdx);
+}
+function flat(exp){ return exp.reduce((a,g)=>a.concat(g),[]); }
+function needJokers(s){ // rough: jokers used by current best solution
+  const tiles=fullHand(s); let bestNeed=0,best=-1;
+  for(const L of CARD) for(const sol of L.sols){ const o=overlap(sol,tiles); if(o>best){best=o; let jk=0,real={},jok=0;
+    tiles.forEach(c=>{if(c==='J')jok++; else{c=normCode(c);real[c]=(real[c]||0)+1;}}); const left=Object.assign({},real);
+    for(const g of sol){ if(g[1]<3){const u=Math.min(left[g[0]]||0,g[1]);left[g[0]]-=u;} }
+    for(const g of sol){ if(g[1]>=3){const u=Math.min(left[g[0]]||0,g[1]);left[g[0]]-=u; jk+=g[1]-u;} }
+    bestNeed=jk; } }
+  return bestNeed;
+}
+
+/* ---------------- rendering ---------------- */
+function el(id){ return document.getElementById(id); }
+function render(){
+  // stats
+  const youOut=seats.filter(s=>s.owner==='you'&&s.out).length;
+  const aiOut =seats.filter(s=>s.owner==='ai'&&s.out).length;
+  const turnNm = (cur>=0 && !gameOver)? seats[cur].nm : '—';
+  el('stats').innerHTML =
+    statBox('Turn', turnNm, 'turn') + statBox('Your hands out', youOut+' / 2') +
+    statBox('AI hands out', aiOut+' / 2') + statBox('Mess left', mosh.length) +
+    timeStatHtml();
+  const tt=el('timeToggle'); if(tt) tt.onclick=()=>setTimerHidden(!timerHidden);
+
+  // center: mosh + discard
+  let moshHtml='<div class="mosh">';
+  const stack=Math.min(6, Math.ceil(mosh.length/24));
+  for(let z=0;z<stack;z++) moshHtml+='<div class="b" style="left:'+(z*3)+'px;top:'+(z*3)+'px;"></div>';
+  moshHtml+='</div>';
+  const disc = currentDiscard? tileSpan(currentDiscard.tile) : '<span style="color:var(--ink-soft);font-size:.7rem;">—</span>';
+  el('center').innerHTML =
+    '<div><div class="discslot'+(currentDiscard?' has':'')+'">'+moshHtml+'</div><div class="moshcap">the mess ('+mosh.length+')</div></div>'+
+    '<div class="discwrap"><div class="discslot'+(currentDiscard?' has':'')+'">'+disc+'</div><div class="moshcap">last discard</div></div>'+
+    '<div class="discwrap"><button class="discbtn" id="discBtn">🗂 <b>'+discardPile.length+'</b></button><div class="moshcap">discards</div></div>';
+  const dbn=el('discBtn'); if(dbn) dbn.onclick=()=>{ discPanelOpen=!discPanelOpen; renderDiscPanel(); };
+
+  // instruction
+  let instr='';
+  if(gameOver) instr='';
+  else if(phase==='ai') instr=(seats[cur].owner==='ai'?'AI':seats[cur].nm)+' is thinking…';
+  else if(phase==='you'){
+    instr='<b>Your turn.</b> Move tiles between your two hands however you like, then tap one to <b>discard</b> — or <b>Declare</b> a hand that’s complete.';
+  }
+  el('instr').innerHTML=instr;
+
+  // AI hands on top (small, face-down), your two hands stacked in one box below
+  renderAiTop();
+  renderYou();
+  renderDiscPanel();
+  // log
+  el('log').innerHTML = logLines.map(l=>'<div>'+l+'</div>').join('');
+}
+function statBox(k,v,cls){ return '<div class="stat '+(cls||'')+'"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>'; }
+function timeStatHtml(){
+  const val = timerHidden ? 'hidden' : fmtTime(elapsedMs());
+  return '<div class="stat time"><div class="k">Time '+
+    '<button class="eye" id="timeToggle" title="'+(timerHidden?'Show the timer':'Hide the timer')+'">'+(timerHidden?'show':'hide')+'</button></div>'+
+    '<div class="v'+(timerHidden?' off':'')+'"><span id="timeVal">'+val+'</span></div></div>';
+}
+
+/* AI hands: small, face-down, at the top (their hand matters less than yours) */
+function renderAiTop(){
+  const html=[1,3].map(k=>{                       // seats[1]=AI South, seats[3]=AI North
+    const s=seats[k];
+    let exp=''; s.exposed.forEach(g=>{ exp+='<div class="expo tiny">'+g.map(c=>tileSpan(c,' xs')).join('')+'</div>'; });
+    const tiles = s.out ? s.concealed.map(c=>tileSpan(c,' xs')).join('')   // reveal once out
+                        : s.concealed.map(()=>'<span class="tile back xs"></span>').join('');
+    const status = s.out ? '<span class="badge">OUT ✓'+(s.winLine?' · '+s.winLine.sec+' L'+s.winLine.ln:'')+'</span>'
+                         : '<span class="cnt">'+handCount(s)+'</span>';
+    return '<div class="aiseat'+(k===cur&&!gameOver?' turn':'')+(s.out?' out':'')+'">'+
+      '<div class="ahead"><span class="anm">'+s.nm+'</span><span class="wind">'+s.wind+'</span>'+status+'</div>'+
+      '<div class="arack">'+exp+tiles+'</div></div>';
+  }).join('');
+  el('aiTop').innerHTML='<div class="ailbl">Opponent (face-down)</div><div class="aiwrap">'+html+'</div>';
+}
+
+/* your two hands in ONE box — Hand 1 upper, Hand 2 lower.
+   They share ONE pool: drag tiles between the two hands freely until you call Mahjong on one. */
+function renderYou(){
+  const box=el('you'); box.className='youbox';
+  const yourTurn = (phase==='you' && cur>=0 && seats[cur] && seats[cur].owner==='you');
+  box.innerHTML='<div class="youlbl">Your hands share <b>one pool</b> — drag tiles between Hand 1 &amp; Hand 2 freely until you Mahjong one (then it locks).</div>'+
+    [0,2].map(k=>yourHandHtml(seats[k],k,yourTurn)).join('')+
+    '<div class="youact"><button class="btn" id="btnDiscard"'+((yourTurn&&selDiscard)?'':' disabled')+'>Discard selected ▸</button>'+
+    (yourTurn?'<span class="acthint">'+(selDiscard?'1 tile selected':'tap any of your tiles to discard it')+'</span>':'')+
+    '</div>';
+
+  box.querySelectorAll('.tw').forEach(node=>{
+    node.addEventListener('dragstart',e=>{ dragFrom={k:+node.dataset.k, idx:+node.dataset.ti}; e.dataTransfer.effectAllowed='move'; });
+    node.addEventListener('dragover', e=>{ e.preventDefault(); node.classList.add('dragover'); });
+    node.addEventListener('dragleave',()=>node.classList.remove('dragover'));
+    node.addEventListener('drop', e=>{ e.preventDefault(); node.classList.remove('dragover'); reorder(dragFrom,{k:+node.dataset.k, idx:+node.dataset.ti}); });
+    if(node.dataset.sel==='1'){ node.onclick=()=>{ selDiscard={k:+node.dataset.k, idx:+node.dataset.ti}; render(); }; }
+  });
+  // dropping onto a hand's empty space appends to that hand
+  box.querySelectorAll('.rack[data-rack]').forEach(rack=>{
+    rack.addEventListener('dragover',e=>{ e.preventDefault(); });
+    rack.addEventListener('drop',e=>{ if(e.target.closest('.tw'))return; e.preventDefault(); const k=+rack.dataset.rack; reorder(dragFrom,{k:k, idx:seats[k].concealed.length}); });
+  });
+  const db=el('btnDiscard'); if(db) db.onclick=()=>{ if(selDiscard) doDiscard(selDiscard.k, selDiscard.idx); };
+  [0,2].forEach(k=>{
+    const sb=el('btnSort'+k);  if(sb) sb.onclick=()=>{ seats[k].concealed=sortTiles(seats[k].concealed); selDiscard=null; render(); };
+    const mb=el('btnDecl'+k);  if(mb) mb.onclick=()=>{ declareSelf(k); };
+  });
+}
+function yourHandHtml(s,k,yourTurn){
+  const editable = yourTurn && !s.out;            // on your turn, BOTH your hands are editable
+  const handNo=(k===0)?'Hand 1':'Hand 2';
+  const valid = (!s.out && handCount(s)===14) ? validate(fullHand(s), s.exposed.length>0) : null;
+  let head='<div class="hhead"><span class="nm">'+handNo+'</span>';
+  head += s.out ? '<span class="badge you">OUT ✓'+(s.winLine?' · '+s.winLine.sec+' L'+s.winLine.ln:'')+'</span>'
+                : '<span class="cnt">'+handCount(s)+' tiles</span>';
+  if(!s.out) head+='<button class="eye" id="btnSort'+k+'">sort</button>';
+  head+='</div>';
+  let exp=''; s.exposed.forEach(g=>{ exp+='<div class="expo">'+g.map(c=>tileSpan(c,' sm')).join('')+'</div>'; });
+  const rack=s.concealed.map((c,idx)=>{
+    let extra=''; const sel=(selDiscard && selDiscard.k===k && selDiscard.idx===idx);
+    if(editable) extra+=' pick'; if(sel) extra+=' sel';
+    return '<span class="tw" '+(s.out?'':'draggable="true" ')+'data-k="'+k+'" data-ti="'+idx+'" data-sel="'+(editable?'1':'0')+'">'+tileSpan(c,extra)+'</span>';
+  }).join('');
+  const declare = (yourTurn && valid) ? '<div class="actions"><button class="btn good" id="btnDecl'+k+'">Declare Mahjong ✓</button></div>' : '';
+  return '<div class="hand'+(editable?' active':'')+(s.out?' out':'')+'">'+head+
+         '<div class="rack" data-rack="'+k+'">'+exp+rack+'</div>'+declare+'</div>';
+}
+/* move a tile within or BETWEEN your two hands (your non-out hands only) */
+function reorder(from,to){
+  if(!from){ dragFrom=null; return; }
+  const sf=seats[from.k], st=seats[to.k];
+  if(!sf||!st||sf.owner!=='you'||st.owner!=='you'||sf.out||st.out){ dragFrom=null; return; }
+  if(from.k===to.k){
+    const arr=sf.concealed; if(from.idx===to.idx){ dragFrom=null; return; }
+    const t=arr.splice(from.idx,1)[0];
+    arr.splice(from.idx<to.idx ? to.idx-1 : to.idx, 0, t);
+  } else {
+    const t=sf.concealed.splice(from.idx,1)[0];        // transfer between Hand 1 and Hand 2
+    st.concealed.splice(Math.min(to.idx, st.concealed.length), 0, t);
+  }
+  dragFrom=null; selDiscard=null; render();
+}
+
+/* face-up discard pile, grouped by suit (Dots, Bams, Craks, then the rest) — a pop-out panel */
+function discGroups(){
+  const b={Dots:[],Bams:[],Craks:[],Other:[]};
+  discardPile.forEach(c=>{ const n=normCode(c);
+    if(/^[1-9]D$/.test(n)) b.Dots.push(n);
+    else if(/^[1-9]B$/.test(n)) b.Bams.push(n);
+    else if(/^[1-9]C$/.test(n)) b.Craks.push(n);
+    else b.Other.push(n);
+  });
+  ['Dots','Bams','Craks','Other'].forEach(k=>b[k].sort((a,c)=>SORTKEY(a)-SORTKEY(c)));
+  return b;
+}
+function renderDiscPanel(){
+  const p=el('discPanel');
+  const tab=el('discTab');
+  if(tab){ const n=el('discTabN'); if(n) n.textContent=discardPile.length; tab.classList.toggle('hidden', discPanelOpen); }
+  p.className='discpanel'+(discPanelOpen?' open':'');
+  p.setAttribute('aria-hidden', discPanelOpen?'false':'true');
+  if(!discPanelOpen){ p.innerHTML=''; return; }
+  const b=discGroups();
+  const groups=[['Dots','Dots'],['Bams','Bams'],['Craks','Craks'],['Other','Winds · Dragons · Flowers · Jokers']].map(([key,label])=>{
+    const arr=b[key];
+    return '<div class="discgroup"><div class="dglbl">'+label+' <span>('+arr.length+')</span></div>'+
+      '<div class="dgtiles">'+(arr.length? arr.map(c=>tileSpan(c,' sm')).join('') : '<span class="empty">none yet</span>')+'</div></div>';
+  }).join('');
+  p.innerHTML='<div class="dphead"><b>Discard pile</b><span class="dpcount">'+discardPile.length+' tiles</span>'+
+    '<button id="dpClose" class="eye">close ✕</button></div>'+
+    '<p class="dphint">Every passed-over discard, by suit — your table memory for reading what\'s gone.</p>'+groups;
+  const c=el('dpClose'); if(c) c.onclick=()=>{ discPanelOpen=false; renderDiscPanel(); };
+}
+
+function declareSelf(k){
+  const s=seats[k];
+  const res=validate(fullHand(s), s.exposed.length>0);
+  if(!res){ flash("That hand isn't a legal 2026 line yet."); return; }
+  declareSeat(k, true);
+}
+
+/* ---------------- modals ---------------- */
+function modal(html){
+  const scrim=document.createElement('div'); scrim.className='scrim';
+  scrim.innerHTML='<div class="card">'+html+'</div>';
+  document.body.appendChild(scrim); return scrim;
+}
+function flash(msg){
+  const m=modal('<p style="margin:0;font-size:1rem;">'+msg+'</p><div class="actions" style="justify-content:flex-end;margin-top:12px;"><button class="btn ghost" id="ok">OK</button></div>');
+  m.querySelector('#ok').onclick=()=>m.remove();
+}
+function showCallModal(i, youOpts, onPass){
+  const d=currentDiscard.tile;
+  let html='<h2>Call it?</h2><p class="lead">'+seats[i].nm+' discarded '+plain(d)+'.</p><div class="callopts">';
+  const wires=[];
+  youOpts.forEach(o=>{
+    o.can.forEach(c=>{
+      const label = c.type==='mahjong'
+        ? '🀄 Mahjong with '+o.s.nm+' — complete this hand!'
+        : 'Pung into '+o.s.nm+' (expose three '+plain(d).replace(/^a /,'')+')';
+      const id='call_'+o.k+'_'+c.type;
+      html+='<button class="btn'+(c.type==='mahjong'?' good':'')+'" data-call="'+id+'">'+label+'</button>';
+      wires.push({id:id, k:o.k, type:c.type});
+    });
+  });
+  html+='<button class="btn ghost" data-call="pass">Pass</button></div>';
+  html+='<p class="lead" style="margin-top:10px;font-size:.84rem;">Pung exposes a set face-up and you keep building toward the line. You then discard.</p>';
+  const m=modal(html);
+  m.querySelectorAll('[data-call]').forEach(node=>{
+    node.onclick=()=>{
+      const v=node.getAttribute('data-call');
+      m.remove();
+      if(v==='pass'){ onPass(); return; }
+      const w=wires.find(x=>x.id===v);
+      execCall(w.k, w.type);
+    };
+  });
+}
+
+/* ---------------- tutorial ---------------- */
+function tutorial(){
+  const html=
+    '<h2>How Messy Mahj works</h2>'+
+    '<p class="lead">Siamese Mahjong: you play <b>two hands at once</b> — and you only win when <b>both</b> go Mahjong.</p>'+
+    '<ul>'+
+    '<li><b>Four hands on the table.</b> Two are yours (East &amp; West), two belong to the AI (South &amp; North). Play goes around in that order.</li>'+
+    '<li><b>The mess, not a wall.</b> All 152 tiles sit face-down in the middle. On your turn you draw one at random — there\'s no built wall and <b>no Charleston</b>. You pick up and play.</li>'+
+    '<li><b>Build against the 2026 card.</b> Each of your two hands is racing to become a legal 2026 line. Jokers help fill any group of three or more (never a pair or single).</li>'+
+    '<li><b>One shared pool.</b> Your two hands aren\'t separate — <b>drag tiles between Hand 1 and Hand 2 freely</b> as you figure out which line each is becoming. A hand only locks when you call Mahjong on it.</li>'+
+    '<li><b>Calling.</b> When the AI discards, you can <b>call</b> it — Pung (you hold two matching tiles) to speed a hand along, or <b>Mahjong</b> if it finishes a hand.</li>'+
+    '<li><b>Winning is two-for-two.</b> Declaring one hand just sets it down (it locks). You haven\'t won until your second hand also goes out.</li>'+
+    '</ul>'+
+    '<p class="lead" style="font-size:.86rem;">This is a gentle first opponent — it mostly draws and discards, and only calls to finish. Tougher AI comes next.</p>'+
+    '<div class="tuttoggle"><span>⏱ <b>Timer:</b> hide it if it distracts — your final time still shows at the end. You can flip it any time during the game, too.</span>'+
+    '<button id="tutTimer" class="'+(timerHidden?'':'on')+'">'+(timerHidden?'Off (hidden)':'On (shown)')+'</button></div>'+
+    '<div class="actions" style="justify-content:center;margin-top:8px;">'+
+    '<button class="btn" id="play">Start playing</button>'+
+    '<button class="btn ghost" id="skip">Skip</button></div>';
+  const m=modal(html);
+  const tb=m.querySelector('#tutTimer');
+  tb.onclick=()=>{ timerHidden=!timerHidden; localStorage.setItem('ott_timer_hidden', timerHidden?'1':'0');
+    tb.textContent=timerHidden?'Off (hidden)':'On (shown)'; tb.className=timerHidden?'':'on'; };
+  const go=()=>{ m.remove(); newGame(); startSeat(0); };
+  m.querySelector('#play').onclick=go;
+  m.querySelector('#skip').onclick=go;
+}
+
+/* ---------------- boot ---------------- */
+window.addEventListener('DOMContentLoaded',()=>{
+  if(!CARD || !CARD.length){ window.__mmErr('card data failed to load'); return; }
+  const tab=el('discTab'); if(tab) tab.onclick=()=>{ discPanelOpen=true; renderDiscPanel(); };
+  tutorial();
+});
+</script>
+</body>
+</html>
