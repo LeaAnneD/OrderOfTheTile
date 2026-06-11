@@ -43,10 +43,31 @@
   ul.soonlist{list-style:none; padding:0; margin:8px 0 0; display:flex; flex-wrap:wrap; gap:8px;}
   ul.soonlist li{background:#fff; border:1px dashed var(--line); border-radius:999px; padding:6px 14px; font-size:.88rem; color:var(--ink-soft);}
   .footer{margin-top:40px; text-align:center; color:var(--ink-soft); font-size:.82rem;}
+  /* auth bar + kudos (👍) voting — logged-in only */
+  .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; flex-wrap:wrap; margin-bottom:4px; min-height:30px;}
+  .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.86rem; font-style:italic;}
+  .hbtn{font-family:"Crimson Text",serif; font-size:.86rem; padding:6px 13px; border-radius:10px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer;}
+  .hbtn.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
+  .kudos{display:none; position:absolute; bottom:12px; right:14px; align-items:center; gap:5px; background:var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:4px 11px; font-family:"Crimson Text",serif; font-size:.86rem; color:var(--rose-deep); cursor:pointer; z-index:2; line-height:1;}
+  body.authed .kudos{display:inline-flex;}
+  .kudos:hover{border-color:var(--rose);}
+  .kudos.voted{background:var(--rose); color:#fff; border-color:var(--rose-deep);}
+  .kudos .thumb{font-size:.98rem;}
+  body.authed a.card .go{padding-right:70px;}
+  .hubscrim{position:fixed; inset:0; background:rgba(43,38,34,.42); display:flex; align-items:center; justify-content:center; padding:18px; z-index:1000;}
+  .hubmodal{background:var(--paper); border-radius:18px; max-width:380px; width:100%; padding:24px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line);}
+  .hubmodal h2{font-family:"Playfair Display",serif; margin:.1em 0 .3em;}
+  .hubmodal input{width:100%; font-family:inherit; font-size:1rem; padding:10px 12px; border:1px solid var(--line); border-radius:10px; margin:6px 0; background:#fff; color:var(--ink);}
+  .hubmsg{font-size:.9rem; color:var(--bad,#B5524C); min-height:1.2em;} .hubmsg.ok{color:var(--good);}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="authbar" id="authbar">
+    <span id="authStatus" class="authstatus">·</span>
+    <button id="authBtn" class="hbtn">Log in / Sign up</button>
+    <button id="logoutBtn" class="hbtn ghost" style="display:none;">Log out</button>
+  </div>
   <img class="seal" src="/images/seal.png" alt="Order of the Tile">
   <h1>The Practice Table</h1>
   <p class="sub">Free American Mah Jongg skill drills — every one a small game that teaches one piece of the table.</p>
@@ -141,5 +162,65 @@
 
   <p class="footer">Order of the Tile · American Mah Jongg (NMJL) · internal preview · 2026-06-11</p>
 </div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb = createClient("https://avltolzpzxcdmgrjnsfa.supabase.co","sb_publishable_zI6klteA7Kz4wbBoMCfOng_sb1Dz-pK");
+let user=null;
+const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
+
+// give every game card a 👍 button (hidden until logged in)
+qa('a.card').forEach(a=>{
+  const slug=(a.getAttribute('href')||'').replace(/\/+$/,''); if(!slug)return;
+  const b=document.createElement('button'); b.className='kudos'; b.dataset.game=slug; b.title='Give this game a kudos';
+  b.innerHTML='<span class="thumb">👍</span><span class="kc">0</span>';
+  b.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); toggleKudos(slug,b); });
+  a.appendChild(b);
+});
+
+function bar(){
+  const st=q('#authStatus'), a=q('#authBtn'), o=q('#logoutBtn');
+  if(user){ st.textContent='Signed in as '+((user.user_metadata&&user.user_metadata.display_name)||user.email)+' — tap 👍 on the games you love'; a.style.display='none'; o.style.display=''; document.body.classList.add('authed'); }
+  else { st.textContent='Log in to cheer for your favorite games'; a.style.display=''; o.style.display='none'; document.body.classList.remove('authed'); }
+}
+async function loadKudos(){
+  try{ const {data}=await sb.from('kudos_counts').select('*'); const m={}; (data||[]).forEach(r=>m[r.game]=r.kudos);
+    qa('.kudos').forEach(b=>{ b.querySelector('.kc').textContent = m[b.dataset.game]||0; }); }catch(_){}
+  qa('.kudos').forEach(b=>b.classList.remove('voted'));
+  if(user){ try{ const {data}=await sb.from('game_kudos').select('game').eq('user_id',user.id); const mine=new Set((data||[]).map(r=>r.game));
+    qa('.kudos').forEach(b=>{ if(mine.has(b.dataset.game))b.classList.add('voted'); }); }catch(_){} }
+}
+async function toggleKudos(game,btn){
+  if(!user){ openAuth(); return; }
+  const voted=btn.classList.contains('voted'); const kc=btn.querySelector('.kc');
+  try{
+    if(voted){ await sb.from('game_kudos').delete().eq('user_id',user.id).eq('game',game); btn.classList.remove('voted'); kc.textContent=Math.max(0,(+kc.textContent||0)-1); }
+    else { await sb.from('game_kudos').upsert({user_id:user.id,game}); btn.classList.add('voted'); kc.textContent=(+kc.textContent||0)+1; }
+  }catch(_){ /* table not set up yet, or transient — kudos quietly no-ops */ }
+}
+
+function modal(html){ const s=document.createElement('div'); s.className='hubscrim'; s.innerHTML='<div class="hubmodal">'+html+'</div>'; s.addEventListener('click',e=>{ if(e.target===s)s.remove(); }); document.body.appendChild(s); return s; }
+function openAuth(){
+  let signup=false;
+  const m=modal('<h2 id="aT">Log in</h2><p style="color:var(--ink-soft); font-style:italic; margin:0 0 10px;">Sign in to cheer for the games you love.</p>'+
+    '<input id="aN" type="text" placeholder="Display name (shown on the leaderboard)" style="display:none;"><input id="aE" type="email" placeholder="Email" autocomplete="email"><input id="aP" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><div class="hubmsg" id="aM"></div>'+
+    '<button class="hbtn" id="aGo" style="width:100%; padding:10px;">Log in</button><button class="hbtn ghost" id="aTog" style="width:100%; padding:8px; margin-top:8px;">New here? Create an account</button>'+
+    '<p style="font-size:.78rem; color:var(--ink-soft); font-style:italic; margin:8px 0 0;">We never sell your information.</p>');
+  const N=m.querySelector('#aN'),E=m.querySelector('#aE'),P=m.querySelector('#aP'),M=m.querySelector('#aM'),Go=m.querySelector('#aGo'),Tog=m.querySelector('#aTog'),T=m.querySelector('#aT');
+  Tog.onclick=()=>{ signup=!signup; N.style.display=signup?'':'none'; T.textContent=signup?'Create account':'Log in'; Go.textContent=signup?'Create account':'Log in'; Tog.textContent=signup?'Have an account? Log in':'New here? Create an account'; M.textContent=''; };
+  Go.onclick=async()=>{ M.className='hubmsg'; M.textContent='Working…'; Go.disabled=true;
+    try{
+      if(signup){ const {data,error}=await sb.auth.signUp({email:E.value.trim(),password:P.value,options:{emailRedirectTo:location.href,data:{display_name:N.value.trim()||E.value.split('@')[0]}}}); if(error)throw error;
+        if(data.session){ M.className='hubmsg ok'; M.textContent='You’re in.'; setTimeout(()=>m.remove(),600); } else { M.className='hubmsg ok'; M.innerHTML='Almost there — check your email for a confirmation link, then log in.'; } }
+      else { const {error}=await sb.auth.signInWithPassword({email:E.value.trim(),password:P.value}); if(error)throw error; M.className='hubmsg ok'; M.textContent='Welcome back.'; setTimeout(()=>m.remove(),400); }
+    }catch(err){ M.className='hubmsg'; M.textContent=(err&&err.message)||String(err); }
+    Go.disabled=false;
+  };
+}
+q('#authBtn').onclick=openAuth;
+q('#logoutBtn').onclick=async()=>{ await sb.auth.signOut(); };
+sb.auth.onAuthStateChange((_e,s)=>{ user=(s&&s.user)||null; bar(); loadKudos(); });
+const {data:{session}}=await sb.auth.getSession(); user=(session&&session.user)||null; bar(); loadKudos();
+</script>
 </body>
 </html>
