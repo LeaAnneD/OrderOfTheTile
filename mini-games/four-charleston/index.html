@@ -111,10 +111,19 @@
   .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
   .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
   @media(max-width:560px){ h1{font-size:1.34rem;} .banner .ask{font-size:1.14rem;} .table{width:300px; height:300px;} .felt{width:112px; height:112px;} .felt .fdir{font-size:1.25rem;} .seat{width:80px; height:80px;} .seat .nm{font-size:.82rem;} }
+  .gamehdr{display:flex; align-items:center; gap:12px; padding:6px 0 9px; border-bottom:1px solid var(--line); margin-bottom:10px;}
+  .gamehdr .backlink{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); text-decoration:none; font-size:.95rem;}
+  .backlink:hover{text-decoration:underline;}
+  .gamehdr .brandmark{margin-left:auto; font-family:"Playfair Display",serif; font-weight:700; color:var(--ink); font-size:.92rem;}
+  .backfoot{text-align:center; margin-top:24px;}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="gamehdr">
+    <a class="backlink" href="../preview.html">← All games</a>
+    <span class="brandmark">Order of the Tile</span>
+  </div>
   <div class="authbar" id="authbar">
     <span id="authStatus" class="authstatus">·</span>
     <button id="lbBtn" class="btn ghost mini">Leaderboard</button>
@@ -147,6 +156,7 @@
   </div>
 
   <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
+  <p class="backfoot"><a class="backlink" href="../preview.html">← Back to all games</a></p>
   <p class="footer-note">Order of the Tile · a free practice drill · American Mah Jongg (NMJL) · <span id="buildStamp">build —</span></p>
 </div>
 
