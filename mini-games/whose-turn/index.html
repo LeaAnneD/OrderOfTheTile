@@ -19,58 +19,46 @@
     --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0; background:var(--paper); color:var(--ink);
-    font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
   .wrap{max-width:920px; margin:0 auto; padding:18px 16px 40px;}
   h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.6rem; margin:.1em 0;}
   .sub{color:var(--ink-soft); font-style:italic; margin:0 0 14px;}
-  /* mode bar */
-  .modebar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:4px 0 10px;}
-  .modepill{font-family:"Playfair Display",serif; font-weight:600; font-size:.92rem; cursor:pointer;
-    border:1px solid var(--line); background:#fff; color:var(--ink-soft); border-radius:999px; padding:6px 16px; box-shadow:var(--shadow);}
-  .modepill.on{background:var(--rose); color:#fff; border-color:var(--rose-deep);}
-  .modepill small{display:block; font-family:"Crimson Text",serif; font-weight:400; font-style:italic; font-size:.72rem; opacity:.85;}
-  .leveltag{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); font-size:1.0rem; margin-left:auto;}
-  /* HUD */
+  .toprow{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:4px 0 10px;}
+  .leveltag{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); font-size:1.0rem;}
+  .toprow .btn.mini{margin-left:auto;}
   .hud{display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 16px;}
   .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px 14px; box-shadow:var(--shadow); min-width:100px;}
   .stat .k{font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft);}
   .stat .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; line-height:1.1;}
-  /* prompt banner */
   .banner{background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:14px; text-align:center;}
   .banner .lead{font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft);}
-  .banner .ask{font-family:"Playfair Display",serif; font-weight:700; font-size:1.35rem; margin-top:2px; line-height:1.2;}
-  .banner .why{font-style:italic; color:var(--ink-soft); font-size:.92rem; margin-top:5px;}
+  .banner .ask{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; margin-top:2px; line-height:1.25;}
+  .banner .why{font-style:italic; color:var(--ink-soft); font-size:.92rem; margin-top:6px; line-height:1.35;}
   @keyframes flashpulse{0%,100%{box-shadow:var(--shadow);} 50%{box-shadow:0 0 0 3px var(--gold), var(--shadow); background:#FBEFD4;}}
   .banner.flash{animation:flashpulse .9s ease 2;}
+  .tuttag{display:inline-block; font-family:"Playfair Display",serif; font-weight:700; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:#fff; background:var(--sage); border-radius:999px; padding:3px 12px; margin-bottom:8px;}
+  .tutstep{font-size:.78rem; color:var(--ink-soft); letter-spacing:.05em;}
   /* table */
   .tablewrap{display:flex; justify-content:center; margin-bottom:8px;}
   .table{position:relative; width:360px; height:360px; max-width:88vw; max-height:88vw;}
-  .ring{position:absolute; inset:64px; border:2px dashed rgba(255,255,255,.0); border-radius:50%;}
+  .ring{position:absolute; inset:64px; border:2px dashed rgba(255,255,255,0); border-radius:50%;}
   .ring.show{border-color:var(--gold);}
   .ring .arrow{position:absolute; color:var(--gold); font-weight:700; font-size:1.1rem;}
-  .felt{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-    width:46%; height:46%; border-radius:14px;
+  .felt{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:46%; height:46%; border-radius:14px;
     background:radial-gradient(circle at 50% 40%, var(--felt) 0%, var(--felt-2) 100%);
-    box-shadow:inset 0 2px 10px rgba(0,0,0,.25), var(--shadow);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:#fff;}
+    box-shadow:inset 0 2px 10px rgba(0,0,0,.25), var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:#fff;}
   .felt .fhint{font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; opacity:.85;}
-  /* a discarded tile */
-  .dtile{width:46px; height:62px; border-radius:8px; background:#FBF6EE; border:1px solid #E9DFcd;
-    box-shadow:0 3px 8px rgba(0,0,0,.3); display:flex; align-items:center; justify-content:center;
-    color:var(--ink); font-family:"Playfair Display",serif; font-weight:700; font-size:.8rem; text-align:center; line-height:1.05; padding:3px;}
+  .dtile{width:46px; height:62px; border-radius:8px; background:#FBF6EE; border:1px solid #E9DFcd; box-shadow:0 3px 8px rgba(0,0,0,.3);
+    display:flex; align-items:center; justify-content:center; color:var(--ink); font-family:"Playfair Display",serif; font-weight:700; font-size:.8rem; text-align:center; line-height:1.05; padding:3px;}
   .dtile.spin{animation:drop .4s ease;}
   @keyframes drop{0%{transform:translateY(-14px) scale(.8); opacity:0;}100%{transform:none; opacity:1;}}
-  /* seats */
-  .seat{position:absolute; width:96px; padding:8px 6px 9px; border-radius:13px;
-    background:#fff; border:1px solid var(--line); box-shadow:var(--shadow);
-    display:flex; flex-direction:column; align-items:center; gap:5px; text-align:center;
-    transition:border-color .12s, background .12s, transform .08s, box-shadow .12s;}
-  .seat .nm{font-family:"Playfair Display",serif; font-weight:600; font-size:.9rem; line-height:1.05;}
-  .seat .you{font-size:.66rem; color:var(--rose-deep); font-weight:600; text-transform:uppercase; letter-spacing:.06em;}
+  .seat{position:absolute; width:96px; padding:8px 6px 9px; border-radius:13px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow);
+    display:flex; flex-direction:column; align-items:center; gap:5px; text-align:center; transition:border-color .12s, background .12s, transform .08s, box-shadow .12s;}
+  .seat .nm{font-family:"Playfair Display",serif; font-weight:600; font-size:.95rem; line-height:1.05;}
+  .seat .you{font-size:.64rem; color:var(--rose-deep); font-weight:600; text-transform:uppercase; letter-spacing:.06em;}
   .seat .minirack{display:flex; gap:2px;}
   .seat .minirack i{width:12px; height:17px; border-radius:3px; background:linear-gradient(180deg,#EAF0E8,#Cdd8C9); border:1px solid #B9c6b6; display:block;}
-  .seat .badge{font-size:.66rem; font-weight:600; padding:1px 7px; border-radius:999px; min-height:0; line-height:1.4;}
+  .seat .badge{font-size:.66rem; font-weight:600; padding:1px 7px; border-radius:999px; line-height:1.4;}
   .seat .badge.dealt{background:var(--paper-2); color:var(--ink-soft);}
   .seat .badge.discard{background:var(--bad-bg); color:var(--bad); border:1px solid var(--bad);}
   .seat .badge.call{background:#FBEFD4; color:#9A7B1E; border:1px solid var(--gold);}
@@ -79,25 +67,23 @@
   .seat.l{left:0; top:50%; transform:translateY(-50%);}
   .seat.r{right:0; top:50%; transform:translateY(-50%);}
   .seat.pick{cursor:pointer;}
-  .seat.pick:hover{border-color:var(--rose); transform:translateX(-50%) translateY(-1px);}
-  .seat.l.pick:hover,.seat.r.pick:hover{transform:translateY(-50%) translateY(-1px);}
+  .seat.pick:hover{border-color:var(--rose);}
   .seat.sel{border-color:var(--rose); background:#F6E9E6; box-shadow:0 0 0 2px var(--rose) inset, var(--shadow);}
   .seat.right{border-color:var(--good); background:var(--good-bg); box-shadow:0 0 0 2px var(--good) inset, var(--shadow);}
   .seat.wrong{border-color:var(--bad); background:var(--bad-bg); box-shadow:0 0 0 2px var(--bad) inset, var(--shadow);}
   .seat.dim{opacity:.5;}
-  /* answer controls under table */
-  .answerbar{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:6px 0 2px; min-height:42px;}
+  .submitbar{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin:10px 0 2px;}
   .nobody{font-family:"Playfair Display",serif; font-size:1rem; padding:10px 18px; border-radius:11px; border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer; box-shadow:var(--shadow);}
   .nobody.sel{background:#F6E9E6; border-color:var(--rose);}
-  .feedline{text-align:center; font-style:italic; color:var(--ink-soft); min-height:1.4em; margin-top:6px; font-size:.96rem;}
+  .feedline{text-align:center; font-style:italic; color:var(--ink-soft); min-height:1.4em; margin-top:8px; font-size:.96rem;}
   .feedline b{font-style:normal; color:var(--ink);}
-  /* controls */
   .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; align-items:center;}
   button.btn{font-family:"Crimson Text",serif; font-size:1rem; border-radius:11px; padding:9px 18px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer; box-shadow:var(--shadow);}
   button.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
   button:disabled{opacity:.45; cursor:not-allowed;}
   .hint{color:var(--ink-soft); font-style:italic; font-size:.92rem;}
-  /* modal */
+  .startwrap{text-align:center;}
+  .startwrap .big{font-size:1.15rem; padding:13px 34px;}
   .scrim{position:fixed; inset:0; background:rgba(43,38,34,.42); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000;}
   .scrim.show{display:flex;}
   .card{background:var(--paper); border-radius:18px; max-width:440px; width:100%; padding:26px 24px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line);}
@@ -125,12 +111,7 @@
   .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;}
   .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
   .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
-  @media(max-width:560px){
-    h1{font-size:1.34rem;} .banner .ask{font-size:1.18rem;}
-    .table{width:300px; height:300px;}
-    .seat{width:82px;} .seat .nm{font-size:.82rem;}
-    .leveltag{margin-left:0; width:100%;}
-  }
+  @media(max-width:560px){ h1{font-size:1.34rem;} .banner .ask{font-size:1.14rem;} .table{width:300px; height:300px;} .seat{width:80px;} .seat .nm{font-size:.84rem;} }
 </style>
 </head>
 <body>
@@ -144,11 +125,9 @@
   <h1>Whose Turn?</h1>
   <p class="sub">Play moves to the right — until someone calls a tile. Then it jumps. Learn to find the next rack every time.</p>
 
-  <div class="modebar">
-    <div class="modepill on" data-mode="flow">Flow<small>no call — who's next?</small></div>
-    <div class="modepill" data-mode="call">The Call<small>after a claim, who's next?</small></div>
-    <div class="modepill" data-mode="skipped">Skipped<small>who lost their turn?</small></div>
+  <div class="toprow">
     <div class="leveltag" id="levelTag">Level 1</div>
+    <button id="tutBtn" class="btn ghost mini">How to play</button>
   </div>
 
   <div class="hud">
@@ -182,288 +161,248 @@
     </div>
     <div class="slow" id="cardSlow"></div>
     <div class="modal-actions">
-      <button id="cardAgain" class="btn ghost">Again</button>
+      <button id="cardAgain" class="btn ghost">Play again</button>
       <button id="cardNext" class="btn" disabled>Next level</button>
-      <button id="cardChoose" class="btn ghost">Choose another game</button>
+      <button id="cardChoose" class="btn ghost">How to play</button>
       <button id="cardDone" class="btn ghost">Finished</button>
     </div>
   </div>
 </div>
 
 <script>
-const BUILD="v1 · 2026-06-10";
+const BUILD="v2 · 2026-06-10";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wt_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wt_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
 document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
 
 /* ---------- turn-order model ----------
-   Render positions around the table, in turn order (play moves to the right):
-     b (bottom / You) -> r (right) -> t (top) -> l (left) -> b ...
-   Index 0=b, 1=r, 2=t, 3=l.  next = (i+1)%4.
-*/
+   Seats fixed by wind, in turn order to the right:
+   East (bottom, You) -> South (right) -> West (top/across) -> North (left) -> East.
+   Index 0=East(b), 1=South(r), 2=West(t), 3=North(l).  next = (i+1)%4.   */
 const POS=['b','r','t','l'];
-const WINDS=['East','South','West','North'];       // rotate to the right: E->S->W->N
+const LABELS=["East (You)","South","West","North"];
 const TILES=['1 Dot','3 Dot','5 Dot','9 Dot','2 Bam','5 Bam','7 Bam','1 Crak','4 Crak','8 Crak','East','South','West','North','Red','Green','Soap'];
 const rnd=n=>Math.floor(Math.random()*n);
 const nextI=i=>(i+1)%4;
 function skippedSet(d,c){const s=[]; let i=(d+1)%4; while(i!==c){s.push(i); i=(i+1)%4;} return s;}
+const nm=i=>LABELS[i].replace(" (You)","");
 
 const LEVELS=[
-  {n:1,title:"Level 1 — From Your Seat",hints:true},
-  {n:2,title:"Level 2 — Around the Table",hints:true},
+  {n:1,title:"Level 1 — With Guides",hints:true},
+  {n:2,title:"Level 2 — No Guides",hints:false},
   {n:3,title:"Level 3 — No Help, Faster",hints:false},
 ];
-const MODES={flow:"Flow",call:"The Call",skipped:"Skipped"};
-const LS="oott_whoseturn_v1";
+const LS="oott_whoseturn_v2";
 function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
 function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
-let prog=loadProg();
-prog.unlocked=prog.unlocked||1; prog.best=prog.best||{flow:{},call:{},skipped:{}}; prog.kinds=prog.kinds||{};
-let mode="flow", cur=LEVELS[0], round=null, timerId=null;
-const K=6; // scenarios per round
-
+let prog=loadProg(); prog.unlocked=prog.unlocked||1; prog.best=prog.best||{}; prog.kinds=prog.kinds||{}; prog.tutDone=prog.tutDone||false;
+let cur=LEVELS[0], round=null, timerId=null, tutorial=null;
+const K=6;
 const $=s=>document.querySelector(s);
 const el=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
-function recordKind(kind,correct,ms){const f=prog.kinds[kind]||{seen:0,right:0,ms:0,n:0}; f.seen++; if(correct)f.right++; f.ms+=ms; f.n++; prog.kinds[kind]=f; round.handle[kind]=Math.max(round.handle[kind]||0,ms); saveProg();}
 
-function startClock(){if(!round.started){round.started=true; round.t0=performance.now(); timerId=setInterval(()=>{if(round.t0)$("#hudTime").textContent=((performance.now()-round.t0)/1000).toFixed(1)+"s";},100);}}
-function updateHud(){
-  const acc=round.attempted?Math.round(round.firstRight/round.attempted*100):null;
-  $("#hudAcc").textContent=acc==null?"—":acc+"%";
-  $("#hudProg").textContent=round.idx+" / "+round.K;
-  const best=prog.best[mode][cur.n]; $("#hudBest").textContent=best?best.toFixed(1)+"s":"—";
-  $("#levelTag").textContent=cur.title;
-  $("#nextLevel").disabled=!(prog.unlocked>cur.n);
-}
-
-/* ---------- scenario generation ---------- */
-function labelsFor(level){
-  // Seats are fixed by wind in turn order to the right: East (bottom, you) -> South -> West -> North.
-  return ["East (You)","South","West","North"];
+/* ---------- one scenario, kind chosen at random (mixed game) ---------- */
+function buildScenario(km,discarder,claimer){
+  let answer=null, answerSet=null, kind;
+  if(km==="flow"){ answer=nextI(discarder); kind="Flow"; }
+  else if(km==="call"){ answer=nextI(claimer); kind="The Call"; }
+  else { answerSet=skippedSet(discarder,claimer); kind=answerSet.length===0?"Skipped — none":(answerSet.length===1?"Skipped — 1":"Skipped — 2"); }
+  return {km,discarder,claimer,answer,answerSet,kind,tile:TILES[rnd(TILES.length)]};
 }
 function makeScenario(){
-  const level=cur.n, labels=labelsFor(level);
-  let discarder=rnd(4), claimer=null;     // anyone at the table can be the one who discards
-  if(mode!=="flow"){
-    do{ claimer=rnd(4); }while(claimer===discarder);
-    // Skipped mode: ~1/3 of the time let the claimer be the natural next (answer = nobody)
-    if(mode==="skipped" && Math.random()<0.34) claimer=nextI(discarder);
-  }
-  let answer, answerSet=null, kind;
-  if(mode==="flow"){ answer=nextI(discarder); kind="Flow"; }
-  else if(mode==="call"){ answer=nextI(claimer); kind="The Call"; }
-  else { answerSet=skippedSet(discarder,claimer); kind=answerSet.length===0?"Skipped — none":(answerSet.length===1?"Skipped — 1":"Skipped — 2"); }
-  return {level,labels,discarder,claimer,answer,answerSet,kind,tile:TILES[rnd(TILES.length)]};
+  const km=["flow","call","skipped"][rnd(3)];
+  const discarder=rnd(4); let claimer=null;
+  if(km!=="flow"){ do{claimer=rnd(4);}while(claimer===discarder); if(km==="skipped"&&Math.random()<0.30)claimer=nextI(discarder); }
+  return buildScenario(km,discarder,claimer);
 }
 
-/* ---------- rendering ---------- */
-function phr(label){const you=label==="You"; return {nm:label.replace(" (You)",""),you};}      // L1 "You" → 2nd person
+/* ---------- prompt wording ---------- */
 function questionText(sc){
-  const d=phr(sc.labels[sc.discarder]);
-  const dV=d.you?"discard":"discards";
-  if(mode==="flow")  return {ask:`<b>${d.nm}</b> ${dV}. No one calls it.<br>Whose turn is it now?`, why:"Play moves to the right →"};
-  const c=phr(sc.labels[sc.claimer]); const cV=c.you?"call":"calls";
-  if(mode==="call")  return {ask:`<b>${d.nm}</b> ${dV}. <b>${c.nm}</b> ${cV} it for an exposure.<br>After they expose and discard, whose turn is it?`, why:"A call becomes the caller's turn — then play continues to the caller's right."};
-  return {ask:`<b>${d.nm}</b> ${dV}. <b>${c.nm}</b> ${cV} it.<br>Which seats just lost their turn?`, why:"Anyone sitting between the discarder and the caller is skipped."};
+  if(sc.km==="flow") return {ask:`<b>${nm(sc.discarder)}</b> discards. No one calls it.<br>Whose turn is it now?`, why:"Play moves to the right → East, South, West, North."};
+  if(sc.km==="call") return {ask:`<b>${nm(sc.discarder)}</b> discards. <b>${nm(sc.claimer)}</b> calls it for an exposure.<br>After they expose and discard, whose turn is it?`, why:"A call jumps the turn to the caller, then play continues to the caller's right."};
+  return {ask:`<b>${nm(sc.discarder)}</b> discards. <b>${nm(sc.claimer)}</b> calls it.<br>Which seats just lost their turn?`, why:"Anyone seated between the discarder and the caller is skipped."};
 }
 function seatBadge(sc,i){
   if(i===sc.discarder) return `<span class="badge discard">discards</span>`;
   if(sc.claimer!=null && i===sc.claimer) return `<span class="badge call">calls!</span>`;
   return `<span class="badge dealt">in play</span>`;
 }
-function renderScenario(){
-  const sc=round.seq[round.idx]; round._show=performance.now(); startClock();
+
+/* ---------- shared question renderer (used by tutorial AND game) ---------- */
+let sel={set:new Set(),nobody:false,locked:false};
+function renderQuestion(sc,opts){
+  opts=opts||{}; sel={set:new Set(),nobody:false,locked:false};
+  const hints=opts.hints!=null?opts.hints:cur.hints;
   const g=$("#game"); g.innerHTML="";
-  const qt=questionText(sc);
   const banner=el("div","banner flash");
-  banner.innerHTML=`<div class="lead">Read the table</div><div class="ask">${qt.ask}</div>${cur.hints?`<div class="why">${qt.why}</div>`:""}`;
+  const qt=questionText(sc);
+  banner.innerHTML=(opts.tut?`<span class="tuttag">Tutorial${opts.step?" · "+opts.step:""}</span>`:"")+
+    (opts.tutText?`<div class="why" style="margin:0 0 8px; font-style:normal; color:var(--ink);">${opts.tutText}</div>`:"")+
+    `<div class="lead">Read the table</div><div class="ask">${qt.ask}</div>${hints?`<div class="why">${qt.why}</div>`:""}`;
   g.appendChild(banner);
 
   const tw=el("div","tablewrap"); const table=el("div","table");
-  // direction ring (hint levels only)
-  const ring=el("div","ring"+(cur.hints?" show":""));
-  if(cur.hints){ ring.innerHTML=`<span class="arrow" style="top:-12px;left:50%;transform:translateX(-50%)">→</span>
-    <span class="arrow" style="right:-12px;top:50%;transform:translateY(-50%)">↓</span>
-    <span class="arrow" style="bottom:-12px;left:50%;transform:translateX(-50%)">←</span>
-    <span class="arrow" style="left:-12px;top:50%;transform:translateY(-50%)">↑</span>`; }
+  const ring=el("div","ring"+(hints?" show":""));
+  if(hints) ring.innerHTML=`<span class="arrow" style="top:-12px;left:50%;transform:translateX(-50%)">→</span><span class="arrow" style="right:-12px;top:50%;transform:translateY(-50%)">↓</span><span class="arrow" style="bottom:-12px;left:50%;transform:translateX(-50%)">←</span><span class="arrow" style="left:-12px;top:50%;transform:translateY(-50%)">↑</span>`;
   table.appendChild(ring);
-  // felt + discarded tile
-  const felt=el("div","felt");
-  felt.innerHTML=`<div class="fhint">discard</div><div class="dtile spin">${sc.tile}</div>`;
-  table.appendChild(felt);
-  // seats
+  const felt=el("div","felt"); felt.innerHTML=`<div class="fhint">discard</div><div class="dtile spin">${sc.tile}</div>`; table.appendChild(felt);
   POS.forEach((p,i)=>{
-    const s=el("div","seat "+p);
-    s.dataset.i=i;
-    s.innerHTML=`<div class="nm">${sc.labels[i].replace(" (You)","")}</div>`+
-      (sc.labels[i].includes("(You)")||(sc.level===1&&i===0)?`<div class="you">You</div>`:"")+
-      `<div class="minirack"><i></i><i></i><i></i></div>`+seatBadge(sc,i);
+    const s=el("div","seat "+p+" pick"); s.dataset.i=i;
+    s.innerHTML=`<div class="nm">${nm(i)}</div>`+(i===0?`<div class="you">You</div>`:"")+`<div class="minirack"><i></i><i></i><i></i></div>`+seatBadge(sc,i);
+    s.onclick=()=>onSeat(sc,i);
     table.appendChild(s);
   });
   tw.appendChild(table); g.appendChild(tw);
 
-  // answer area
-  const ab=el("div","answerbar");
-  const feed=el("div","feedline"); feed.id="feed";
-  if(mode==="skipped"){
-    const nob=el("button","nobody"); nob.id="nobodyBtn"; nob.textContent="Nobody was skipped";
-    ab.appendChild(nob);
-    const lock=el("button","btn"); lock.id="lockBtn"; lock.textContent="Lock it in";
-    ab.appendChild(lock);
-  }
-  g.appendChild(ab); g.appendChild(feed);
-
-  wireAnswers(sc);
-  updateHud();
+  const sb=el("div","submitbar");
+  if(sc.km==="skipped"){ const nob=el("button","nobody"); nob.id="nobodyBtn"; nob.textContent="Nobody was skipped"; nob.onclick=()=>onNobody(); sb.appendChild(nob); }
+  const sub=el("button","btn"); sub.id="submitBtn"; sub.textContent=opts.tut?"Submit":"Submit answer"; sub.disabled=true; sub.onclick=()=>doSubmit(sc,opts); sb.appendChild(sub);
+  g.appendChild(sb);
+  const feed=el("div","feedline"); feed.id="feed"; g.appendChild(feed);
+  if(!opts.tut) updateHud();
 }
-
-let selSet=new Set(), nobodyPicked=false, answered=false;
-function wireAnswers(sc){
-  selSet=new Set(); nobodyPicked=false; answered=false;
-  const seats=[...document.querySelectorAll('.seat')];
-  if(mode==="skipped"){
-    seats.forEach(s=>{ s.classList.add('pick'); s.onclick=()=>{
-      if(answered)return; const i=+s.dataset.i;
-      if(selSet.has(i)){selSet.delete(i); s.classList.remove('sel');}
-      else {selSet.add(i); s.classList.add('sel'); nobodyPicked=false; $("#nobodyBtn").classList.remove('sel');}
-    };});
-    $("#nobodyBtn").onclick=()=>{ if(answered)return; nobodyPicked=!nobodyPicked;
-      $("#nobodyBtn").classList.toggle('sel',nobodyPicked);
-      if(nobodyPicked){selSet.clear(); seats.forEach(s=>s.classList.remove('sel'));}
-    };
-    $("#lockBtn").onclick=()=>submitSkipped(sc,seats);
+function seats(){return [...document.querySelectorAll('.seat')];}
+function refreshSubmit(){const s=$("#submitBtn"); if(s)s.disabled=!(sel.set.size>0||sel.nobody);}
+function onSeat(sc,i){
+  if(sel.locked)return;
+  if(sc.km==="skipped"){
+    if(sel.set.has(i)){sel.set.delete(i); seats()[i].classList.remove('sel');}
+    else {sel.set.add(i); seats()[i].classList.add('sel'); sel.nobody=false; const n=$("#nobodyBtn"); if(n)n.classList.remove('sel');}
   } else {
-    seats.forEach(s=>{ s.classList.add('pick'); s.onclick=()=>submitPick(sc,+s.dataset.i,seats); });
+    sel.set.clear(); seats().forEach(s=>s.classList.remove('sel'));
+    sel.set.add(i); seats()[i].classList.add('sel');
   }
+  refreshSubmit();
 }
-function lockSeats(seats){answered=true; seats.forEach(s=>{s.classList.remove('pick'); s.onclick=null;});}
-function afterAnswer(correct,ms,kind){
-  round.attempted++; if(correct){round.firstRight++;}
-  recordKind(kind,correct,ms);
-  setTimeout(()=>{ round.idx++; if(round.idx>=round.K) finishRound(); else renderScenario(); }, correct?780:1500);
-}
-function submitPick(sc,i,seats){
-  if(answered)return; const ms=performance.now()-round._show; lockSeats(seats);
-  const correct=i===sc.answer;
-  const chosen=seats[i], target=seats[sc.answer];
-  chosen.classList.add(correct?'right':'wrong');
-  if(!correct) target.classList.add('right');
-  const L=sc.labels.map(x=>x.replace(" (You)",""));
-  $("#feed").innerHTML=correct? `Right — <b>${L[sc.answer]}</b> is up.` :
-    `Not quite. <b>${L[sc.answer]}</b> is up${mode==="call"?` — the call jumped the turn to the caller's right.`:`.`}`;
-  afterAnswer(correct,ms,sc.kind);
-}
-function submitSkipped(sc,seats){
-  if(answered)return; const ms=performance.now()-round._show;
-  const want=new Set(sc.answerSet);
-  const got = nobodyPicked ? new Set() : selSet;   // empty selection == "nobody"
-  const correct = want.size===0 ? got.size===0
-                : (got.size===want.size && [...want].every(x=>got.has(x)));
-  lockSeats(seats);
-  // paint truth
-  seats.forEach((s,i)=>{
-    if(want.has(i)) s.classList.add('right');
-    else if(got.has(i)&&!want.has(i)) s.classList.add('wrong');
-  });
-  const L=sc.labels.map(x=>x.replace(" (You)",""));
-  let truth = want.size===0 ? "No one was skipped — the caller was next in turn anyway."
-    : `Skipped: <b>${[...want].map(i=>L[i]).join(", ")}</b>.`;
-  $("#feed").innerHTML=(correct?"Right. ":"Not quite. ")+truth;
-  afterAnswer(correct,ms,sc.kind);
+function onNobody(){ if(sel.locked)return; sel.nobody=!sel.nobody; const n=$("#nobodyBtn"); n.classList.toggle('sel',sel.nobody); if(sel.nobody){sel.set.clear(); seats().forEach(s=>s.classList.remove('sel'));} refreshSubmit(); }
+
+function doSubmit(sc,opts){
+  if(sel.locked || (!sel.set.size && !sel.nobody))return;
+  sel.locked=true; $("#submitBtn").disabled=true; seats().forEach(s=>s.classList.remove('pick'));
+  let correct;
+  if(sc.km==="skipped"){
+    const want=new Set(sc.answerSet), got=sel.nobody?new Set():sel.set;
+    correct = want.size===0 ? got.size===0 : (got.size===want.size && [...want].every(x=>got.has(x)));
+    seats().forEach((s,i)=>{ if(want.has(i))s.classList.add('right'); else if(got.has(i)&&!want.has(i))s.classList.add('wrong'); });
+    const truth = want.size===0 ? "No one was skipped — the caller was the next seat anyway." : `Skipped: <b>${[...want].map(nm).join(", ")}</b>.`;
+    $("#feed").innerHTML=(correct?"Right. ":"Not quite. ")+truth;
+  } else {
+    const i=[...sel.set][0]; correct=i===sc.answer;
+    seats()[i].classList.add(correct?'right':'wrong'); if(!correct)seats()[sc.answer].classList.add('right');
+    $("#feed").innerHTML=correct?`Right — <b>${nm(sc.answer)}</b> is up.`:`Not quite. <b>${nm(sc.answer)}</b> is up${sc.km==="call"?" — the call jumped the turn to the caller's right.":"."}`;
+  }
+  if(opts.tut) tutAfter(correct); else gameAfter(sc,correct);
 }
 
-function finishRound(){
+/* ---------- TUTORIAL ---------- */
+const TUT=[
+  {sc:buildScenario("flow",1,null), text:"<b>Turns move to the right.</b> Around the table it goes East &rarr; South &rarr; West &rarr; North &rarr; East. When a tile is discarded and nobody calls it, the next seat to the right simply takes their turn."},
+  {sc:buildScenario("call",0,2),    text:"<b>A call jumps the turn.</b> If a player takes (calls) someone's discard to make an exposure, the turn jumps to <i>them</i> — then play continues to <i>their</i> right. It does not go back to the usual next seat."},
+  {sc:buildScenario("skipped",0,2), text:"<b>Some seats get skipped.</b> When a call jumps ahead, anyone sitting between the discarder and the caller loses their turn this go-round. Tap every seat that was skipped (or “Nobody”)."},
+];
+function startTutorial(){
+  clearInterval(timerId); $("#hudTime").textContent="0.0s"; $("#hudAcc").textContent="—"; $("#hudProg").textContent="0 / 0";
+  tutorial={step:0,right:0};
+  renderTut();
+}
+function renderTut(){
+  const t=TUT[tutorial.step];
+  renderQuestion(t.sc,{tut:true,hints:true,tutText:t.text,step:(tutorial.step+1)+" of "+TUT.length});
+}
+function tutAfter(correct){
+  if(correct)tutorial.right++;
+  const last=tutorial.step>=TUT.length-1;
+  const sb=document.querySelector('.submitbar');
+  const nxt=el("button","btn"); nxt.textContent=last?"Start playing ▶":"Next ▶";
+  nxt.onclick=()=>{ if(last){ prog.tutDone=true; saveProg(); showStart(); } else { tutorial.step++; renderTut(); } };
+  sb.innerHTML=""; sb.appendChild(nxt);
+}
+
+/* ---------- START / PLAY ---------- */
+function showStart(){
   clearInterval(timerId);
-  const secs=(performance.now()-round.t0)/1000;
-  const acc=Math.round(round.firstRight/round.attempted*100);
-  const clean=acc===100;
-  if(window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode,level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean});
-  if(clean){
-    if(!prog.best[mode][cur.n]||secs<prog.best[mode][cur.n]) prog.best[mode][cur.n]=+secs.toFixed(1);
-    if(cur.n>=prog.unlocked&&cur.n<LEVELS.length) prog.unlocked=cur.n+1;
-    saveProg();
-  }
-  const slow=Object.entries(round.handle).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([n,ms])=>`<b>${n}</b> ${(ms/1000).toFixed(1)}s`).join(" · ");
-  $("#cardTitle").textContent=clean?"Clean sweep.":"Round cleared.";
-  $("#cardVerdict").textContent=clean
-    ?(cur.n<LEVELS.length?"Every seat, first try. The next level is open to you.":"Flow, the call, the skip — first try, every time. You can read the turn cold.")
-    :`${round.firstRight} of ${round.attempted} right on the first try. Run it again until it's clean.`;
-  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s";
-  $("#cardSlow").innerHTML=slow?"Where you hesitated: "+slow:"";
-  $("#cardNext").disabled=!(clean&&cur.n<LEVELS.length);
-  $("#scrim").classList.add("show");
+  const g=$("#game");
+  g.innerHTML=`<div class="banner flash"><div class="lead">Ready to play</div>
+    <div class="ask" style="font-size:1.15rem;">One mixed round — flows, calls, and skips together.</div>
+    <div class="why"><b>East is you</b>, at the bottom. South to your right, West across, North to your left. The clock starts when you press Play.</div></div>
+    <div class="startwrap"><button id="playBtn" class="btn big">Play ▶</button>
+    <button id="tut2" class="btn ghost" style="margin-left:10px;">See the tutorial</button></div>`;
+  $("#playBtn").onclick=()=>deal();
+  $("#tut2").onclick=()=>startTutorial();
   updateHud();
 }
 
-/* ---------- round lifecycle ---------- */
+/* ---------- GAME ---------- */
+function startClock(){ if(!round.started){round.started=true; round.t0=performance.now(); timerId=setInterval(()=>{if(round.t0)$("#hudTime").textContent=((performance.now()-round.t0)/1000).toFixed(1)+"s";},100);} }
+function updateHud(){
+  const acc=round&&round.attempted?Math.round(round.firstRight/round.attempted*100):null;
+  $("#hudAcc").textContent=acc==null?"—":acc+"%";
+  $("#hudProg").textContent=round?(round.idx+" / "+round.K):"0 / 0";
+  const best=prog.best[cur.n]; $("#hudBest").textContent=best?best.toFixed(1)+"s":"—";
+  $("#levelTag").textContent=cur.title; $("#nextLevel").disabled=!(prog.unlocked>cur.n);
+}
 function deal(){
   clearInterval(timerId);
-  const seq=[]; for(let i=0;i<K;i++) seq.push(makeScenario());
-  round={seq,idx:0,K,firstRight:0,attempted:0,handle:{},started:false,t0:null,_show:null};
+  const seq=[]; for(let i=0;i<K;i++)seq.push(makeScenario());
+  round={seq,idx:0,K,firstRight:0,attempted:0,handle:{},started:false,t0:null};
   $("#hudTime").textContent="0.0s";
-  showStartGate();                 // wait for Start — the clock only begins when the player is ready
+  renderPlay();
 }
-function modeHowto(){
-  if(mode==="flow")   return "Play moves around the table to the <b>right</b>: East &rarr; South &rarr; West &rarr; North &rarr; East. A tile is discarded and nobody calls it &mdash; the next seat to the right is up. <b>Which seat is it?</b>";
-  if(mode==="call")   return "Normally play moves to the <b>right</b>. But when a player <b>calls</b> (takes) someone's discard for an exposure, the turn jumps to <b>them</b> &mdash; then play continues to <b>their</b> right. <b>Who is up after the call?</b>";
-  return "When a discard is <b>called</b> by someone who is not the next player, everyone seated between the discarder and the caller is <b>skipped</b>. <b>Which seats just lost their turn?</b>";
+function renderPlay(){ const sc=round.seq[round.idx]; round._show=performance.now(); startClock(); renderQuestion(sc,{}); }
+function recordKind(kind,correct,ms){const f=prog.kinds[kind]||{seen:0,right:0,ms:0,n:0}; f.seen++; if(correct)f.right++; f.ms+=ms; f.n++; prog.kinds[kind]=f; round.handle[kind]=Math.max(round.handle[kind]||0,ms); saveProg();}
+function gameAfter(sc,correct){
+  const ms=performance.now()-round._show;
+  round.attempted++; if(correct)round.firstRight++; recordKind(sc.kind,correct,ms);
+  setTimeout(()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else renderPlay(); }, correct?820:1600);
 }
-function showStartGate(){
-  const g=$("#game");
-  g.innerHTML=`<div class="banner flash"><div class="lead">How this round works</div>
-    <div class="ask" style="font-size:1.05rem; line-height:1.35;">${modeHowto()}</div>
-    <div class="why"><b>East is you</b>, at the bottom. South sits to your right, West across, North to your left.</div></div>
-    <div style="text-align:center; margin-top:6px;"><button id="startBtn" class="btn" style="font-size:1.1rem; padding:12px 30px;">Start round &#9654;</button></div>`;
-  $("#startBtn").onclick=()=>renderScenario();
+function finishRound(){
+  clearInterval(timerId);
+  const secs=(performance.now()-round.t0)/1000, acc=Math.round(round.firstRight/round.attempted*100), clean=acc===100;
+  if(window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode:"mixed",level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean});
+  if(clean){ if(!prog.best[cur.n]||secs<prog.best[cur.n])prog.best[cur.n]=+secs.toFixed(1); if(cur.n>=prog.unlocked&&cur.n<LEVELS.length)prog.unlocked=cur.n+1; saveProg(); }
+  const slow=Object.entries(round.handle).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([n,ms])=>`<b>${n}</b> ${(ms/1000).toFixed(1)}s`).join(" · ");
+  $("#cardTitle").textContent=clean?"Clean sweep.":"Round cleared.";
+  $("#cardVerdict").textContent=clean?(cur.n<LEVELS.length?"Every seat, first try. The next level is open to you.":"Flows, calls, and skips — first try, every time. You can read the turn cold."):`${round.firstRight} of ${round.attempted} right on the first try. Run it again until it's clean.`;
+  $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s"; $("#cardSlow").innerHTML=slow?"Where you hesitated: "+slow:"";
+  $("#cardNext").disabled=!(clean&&cur.n<LEVELS.length); $("#scrim").classList.add("show"); updateHud();
 }
-function gotoLevel(n){cur=LEVELS[n-1]; deal();}
-function setMode(m){mode=m; document.querySelectorAll(".modepill").forEach(p=>p.classList.toggle("on",p.dataset.mode===m)); deal();}
 
-document.querySelectorAll(".modepill").forEach(p=>p.addEventListener("click",()=>setMode(p.dataset.mode)));
-$("#newRound").onclick=()=>deal();
+/* ---------- wiring ---------- */
+function gotoLevel(n){cur=LEVELS[n-1]; showStart();}
+$("#tutBtn").onclick=()=>startTutorial();
+$("#newRound").onclick=()=>showStart();
 $("#nextLevel").onclick=()=>{if(prog.unlocked>cur.n)gotoLevel(cur.n+1);};
 $("#cardAgain").onclick=()=>{$("#scrim").classList.remove("show"); deal();};
 $("#cardNext").onclick=()=>{$("#scrim").classList.remove("show"); if(cur.n<LEVELS.length)gotoLevel(cur.n+1);};
-$("#resetAll").onclick=()=>{if(confirm("Reset all progress and best times?")){localStorage.removeItem(LS); prog=loadProg(); prog.unlocked=1; prog.best={flow:{},call:{},skipped:{}}; prog.kinds={}; saveProg(); cur=LEVELS[0]; setMode("flow");}};
-
+$("#cardChoose").onclick=()=>{$("#scrim").classList.remove("show"); startTutorial(); window.scrollTo({top:0,behavior:'smooth'});};
+$("#cardDone").onclick=()=>{$("#scrim").classList.remove("show"); showSummary();};
+$("#resetAll").onclick=()=>{if(confirm("Reset all progress and best times?")){localStorage.removeItem(LS); prog=loadProg(); prog.unlocked=1; prog.best={}; prog.kinds={}; prog.tutDone=false; saveProg(); cur=LEVELS[0]; startTutorial();}};
 $("#stopBtn").onclick=()=>{
   clearInterval(timerId);
-  const secs=(round&&round.t0)?(performance.now()-round.t0)/1000:0;
-  const acc=(round&&round.attempted)?Math.round(round.firstRight/round.attempted*100):0;
-  if(secs>0&&window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode,level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean:false});
-  $("#cardTitle").textContent="Stopped.";
-  $("#cardVerdict").textContent="You ended the round early. Pick up wherever you like.";
+  const secs=(round&&round.t0)?(performance.now()-round.t0)/1000:0, acc=(round&&round.attempted)?Math.round(round.firstRight/round.attempted*100):0;
+  if(secs>0&&window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode:"mixed",level:cur.n,accuracy:acc,duration_sec:+secs.toFixed(2),clean:false});
+  $("#cardTitle").textContent="Stopped."; $("#cardVerdict").textContent="You ended the round early. Pick up wherever you like.";
   $("#cardAcc").textContent=acc+"%"; $("#cardTime").textContent=secs.toFixed(1)+"s"; $("#cardSlow").innerHTML="";
-  $("#cardNext").disabled=!(prog.unlocked>cur.n);
-  $("#scrim").classList.add("show");
+  $("#cardNext").disabled=!(prog.unlocked>cur.n); $("#scrim").classList.add("show");
 };
-$("#cardChoose").onclick=()=>{
-  $("#scrim").classList.remove("show");
-  window.scrollTo({top:0,behavior:'smooth'});
-  const mb=document.querySelector('.modebar');
-  if(mb&&mb.animate) mb.animate([{filter:'brightness(1)'},{filter:'brightness(1.18)'},{filter:'brightness(1)'}],{duration:800});
-};
-$("#cardDone").onclick=()=>{ $("#scrim").classList.remove("show"); showSummary(); };
 function showSummary(){
-  clearInterval(timerId);
-  let rows='';
-  ['flow','call','skipped'].forEach(m=>{for(let L=1;L<=3;L++){const b=prog.best[m]&&prog.best[m][L]; if(b)rows+=`<tr><td>${MODES[m]}</td><td>Level ${L}</td><td>${b.toFixed(1)}s</td></tr>`;}});
-  if(!rows) rows=`<tr><td colspan="3" style="color:var(--ink-soft); font-style:italic;">No clean rounds yet — clear one at 100% to set a best time.</td></tr>`;
+  clearInterval(timerId); let rows='';
+  for(let L=1;L<=3;L++){const b=prog.best[L]; if(b)rows+=`<tr><td>Level ${L}</td><td>${b.toFixed(1)}s</td></tr>`;}
+  if(!rows)rows=`<tr><td colspan="2" style="color:var(--ink-soft); font-style:italic;">No clean rounds yet — clear one at 100% to set a best time.</td></tr>`;
   const kinds=Object.entries(prog.kinds||{}).filter(([n,f])=>f.seen>0);
   const reps=kinds.reduce((s,[,f])=>s+f.seen,0);
   const work=kinds.map(([n,f])=>({n,acc:f.right/f.seen,ms:f.ms/f.n})).sort((a,b)=>a.acc-b.acc||b.ms-a.ms).slice(0,3).map(x=>`<b>${x.n}</b> ${Math.round(x.acc*100)}%`).join(' · ');
-  $("#game").innerHTML=`<div class="summary">
-    <h2>Your practice so far</h2>
-    <table><thead><tr><th>Mode</th><th>Level</th><th>Best (100%)</th></tr></thead><tbody>${rows}</tbody></table>
+  $("#game").innerHTML=`<div class="summary"><h2>Your practice so far</h2>
+    <table><thead><tr><th>Level</th><th>Best (100%)</th></tr></thead><tbody>${rows}</tbody></table>
     <p class="note">${reps} scenarios practiced${work?` · spots to work on: ${work}`:''}</p>
     <p class="note">These stats live only on this device for now. Soon you'll be able to create a free account to save your progress across devices and see how you rank — and we will never sell your information.</p>
-    <button class="btn" id="backToPlay">Back to practice</button>
-  </div>`;
-  $("#backToPlay").onclick=()=>deal();
+    <button class="btn" id="backToPlay">Back to play</button></div>`;
+  $("#backToPlay").onclick=()=>showStart();
 }
 
-deal();
+/* first load: tutorial for newcomers, otherwise the Play screen */
+if(prog.tutDone) showStart(); else startTutorial();
 </script>
 
 <script type="module">
@@ -476,20 +415,11 @@ const sb = createClient(SB_URL, SB_KEY);
 let user=null;
 const q=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const MODE_LABEL={flow:'Flow',call:'The Call',skipped:'Skipped'};
 const fmt=s=>{s=Math.round(s); if(s<60)return s+'s'; const m=Math.floor(s/60),r=s%60; if(m<60)return m+'m '+r+'s'; return Math.floor(m/60)+'h '+(m%60)+'m';};
-
-function renderBar(){
-  const st=q("#authStatus"), a=q("#authBtn"), o=q("#logoutBtn");
+function renderBar(){ const st=q("#authStatus"), a=q("#authBtn"), o=q("#logoutBtn");
   if(user){ st.textContent='Signed in as '+(user.user_metadata?.display_name||user.email); a.style.display='none'; o.style.display=''; }
-  else { st.textContent='Playing as guest — scores aren’t saved'; a.style.display=''; o.style.display='none'; }
-}
-function modal(html){
-  const scrim=document.createElement('div'); scrim.className='scrim show';
-  scrim.innerHTML='<div class="card">'+html+'</div>';
-  scrim.addEventListener('click',e=>{if(e.target===scrim)scrim.remove();});
-  document.body.appendChild(scrim); return scrim;
-}
+  else { st.textContent='Playing as guest — scores aren’t saved'; a.style.display=''; o.style.display='none'; } }
+function modal(html){ const scrim=document.createElement('div'); scrim.className='scrim show'; scrim.innerHTML='<div class="card">'+html+'</div>'; scrim.addEventListener('click',e=>{if(e.target===scrim)scrim.remove();}); document.body.appendChild(scrim); return scrim; }
 function openAuth(){
   let signup=false;
   const m=modal(`<h2 id="aTitle">Log in</h2>
@@ -529,41 +459,25 @@ async function openLeaderboard(){
     <div class="modal-actions" style="grid-template-columns:1fr;"><button class="btn ghost" id="lbClose">Close</button></div>`);
   m.querySelector('#lbClose').onclick=()=>m.remove();
   const body=m.querySelector('#lbBody'), t1=m.querySelector('#lbT1'), t2=m.querySelector('#lbT2');
-  async function showTime(){
-    t1.className='btn mini'; t2.className='btn ghost mini'; body.textContent='Loading…';
+  async function showTime(){ t1.className='btn mini'; t2.className='btn ghost mini'; body.textContent='Loading…';
     const {data,error}=await sb.from('lb_time').select('*').limit(25);
     if(error){body.innerHTML='<p class="note">'+esc(error.message)+'</p>';return;}
     if(!data.length){body.innerHTML='<p class="note">No players yet — be the first.</p>';return;}
-    body.innerHTML='<p class="note" style="margin-top:0;">Time played across every Order of the Tile drill.</p>'+
-      '<table class="lbtable"><thead><tr><th>#</th><th>Player</th><th>Time played</th><th>Rounds</th></tr></thead><tbody>'+
-      data.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.display_name)}</td><td>${fmt(r.total_seconds)}</td><td>${r.rounds_played}</td></tr>`).join('')+'</tbody></table>';
-  }
-  async function showHigh(){
-    t2.className='btn mini'; t1.className='btn ghost mini'; body.textContent='Loading…';
+    body.innerHTML='<p class="note" style="margin-top:0;">Time played across every Order of the Tile drill.</p><table class="lbtable"><thead><tr><th>#</th><th>Player</th><th>Time played</th><th>Rounds</th></tr></thead><tbody>'+data.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.display_name)}</td><td>${fmt(r.total_seconds)}</td><td>${r.rounds_played}</td></tr>`).join('')+'</tbody></table>'; }
+  async function showHigh(){ t2.className='btn mini'; t1.className='btn ghost mini'; body.textContent='Loading…';
     const {data,error}=await sb.from('lb_highscores').select('*').eq('game',GAME);
     if(error){body.innerHTML='<p class="note">'+esc(error.message)+'</p>';return;}
     if(!data.length){body.innerHTML='<p class="note">No clean (100%) runs yet — set the first record.</p>';return;}
-    body.innerHTML='<p class="note" style="margin-top:0;">Fastest clean run in <b>Whose Turn?</b></p>'+
-      '<table class="lbtable"><thead><tr><th>Mode</th><th>Level</th><th>Record holder</th><th>Best</th></tr></thead><tbody>'+
-      data.map(r=>`<tr><td>${MODE_LABEL[r.mode]||r.mode}</td><td>${r.level}</td><td>${esc(r.display_name)}</td><td>${(+r.best_seconds).toFixed(1)}s</td></tr>`).join('')+'</tbody></table>';
-  }
+    body.innerHTML='<p class="note" style="margin-top:0;">Fastest clean run in <b>Whose Turn?</b></p><table class="lbtable"><thead><tr><th>Level</th><th>Record holder</th><th>Best</th></tr></thead><tbody>'+data.map(r=>`<tr><td>${r.level}</td><td>${esc(r.display_name)}</td><td>${(+r.best_seconds).toFixed(1)}s</td></tr>`).join('')+'</tbody></table>'; }
   t1.onclick=showTime; t2.onclick=showHigh; showTime();
 }
-
-window.OOTT={
-  get user(){return user;},
-  async logSession(d){
-    if(!user)return;
-    try{ await sb.from('sessions').insert({user_id:user.id,game:GAME,mode:d.mode,level:d.level,accuracy:d.accuracy,duration_sec:d.duration_sec,clean:!!d.clean}); }catch(e){}
-  },
-  openAuth, openLeaderboard
-};
-q("#authBtn").onclick=openAuth;
-q("#lbBtn").onclick=openLeaderboard;
+window.OOTT={ get user(){return user;},
+  async logSession(d){ if(!user)return; try{ await sb.from('sessions').insert({user_id:user.id,game:GAME,mode:d.mode,level:d.level,accuracy:d.accuracy,duration_sec:d.duration_sec,clean:!!d.clean}); }catch(e){} },
+  openAuth, openLeaderboard };
+q("#authBtn").onclick=openAuth; q("#lbBtn").onclick=openLeaderboard;
 q("#logoutBtn").onclick=async()=>{ await sb.auth.signOut(); };
 sb.auth.onAuthStateChange((_e,session)=>{ user=session?.user||null; renderBar(); });
-const {data:{session}}=await sb.auth.getSession();
-user=session?.user||null; renderBar();
+const {data:{session}}=await sb.auth.getSession(); user=session?.user||null; renderBar();
 </script>
 </body>
 </html>
