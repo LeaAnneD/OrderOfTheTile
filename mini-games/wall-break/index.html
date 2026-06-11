@@ -349,9 +349,10 @@ function startRound(){
 }
 function nextScenario(){ const sc=round.seq[round.idx]; round._show=performance.now(); if(timed())startClock(); renderScenario(sc,{}); updateHud(); }
 function gameAfter(correct){
-  const ms=performance.now()-round._show;
-  round.attempted++; if(correct)round.firstRight++;
-  setTimeout(()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else nextScenario(); }, correct?900:1700);
+  round.attempted++; if(correct)round.firstRight++; updateHud();
+  const go=el("button","btn"); go.textContent=round.idx>=round.K-1?"See your results ▶":"Continue ▶";
+  go.onclick=()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else nextScenario(); };
+  const sb=$("#game").querySelector('.submitbar'); if(sb){ sb.innerHTML=''; sb.appendChild(go); } else { const w=el("div","submitbar"); w.appendChild(go); $("#game").appendChild(w); }
 }
 function startClock(){ if(!round.started){round.started=true; round.t0=performance.now(); timerId=setInterval(()=>{if(round.t0)$("#hudTime").textContent=((performance.now()-round.t0)/1000).toFixed(1)+"s";},100);} }
 function stopTimer(){ clearInterval(timerId); timerId=null; }

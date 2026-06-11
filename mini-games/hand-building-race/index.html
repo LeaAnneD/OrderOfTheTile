@@ -305,7 +305,7 @@ function submitTwo(sc,opts){
   flash(correct?`Right — the two closest are <b>${sc.top2.join("</b> and <b>")}</b>.`:`Not quite — the two closest are <b>${sc.top2.join("</b> and <b>")}</b>.`);
   after(correct);
 }
-function after(correct){ round.attempted++; if(correct)round.firstRight++; setTimeout(()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else { round._locked=false; renderQuestion(round.seq[round.idx],{}); } }, correct?900:1700); }
+function after(correct){ round.attempted++; if(correct)round.firstRight++; updateHud(); const go=el("button","btn"); go.textContent=round.idx>=round.K-1?"See your results ▶":"Continue ▶"; go.onclick=()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else { round._locked=false; renderQuestion(round.seq[round.idx],{}); } }; const w=el("div","lockbar"); w.appendChild(go); $("#game").appendChild(w); }
 
 /* ---------- tutorial ---------- */
 function startTutorial(){ setPlaying(false); const sc=makeScenario();

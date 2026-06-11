@@ -353,8 +353,10 @@ function renderPlay(){ const sc=round.seq[round.idx]; round._show=performance.no
 function recordKind(kind,correct,ms){const f=prog.kinds[kind]||{seen:0,right:0,ms:0,n:0}; f.seen++; if(correct)f.right++; f.ms+=ms; f.n++; prog.kinds[kind]=f; round.handle[kind]=Math.max(round.handle[kind]||0,ms); saveProg();}
 function gameAfter(sc,correct){
   const ms=performance.now()-round._show;
-  round.attempted++; if(correct)round.firstRight++; recordKind(sc.kind,correct,ms);
-  setTimeout(()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else renderPlay(); }, correct?820:1600);
+  round.attempted++; if(correct)round.firstRight++; recordKind(sc.kind,correct,ms); updateHud();
+  const go=el("button","btn"); go.textContent=round.idx>=round.K-1?"See your results ▶":"Continue ▶";
+  go.onclick=()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else renderPlay(); };
+  const sb=document.querySelector('.submitbar'); if(sb){ sb.innerHTML=''; sb.appendChild(go); } else { const w=el("div","submitbar"); w.appendChild(go); $("#game").appendChild(w); }
 }
 function finishRound(){
   clearInterval(timerId);
