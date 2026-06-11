@@ -142,6 +142,7 @@
   // inline instead and skips the bar. All of it calls POST /api/ask.
   (function () {
     var API = 'https://ask.orderofthetile.com/api/ask';
+    var VOTE_API = 'https://ask.orderofthetile.com/api/vote';
     var PLACEHOLDER = 'Ask Prim anything about American Mahjong…';
 
     function renderAsk(container) {
@@ -151,7 +152,8 @@
         + '<button type="submit" class="ask-btn">Ask Prim</button>'
         + '</form>'
         + '<div class="ask-answer" aria-live="polite"><p class="ask-answer-text"></p>'
-        + '<div class="ask-sources" style="display:none"></div></div>';
+        + '<div class="ask-sources" style="display:none"></div>'
+        + '<div class="ask-feedback"></div></div>';
 
       var form = container.querySelector('.ask-form');
       var q = container.querySelector('.ask-q');
@@ -159,8 +161,32 @@
       var ans = container.querySelector('.ask-answer');
       var ansText = container.querySelector('.ask-answer-text');
       var srcs = container.querySelector('.ask-sources');
+      var fb = container.querySelector('.ask-feedback');
 
-      function show(text, sources) {
+      // 👍 / 👎 on a real answer. One vote per answer, fire-and-forget.
+      function renderFeedback(id) {
+        fb.style.display = 'flex';
+        fb.innerHTML =
+          '<span class="ask-fb-label">Was this helpful?</span>'
+          + '<button type="button" class="ask-fb-btn" data-v="up" aria-label="Yes, helpful">👍</button>'
+          + '<button type="button" class="ask-fb-btn" data-v="down" aria-label="No, not helpful">👎</button>';
+        var voted = false;
+        var btns = fb.querySelectorAll('.ask-fb-btn');
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].addEventListener('click', function (e) {
+            if (voted) return;
+            voted = true;
+            var vote = e.currentTarget.getAttribute('data-v');
+            fb.innerHTML = '<span class="ask-fb-thanks">Thank you, that helps Prim sharpen up.</span>';
+            fetch(VOTE_API, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: id, vote: vote })
+            }).catch(function () { /* a lost vote must never bother the visitor */ });
+          });
+        }
+      }
+
+      function show(text, sources, id) {
         ansText.textContent = text;
         if (sources && sources.length) {
           srcs.style.display = 'block';
@@ -168,6 +194,7 @@
             return s.url ? '<a href="' + s.url + '">' + s.name + '</a>' : s.name;
           }).join(' · ');
         } else { srcs.style.display = 'none'; srcs.innerHTML = ''; }
+        if (id) { renderFeedback(id); } else { fb.style.display = 'none'; fb.innerHTML = ''; }
         ans.classList.add('show');
       }
 
@@ -176,18 +203,27 @@
         var question = q.value.trim();
         if (question.length < 3) return;
         btn.disabled = true; btn.textContent = 'Thinking…';
-        show('', null); ansText.textContent = '';
+        show('', null, null); ansText.textContent = '';
         fetch(API, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question: question })
         })
           .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
           .then(function (res) {
-            if (!res.ok) { show('Sorry, something went sideways. Try again in a moment.', null); return; }
-            show(res.j.answer || "I don't have that one yet.", res.j.sources);
+            if (!res.ok) { show('Sorry, something went sideways. Try again in a moment.', null, null); return; }
+            show(res.j.answer || "I don't have that one yet.", res.j.sources, res.j.id);
           })
-          .catch(function () { show("Sorry, I couldn't reach the table just now. Try again in a moment.", null); })
+          .catch(function () { show("Sorry, I couldn't reach the table just now. Try again in a moment.", null, null); })
           .finally(function () { btn.disabled = false; btn.textContent = 'Ask Prim'; });
+      });
+
+      // Enter submits; Shift+Enter drops to a new line.
+      q.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          if (typeof form.requestSubmit === 'function') form.requestSubmit();
+          else form.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
       });
       return q;
     }
@@ -206,7 +242,8 @@
     bar.setAttribute('aria-label', 'Ask Prim a question');
     bar.innerHTML =
       '<span class="ask-bar-icon" aria-hidden="true">🪄</span>'
-      + '<span class="ask-bar-text">Ask Prim anything about American Mahjong</span>';
+      + '<span class="ask-bar-text">Ask Prim <strong>anything</strong> about American Mahjong</span>'
+      + '<span class="ask-bar-cta" aria-hidden="true">Tap&nbsp;to&nbsp;ask&nbsp;&rarr;</span>';
     document.body.appendChild(bar);
 
     // Pop-up

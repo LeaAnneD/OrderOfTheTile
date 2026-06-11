@@ -233,19 +233,38 @@ footer {
 /* Slim bar pinned just under the fixed 74px nav, on every page except ask.html. */
 .ask-bar {
   position: fixed; top: 74px; left: 0; right: 0; z-index: 99;
-  height: 40px; display: flex; align-items: center; gap: 8px;
+  height: 46px; display: flex; align-items: center; gap: 10px;
   padding: 0 16px; cursor: pointer;
-  background: rgba(245,240,232,0.92);
-  backdrop-filter: blur(8px);
-  border-bottom: 0.5px solid var(--lilac);
-  font-family: var(--body); color: var(--dusk);
-  transition: color 0.15s, background 0.15s;
+  background: linear-gradient(90deg, #8E6594 0%, #9B72A0 45%, #B083B6 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.28);
+  box-shadow: 0 3px 14px rgba(155,114,160,0.32);
+  font-family: var(--body); color: #fff;
+  transition: filter 0.15s, box-shadow 0.15s;
+  animation: askBarGlow 3.4s ease-in-out infinite;
 }
-.ask-bar:hover { color: var(--ink); background: rgba(245,240,232,0.98); }
-.ask-bar:focus-visible { outline: 1.5px solid var(--orchid); outline-offset: -2px; }
-.ask-bar-icon { font-size: 15px; }
-.ask-bar-text { font-size: 15px; letter-spacing: 0.01em; }
-.ask-bar-text::after { content: ' →'; color: var(--orchid); }
+@keyframes askBarGlow {
+  0%, 100% { box-shadow: 0 3px 14px rgba(155,114,160,0.30); }
+  50%      { box-shadow: 0 3px 22px rgba(155,114,160,0.58); }
+}
+.ask-bar:hover { filter: brightness(1.06); box-shadow: 0 3px 24px rgba(155,114,160,0.62); }
+.ask-bar:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+.ask-bar-icon { font-size: 18px; flex: 0 0 auto; }
+.ask-bar-text {
+  font-size: 15px; letter-spacing: 0.01em; color: #fff;
+  flex: 1 1 auto; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ask-bar-text strong { font-style: italic; font-weight: 700; }
+.ask-bar-cta {
+  flex: 0 0 auto;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.02em;
+  color: var(--orchid); background: #fff;
+  padding: 5px 14px; border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ask-bar { animation: none; }
+}
 
 /* Pop-up over the page (used everywhere except the dedicated ask page). */
 .ask-modal {
@@ -301,10 +320,23 @@ footer {
 }
 .ask-sources a { color: var(--orchid); text-decoration: none; }
 .ask-sources a:hover { text-decoration: underline; }
+.ask-feedback {
+  display: none; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid var(--lilac); font-family: var(--body); flex-wrap: wrap;
+}
+.ask-fb-label { font-size: 14px; color: var(--dusk); }
+.ask-fb-btn {
+  font-size: 17px; line-height: 1; background: #fff; border: 1px solid var(--lilac);
+  border-radius: 8px; padding: 5px 10px; cursor: pointer; transition: border-color .1s, transform .06s;
+}
+.ask-fb-btn:hover { border-color: var(--orchid); }
+.ask-fb-btn:active { transform: translateY(1px); }
+.ask-fb-thanks { font-size: 14px; font-style: italic; color: var(--orchid); }
 
 @media (max-width: 600px) {
-  .ask-bar { height: 38px; padding: 0 14px; }
+  .ask-bar { height: 44px; padding: 0 12px; gap: 8px; }
   .ask-bar-text { font-size: 13.5px; }
+  .ask-bar-cta { font-size: 12px; padding: 4px 11px; }
   .ask-modal { padding: 80px 12px 20px; }
   .ask-modal-card { padding: 26px 18px 20px; }
   .ask-btn { align-self: stretch; }
