@@ -54,6 +54,8 @@
   .kudos.voted{background:var(--rose); color:#fff; border-color:var(--rose-deep);}
   .kudos .thumb{font-size:.98rem;}
   body.authed a.card .go{padding-right:70px;}
+  .lovedbadge{align-self:flex-start; background:var(--rose-deep); color:#fff; font-family:"Playfair Display",serif; font-weight:700; font-size:.64rem; letter-spacing:.09em; text-transform:uppercase; padding:3px 11px; border-radius:999px; margin-bottom:2px;}
+  a.card.lovedcard{border-color:var(--rose); box-shadow:0 0 0 1px var(--rose), var(--shadow);}
   .hubscrim{position:fixed; inset:0; background:rgba(43,38,34,.42); display:flex; align-items:center; justify-content:center; padding:18px; z-index:1000;}
   .hubmodal{background:var(--paper); border-radius:18px; max-width:380px; width:100%; padding:24px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line);}
   .hubmodal h2{font-family:"Playfair Display",serif; margin:.1em 0 .3em;}
@@ -183,9 +185,20 @@ function bar(){
   if(user){ st.textContent='Signed in as '+((user.user_metadata&&user.user_metadata.display_name)||user.email)+' — tap 👍 on the games you love'; a.style.display='none'; o.style.display=''; document.body.classList.add('authed'); }
   else { st.textContent='Log in to cheer for your favorite games'; a.style.display=''; o.style.display='none'; document.body.classList.remove('authed'); }
 }
+function setLoved(m){
+  qa('.lovedbadge').forEach(e=>e.remove());
+  qa('a.card').forEach(a=>a.classList.remove('lovedcard'));
+  let max=0; Object.keys(m).forEach(g=>{ if((m[g]||0)>max)max=m[g]; });
+  if(max<=0) return;
+  qa('a.card').forEach(a=>{ const slug=(a.getAttribute('href')||'').replace(/\/+$/,''); if((m[slug]||0)===max){
+    a.classList.add('lovedcard'); const b=document.createElement('div'); b.className='lovedbadge'; b.innerHTML='♥ Most loved'; a.insertBefore(b,a.firstChild);
+  }});
+}
+function refreshLoved(){ const m={}; qa('.kudos').forEach(b=>{ m[b.dataset.game]=+(b.querySelector('.kc').textContent)||0; }); setLoved(m); }
 async function loadKudos(){
-  try{ const {data}=await sb.from('kudos_counts').select('*'); const m={}; (data||[]).forEach(r=>m[r.game]=r.kudos);
-    qa('.kudos').forEach(b=>{ b.querySelector('.kc').textContent = m[b.dataset.game]||0; }); }catch(_){}
+  let m={};
+  try{ const {data}=await sb.from('kudos_counts').select('*'); (data||[]).forEach(r=>m[r.game]=r.kudos);
+    qa('.kudos').forEach(b=>{ b.querySelector('.kc').textContent = m[b.dataset.game]||0; }); setLoved(m); }catch(_){}
   qa('.kudos').forEach(b=>b.classList.remove('voted'));
   if(user){ try{ const {data}=await sb.from('game_kudos').select('game').eq('user_id',user.id); const mine=new Set((data||[]).map(r=>r.game));
     qa('.kudos').forEach(b=>{ if(mine.has(b.dataset.game))b.classList.add('voted'); }); }catch(_){} }
@@ -197,6 +210,7 @@ async function toggleKudos(game,btn){
     if(voted){ await sb.from('game_kudos').delete().eq('user_id',user.id).eq('game',game); btn.classList.remove('voted'); kc.textContent=Math.max(0,(+kc.textContent||0)-1); }
     else { await sb.from('game_kudos').upsert({user_id:user.id,game}); btn.classList.add('voted'); kc.textContent=(+kc.textContent||0)+1; }
   }catch(_){ /* table not set up yet, or transient — kudos quietly no-ops */ }
+  refreshLoved();
 }
 
 function modal(html){ const s=document.createElement('div'); s.className='hubscrim'; s.innerHTML='<div class="hubmodal">'+html+'</div>'; s.addEventListener('click',e=>{ if(e.target===s)s.remove(); }); document.body.appendChild(s); return s; }
