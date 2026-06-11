@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Solo Mahj — Order of the Tile</title>
+<link rel="icon" type="image/png" href="/images/seal.png">
+<link rel="apple-touch-icon" href="/images/seal.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
+    --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
+    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A;
+    --bam:#3C7A4E; --crak:#B5524C; --dot:#3A5C86; --honor:#6B5F54;
+    --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; background:var(--paper); color:var(--ink); font-family:"Crimson Text",Georgia,serif; overscroll-behavior:none;}
+  .wrap{max-width:920px; margin:0 auto; padding:18px 16px 40px;}
+  h1{font-family:"Playfair Display",serif; font-weight:700; font-size:1.6rem; margin:.1em 0;}
+  .sub{color:var(--ink-soft); font-style:italic; margin:0 0 14px;}
+  .toprow{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:4px 0 10px;}
+  .leveltag{font-family:"Playfair Display",serif; font-weight:600; color:var(--rose-deep); font-size:1.0rem;}
+  .toprow .btn.mini{margin-left:auto;}
+  .hud{display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 14px;}
+  .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px 14px; box-shadow:var(--shadow); min-width:92px;}
+  .stat .k{font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft);}
+  .stat .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; line-height:1.1;}
+  .banner{background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:12px; text-align:center;}
+  .banner .lead{font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft);}
+  .banner .ask{font-family:"Playfair Display",serif; font-weight:700; font-size:1.22rem; margin-top:2px; line-height:1.25;}
+  .banner .why{font-style:italic; color:var(--ink-soft); font-size:.92rem; margin-top:5px;}
+  @keyframes flashpulse{0%,100%{box-shadow:var(--shadow);} 50%{box-shadow:0 0 0 3px var(--gold), var(--shadow); background:#FBEFD4;}}
+  .banner.flash{animation:flashpulse .9s ease 2;}
+  .tuttag{display:inline-block; font-family:"Playfair Display",serif; font-weight:700; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:#fff; background:var(--sage); border-radius:999px; padding:3px 12px; margin-bottom:8px;}
+  .rackhead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin:2px 2px 4px;}
+  .rackhead .lbl{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .rack{display:flex; gap:5px; flex-wrap:wrap; justify-content:center; padding:12px; border:1px solid var(--line); border-radius:14px; background:#fff; box-shadow:var(--shadow); margin-bottom:8px; min-height:78px;}
+  .tile{width:42px; height:56px; border-radius:8px; background:#fff; border:1px solid #E1D6c2; box-shadow:0 2px 5px rgba(0,0,0,.16); display:flex; flex-direction:column; align-items:center; justify-content:center; user-select:none; line-height:1; cursor:pointer; position:relative;}
+  .tile .n{font-family:"Playfair Display",serif; font-weight:700; font-size:1.12rem;}
+  .tile .s{font-size:.6rem; text-transform:uppercase; letter-spacing:.04em; margin-top:2px;}
+  .tile.bam{color:var(--bam);} .tile.crak{color:var(--crak);} .tile.dot{color:var(--dot);} .tile.honor{color:var(--honor);}
+  .tile.sel{transform:translateY(-8px); box-shadow:0 0 0 2px var(--rose), 0 6px 12px rgba(0,0,0,.2); border-color:var(--rose);}
+  .tile.ro{cursor:default;}
+  .tile .dot{position:absolute; top:3px; right:3px; width:7px; height:7px; border-radius:50%;}
+  .tile .dot.work{background:var(--good);} .tile .dot.dead{background:#C8BCa6;}
+  .tile.fresh{outline:2px solid var(--gold); outline-offset:1px;}
+  .legend{font-size:.8rem; color:var(--ink-soft); text-align:center; margin:-2px 0 8px;}
+  .legend b{color:var(--good); font-style:normal;}
+  .actionbar{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:12px 0 2px;}
+  .coach{max-width:600px; margin:12px auto 0; background:#FBEFD4; border:1px solid var(--gold); border-radius:12px; padding:12px 16px; color:#6b531a;}
+  .coach .h{font-family:"Playfair Display",serif; font-weight:700; font-size:.8rem; letter-spacing:.06em; text-transform:uppercase; color:#9A7B1E; margin-bottom:3px;}
+  .coach .b{font-style:italic; line-height:1.4;}
+  .feedline{text-align:center; font-style:italic; color:var(--ink-soft); min-height:1.2em; margin-top:8px; font-size:.96rem;}
+  .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; align-items:center;}
+  button.btn{font-family:"Crimson Text",serif; font-size:1rem; border-radius:11px; padding:9px 18px; border:1px solid var(--rose-deep); background:var(--rose); color:#fff; cursor:pointer; box-shadow:var(--shadow);}
+  button.ghost{background:#fff; color:var(--ink); border-color:var(--line);}
+  button.tiny{font-size:.82rem; padding:5px 12px;}
+  button:disabled{opacity:.45; cursor:not-allowed;}
+  .hint{color:var(--ink-soft); font-style:italic; font-size:.9rem;}
+  .startwrap{text-align:center;} .startwrap .big{font-size:1.15rem; padding:13px 34px;}
+  .scrim{position:fixed; inset:0; background:rgba(43,38,34,.42); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000;}
+  .scrim.show{display:flex;}
+  .card{background:var(--paper); border-radius:18px; max-width:460px; width:100%; padding:26px 24px; box-shadow:0 20px 60px rgba(0,0,0,.3); border:1px solid var(--line);}
+  .card h2{font-family:"Playfair Display",serif; margin:.1em 0 .3em; font-size:1.5rem;}
+  .card .verdict{font-style:italic; color:var(--ink-soft); margin-bottom:16px;}
+  .modal-actions{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px;}
+  .modal-actions .btn{width:100%; padding:11px 10px; font-size:.96rem; margin:0;}
+  .prim-card{max-width:460px; text-align:center;}
+  .prim-card h2{color:var(--rose-deep); font-size:1.7rem;}
+  .prim-card p{font-size:1.05rem; line-height:1.5; color:var(--ink);}
+  .prim-card .sig{font-family:"Playfair Display",serif; font-style:italic; color:var(--rose-deep); margin-top:8px;}
+  .summary{background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); padding:18px;}
+  .summary h2{font-family:"Playfair Display",serif; margin:.1em 0 .5em;}
+  .note{font-style:italic; color:var(--ink-soft); font-size:.92rem;}
+  .authbar{display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-bottom:8px; flex-wrap:wrap;}
+  .authstatus{margin-right:auto; color:var(--ink-soft); font-size:.9rem; font-style:italic;}
+  .btn.mini{font-size:.85rem; padding:6px 12px;}
+  .authform{display:flex; flex-direction:column; gap:10px;}
+  .authform input{font-family:inherit; font-size:1rem; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);}
+  .authmsg{font-size:.9rem; color:var(--bad); min-height:1.2em;} .authmsg.ok{color:var(--good);}
+  .lbtabs{display:flex; gap:8px; margin-bottom:12px;}
+  .lbtable{width:100%; border-collapse:collapse; font-size:.95rem;}
+  .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;}
+  .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+  .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
+  @media(max-width:560px){ h1{font-size:1.34rem;} .banner .ask{font-size:1.1rem;} .tile{width:38px; height:50px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="authbar" id="authbar">
+    <span id="authStatus" class="authstatus">·</span>
+    <button id="lbBtn" class="btn ghost mini">Leaderboard</button>
+    <button id="authBtn" class="btn mini">Log in / Sign up</button>
+    <button id="logoutBtn" class="btn ghost mini" style="display:none;">Log out</button>
+  </div>
+  <h1>Solo Mahj</h1>
+  <p class="sub">Walk the Charleston on your own. Pass three, take three, and learn which tiles to let go — and which to hold.</p>
+
+  <div class="toprow">
+    <div class="leveltag" id="levelTag">Level 1</div>
+    <button id="tutBtn" class="btn ghost mini">How to play</button>
+  </div>
+
+  <div class="hud">
+    <div class="stat"><div class="k">Sound passes</div><div class="v" id="hudGood">— / —</div></div>
+    <div class="stat"><div class="k">Step</div><div class="v" id="hudStep">—</div></div>
+    <div class="stat"><div class="k">Levels done</div><div class="v" id="hudLvls">0 / 3</div></div>
+  </div>
+
+  <div id="game"></div>
+
+  <div class="controls">
+    <button id="toggleBtn" class="btn">Play &#9654;</button>
+    <button id="nextLevel" class="btn ghost" disabled>Next level</button>
+    <span class="hint" id="hint">No timer. Pass your dead weight, hold the tiles your best hands need.</span>
+    <button id="resetAll" class="btn ghost" style="margin-left:auto; font-size:.85rem; padding:6px 12px;">Reset progress</button>
+  </div>
+
+  <div id="errbar" style="display:none; margin-top:16px; padding:10px 14px; border-radius:10px; background:#F6E2E0; border:1px solid #B5524C; color:#7a2f2b; font-size:.86rem; white-space:pre-wrap;"></div>
+  <p class="footer-note">Order of the Tile · a free practice drill · American Mah Jongg (NMJL) · <span id="buildStamp">build —</span></p>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="card">
+    <h2 id="cardTitle">Charleston complete</h2>
+    <p class="verdict" id="cardVerdict"></p>
+    <div class="modal-actions">
+      <button id="cardAgain" class="btn ghost">New hand</button>
+      <button id="cardNext" class="btn" disabled>Next level</button>
+      <button id="cardChoose" class="btn ghost">How to play</button>
+      <button id="cardDone" class="btn ghost">Finished</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const BUILD="v1 · 2026-06-10";
+function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_sm_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_sm_err',JSON.stringify(log.slice(-12)));}catch(_){}}
+window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
+window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
+document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
+
+const HANDS = {"2026":{"1":{"hands":["3x2B   3x0   4x2C   4x6C","3x2B   3x0   4x2D   4x6D","3x2C   3x0   4x2B   4x6B","3x2C   3x0   4x2D   4x6D","3x2D   3x0   4x2B   4x6B","3x2D   3x0   4x2C   4x6C"]},"2":{"hands":["1x2B   1x0   1x2B   1x6B   3xGD   4x2C   3xRD","1x2B   1x0   1x2B   1x6B   3xGD   4x6C   3xRD","1x2B   1x0   1x2B   1x6B   3xGD   4x2D   3xWD","1x2B   1x0   1x2B   1x6B   3xGD   4x6D   3xWD","1x2C   1x0   1x2C   1x6C   3xRD   4x2B   3xGD","1x2C   1x0   1x2C   1x6C   3xRD   4x6B   3xGD","1x2C   1x0   1x2C   1x6C   3xRD   4x2D   3xWD","1x2C   1x0   1x2C   1x6C   3xRD   4x6D   3xWD","1x2D   1x0   1x2D   1x6D   3xWD   4x2B   3xGD","1x2D   1x0   1x2D   1x6D   3xWD   4x6B   3xGD","1x2D   1x0   1x2D   1x6D   3xWD   4x2C   3xRD","1x2D   1x0   1x2D   1x6D   3xWD   4x6C   3xRD"]},"3":{"hands":["3xF   1x2B   1x0   1x2B   1x6B   3x2C   4x6D","3xF   1x2B   1x0   1x2B   1x6B   3x2D   4x6C","3xF   1x2C   1x0   1x2C   1x6C   3x2B   4x6D","3xF   1x2C   1x0   1x2C   1x6C   3x2D   4x6B","3xF   1x2D   1x0   1x2D   1x6D   3x2B   4x6C","3xF   1x2D   1x0   1x2D   1x6D   3x2C   4x6B"]},"4":{"hands":["2x2B   2x0   3x2C   3x6C   1xN   1xE   1xW   1xS","2x2B   2x0   3x2D   3x6D   1xN   1xE   1xW   1xS","2x2C   2x0   3x2B   3x6B   1xN   1xE   1xW   1xS","2x2C   2x0   3x2D   3x6D   1xN   1xE   1xW   1xS","2x2D   2x0   3x2B   3x6B   1xN   1xE   1xW   1xS","2x2D   2x0   3x2C   3x6C   1xN   1xE   1xW   1xS"]}},"2468":{"1":{"hands":["3x2B   3x4B   4x6B   4x8B","3x2C   3x4C   4x6C   4x8C","3x2D   3x4D   4x6D   4x8D","3x2B   3x4B   4x6C   4x8C","3x2B   3x4B   4x6D   4x8D","3x2C   3x4C   4x6B   4x8B","3x2C   3x4C   4x6D   4x8D","3x2D   3x4D   4x6B   4x8B","3x2D   3x4D   4x6C   4x8C"]},"2":{"hands":["2xF   4x2B   2x4C   2x6C   4x8B","2xF   4x2B   2x4D   2x6D   4x8B","2xF   4x2C   2x4B   2x6B   4x8C","2xF   4x2C   2x4D   2x6D   4x8C","2xF   4x2D   2x4B   2x6B   4x8D","2xF   4x2D   2x4C   2x6C   4x8D"]},"3":{"hands":["2xE   2x2B   3x4B   3x6B   2x8B   2xW","2xE   2x2C   3x4C   3x6C   2x8C   2xW","2xE   2x2D   3x4D   3x6D   2x8D   2xW"]},"4":{"hands":["4x2B   3xGD   4x8C   3xRD","4x2B   3xGD   4x8D   3xWD","4x2C   3xRD   4x8B   3xGD","4x2C   3xRD   4x8D   3xWD","4x2D   3xWD   4x8B   3xGD","4x2D   3xWD   4x8C   3xRD"]},"5":{"hands":["3xF   2x2B   2x4B   3x6B   4x8B","3xF   2x2C   2x4C   3x6C   4x8C","3xF   2x2D   2x4D   3x6D   4x8D"]},"6":{"hands":["1x2B   1x4B   1x6B   1x8B   4x2C   1xRD   4x2D   1xWD","1x2B   1x4B   1x6B   1x8B   4x4C   1xRD   4x4D   1xWD","1x2B   1x4B   1x6B   1x8B   4x6C   1xRD   4x6D   1xWD","1x2B   1x4B   1x6B   1x8B   4x8C   1xRD   4x8D   1xWD","1x2C   1x4C   1x6C   1x8C   4x2B   1xGD   4x2D   1xWD","1x2C   1x4C   1x6C   1x8C   4x4B   1xGD   4x4D   1xWD","1x2C   1x4C   1x6C   1x8C   4x6B   1xGD   4x6D   1xWD","1x2C   1x4C   1x6C   1x8C   4x8B   1xGD   4x8D   1xWD","1x2D   1x4D   1x6D   1x8D   4x2B   1xGD   4x2C   1xRD","1x2D   1x4D   1x6D   1x8D   4x4B   1xGD   4x4C   1xRD","1x2D   1x4D   1x6D   1x8D   4x6B   1xGD   4x6C   1xRD","1x2D   1x4D   1x6D   1x8D   4x8B   1xGD   4x8C   1xRD"]},"7":{"hands":["3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x2C","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x4C","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x6C","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x8C","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x2D","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x4D","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x6D","3xF   1x2B   1x4B   1x6B   1x8B   3xF   4x8D","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x2B","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x4B","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x6B","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x8B","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x2D","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x4D","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x6D","3xF   1x2C   1x4C   1x6C   1x8C   3xF   4x8D","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x2B","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x4B","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x6B","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x8B","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x2C","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x4C","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x6C","3xF   1x2D   1x4D   1x6D   1x8D   3xF   4x8C"]},"8":{"hands":["2xF   1x2B   1x4B   1x6B   3x8B   1x2C   1x4C   1x6C   3x8C","2xF   1x2B   1x4B   1x6B   3x8B   1x2D   1x4D   1x6D   3x8D","2xF   1x2C   1x4C   1x6C   3x8C   1x2D   1x4D   1x6D   3x8D"]}},"Any Like Numbers":{"1":{"hands":["4x1B   6xF   4x1C","4x1B   6xF   4x1D","4x1C   6xF   4x1D","4x2B   6xF   4x2C","4x2B   6xF   4x2D","4x2C   6xF   4x2D","4x3B   6xF   4x3C","4x3B   6xF   4x3D","4x3C   6xF   4x3D","4x4B   6xF   4x4C","4x4B   6xF   4x4D","4x4C   6xF   4x4D","4x5B   6xF   4x5C","4x5B   6xF   4x5D","4x5C   6xF   4x5D","4x6B   6xF   4x6C","4x6B   6xF   4x6D","4x6C   6xF   4x6D","4x7B   6xF   4x7C","4x7B   6xF   4x7D","4x7C   6xF   4x7D","4x8B   6xF   4x8C","4x8B   6xF   4x8D","4x8C   6xF   4x8D","4x9B   6xF   4x9C","4x9B   6xF   4x9D","4x9C   6xF   4x9D"]},"2":{"hands":["4x1B   1xGD   3x1C   1xRD   4x1D   1xWD","4x1B   1xGD   3x1D   1xWD   4x1C   1xRD","4x1C   1xRD   3x1B   1xGD   4x1D   1xWD","4x2B   1xGD   3x2C   1xRD   4x2D   1xWD","4x2B   1xGD   3x2D   1xWD   4x2C   1xRD","4x2C   1xRD   3x2B   1xGD   4x2D   1xWD","4x3B   1xGD   3x3C   1xRD   4x3D   1xWD","4x3B   1xGD   3x3D   1xWD   4x3C   1xRD","4x3C   1xRD   3x3B   1xGD   4x3D   1xWD","4x4B   1xGD   3x4C   1xRD   4x4D   1xWD","4x4B   1xGD   3x4D   1xWD   4x4C   1xRD","4x4C   1xRD   3x4B   1xGD   4x4D   1xWD","4x5B   1xGD   3x5C   1xRD   4x5D   1xWD","4x5B   1xGD   3x5D   1xWD   4x5C   1xRD","4x5C   1xRD   3x5B   1xGD   4x5D   1xWD","4x6B   1xGD   3x6C   1xRD   4x6D   1xWD","4x6B   1xGD   3x6D   1xWD   4x6C   1xRD","4x6C   1xRD   3x6B   1xGD   4x6D   1xWD","4x7B   1xGD   3x7C   1xRD   4x7D   1xWD","4x7B   1xGD   3x7D   1xWD   4x7C   1xRD","4x7C   1xRD   3x7B   1xGD   4x7D   1xWD","4x8B   1xGD   3x8C   1xRD   4x8D   1xWD","4x8B   1xGD   3x8D   1xWD   4x8C   1xRD","4x8C   1xRD   3x8B   1xGD   4x8D   1xWD","4x9B   1xGD   3x9C   1xRD   4x9D   1xWD","4x9B   1xGD   3x9D   1xWD   4x9C   1xRD","4x9C   1xRD   3x9B   1xGD   4x9D   1xWD"]},"3":{"hands":["2xF   4x1B   2x1C   4x1D   2xRD","2xF   4x1B   2x1C   4x1D   2xGD","2xF   4x1B   2x1C   4x1D   2xWD","2xF   4x1B   2x1D   4x1C   2xRD","2xF   4x1B   2x1D   4x1C   2xGD","2xF   4x1B   2x1D   4x1C   2xWD","2xF   4x1C   2x1B   4x1D   2xRD","2xF   4x1C   2x1B   4x1D   2xGD","2xF   4x1C   2x1B   4x1D   2xWD","2xF   4x2B   2x2C   4x2D   2xRD","2xF   4x2B   2x2C   4x2D   2xGD","2xF   4x2B   2x2C   4x2D   2xWD","2xF   4x2B   2x2D   4x2C   2xRD","2xF   4x2B   2x2D   4x2C   2xGD","2xF   4x2B   2x2D   4x2C   2xWD","2xF   4x2C   2x2B   4x2D   2xRD","2xF   4x2C   2x2B   4x2D   2xGD","2xF   4x2C   2x2B   4x2D   2xWD","2xF   4x3B   2x3C   4x3D   2xRD","2xF   4x3B   2x3C   4x3D   2xGD","2xF   4x3B   2x3C   4x3D   2xWD","2xF   4x3B   2x3D   4x3C   2xRD","2xF   4x3B   2x3D   4x3C   2xGD","2xF   4x3B   2x3D   4x3C   2xWD","2xF   4x3C   2x3B   4x3D   2xRD","2xF   4x3C   2x3B   4x3D   2xGD","2xF   4x3C   2x3B   4x3D   2xWD","2xF   4x4B   2x4C   4x4D   2xRD","2xF   4x4B   2x4C   4x4D   2xGD","2xF   4x4B   2x4C   4x4D   2xWD","2xF   4x4B   2x4D   4x4C   2xRD","2xF   4x4B   2x4D   4x4C   2xGD","2xF   4x4B   2x4D   4x4C   2xWD","2xF   4x4C   2x4B   4x4D   2xRD","2xF   4x4C   2x4B   4x4D   2xGD","2xF   4x4C   2x4B   4x4D   2xWD","2xF   4x5B   2x5C   4x5D   2xRD","2xF   4x5B   2x5C   4x5D   2xGD","2xF   4x5B   2x5C   4x5D   2xWD","2xF   4x5B   2x5D   4x5C   2xRD","2xF   4x5B   2x5D   4x5C   2xGD","2xF   4x5B   2x5D   4x5C   2xWD","2xF   4x5C   2x5B   4x5D   2xRD","2xF   4x5C   2x5B   4x5D   2xGD","2xF   4x5C   2x5B   4x5D   2xWD","2xF   4x6B   2x6C   4x6D   2xRD","2xF   4x6B   2x6C   4x6D   2xGD","2xF   4x6B   2x6C   4x6D   2xWD","2xF   4x6B   2x6D   4x6C   2xRD","2xF   4x6B   2x6D   4x6C   2xGD","2xF   4x6B   2x6D   4x6C   2xWD","2xF   4x6C   2x6B   4x6D   2xRD","2xF   4x6C   2x6B   4x6D   2xGD","2xF   4x6C   2x6B   4x6D   2xWD","2xF   4x7B   2x7C   4x7D   2xRD","2xF   4x7B   2x7C   4x7D   2xGD","2xF   4x7B   2x7C   4x7D   2xWD","2xF   4x7B   2x7D   4x7C   2xRD","2xF   4x7B   2x7D   4x7C   2xGD","2xF   4x7B   2x7D   4x7C   2xWD","2xF   4x7C   2x7B   4x7D   2xRD","2xF   4x7C   2x7B   4x7D   2xGD","2xF   4x7C   2x7B   4x7D   2xWD","2xF   4x8B   2x8C   4x8D   2xRD","2xF   4x8B   2x8C   4x8D   2xGD","2xF   4x8B   2x8C   4x8D   2xWD","2xF   4x8B   2x8D   4x8C   2xRD","2xF   4x8B   2x8D   4x8C   2xGD","2xF   4x8B   2x8D   4x8C   2xWD","2xF   4x8C   2x8B   4x8D   2xRD","2xF   4x8C   2x8B   4x8D   2xGD","2xF   4x8C   2x8B   4x8D   2xWD","2xF   4x9B   2x9C   4x9D   2xRD","2xF   4x9B   2x9C   4x9D   2xGD","2xF   4x9B   2x9C   4x9D   2xWD","2xF   4x9B   2x9D   4x9C   2xRD","2xF   4x9B   2x9D   4x9C   2xGD","2xF   4x9B   2x9D   4x9C   2xWD","2xF   4x9C   2x9B   4x9D   2xRD","2xF   4x9C   2x9B   4x9D   2xGD","2xF   4x9C   2x9B   4x9D   2xWD"]}},"Quints":{"1":{"hands":["5x1B   4x1C   5x1D","5x1B   4x1D   5x1C","5x1C   4x1B   5x1D","5x2B   4x2C   5x2D","5x2B   4x2D   5x2C","5x2C   4x2B   5x2D","5x3B   4x3C   5x3D","5x3B   4x3D   5x3C","5x3C   4x3B   5x3D","5x4B   4x4C   5x4D","5x4B   4x4D   5x4C","5x4C   4x4B   5x4D","5x5B   4x5C   5x5D","5x5B   4x5D   5x5C","5x5C   4x5B   5x5D","5x6B   4x6C   5x6D","5x6B   4x6D   5x6C","5x6C   4x6B   5x6D","5x7B   4x7C   5x7D","5x7B   4x7D   5x7C","5x7C   4x7B   5x7D","5x8B   4x8C   5x8D","5x8B   4x8D   5x8C","5x8C   4x8B   5x8D","5x9B   4x9C   5x9D","5x9B   4x9D   5x9C","5x9C   4x9B   5x9D"]},"2":{"hands":["2xF   5x1B   2x2B   5x3B","2xF   5x2B   2x3B   5x4B","2xF   5x3B   2x4B   5x5B","2xF   5x4B   2x5B   5x6B","2xF   5x5B   2x6B   5x7B","2xF   5x6B   2x7B   5x8B","2xF   5x7B   2x8B   5x9B","2xF   5x1C   2x2C   5x3C","2xF   5x2C   2x3C   5x4C","2xF   5x3C   2x4C   5x5C","2xF   5x4C   2x5C   5x6C","2xF   5x5C   2x6C   5x7C","2xF   5x6C   2x7C   5x8C","2xF   5x7C   2x8C   5x9C","2xF   5x1D   2x2D   5x3D","2xF   5x2D   2x3D   5x4D","2xF   5x3D   2x4D   5x5D","2xF   5x4D   2x5D   5x6D","2xF   5x5D   2x6D   5x7D","2xF   5x6D   2x7D   5x8D","2xF   5x7D   2x8D   5x9D"]},"3":{"hands":["5x1B   5x2B   4xRD","5x1B   5x2B   4xWD","5x1B   5x3B   4xRD","5x1B   5x3B   4xWD","5x1B   5x4B   4xRD","5x1B   5x4B   4xWD","5x1B   5x5B   4xRD","5x1B   5x5B   4xWD","5x1B   5x6B   4xRD","5x1B   5x6B   4xWD","5x1B   5x7B   4xRD","5x1B   5x7B   4xWD","5x1B   5x8B   4xRD","5x1B   5x8B   4xWD","5x1B   5x9B   4xRD","5x1B   5x9B   4xWD","5x2B   5x3B   4xRD","5x2B   5x3B   4xWD","5x2B   5x4B   4xRD","5x2B   5x4B   4xWD","5x2B   5x5B   4xRD","5x2B   5x5B   4xWD","5x2B   5x6B   4xRD","5x2B   5x6B   4xWD","5x2B   5x7B   4xRD","5x2B   5x7B   4xWD","5x2B   5x8B   4xRD","5x2B   5x8B   4xWD","5x2B   5x9B   4xRD","5x2B   5x9B   4xWD","5x3B   5x4B   4xRD","5x3B   5x4B   4xWD","5x3B   5x5B   4xRD","5x3B   5x5B   4xWD","5x3B   5x6B   4xRD","5x3B   5x6B   4xWD","5x3B   5x7B   4xRD","5x3B   5x7B   4xWD","5x3B   5x8B   4xRD","5x3B   5x8B   4xWD","5x3B   5x9B   4xRD","5x3B   5x9B   4xWD","5x4B   5x5B   4xRD","5x4B   5x5B   4xWD","5x4B   5x6B   4xRD","5x4B   5x6B   4xWD","5x4B   5x7B   4xRD","5x4B   5x7B   4xWD","5x4B   5x8B   4xRD","5x4B   5x8B   4xWD","5x4B   5x9B   4xRD","5x4B   5x9B   4xWD","5x5B   5x6B   4xRD","5x5B   5x6B   4xWD","5x5B   5x7B   4xRD","5x5B   5x7B   4xWD","5x5B   5x8B   4xRD","5x5B   5x8B   4xWD","5x5B   5x9B   4xRD","5x5B   5x9B   4xWD","5x6B   5x7B   4xRD","5x6B   5x7B   4xWD","5x6B   5x8B   4xRD","5x6B   5x8B   4xWD","5x6B   5x9B   4xRD","5x6B   5x9B   4xWD","5x7B   5x8B   4xRD","5x7B   5x8B   4xWD","5x7B   5x9B   4xRD","5x7B   5x9B   4xWD","5x8B   5x9B   4xRD","5x8B   5x9B   4xWD","5x1C   5x2C   4xGD","5x1C   5x2C   4xWD","5x1C   5x3C   4xGD","5x1C   5x3C   4xWD","5x1C   5x4C   4xGD","5x1C   5x4C   4xWD","5x1C   5x5C   4xGD","5x1C   5x5C   4xWD","5x1C   5x6C   4xGD","5x1C   5x6C   4xWD","5x1C   5x7C   4xGD","5x1C   5x7C   4xWD","5x1C   5x8C   4xGD","5x1C   5x8C   4xWD","5x1C   5x9C   4xGD","5x1C   5x9C   4xWD","5x2C   5x3C   4xGD","5x2C   5x3C   4xWD","5x2C   5x4C   4xGD","5x2C   5x4C   4xWD","5x2C   5x5C   4xGD","5x2C   5x5C   4xWD","5x2C   5x6C   4xGD","5x2C   5x6C   4xWD","5x2C   5x7C   4xGD","5x2C   5x7C   4xWD","5x2C   5x8C   4xGD","5x2C   5x8C   4xWD","5x2C   5x9C   4xGD","5x2C   5x9C   4xWD","5x3C   5x4C   4xGD","5x3C   5x4C   4xWD","5x3C   5x5C   4xGD","5x3C   5x5C   4xWD","5x3C   5x6C   4xGD","5x3C   5x6C   4xWD","5x3C   5x7C   4xGD","5x3C   5x7C   4xWD","5x3C   5x8C   4xGD","5x3C   5x8C   4xWD","5x3C   5x9C   4xGD","5x3C   5x9C   4xWD","5x4C   5x5C   4xGD","5x4C   5x5C   4xWD","5x4C   5x6C   4xGD","5x4C   5x6C   4xWD","5x4C   5x7C   4xGD","5x4C   5x7C   4xWD","5x4C   5x8C   4xGD","5x4C   5x8C   4xWD","5x4C   5x9C   4xGD","5x4C   5x9C   4xWD","5x5C   5x6C   4xGD","5x5C   5x6C   4xWD","5x5C   5x7C   4xGD","5x5C   5x7C   4xWD","5x5C   5x8C   4xGD","5x5C   5x8C   4xWD","5x5C   5x9C   4xGD","5x5C   5x9C   4xWD","5x6C   5x7C   4xGD","5x6C   5x7C   4xWD","5x6C   5x8C   4xGD","5x6C   5x8C   4xWD","5x6C   5x9C   4xGD","5x6C   5x9C   4xWD","5x7C   5x8C   4xGD","5x7C   5x8C   4xWD","5x7C   5x9C   4xGD","5x7C   5x9C   4xWD","5x8C   5x9C   4xGD","5x8C   5x9C   4xWD","5x1D   5x2D   4xRD","5x1D   5x2D   4xGD","5x1D   5x3D   4xRD","5x1D   5x3D   4xGD","5x1D   5x4D   4xRD","5x1D   5x4D   4xGD","5x1D   5x5D   4xRD","5x1D   5x5D   4xGD","5x1D   5x6D   4xRD","5x1D   5x6D   4xGD","5x1D   5x7D   4xRD","5x1D   5x7D   4xGD","5x1D   5x8D   4xRD","5x1D   5x8D   4xGD","5x1D   5x9D   4xRD","5x1D   5x9D   4xGD","5x2D   5x3D   4xRD","5x2D   5x3D   4xGD","5x2D   5x4D   4xRD","5x2D   5x4D   4xGD","5x2D   5x5D   4xRD","5x2D   5x5D   4xGD","5x2D   5x6D   4xRD","5x2D   5x6D   4xGD","5x2D   5x7D   4xRD","5x2D   5x7D   4xGD","5x2D   5x8D   4xRD","5x2D   5x8D   4xGD","5x2D   5x9D   4xRD","5x2D   5x9D   4xGD","5x3D   5x4D   4xRD","5x3D   5x4D   4xGD","5x3D   5x5D   4xRD","5x3D   5x5D   4xGD","5x3D   5x6D   4xRD","5x3D   5x6D   4xGD","5x3D   5x7D   4xRD","5x3D   5x7D   4xGD","5x3D   5x8D   4xRD","5x3D   5x8D   4xGD","5x3D   5x9D   4xRD","5x3D   5x9D   4xGD","5x4D   5x5D   4xRD","5x4D   5x5D   4xGD","5x4D   5x6D   4xRD","5x4D   5x6D   4xGD","5x4D   5x7D   4xRD","5x4D   5x7D   4xGD","5x4D   5x8D   4xRD","5x4D   5x8D   4xGD","5x4D   5x9D   4xRD","5x4D   5x9D   4xGD","5x5D   5x6D   4xRD","5x5D   5x6D   4xGD","5x5D   5x7D   4xRD","5x5D   5x7D   4xGD","5x5D   5x8D   4xRD","5x5D   5x8D   4xGD","5x5D   5x9D   4xRD","5x5D   5x9D   4xGD","5x6D   5x7D   4xRD","5x6D   5x7D   4xGD","5x6D   5x8D   4xRD","5x6D   5x8D   4xGD","5x6D   5x9D   4xRD","5x6D   5x9D   4xGD","5x7D   5x8D   4xRD","5x7D   5x8D   4xGD","5x7D   5x9D   4xRD","5x7D   5x9D   4xGD","5x8D   5x9D   4xRD","5x8D   5x9D   4xGD"]}},"Consecutive Run":{"1":{"hands":["2x1B   3x2B   2x3B   3x4B   4x5B","2x1C   3x2C   2x3C   3x4C   4x5C","2x1D   3x2D   2x3D   3x4D   4x5D","2x5B   3x6B   2x7B   3x8B   4x9B","2x5C   3x6C   2x7C   3x8C   4x9C","2x5D   3x6D   2x7D   3x8D   4x9D"]},"2":{"hands":["3xF   4x1B   1x2B   1x3B   1x4B   4x5B","3xF   4x1C   1x2C   1x3C   1x4C   4x5C","3xF   4x1D   1x2D   1x3D   1x4D   4x5D","3xF   4x1B   1x2C   1x3C   1x4C   4x5B","3xF   4x1B   1x2D   1x3D   1x4D   4x5B","3xF   4x1C   1x2B   1x3B   1x4B   4x5C","3xF   4x1C   1x2D   1x3D   1x4D   4x5C","3xF   4x1D   1x2B   1x3B   1x4B   4x5D","3xF   4x1D   1x2C   1x3C   1x4C   4x5D","3xF   4x2B   1x3B   1x4B   1x5B   4x6B","3xF   4x2C   1x3C   1x4C   1x5C   4x6C","3xF   4x2D   1x3D   1x4D   1x5D   4x6D","3xF   4x2B   1x3C   1x4C   1x5C   4x6B","3xF   4x2B   1x3D   1x4D   1x5D   4x6B","3xF   4x2C   1x3B   1x4B   1x5B   4x6C","3xF   4x2C   1x3D   1x4D   1x5D   4x6C","3xF   4x2D   1x3B   1x4B   1x5B   4x6D","3xF   4x2D   1x3C   1x4C   1x5C   4x6D","3xF   4x3B   1x4B   1x5B   1x6B   4x7B","3xF   4x3C   1x4C   1x5C   1x6C   4x7C","3xF   4x3D   1x4D   1x5D   1x6D   4x7D","3xF   4x3B   1x4C   1x5C   1x6C   4x7B","3xF   4x3B   1x4D   1x5D   1x6D   4x7B","3xF   4x3C   1x4B   1x5B   1x6B   4x7C","3xF   4x3C   1x4D   1x5D   1x6D   4x7C","3xF   4x3D   1x4B   1x5B   1x6B   4x7D","3xF   4x3D   1x4C   1x5C   1x6C   4x7D","3xF   4x4B   1x5B   1x6B   1x7B   4x8B","3xF   4x4C   1x5C   1x6C   1x7C   4x8C","3xF   4x4D   1x5D   1x6D   1x7D   4x8D","3xF   4x4B   1x5C   1x6C   1x7C   4x8B","3xF   4x4B   1x5D   1x6D   1x7D   4x8B","3xF   4x4C   1x5B   1x6B   1x7B   4x8C","3xF   4x4C   1x5D   1x6D   1x7D   4x8C","3xF   4x4D   1x5B   1x6B   1x7B   4x8D","3xF   4x4D   1x5C   1x6C   1x7C   4x8D","3xF   4x5B   1x6B   1x7B   1x8B   4x9B","3xF   4x5C   1x6C   1x7C   1x8C   4x9C","3xF   4x5D   1x6D   1x7D   1x8D   4x9D","3xF   4x5B   1x6C   1x7C   1x8C   4x9B","3xF   4x5B   1x6D   1x7D   1x8D   4x9B","3xF   4x5C   1x6B   1x7B   1x8B   4x9C","3xF   4x5C   1x6D   1x7D   1x8D   4x9C","3xF   4x5D   1x6B   1x7B   1x8B   4x9D","3xF   4x5D   1x6C   1x7C   1x8C   4x9D"]},"3":{"hands":["2x1B   2x2B   3x1C   3x2C   4x3D","2x1B   2x2B   3x1D   3x2D   4x3C","2x1C   2x2C   3x1B   3x2B   4x3D","2x1C   2x2C   3x1D   3x2D   4x3B","2x1D   2x2D   3x1B   3x2B   4x3C","2x1D   2x2D   3x1C   3x2C   4x3B","2x2B   2x3B   3x2C   3x3C   4x4D","2x2B   2x3B   3x2D   3x3D   4x4C","2x2C   2x3C   3x2B   3x3B   4x4D","2x2C   2x3C   3x2D   3x3D   4x4B","2x2D   2x3D   3x2B   3x3B   4x4C","2x2D   2x3D   3x2C   3x3C   4x4B","2x3B   2x4B   3x3C   3x4C   4x5D","2x3B   2x4B   3x3D   3x4D   4x5C","2x3C   2x4C   3x3B   3x4B   4x5D","2x3C   2x4C   3x3D   3x4D   4x5B","2x3D   2x4D   3x3B   3x4B   4x5C","2x3D   2x4D   3x3C   3x4C   4x5B","2x4B   2x5B   3x4C   3x5C   4x6D","2x4B   2x5B   3x4D   3x5D   4x6C","2x4C   2x5C   3x4B   3x5B   4x6D","2x4C   2x5C   3x4D   3x5D   4x6B","2x4D   2x5D   3x4B   3x5B   4x6C","2x4D   2x5D   3x4C   3x5C   4x6B","2x5B   2x6B   3x5C   3x6C   4x7D","2x5B   2x6B   3x5D   3x6D   4x7C","2x5C   2x6C   3x5B   3x6B   4x7D","2x5C   2x6C   3x5D   3x6D   4x7B","2x5D   2x6D   3x5B   3x6B   4x7C","2x5D   2x6D   3x5C   3x6C   4x7B","2x6B   2x7B   3x6C   3x7C   4x8D","2x6B   2x7B   3x6D   3x7D   4x8C","2x6C   2x7C   3x6B   3x7B   4x8D","2x6C   2x7C   3x6D   3x7D   4x8B","2x6D   2x7D   3x6B   3x7B   4x8C","2x6D   2x7D   3x6C   3x7C   4x8B","2x7B   2x8B   3x7C   3x8C   4x9D","2x7B   2x8B   3x7D   3x8D   4x9C","2x7C   2x8C   3x7B   3x8B   4x9D","2x7C   2x8C   3x7D   3x8D   4x9B","2x7D   2x8D   3x7B   3x8B   4x9C","2x7D   2x8D   3x7C   3x8C   4x9B"]},"4":{"hands":["3x1B   3x2B   4x3B   4x4B","3x1C   3x2C   4x3C   4x4C","3x1D   3x2D   4x3D   4x4D","3x1B   3x2B   4x3C   4x4C","3x1B   3x2B   4x3D   4x4D","3x1C   3x2C   4x3B   4x4B","3x1C   3x2C   4x3D   4x4D","3x1D   3x2D   4x3B   4x4B","3x1D   3x2D   4x3C   4x4C","3x2B   3x3B   4x4B   4x5B","3x2C   3x3C   4x4C   4x5C","3x2D   3x3D   4x4D   4x5D","3x2B   3x3B   4x4C   4x5C","3x2B   3x3B   4x4D   4x5D","3x2C   3x3C   4x4B   4x5B","3x2C   3x3C   4x4D   4x5D","3x2D   3x3D   4x4B   4x5B","3x2D   3x3D   4x4C   4x5C","3x3B   3x4B   4x5B   4x6B","3x3C   3x4C   4x5C   4x6C","3x3D   3x4D   4x5D   4x6D","3x3B   3x4B   4x5C   4x6C","3x3B   3x4B   4x5D   4x6D","3x3C   3x4C   4x5B   4x6B","3x3C   3x4C   4x5D   4x6D","3x3D   3x4D   4x5B   4x6B","3x3D   3x4D   4x5C   4x6C","3x4B   3x5B   4x6B   4x7B","3x4C   3x5C   4x6C   4x7C","3x4D   3x5D   4x6D   4x7D","3x4B   3x5B   4x6C   4x7C","3x4B   3x5B   4x6D   4x7D","3x4C   3x5C   4x6B   4x7B","3x4C   3x5C   4x6D   4x7D","3x4D   3x5D   4x6B   4x7B","3x4D   3x5D   4x6C   4x7C","3x5B   3x6B   4x7B   4x8B","3x5C   3x6C   4x7C   4x8C","3x5D   3x6D   4x7D   4x8D","3x5B   3x6B   4x7C   4x8C","3x5B   3x6B   4x7D   4x8D","3x5C   3x6C   4x7B   4x8B","3x5C   3x6C   4x7D   4x8D","3x5D   3x6D   4x7B   4x8B","3x5D   3x6D   4x7C   4x8C","3x6B   3x7B   4x8B   4x9B","3x6C   3x7C   4x8C   4x9C","3x6D   3x7D   4x8D   4x9D","3x6B   3x7B   4x8C   4x9C","3x6B   3x7B   4x8D   4x9D","3x6C   3x7C   4x8B   4x9B","3x6C   3x7C   4x8D   4x9D","3x6D   3x7D   4x8B   4x9B","3x6D   3x7D   4x8C   4x9C"]},"5":{"hands":["3xF   2x1B   2x2B   3x3B   4xGD","3xF   2x1C   2x2C   3x3C   4xRD","3xF   2x1D   2x2D   3x3D   4xWD","3xF   2x1B   2x2C   3x3B   4xRD","3xF   2x1B   2x2D   3x3B   4xWD","3xF   2x1C   2x2B   3x3C   4xGD","3xF   2x1C   2x2D   3x3C   4xWD","3xF   2x1D   2x2B   3x3D   4xGD","3xF   2x1D   2x2C   3x3D   4xRD","3xF   2x2B   2x3B   3x4B   4xGD","3xF   2x2C   2x3C   3x4C   4xRD","3xF   2x2D   2x3D   3x4D   4xWD","3xF   2x2B   2x3C   3x4B   4xRD","3xF   2x2B   2x3D   3x4B   4xWD","3xF   2x2C   2x3B   3x4C   4xGD","3xF   2x2C   2x3D   3x4C   4xWD","3xF   2x2D   2x3B   3x4D   4xGD","3xF   2x2D   2x3C   3x4D   4xRD","3xF   2x3B   2x4B   3x5B   4xGD","3xF   2x3C   2x4C   3x5C   4xRD","3xF   2x3D   2x4D   3x5D   4xWD","3xF   2x3B   2x4C   3x5B   4xRD","3xF   2x3B   2x4D   3x5B   4xWD","3xF   2x3C   2x4B   3x5C   4xGD","3xF   2x3C   2x4D   3x5C   4xWD","3xF   2x3D   2x4B   3x5D   4xGD","3xF   2x3D   2x4C   3x5D   4xRD","3xF   2x4B   2x5B   3x6B   4xGD","3xF   2x4C   2x5C   3x6C   4xRD","3xF   2x4D   2x5D   3x6D   4xWD","3xF   2x4B   2x5C   3x6B   4xRD","3xF   2x4B   2x5D   3x6B   4xWD","3xF   2x4C   2x5B   3x6C   4xGD","3xF   2x4C   2x5D   3x6C   4xWD","3xF   2x4D   2x5B   3x6D   4xGD","3xF   2x4D   2x5C   3x6D   4xRD","3xF   2x5B   2x6B   3x7B   4xGD","3xF   2x5C   2x6C   3x7C   4xRD","3xF   2x5D   2x6D   3x7D   4xWD","3xF   2x5B   2x6C   3x7B   4xRD","3xF   2x5B   2x6D   3x7B   4xWD","3xF   2x5C   2x6B   3x7C   4xGD","3xF   2x5C   2x6D   3x7C   4xWD","3xF   2x5D   2x6B   3x7D   4xGD","3xF   2x5D   2x6C   3x7D   4xRD","3xF   2x6B   2x7B   3x8B   4xGD","3xF   2x6C   2x7C   3x8C   4xRD","3xF   2x6D   2x7D   3x8D   4xWD","3xF   2x6B   2x7C   3x8B   4xRD","3xF   2x6B   2x7D   3x8B   4xWD","3xF   2x6C   2x7B   3x8C   4xGD","3xF   2x6C   2x7D   3x8C   4xWD","3xF   2x6D   2x7B   3x8D   4xGD","3xF   2x6D   2x7C   3x8D   4xRD","3xF   2x7B   2x8B   3x9B   4xGD","3xF   2x7C   2x8C   3x9C   4xRD","3xF   2x7D   2x8D   3x9D   4xWD","3xF   2x7B   2x8C   3x9B   4xRD","3xF   2x7B   2x8D   3x9B   4xWD","3xF   2x7C   2x8B   3x9C   4xGD","3xF   2x7C   2x8D   3x9C   4xWD","3xF   2x7D   2x8B   3x9D   4xGD","3xF   2x7D   2x8C   3x9D   4xRD"]},"6":{"hands":["4x1B   6xF   4x2B","4x2B   6xF   4x3B","4x3B   6xF   4x4B","4x4B   6xF   4x5B","4x5B   6xF   4x6B","4x6B   6xF   4x7B","4x7B   6xF   4x8B","4x8B   6xF   4x9B","4x1C   6xF   4x2C","4x2C   6xF   4x3C","4x3C   6xF   4x4C","4x4C   6xF   4x5C","4x5C   6xF   4x6C","4x6C   6xF   4x7C","4x7C   6xF   4x8C","4x8C   6xF   4x9C","4x1D   6xF   4x2D","4x2D   6xF   4x3D","4x3D   6xF   4x4D","4x4D   6xF   4x5D","4x5D   6xF   4x6D","4x6D   6xF   4x7D","4x7D   6xF   4x8D","4x8D   6xF   4x9D"]},"7":{"hands":["2xF   4x1B   4x2B   4x3B","2xF   4x1C   4x2C   4x3C","2xF   4x1D   4x2D   4x3D","2xF   4x1B   4x2C   4x3D","2xF   4x1B   4x2D   4x3C","2xF   4x1C   4x2B   4x3D","2xF   4x1C   4x2D   4x3B","2xF   4x1D   4x2B   4x3C","2xF   4x1D   4x2C   4x3B","2xF   4x2B   4x3B   4x4B","2xF   4x2C   4x3C   4x4C","2xF   4x2D   4x3D   4x4D","2xF   4x2B   4x3C   4x4D","2xF   4x2B   4x3D   4x4C","2xF   4x2C   4x3B   4x4D","2xF   4x2C   4x3D   4x4B","2xF   4x2D   4x3B   4x4C","2xF   4x2D   4x3C   4x4B","2xF   4x3B   4x4B   4x5B","2xF   4x3C   4x4C   4x5C","2xF   4x3D   4x4D   4x5D","2xF   4x3B   4x4C   4x5D","2xF   4x3B   4x4D   4x5C","2xF   4x3C   4x4B   4x5D","2xF   4x3C   4x4D   4x5B","2xF   4x3D   4x4B   4x5C","2xF   4x3D   4x4C   4x5B","2xF   4x4B   4x5B   4x6B","2xF   4x4C   4x5C   4x6C","2xF   4x4D   4x5D   4x6D","2xF   4x4B   4x5C   4x6D","2xF   4x4B   4x5D   4x6C","2xF   4x4C   4x5B   4x6D","2xF   4x4C   4x5D   4x6B","2xF   4x4D   4x5B   4x6C","2xF   4x4D   4x5C   4x6B","2xF   4x5B   4x6B   4x7B","2xF   4x5C   4x6C   4x7C","2xF   4x5D   4x6D   4x7D","2xF   4x5B   4x6C   4x7D","2xF   4x5B   4x6D   4x7C","2xF   4x5C   4x6B   4x7D","2xF   4x5C   4x6D   4x7B","2xF   4x5D   4x6B   4x7C","2xF   4x5D   4x6C   4x7B","2xF   4x6B   4x7B   4x8B","2xF   4x6C   4x7C   4x8C","2xF   4x6D   4x7D   4x8D","2xF   4x6B   4x7C   4x8D","2xF   4x6B   4x7D   4x8C","2xF   4x6C   4x7B   4x8D","2xF   4x6C   4x7D   4x8B","2xF   4x6D   4x7B   4x8C","2xF   4x6D   4x7C   4x8B","2xF   4x7B   4x8B   4x9B","2xF   4x7C   4x8C   4x9C","2xF   4x7D   4x8D   4x9D","2xF   4x7B   4x8C   4x9D","2xF   4x7B   4x8D   4x9C","2xF   4x7C   4x8B   4x9D","2xF   4x7C   4x8D   4x9B","2xF   4x7D   4x8B   4x9C","2xF   4x7D   4x8C   4x9B"]},"8":{"hands":["1x1B   2x2B   3x3B   1x1C   2x2C   3x3C   2x4D","1x1B   2x2B   3x3B   1x1D   2x2D   3x3D   2x4C","1x1C   2x2C   3x3C   1x1D   2x2D   3x3D   2x4B","1x2B   2x3B   3x4B   1x2C   2x3C   3x4C   2x5D","1x2B   2x3B   3x4B   1x2D   2x3D   3x4D   2x5C","1x2C   2x3C   3x4C   1x2D   2x3D   3x4D   2x5B","1x3B   2x4B   3x5B   1x3C   2x4C   3x5C   2x6D","1x3B   2x4B   3x5B   1x3D   2x4D   3x5D   2x6C","1x3C   2x4C   3x5C   1x3D   2x4D   3x5D   2x6B","1x4B   2x5B   3x6B   1x4C   2x5C   3x6C   2x7D","1x4B   2x5B   3x6B   1x4D   2x5D   3x6D   2x7C","1x4C   2x5C   3x6C   1x4D   2x5D   3x6D   2x7B","1x5B   2x6B   3x7B   1x5C   2x6C   3x7C   2x8D","1x5B   2x6B   3x7B   1x5D   2x6D   3x7D   2x8C","1x5C   2x6C   3x7C   1x5D   2x6D   3x7D   2x8B","1x6B   2x7B   3x8B   1x6C   2x7C   3x8C   2x9D","1x6B   2x7B   3x8B   1x6D   2x7D   3x8D   2x9C","1x6C   2x7C   3x8C   1x6D   2x7D   3x8D   2x9B"]}},"13579":{"1":{"hands":["2x1B   3x3B   2x5B   3x7B   4x9B","2x1C   3x3C   2x5C   3x7C   4x9C","2x1D   3x3D   2x5D   3x7D   4x9D","2x1B   3x3B   2x5C   3x7C   4x9D","2x1B   3x3B   2x5D   3x7D   4x9C","2x1C   3x3C   2x5B   3x7B   4x9D","2x1C   3x3C   2x5D   3x7D   4x9B","2x1D   3x3D   2x5B   3x7B   4x9C","2x1D   3x3D   2x5C   3x7C   4x9B"]},"2":{"hands":["3x1B   3x3B   4x3C   4x5C","3x1B   3x3B   4x3D   4x5D","3x1C   3x3C   4x3B   4x5B","3x1C   3x3C   4x3D   4x5D","3x1D   3x3D   4x3B   4x5B","3x1D   3x3D   4x3C   4x5C","3x5B   3x7B   4x7C   4x9C","3x5B   3x7B   4x7D   4x9D","3x5C   3x7C   4x7B   4x9B","3x5C   3x7C   4x7D   4x9D","3x5D   3x7D   4x7B   4x9B","3x5D   3x7D   4x7C   4x9C"]},"3":{"hands":["2xN   4x1B   2x3B   4x5B   2xS","2xN   4x1C   2x3C   4x5C   2xS","2xN   4x1D   2x3D   4x5D   2xS","2xN   4x5B   2x7B   4x9B   2xS","2xN   4x5C   2x7C   4x9C   2xS","2xN   4x5D   2x7D   4x9D   2xS"]},"4":{"hands":["2x1B   1x3B   1x5B   1x7B   1x9B   4x1C   4x1D","2x1C   1x3C   1x5C   1x7C   1x9C   4x1B   4x1D","2x1D   1x3D   1x5D   1x7D   1x9D   4x1B   4x1C","2x3B   1x1B   1x5B   1x7B   1x9B   4x3C   4x3D","2x3C   1x1C   1x5C   1x7C   1x9C   4x3B   4x3D","2x3D   1x1D   1x5D   1x7D   1x9D   4x3B   4x3C","2x5B   1x1B   1x3B   1x7B   1x9B   4x5C   4x5D","2x5C   1x1C   1x3C   1x7C   1x9C   4x5B   4x5D","2x5D   1x1D   1x3D   1x7D   1x9D   4x5B   4x5C","2x7B   1x1B   1x3B   1x5B   1x9B   4x7C   4x7D","2x7C   1x1C   1x3C   1x5C   1x9C   4x7B   4x7D","2x7D   1x1D   1x3D   1x5D   1x9D   4x7B   4x7C","2x9B   1x1B   1x3B   1x5B   1x7B   4x9C   4x9D","2x9C   1x1C   1x3C   1x5C   1x7C   4x9B   4x9D","2x9D   1x1D   1x3D   1x5D   1x7D   4x9B   4x9C"]},"5":{"hands":["3xF   2x1B   2x3B   3x5B   4xGD","3xF   2x1C   2x3C   3x5C   4xRD","3xF   2x1D   2x3D   3x5D   4xWD","3xF   2x5B   2x7B   3x9B   4xGD","3xF   2x5C   2x7C   3x9C   4xRD","3xF   2x5D   2x7D   3x9D   4xWD"]},"6":{"hands":["2x1B   2x3B   3x1C   3x3C   4x5D","2x1B   2x3B   3x1D   3x3D   4x5C","2x1C   2x3C   3x1B   3x3B   4x5D","2x1C   2x3C   3x1D   3x3D   4x5B","2x1D   2x3D   3x1B   3x3B   4x5C","2x1D   2x3D   3x1C   3x3C   4x5B","2x5B   2x7B   3x5C   3x7C   4x9D","2x5B   2x7B   3x5D   3x7D   4x9C","2x5C   2x7C   3x5B   3x7B   4x9D","2x5C   2x7C   3x5D   3x7D   4x9B","2x5D   2x7D   3x5B   3x7B   4x9C","2x5D   2x7D   3x5C   3x7C   4x9B"]},"7":{"hands":["4x1B   2x3B   2x5B   2x7B   4x9B","4x1C   2x3C   2x5C   2x7C   4x9C","4x1D   2x3D   2x5D   2x7D   4x9D","4x1B   2x3C   2x5C   2x7C   4x9B","4x1B   2x3D   2x5D   2x7D   4x9B","4x1C   2x3B   2x5B   2x7B   4x9C","4x1C   2x3D   2x5D   2x7D   4x9C","4x1D   2x3B   2x5B   2x7B   4x9D","4x1D   2x3C   2x5C   2x7C   4x9D"]},"8":{"hands":["2xF   2x1B   2x3B   2x5B   3x1C   3x1D","2xF   2x5B   2x7B   2x9B   3x5C   3x5D","2xF   2x1C   2x3C   2x5C   3x1B   3x1D","2xF   2x5C   2x7C   2x9C   3x5B   3x5D","2xF   2x1D   2x3D   2x5D   3x1B   3x1C","2xF   2x5D   2x7D   2x9D   3x5B   3x5C"]},"9":{"hands":["2xF   1x1B   1x3B   1x5B   3x7B   3x9B   3xRD","2xF   1x1B   1x3B   1x5B   3x7B   3x9B   3xWD","2xF   1x1C   1x3C   1x5C   3x7C   3x9C   3xGD","2xF   1x1C   1x3C   1x5C   3x7C   3x9C   3xWD","2xF   1x1D   1x3D   1x5D   3x7D   3x9D   3xRD","2xF   1x1D   1x3D   1x5D   3x7D   3x9D   3xGD"]}},"Winds & Dragons":{"1":{"hands":["4xN   3xE   3xW   4xS","3xN   4xE   4xW   3xS"]},"2":{"hands":["1x1B   1x2B   1x3B   1x4B   3xGD   3xWD   4xRD","1x1B   1x2B   1x3B   1x4B   3xRD   3xWD   4xGD","1x1B   1x2B   1x3B   1x4B   3xRD   3xGD   4xWD","1x2B   1x3B   1x4B   1x5B   3xGD   3xWD   4xRD","1x2B   1x3B   1x4B   1x5B   3xRD   3xWD   4xGD","1x2B   1x3B   1x4B   1x5B   3xRD   3xGD   4xWD","1x3B   1x4B   1x5B   1x6B   3xGD   3xWD   4xRD","1x3B   1x4B   1x5B   1x6B   3xRD   3xWD   4xGD","1x3B   1x4B   1x5B   1x6B   3xRD   3xGD   4xWD","1x4B   1x5B   1x6B   1x7B   3xGD   3xWD   4xRD","1x4B   1x5B   1x6B   1x7B   3xRD   3xWD   4xGD","1x4B   1x5B   1x6B   1x7B   3xRD   3xGD   4xWD","1x5B   1x6B   1x7B   1x8B   3xGD   3xWD   4xRD","1x5B   1x6B   1x7B   1x8B   3xRD   3xWD   4xGD","1x5B   1x6B   1x7B   1x8B   3xRD   3xGD   4xWD","1x6B   1x7B   1x8B   1x9B   3xGD   3xWD   4xRD","1x6B   1x7B   1x8B   1x9B   3xRD   3xWD   4xGD","1x6B   1x7B   1x8B   1x9B   3xRD   3xGD   4xWD","1x1C   1x2C   1x3C   1x4C   3xGD   3xWD   4xRD","1x1C   1x2C   1x3C   1x4C   3xRD   3xWD   4xGD","1x1C   1x2C   1x3C   1x4C   3xRD   3xGD   4xWD","1x2C   1x3C   1x4C   1x5C   3xGD   3xWD   4xRD","1x2C   1x3C   1x4C   1x5C   3xRD   3xWD   4xGD","1x2C   1x3C   1x4C   1x5C   3xRD   3xGD   4xWD","1x3C   1x4C   1x5C   1x6C   3xGD   3xWD   4xRD","1x3C   1x4C   1x5C   1x6C   3xRD   3xWD   4xGD","1x3C   1x4C   1x5C   1x6C   3xRD   3xGD   4xWD","1x4C   1x5C   1x6C   1x7C   3xGD   3xWD   4xRD","1x4C   1x5C   1x6C   1x7C   3xRD   3xWD   4xGD","1x4C   1x5C   1x6C   1x7C   3xRD   3xGD   4xWD","1x5C   1x6C   1x7C   1x8C   3xGD   3xWD   4xRD","1x5C   1x6C   1x7C   1x8C   3xRD   3xWD   4xGD","1x5C   1x6C   1x7C   1x8C   3xRD   3xGD   4xWD","1x6C   1x7C   1x8C   1x9C   3xGD   3xWD   4xRD","1x6C   1x7C   1x8C   1x9C   3xRD   3xWD   4xGD","1x6C   1x7C   1x8C   1x9C   3xRD   3xGD   4xWD","1x1D   1x2D   1x3D   1x4D   3xGD   3xWD   4xRD","1x1D   1x2D   1x3D   1x4D   3xRD   3xWD   4xGD","1x1D   1x2D   1x3D   1x4D   3xRD   3xGD   4xWD","1x2D   1x3D   1x4D   1x5D   3xGD   3xWD   4xRD","1x2D   1x3D   1x4D   1x5D   3xRD   3xWD   4xGD","1x2D   1x3D   1x4D   1x5D   3xRD   3xGD   4xWD","1x3D   1x4D   1x5D   1x6D   3xGD   3xWD   4xRD","1x3D   1x4D   1x5D   1x6D   3xRD   3xWD   4xGD","1x3D   1x4D   1x5D   1x6D   3xRD   3xGD   4xWD","1x4D   1x5D   1x6D   1x7D   3xGD   3xWD   4xRD","1x4D   1x5D   1x6D   1x7D   3xRD   3xWD   4xGD","1x4D   1x5D   1x6D   1x7D   3xRD   3xGD   4xWD","1x5D   1x6D   1x7D   1x8D   3xGD   3xWD   4xRD","1x5D   1x6D   1x7D   1x8D   3xRD   3xWD   4xGD","1x5D   1x6D   1x7D   1x8D   3xRD   3xGD   4xWD","1x6D   1x7D   1x8D   1x9D   3xGD   3xWD   4xRD","1x6D   1x7D   1x8D   1x9D   3xRD   3xWD   4xGD","1x6D   1x7D   1x8D   1x9D   3xRD   3xGD   4xWD"]},"3":{"hands":["3xN   4x1B   4x1C   3xS","3xN   4x1B   4x1D   3xS","3xN   4x1C   4x1D   3xS","3xN   4x3B   4x3C   3xS","3xN   4x3B   4x3D   3xS","3xN   4x3C   4x3D   3xS","3xN   4x5B   4x5C   3xS","3xN   4x5B   4x5D   3xS","3xN   4x5C   4x5D   3xS","3xN   4x7B   4x7C   3xS","3xN   4x7B   4x7D   3xS","3xN   4x7C   4x7D   3xS","3xN   4x9B   4x9C   3xS","3xN   4x9B   4x9D   3xS","3xN   4x9C   4x9D   3xS"]},"4":{"hands":["3xE   4x2B   4x2C   3xW","3xE   4x2B   4x2D   3xW","3xE   4x2C   4x2D   3xW","3xE   4x4B   4x4C   3xW","3xE   4x4B   4x4D   3xW","3xE   4x4C   4x4D   3xW","3xE   4x6B   4x6C   3xW","3xE   4x6B   4x6D   3xW","3xE   4x6C   4x6D   3xW","3xE   4x8B   4x8C   3xW","3xE   4x8B   4x8D   3xW","3xE   4x8C   4x8D   3xW"]},"5":{"hands":["3xF   4xN   3xF   4xRD","3xF   4xN   3xF   4xGD","3xF   4xN   3xF   4xWD","3xF   4xE   3xF   4xRD","3xF   4xE   3xF   4xGD","3xF   4xE   3xF   4xWD","3xF   4xW   3xF   4xRD","3xF   4xW   3xF   4xGD","3xF   4xW   3xF   4xWD","3xF   4xS   3xF   4xRD","3xF   4xS   3xF   4xGD","3xF   4xS   3xF   4xWD"]},"6":{"hands":["1x1B   1xN   1x2B   2xE   1x3B   3xW   1x4B   4xS","1x1C   1xN   1x2C   2xE   1x3C   3xW   1x4C   4xS","1x1D   1xN   1x2D   2xE   1x3D   3xW   1x4D   4xS"]},"7":{"hands":["2xF   4xN   4xS   2xRD   2xGD","2xF   4xN   4xS   2xRD   2xWD","2xF   4xN   4xS   2xGD   2xWD","2xF   4xE   4xW   2xRD   2xGD","2xF   4xE   4xW   2xRD   2xWD","2xF   4xE   4xW   2xGD   2xWD"]},"8":{"hands":["2xN   3xE   1x2B   1x0   1x2B   1x6B   3xW   2xS","2xN   3xE   1x2C   1x0   1x2C   1x6C   3xW   2xS","2xN   3xE   1x2D   1x0   1x2D   1x6D   3xW   2xS"]}},"369":{"1":{"hands":["3x3B   3x6B   4x6C   4x9C","3x3B   3x6B   4x6D   4x9D","3x3C   3x6C   4x6B   4x9B","3x3C   3x6C   4x6D   4x9D","3x3D   3x6D   4x6B   4x9B","3x3D   3x6D   4x6C   4x9C","3x3B   3x6B   4x6C   4x9D","3x3B   3x6B   4x6D   4x9C","3x3C   3x6C   4x6B   4x9D","3x3C   3x6C   4x6D   4x9B","3x3D   3x6D   4x6B   4x9C","3x3D   3x6D   4x6C   4x9B"]},"2":{"hands":["2x3B   2x6B   3x3C   3x6C   4x9D","2x3B   2x6B   3x3D   3x6D   4x9C","2x3C   2x6C   3x3B   3x6B   4x9D","2x3C   2x6C   3x3D   3x6D   4x9B","2x3D   2x6D   3x3B   3x6B   4x9C","2x3D   2x6D   3x3C   3x6C   4x9B"]},"3":{"hands":["3xF   2x3B   3x6B   2x9B   4xRD","3xF   2x3B   3x6B   2x9B   4xGD","3xF   2x3B   3x6B   2x9B   4xWD","3xF   2x3C   3x6C   2x9C   4xRD","3xF   2x3C   3x6C   2x9C   4xGD","3xF   2x3C   3x6C   2x9C   4xWD","3xF   2x3D   3x6D   2x9D   4xRD","3xF   2x3D   3x6D   2x9D   4xGD","3xF   2x3D   3x6D   2x9D   4xWD"]},"4":{"hands":["2x3B   2x6B   3x6C   3x9C   1xN   1xE   1xW   1xS","2x3B   2x6B   3x6D   3x9D   1xN   1xE   1xW   1xS","2x3C   2x6C   3x6B   3x9B   1xN   1xE   1xW   1xS","2x3C   2x6C   3x6D   3x9D   1xN   1xE   1xW   1xS","2x3D   2x6D   3x6B   3x9B   1xN   1xE   1xW   1xS","2x3D   2x6D   3x6C   3x9C   1xN   1xE   1xW   1xS"]},"5":{"hands":["2xF   2x3B   1x6B   1x9B   4x3C   4x3D","2xF   2x3C   1x6C   1x9C   4x3B   4x3D","2xF   2x3D   1x6D   1x9D   4x3B   4x3C","2xF   2x6B   1x3B   1x9B   4x6C   4x6D","2xF   2x6C   1x3C   1x9C   4x6B   4x6D","2xF   2x6D   1x3D   1x9D   4x6B   4x6C","2xF   2x9B   1x3B   1x6B   4x9C   4x9D","2xF   2x9C   1x3C   1x6C   4x9B   4x9D","2xF   2x9D   1x3D   1x6D   4x9B   4x9C"]},"6":{"hands":["2xF   3x3B   3x6B   3x9B   1x3C   1x6C   1x9C","2xF   3x3B   3x6B   3x9B   1x3D   1x6D   1x9D","2xF   3x3C   3x6C   3x9C   1x3B   1x6B   1x9B","2xF   3x3C   3x6C   3x9C   1x3D   1x6D   1x9D","2xF   3x3D   3x6D   3x9D   1x3B   1x6B   1x9B","2xF   3x3D   3x6D   3x9D   1x3C   1x6C   1x9C"]}},"Singles & Pairs":{"1":{"hands":["2xN   2xE   2xW   2xS   1x1B   1xGD   1x1C   1xRD   1x1D   1xWD","2xN   2xE   2xW   2xS   1x2B   1xGD   1x2C   1xRD   1x2D   1xWD","2xN   2xE   2xW   2xS   1x3B   1xGD   1x3C   1xRD   1x3D   1xWD","2xN   2xE   2xW   2xS   1x4B   1xGD   1x4C   1xRD   1x4D   1xWD","2xN   2xE   2xW   2xS   1x5B   1xGD   1x5C   1xRD   1x5D   1xWD","2xN   2xE   2xW   2xS   1x6B   1xGD   1x6C   1xRD   1x6D   1xWD","2xN   2xE   2xW   2xS   1x7B   1xGD   1x7C   1xRD   1x7D   1xWD","2xN   2xE   2xW   2xS   1x8B   1xGD   1x8C   1xRD   1x8D   1xWD","2xN   2xE   2xW   2xS   1x9B   1xGD   1x9C   1xRD   1x9D   1xWD"]},"2":{"hands":["1x2C   1x4C   2x6C   2x8C   1x2D   1x4D   2x6D   2x8D   2x8B","1x2B   1x4B   2x6B   2x8B   1x2D   1x4D   2x6D   2x8D   2x8C","1x2B   1x4B   2x6B   2x8B   1x2C   1x4C   2x6C   2x8C   2x8D"]},"3":{"hands":["2xF   2x3B   1x6B   1x9B   1x3C   2x6C   1x9C   1x3D   1x6D   2x9D","2xF   2x3B   1x6B   1x9B   1x3D   2x6D   1x9D   1x3C   1x6C   2x9C","2xF   2x3C   1x6C   1x9C   1x3B   2x6B   1x9B   1x3D   1x6D   2x9D","2xF   2x3C   1x6C   1x9C   1x3D   2x6D   1x9D   1x3B   1x6B   2x9B","2xF   2x3D   1x6D   1x9D   1x3B   2x6B   1x9B   1x3C   1x6C   2x9C","2xF   2x3D   1x6D   1x9D   1x3C   2x6C   1x9C   1x3B   1x6B   2x9B"]},"4":{"hands":["2x1B   2x2B   2x3B   2x4B   2x5B   2x6B   2x7B","2x2B   2x3B   2x4B   2x5B   2x6B   2x7B   2x8B","2x3B   2x4B   2x5B   2x6B   2x7B   2x8B   2x9B","2x1C   2x2C   2x3C   2x4C   2x5C   2x6C   2x7C","2x2C   2x3C   2x4C   2x5C   2x6C   2x7C   2x8C","2x3C   2x4C   2x5C   2x6C   2x7C   2x8C   2x9C","2x1D   2x2D   2x3D   2x4D   2x5D   2x6D   2x7D","2x2D   2x3D   2x4D   2x5D   2x6D   2x7D   2x8D","2x3D   2x4D   2x5D   2x6D   2x7D   2x8D   2x9D"]},"5":{"hands":["2x1B   1x3B   1x5B   1x7B   2x9B   2x1C   1x3C   1x5C   1x7C   2x9C","2x1B   1x3B   1x5B   1x7B   2x9B   2x1D   1x3D   1x5D   1x7D   2x9D","2x1C   1x3C   1x5C   1x7C   2x9C   2x1D   1x3D   1x5D   1x7D   2x9D"]},"6":{"hands":["2xF   1x2B   1x0   1x2B   1x6B   1x2C   1x0   1x2C   1x6C   1x2D   1x0   1x2D   1x6D"]}}};
+const SECTIONS = Object.keys(HANDS);
+const SUIT={B:"Bam",C:"Crak",D:"Dot"}, SUITCLASS={B:"bam",C:"crak",D:"dot"};
+const HONOR={E:["E","East"],S:["S","South"],W:["W","West"],N:["N","North"],RD:["RD","Red"],GD:["GD","Green"],WD:["WD","Soap"],F:["F","Flower"]};
+const normCode=c=>c==="0"?"WD":c;
+function tileLabel(code){code=normCode(code); if(/^[1-9][BCD]$/.test(code))return{n:code[0],s:SUIT[code[1]],cls:SUITCLASS[code[1]]}; const h=HONOR[code]; return h?{n:h[0],s:h[1],cls:"honor"}:{n:code,s:"",cls:"honor"};}
+function parseHand(compact){const map={}; compact.split(/\s+/).filter(Boolean).forEach(tok=>{const m=tok.match(/(\d+)x(.+)/); if(m){const c=normCode(m[2]); map[c]=(map[c]||0)+ +m[1];}}); return map;}
+const PARSED={};
+SECTIONS.forEach(sec=>{PARSED[sec]={}; Object.keys(HANDS[sec]).forEach(ln=>{PARSED[sec][ln]=HANDS[sec][ln].hands.map(parseHand);});});
+function matched(rack,hand){let s=0; for(const c in hand) s+=Math.min(rack[c]||0,hand[c]); return s;}
+function sectionClose(rack,sec){let best=0; Object.keys(PARSED[sec]).forEach(ln=>{ PARSED[sec][ln].forEach(h=>{const m=matched(rack,h); if(m>best)best=m;}); }); return best;}
+function rankSections(rack){return SECTIONS.map(sec=>({sec,score:sectionClose(rack,sec)})).sort((a,b)=>b.score-a.score);}
+function rackMap(arr){const m={}; arr.forEach(c=>m[c]=(m[c]||0)+1); return m;}
+function bestOf(arr){return rankSections(rackMap(arr))[0];}
+function bestScore(arr){return bestOf(arr).score;}
+// a tile is "working" if removing it lowers the best-section closeness
+function isWorking(arr,idx){ const base=bestScore(arr); const a2=arr.slice(); a2.splice(idx,1); return base-bestScore(a2) > 0; }
+
+const SET=[];
+"123456789".split("").forEach(n=>["B","C","D"].forEach(s=>{for(let i=0;i<4;i++)SET.push(n+s);}));
+["E","S","W","N"].forEach(w=>{for(let i=0;i<4;i++)SET.push(w);});
+["RD","GD","WD"].forEach(d=>{for(let i=0;i<4;i++)SET.push(d);});
+for(let i=0;i<8;i++)SET.push("F");
+const rnd=n=>Math.floor(Math.random()*n);
+const cap=c=>c==="F"?8:4;
+function deal(n){ const arr=[]; const m={}; let g=0; while(arr.length<n && g++<800){ const c=SET[rnd(SET.length)]; if((m[c]||0)<cap(c)){m[c]=(m[c]||0)+1; arr.push(c);} } return arr; }
+function drawIn(arr,n){ const m=rackMap(arr); const out=[]; let g=0; while(out.length<n && g++<800){ const c=SET[rnd(SET.length)]; if((m[c]||0)<cap(c)){m[c]=(m[c]||0)+1; out.push(c);} } return out; }
+
+const FIRST=[{dir:"right",txt:"to your right"},{dir:"across",txt:"across the table"},{dir:"left",txt:"to your left"}];
+const SECOND=[{dir:"left",txt:"to your left"},{dir:"across",txt:"across the table"},{dir:"right",txt:"to your right"}];
+
+const LEVELS=[{n:1,hints:true},{n:2,hints:false},{n:3,hints:false}];
+const LS="oott_solomahj_v1";
+function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
+function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
+let prog=loadProg(); prog.unlocked=prog.unlocked||1; prog.completed=prog.completed||false; prog.tutDone=prog.tutDone||false;
+let cur=LEVELS[0], game=null, playing=false;
+const $=s=>document.querySelector(s);
+const el=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+function setPlaying(on){ playing=on; const t=$("#toggleBtn"); if(t)t.innerHTML=on?"Stop &#9632;":"Play &#9654;"; }
+function updateHud(){
+  $("#hudGood").textContent=game?(game.good+" / "+game.total):"— / —";
+  $("#hudStep").textContent=game?game.stepLabel:"—";
+  $("#hudLvls").textContent=Math.min(3,prog.unlocked-1)+" / 3";
+  $("#levelTag").textContent="Level "+cur.n; $("#nextLevel").disabled=!(prog.unlocked>cur.n);
+}
+
+/* ---------- render a pass ---------- */
+function renderPass(pass,opts){
+  opts=opts||{}; game.sel=new Set(); game.pass=pass;
+  const hints=opts.tut?true:cur.hints;
+  const g=$("#game"); g.innerHTML="";
+  const b=el("div","banner flash");
+  b.innerHTML=(opts.tut?`<span class="tuttag">Tutorial</span>`:"")+
+    `<div class="lead">${game.stepLabel}</div><div class="ask">Pass 3 tiles ${pass.txt}.</div>
+     <div class="why">Pick the three you least want — your dead weight — then pass them. You'll take 3 back.</div>`;
+  g.appendChild(b);
+  const rh=el("div","rackhead"); rh.innerHTML=`<span class="lbl">your hand · pick 3 to pass</span>`; g.appendChild(rh);
+  g.appendChild(handEl(hints));
+  if(hints) g.appendChild(Object.assign(el("div","legend"),{innerHTML:`<b>● green</b> = a tile your strongest hand is using (think before passing it). grey = dead weight, safe to pass.`}));
+  const ab=el("div","actionbar"); const go=el("button","btn"); go.id="passBtn"; go.textContent=`Pass these 3 ${pass.dir} ▶`; go.disabled=true; go.onclick=()=>doPass(opts); ab.appendChild(go); g.appendChild(ab);
+  const feed=el("div","feedline"); feed.id="feed"; g.appendChild(feed);
+  updateHud();
+}
+function handEl(hints){
+  const rack=el("div","rack"); rack.id="rackbox";
+  game.hand.forEach((c,idx)=>{
+    const t=tileLabel(c); const e=el("div","tile "+t.cls+(game.sel.has(idx)?" sel":"")+(game.fresh&&game.fresh.has(idx)?" fresh":""));
+    let dot=""; if(hints) dot=`<span class="dot ${isWorking(game.hand,idx)?'work':'dead'}"></span>`;
+    e.innerHTML=`${dot}<div class="n">${t.n}</div><div class="s">${t.s}</div>`;
+    e.onclick=()=>toggleSel(idx,hints); rack.appendChild(e);
+  });
+  return rack;
+}
+function toggleSel(idx,hints){
+  if(game.sel.has(idx)) game.sel.delete(idx);
+  else { if(game.sel.size>=3){flash("That's three already — pass them, or tap one to deselect."); return;} game.sel.add(idx); }
+  const old=$("#rackbox"); if(old)old.replaceWith(handEl(hints));
+  const pb=$("#passBtn"); if(pb)pb.disabled=game.sel.size!==3;
+}
+function flash(m){const f=$("#feed"); if(f)f.textContent=m;}
+
+function doPass(opts){
+  if(game.sel.size!==3)return;
+  const idxs=[...game.sel].sort((a,b)=>b-a);
+  // grade: how many passed tiles were dead weight (good) vs working (risky)?
+  let dead=0; const passedCodes=[];
+  idxs.forEach(i=>{ if(!isWorking(game.hand,i))dead++; passedCodes.push(game.hand[i]); });
+  const sound = dead===3;
+  game.total++; if(sound)game.good++;
+  // remove passed, draw 3 in
+  idxs.forEach(i=>game.hand.splice(i,1));
+  const incoming=drawIn(game.hand,3);
+  game.fresh=new Set(); incoming.forEach(c=>{ game.hand.push(c); game.fresh.add(game.hand.length-1); });
+  // feedback
+  const g=$("#game"); $("#rackbox").replaceWith(handEl(opts&&opts.tut?true:cur.hints));
+  $("#passBtn").remove();
+  flash(sound?"Sound pass — all three were dead weight. ✓":`${dead} of 3 were dead weight; the rest your strongest hand wanted.`);
+  const coach=el("div","coach"); coach.innerHTML=`<div class="h">Prim's note</div><div class="b">${sound?"Nice — you let go of tiles no hand of yours needed and kept your shape. The gold-outlined tiles are the three you just drew.":"Careful — passing a tile your best line is using sets you back. When two tiles are equally useless, pass those first. The gold-outlined tiles are your three new ones."}</div>`; g.appendChild(coach);
+  const w=el("div","actionbar"); const go=el("button","btn"); go.textContent="Continue ▶"; go.onclick=()=>advance(opts); w.appendChild(go); g.appendChild(w);
+  updateHud();
+}
+
+/* ---------- flow ---------- */
+function advance(opts){
+  if(opts&&opts.tut){ prog.tutDone=true; saveProg(); showStart(); return; }
+  if(game.phase==="first"){
+    if(game.i<2){ game.i++; setStepLabel(); renderPass(FIRST[game.i],{}); return; }
+    askSecond(); return;
+  }
+  if(game.phase==="second"){
+    if(game.i<2){ game.i++; setStepLabel(); renderPass(SECOND[game.i],{}); return; }
+    askCourtesy(); return;
+  }
+  finish();
+}
+function setStepLabel(){
+  if(game.phase==="first") game.stepLabel="First Charleston · pass "+(game.i+1)+" of 3";
+  else if(game.phase==="second") game.stepLabel="Second Charleston · pass "+(game.i+1)+" of 3";
+  else game.stepLabel="Courtesy pass";
+}
+function askSecond(){
+  const g=$("#game"); g.innerHTML="";
+  const b=el("div","banner flash"); b.innerHTML=`<div class="lead">A choice</div><div class="ask">Take the second Charleston?</div>
+    <div class="why">The second Charleston is optional — any player can stop it. Continue only if more passing will help your hand.</div>`;
+  g.appendChild(b);
+  g.appendChild(handEl(cur.hints));
+  const ab=el("div","actionbar");
+  const yes=el("button","btn"); yes.textContent="Continue the second Charleston ▶"; yes.onclick=()=>{ game.phase="second"; game.i=0; setStepLabel(); renderPass(SECOND[0],{}); };
+  const no=el("button","btn ghost"); no.textContent="Stop here"; no.onclick=()=>askCourtesy();
+  ab.appendChild(yes); ab.appendChild(no); g.appendChild(ab);
+  game.stepLabel="Second Charleston?"; updateHud();
+}
+function askCourtesy(){
+  const g=$("#game"); g.innerHTML="";
+  const b=el("div","banner flash"); b.innerHTML=`<div class="lead">Last option</div><div class="ask">A courtesy pass?</div>
+    <div class="why">You and the player across can swap 1 to 3 tiles, by agreement — or skip it.</div>`;
+  g.appendChild(b);
+  const ab=el("div","actionbar");
+  const yes=el("button","btn"); yes.textContent="Make a courtesy pass ▶"; yes.onclick=()=>renderCourtesy();
+  const no=el("button","btn ghost"); no.textContent="No courtesy — finish"; no.onclick=()=>finish();
+  ab.appendChild(yes); ab.appendChild(no); g.appendChild(ab);
+  game.stepLabel="Courtesy?"; updateHud();
+}
+function renderCourtesy(){
+  game.sel=new Set(); game.phase="courtesy"; game.stepLabel="Courtesy pass";
+  const g=$("#game"); g.innerHTML="";
+  const b=el("div","banner flash"); b.innerHTML=`<div class="lead">Courtesy pass</div><div class="ask">Pass up to 3 tiles across.</div><div class="why">Pick 0 to 3 of your dead-weight tiles, then pass.</div>`;
+  g.appendChild(b);
+  const rh=el("div","rackhead"); rh.innerHTML=`<span class="lbl">your hand · pick up to 3</span>`; g.appendChild(rh);
+  g.appendChild(handEl(cur.hints));
+  const ab=el("div","actionbar"); const go=el("button","btn"); go.id="passBtn"; go.textContent="Pass across ▶"; go.onclick=()=>doCourtesy(); ab.appendChild(go); g.appendChild(ab);
+  const feed=el("div","feedline"); feed.id="feed"; g.appendChild(feed);
+  // courtesy allows 0-3, so override toggle cap by re-rendering pass button state
+  updateHud();
+}
+function doCourtesy(){
+  const idxs=[...game.sel].sort((a,b)=>b-a);
+  if(idxs.length){ let dead=0; idxs.forEach(i=>{ if(!isWorking(game.hand,i))dead++; }); game.total++; if(dead===idxs.length)game.good++;
+    idxs.forEach(i=>game.hand.splice(i,1)); const incoming=drawIn(game.hand,idxs.length); incoming.forEach(c=>game.hand.push(c));
+  }
+  finish();
+}
+
+function finish(){
+  const fb=bestOf(game.hand);
+  const gained=fb.score-game.startBest;
+  const clean = game.total>0 && game.good===game.total;
+  if(window.OOTT&&window.OOTT.logSession) window.OOTT.logSession({mode:"charleston",level:cur.n,accuracy:game.total?Math.round(game.good/game.total*100):100,duration_sec:0,clean});
+  let firstFull=false;
+  if(clean){ if(cur.n>=prog.unlocked&&cur.n<LEVELS.length)prog.unlocked=cur.n+1; if(cur.n===LEVELS.length&&!prog.completed){prog.completed=true; firstFull=true;} saveProg(); }
+  setPlaying(false);
+  if(firstFull){ primCongrats(); return; }
+  $("#cardTitle").textContent=clean?"Every pass, sound.":"Charleston complete.";
+  const dir = gained>0?`closer to <b>${fb.sec}</b> (you gained ${gained} tile${gained===1?"":"s"} toward it)`:gained<0?`a little further from a finished hand — the draw didn't fall your way`:`about where you started, now leaning toward <b>${fb.sec}</b>`;
+  $("#cardVerdict").innerHTML=`You made <b>${game.good}</b> of <b>${game.total}</b> sound passes. Your hand ended ${dir}. ${clean?(cur.n<LEVELS.length?"The next level is open.":"You can read your dead weight cold."):"Run it again — pass only what no hand of yours needs."}`;
+  $("#cardNext").disabled=!(clean&&cur.n<LEVELS.length);
+  $("#scrim").classList.add("show"); updateHud();
+}
+function stopRound(){ setPlaying(false); $("#cardTitle").textContent="Stopped."; $("#cardVerdict").textContent="You ended early. Press Play for a fresh hand whenever you're ready."; $("#cardNext").disabled=!(prog.unlocked>cur.n); $("#scrim").classList.add("show"); }
+
+/* ---------- start ---------- */
+function showStart(){
+  setPlaying(false);
+  $("#game").innerHTML=`<div class="banner flash"><div class="lead">Ready to play</div>
+    <div class="ask" style="font-size:1.1rem;">You'll be dealt 13 tiles and walk the whole Charleston, one pass at a time.</div>
+    <div class="why">No clock. Pass your dead weight, keep what your best hands need. Clear all three levels the first time and Prim has something for you.</div></div>
+    <div class="startwrap"><button id="playBig" class="btn big">Play ▶</button>
+    <button id="tutBig" class="btn ghost" style="margin-left:10px;">Skip — show the tutorial</button></div>`;
+  $("#playBig").onclick=()=>startRound(); $("#tutBig").onclick=()=>startTutorial();
+  $("#hudGood").textContent="— / —"; $("#hudStep").textContent="—"; updateHud();
+}
+function startRound(){
+  const hand=deal(13);
+  game={hand,phase:"first",i:0,good:0,total:0,sel:new Set(),fresh:null,startBest:bestScore(hand),stepLabel:""};
+  setStepLabel(); setPlaying(true); renderPass(FIRST[0],{});
+}
+function startTutorial(){
+  const hand=deal(13);
+  game={hand,phase:"first",i:0,good:0,total:0,sel:new Set(),fresh:null,startBest:bestScore(hand),stepLabel:"Tutorial — your first pass"};
+  setPlaying(false); renderPass(FIRST[0],{tut:true});
+}
+
+/* ---------- confetti + Prim ---------- */
+function confetti(){
+  let c=document.getElementById('cfx'); if(!c){c=document.createElement('canvas'); c.id='cfx'; c.style.cssText='position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:3000;'; document.body.appendChild(c);}
+  c.width=innerWidth; c.height=innerHeight; const ctx=c.getContext('2d');
+  const COL=['#B76E79','#C9A24A','#7E8A6F','#9A5662','#E2B33C','#5DCAA5','#D4537E']; let P=[]; const cx=innerWidth/2,cy=innerHeight*0.34;
+  for(let i=0;i<170;i++){const a=Math.random()*Math.PI*2,s=3+Math.random()*8;P.push({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s-3,g:.14,rot:Math.random()*6,vr:(Math.random()-.5)*.4,sz:5+Math.random()*7,c:COL[i%COL.length],life:130});}
+  for(let i=0;i<130;i++){P.push({x:Math.random()*innerWidth,y:-10-Math.random()*60,vx:(Math.random()-.5)*1.5,vy:2+Math.random()*3,g:.06,rot:Math.random()*6,vr:(Math.random()-.5)*.3,sz:5+Math.random()*6,c:COL[i%COL.length],life:200});}
+  function tick(){ctx.clearRect(0,0,c.width,c.height); P.forEach(p=>{p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life--; ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.globalAlpha=Math.max(0,Math.min(1,p.life/30));ctx.fillStyle=p.c;ctx.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz*.6);ctx.restore();}); P=P.filter(p=>p.life>0&&p.y<c.height+40); if(P.length)requestAnimationFrame(tick); else ctx.clearRect(0,0,c.width,c.height);}
+  tick();
+}
+function primCongrats(){
+  confetti();
+  const scrim=el("div","scrim show");
+  scrim.innerHTML=`<div class="card prim-card">
+    <h2>Prim sees you.</h2>
+    <p>You came to the table not knowing your East from your North, and you just cleared every level of this drill — start to finish, first time through.</p>
+    <p>That is no small thing. I was watching the whole way.</p>
+    <p class="sig">Welcome, favorite fourth. The seat was always yours. — Prim</p>
+    <div class="modal-actions" style="grid-template-columns:1fr;"><button class="btn" id="primGo">Keep playing</button></div></div>`;
+  document.body.appendChild(scrim); scrim.querySelector('#primGo').onclick=()=>{ scrim.remove(); showStart(); };
+}
+
+/* ---------- wiring ---------- */
+$("#toggleBtn").onclick=()=>{ if(playing)stopRound(); else startRound(); };
+$("#tutBtn").onclick=()=>startTutorial();
+$("#nextLevel").onclick=()=>{ if(prog.unlocked>cur.n){cur=LEVELS[cur.n]; showStart();} };
+$("#cardAgain").onclick=()=>{ $("#scrim").classList.remove("show"); startRound(); };
+$("#cardNext").onclick=()=>{ $("#scrim").classList.remove("show"); if(cur.n<LEVELS.length){cur=LEVELS[cur.n]; startRound();} };
+$("#cardChoose").onclick=()=>{ $("#scrim").classList.remove("show"); startTutorial(); };
+$("#cardDone").onclick=()=>{ $("#scrim").classList.remove("show"); showSummary(); };
+$("#resetAll").onclick=()=>{ if(confirm("Reset all progress?")){ localStorage.removeItem(LS); prog=loadProg(); prog.unlocked=1; prog.completed=false; prog.tutDone=false; saveProg(); cur=LEVELS[0]; startTutorial(); } };
+function showSummary(){
+  $("#game").innerHTML=`<div class="summary"><h2>Your practice so far</h2>
+    <p class="note">Levels cleared: ${Math.min(3,prog.unlocked-1)} of 3.</p>
+    ${(window.OOTT&&window.OOTT.user)?`<p class="note">You're signed in — your progress is saved to your account.</p>`:`<p class="note">These stats live on this device. If you haven't made a free account yet, create one to keep your record across devices and climb the leaderboard — we'll never sell your information.</p><button class="btn" onclick="window.OOTT&&window.OOTT.openAuth&&window.OOTT.openAuth()">Create a free account</button>`}
+    <button class="btn ghost" id="backToPlay">Back to play</button></div>`;
+  $("#backToPlay").onclick=()=>showStart();
+}
+if(prog.tutDone) showStart(); else startTutorial();
+</script>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL="https://avltolzpzxcdmgrjnsfa.supabase.co";
+const SB_KEY="sb_publishable_zI6klteA7Kz4wbBoMCfOng_sb1Dz-pK";
+const GAME="solo-mahj";
+const REDIRECT="https://www.orderofthetile.com/mini-games/solo-mahj/";
+const sb = createClient(SB_URL, SB_KEY);
+let user=null;
+const q=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=s=>{s=Math.round(s); if(s<60)return s+'s'; const m=Math.floor(s/60),r=s%60; if(m<60)return m+'m '+r+'s'; return Math.floor(m/60)+'h '+(m%60)+'m';};
+function renderBar(){ const st=q("#authStatus"), a=q("#authBtn"), o=q("#logoutBtn");
+  if(user){ st.textContent='Signed in as '+(user.user_metadata?.display_name||user.email); a.style.display='none'; o.style.display=''; }
+  else { st.textContent='Playing as guest — scores aren’t saved'; a.style.display=''; o.style.display='none'; } }
+function modal(html){ const scrim=document.createElement('div'); scrim.className='scrim show'; scrim.innerHTML='<div class="card">'+html+'</div>'; scrim.addEventListener('click',e=>{if(e.target===scrim)scrim.remove();}); document.body.appendChild(scrim); return scrim; }
+function openAuth(){
+  let signup=false;
+  const m=modal(`<h2 id="aTitle">Log in</h2>
+    <p class="verdict">Save your progress and join the leaderboard.</p>
+    <div class="authform">
+      <input id="aName" type="text" placeholder="Display name (shown on leaderboard)" style="display:none;">
+      <input id="aEmail" type="email" placeholder="Email" autocomplete="email">
+      <input id="aPass" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
+      <div class="authmsg" id="aMsg"></div>
+      <button class="btn" id="aGo">Log in</button>
+      <button class="btn ghost" id="aToggle">New here? Create an account</button>
+      <p class="note" style="font-size:.82rem; margin:6px 0 0;">We never sell your information. Your login only saves your stats and lets you appear on the leaderboard.</p>
+    </div>`);
+  const name=m.querySelector('#aName'),email=m.querySelector('#aEmail'),pass=m.querySelector('#aPass'),msg=m.querySelector('#aMsg'),go=m.querySelector('#aGo'),tog=m.querySelector('#aToggle'),title=m.querySelector('#aTitle');
+  tog.onclick=()=>{ signup=!signup; name.style.display=signup?'':'none'; title.textContent=signup?'Create account':'Log in'; go.textContent=signup?'Create account':'Log in'; tog.textContent=signup?'Have an account? Log in':'New here? Create an account'; msg.textContent=''; };
+  go.onclick=async()=>{
+    msg.className='authmsg'; msg.textContent='Working…'; go.disabled=true;
+    try{
+      if(signup){
+        const {data,error}=await sb.auth.signUp({email:email.value.trim(),password:pass.value,options:{emailRedirectTo:REDIRECT,data:{display_name:name.value.trim()||email.value.split('@')[0]}}});
+        if(error)throw error;
+        if(data.session){ msg.className='authmsg ok'; msg.textContent='Account created — you’re in.'; setTimeout(()=>m.remove(),700); }
+        else { msg.className='authmsg ok'; msg.innerHTML='Almost there — we sent a confirmation link to <b>'+esc(email.value.trim())+'</b>. Click it, then come back and log in.'; }
+      }else{
+        const {error}=await sb.auth.signInWithPassword({email:email.value.trim(),password:pass.value});
+        if(error)throw error;
+        msg.className='authmsg ok'; msg.textContent='Welcome back.'; setTimeout(()=>m.remove(),500);
+      }
+    }catch(err){ msg.className='authmsg'; msg.textContent=(err&&err.message)||String(err); }
+    go.disabled=false;
+  };
+}
+async function openLeaderboard(){
+  const m=modal(`<h2>Leaderboard</h2>
+    <div class="lbtabs"><button class="btn mini" id="lbT1">Most time played</button><button class="btn ghost mini" id="lbT2">High scores</button></div>
+    <div id="lbBody">Loading…</div>
+    <div class="modal-actions" style="grid-template-columns:1fr;"><button class="btn ghost" id="lbClose">Close</button></div>`);
+  m.querySelector('#lbClose').onclick=()=>m.remove();
+  const body=m.querySelector('#lbBody'), t1=m.querySelector('#lbT1'), t2=m.querySelector('#lbT2');
+  async function showTime(){ t1.className='btn mini'; t2.className='btn ghost mini'; body.textContent='Loading…';
+    const {data,error}=await sb.from('lb_time').select('*').limit(25);
+    if(error){body.innerHTML='<p class="note">'+esc(error.message)+'</p>';return;}
+    if(!data.length){body.innerHTML='<p class="note">No players yet — be the first.</p>';return;}
+    body.innerHTML='<p class="note" style="margin-top:0;">Time played across every Order of the Tile drill.</p><table class="lbtable"><thead><tr><th>#</th><th>Player</th><th>Time played</th><th>Rounds</th></tr></thead><tbody>'+data.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.display_name)}</td><td>${fmt(r.total_seconds)}</td><td>${r.rounds_played}</td></tr>`).join('')+'</tbody></table>'; }
+  async function showHigh(){ t2.className='btn mini'; t1.className='btn ghost mini'; body.textContent='Loading…';
+    const {data,error}=await sb.from('lb_highscores').select('*').eq('game',GAME);
+    if(error){body.innerHTML='<p class="note">'+esc(error.message)+'</p>';return;}
+    if(!data.length){body.innerHTML='<p class="note">No clean (100%) runs yet — set the first record.</p>';return;}
+    body.innerHTML='<p class="note" style="margin-top:0;">All-sound-pass runs in <b>Solo Mahj</b>.</p><table class="lbtable"><thead><tr><th>Level</th><th>Record holder</th></tr></thead><tbody>'+data.map(r=>`<tr><td>${r.level}</td><td>${esc(r.display_name)}</td></tr>`).join('')+'</tbody></table>'; }
+  t1.onclick=showTime; t2.onclick=showHigh; showTime();
+}
+window.OOTT={ get user(){return user;},
+  async logSession(d){ if(!user)return; try{ await sb.from('sessions').insert({user_id:user.id,game:GAME,mode:d.mode,level:d.level,accuracy:d.accuracy,duration_sec:d.duration_sec,clean:!!d.clean}); }catch(e){} },
+  openAuth, openLeaderboard };
+q("#authBtn").onclick=openAuth; q("#lbBtn").onclick=openLeaderboard;
+q("#logoutBtn").onclick=async()=>{ await sb.auth.signOut(); };
+sb.auth.onAuthStateChange((_e,session)=>{ user=session?.user||null; renderBar(); });
+const {data:{session}}=await sb.auth.getSession(); user=session?.user||null; renderBar();
+</script>
+</body>
+</html>
