@@ -123,6 +123,10 @@
   .tw{display:inline-block; cursor:grab;}
   .tw:active{cursor:grabbing;}
   .tw.dragover>.tile{outline:2px dashed var(--rose); outline-offset:1px;}
+  .youbox .rack{touch-action:none;}
+  .tw[data-sel="1"]{cursor:grab;}
+  .tw.dragging{cursor:grabbing;}
+  .tw.dragging>.tile{transform:translateY(-12px) scale(1.07); box-shadow:0 0 0 2px var(--gold), 0 12px 20px rgba(0,0,0,.3); border-color:var(--gold); position:relative; z-index:5;}
 
   /* ---- discard pile button + pop-out ---- */
   .discbtn{font-family:"Playfair Display",serif; font-weight:700; font-size:1rem; cursor:pointer; border:1px solid var(--line); background:#fff; color:var(--rose-deep); border-radius:9px; padding:10px 12px; box-shadow:var(--shadow); min-width:54px;}
@@ -529,18 +533,7 @@ function renderYou(){
     (yourTurn?'<span class="acthint">'+(selDiscard?'1 tile selected':'tap any of your tiles to discard it')+'</span>':'')+
     '</div>';
 
-  box.querySelectorAll('.tw').forEach(node=>{
-    node.addEventListener('dragstart',e=>{ dragFrom={k:+node.dataset.k, idx:+node.dataset.ti}; e.dataTransfer.effectAllowed='move'; });
-    node.addEventListener('dragover', e=>{ e.preventDefault(); node.classList.add('dragover'); });
-    node.addEventListener('dragleave',()=>node.classList.remove('dragover'));
-    node.addEventListener('drop', e=>{ e.preventDefault(); node.classList.remove('dragover'); reorder(dragFrom,{k:+node.dataset.k, idx:+node.dataset.ti}); });
-    if(node.dataset.sel==='1'){ node.onclick=()=>{ selDiscard={k:+node.dataset.k, idx:+node.dataset.ti}; render(); }; }
-  });
-  // dropping onto a hand's empty space appends to that hand
-  box.querySelectorAll('.rack[data-rack]').forEach(rack=>{
-    rack.addEventListener('dragover',e=>{ e.preventDefault(); });
-    rack.addEventListener('drop',e=>{ if(e.target.closest('.tw'))return; e.preventDefault(); const k=+rack.dataset.rack; reorder(dragFrom,{k:k, idx:seats[k].concealed.length}); });
-  });
+  if(!box._wired){ box._wired=true; wireYouDrag(box); }   // grab-and-drag (pointer events) + tap-to-discard, wired once
   const db=el('btnDiscard'); if(db) db.onclick=()=>{ if(selDiscard) doDiscard(selDiscard.k, selDiscard.idx); };
   [0,2].forEach(k=>{
     const sb=el('btnSort'+k);  if(sb) sb.onclick=()=>{ seats[k].concealed=sortTiles(seats[k].concealed); selDiscard=null; render(); };
@@ -560,7 +553,7 @@ function yourHandHtml(s,k,yourTurn){
   const rack=s.concealed.map((c,idx)=>{
     let extra=''; const sel=(selDiscard && selDiscard.k===k && selDiscard.idx===idx);
     if(editable) extra+=' pick'; if(sel) extra+=' sel';
-    return '<span class="tw" '+(s.out?'':'draggable="true" ')+'data-k="'+k+'" data-ti="'+idx+'" data-sel="'+(editable?'1':'0')+'">'+tileSpan(c,extra)+'</span>';
+    return '<span class="tw" data-k="'+k+'" data-ti="'+idx+'" data-sel="'+(editable?'1':'0')+'">'+tileSpan(c,extra)+'</span>';
   }).join('');
   const declare = (yourTurn && valid) ? '<div class="actions"><button class="btn good" id="btnDecl'+k+'">Declare Mahjong ✓</button></div>' : '';
   return '<div class="hand'+(editable?' active':'')+(s.out?' out':'')+'">'+head+
@@ -580,6 +573,46 @@ function reorder(from,to){
     st.concealed.splice(Math.min(to.idx, st.concealed.length), 0, t);
   }
   dragFrom=null; selDiscard=null; render();
+}
+
+/* move a tile within or BETWEEN your two hands; returns the tile's NEW position */
+function moveTile(from,to){
+  const sf=seats[from.k], st=seats[to.k];
+  if(!sf||!st||sf.owner!=='you'||st.owner!=='you'||sf.out||st.out) return from;
+  if(from.k===to.k){
+    const arr=sf.concealed; if(from.idx===to.idx) return from;
+    const t=arr.splice(from.idx,1)[0]; const ni=from.idx<to.idx ? to.idx-1 : to.idx; arr.splice(ni,0,t); return {k:from.k,idx:ni};
+  }
+  const t=sf.concealed.splice(from.idx,1)[0]; const ni=Math.min(to.idx, st.concealed.length); st.concealed.splice(ni,0,t); return {k:to.k,idx:ni};
+}
+/* pointer-based grab-and-drag for your hands: tap = select to discard, drag = reorder / move
+   between Hand 1 and Hand 2 with a visible grabbed-tile lift. Wired once on the persistent #you box. */
+function wireYouDrag(box){
+  let drag=null;
+  const liftAt=p=>{ const n=box.querySelector('.tw[data-k="'+p.k+'"][data-ti="'+p.idx+'"]'); if(n)n.classList.add('dragging'); };
+  box.addEventListener('pointerdown',e=>{
+    const tw=e.target.closest && e.target.closest('.tw'); if(!tw||tw.dataset.sel!=='1')return;
+    drag={cur:{k:+tw.dataset.k,idx:+tw.dataset.ti}, x:e.clientX, y:e.clientY, moved:false};
+    try{box.setPointerCapture(e.pointerId);}catch(_){ }
+  });
+  box.addEventListener('pointermove',e=>{
+    if(!drag)return;
+    if(!drag.moved){ if(Math.abs(e.clientX-drag.x)<6 && Math.abs(e.clientY-drag.y)<6)return; drag.moved=true; liftAt(drag.cur); }
+    const u=document.elementFromPoint(e.clientX,e.clientY); if(!u||!u.closest)return;
+    const tw=u.closest('.tw');
+    if(tw && tw.dataset.sel==='1'){
+      const target={k:+tw.dataset.k,idx:+tw.dataset.ti};
+      if(target.k!==drag.cur.k || target.idx!==drag.cur.idx){ drag.cur=moveTile(drag.cur,target); renderYou(); liftAt(drag.cur); }
+      return;
+    }
+    const rack=u.closest('.rack[data-rack]');
+    if(rack){ const k=+rack.dataset.rack; if(k!==drag.cur.k && seats[k] && seats[k].owner==='you' && !seats[k].out){ drag.cur=moveTile(drag.cur,{k,idx:seats[k].concealed.length}); renderYou(); liftAt(drag.cur); } }
+  });
+  const end=()=>{ if(!drag)return; const wasDrag=drag.moved, pos=drag.cur; drag=null;
+    if(wasDrag){ selDiscard=null; render(); }
+    else { const s=seats[pos.k]; if(s && s.owner==='you' && !s.out){ selDiscard={k:pos.k,idx:pos.idx}; render(); } }
+  };
+  box.addEventListener('pointerup',end); box.addEventListener('pointercancel',end);
 }
 
 /* face-up discard pile, grouped by suit (Dots, Bams, Craks, then the rest) — a pop-out panel */
