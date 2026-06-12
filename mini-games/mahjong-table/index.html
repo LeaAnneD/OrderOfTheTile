@@ -1,0 +1,1519 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Table â€” Play American Mahjong vs. the Computer</title>
+<style>
+  :root{
+    --felt:#1f6b4a; --felt-dark:#164e36; --felt-edge:#0d3322;
+    --gold:#d9b65a; --gold-soft:#efd98c;
+    --ink:#1b2a22; --cream:#f6efe0;
+    --tileW:54px; --tileH:74px;
+    --rackTileW:46px; --rackTileH:62px;
+    --back1:#b8472f; --back2:#7e2d1c;
+    --shadow:0 6px 10px rgba(0,0,0,.35);
+    --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:var(--font);}
+  body{
+    background:radial-gradient(ellipse at center, #2a3d34 0%, #16221c 70%, #0c1410 100%);
+    color:var(--cream); overflow:hidden; user-select:none;
+    -webkit-user-select:none; touch-action:none;
+  }
+
+  /* ---------- Layout ---------- */
+  #app{position:fixed; inset:0; display:flex;}
+  #tableWrap{flex:1; position:relative; min-width:0;}
+  #table{
+    position:absolute; inset:14px;
+    background:
+      radial-gradient(ellipse at center, var(--felt) 0%, var(--felt-dark) 78%, var(--felt-edge) 100%);
+    border-radius:24px;
+    box-shadow: inset 0 0 60px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.5);
+    border:3px solid rgba(217,182,90,.25);
+    display:grid;
+    grid-template-rows: 90px 1fr 202px;
+    grid-template-columns: 90px 1fr 90px;
+    grid-template-areas:
+      "tl  top  tr"
+      "lft mid rgt"
+      "bl  you  br";
+  }
+  .seat{position:relative; display:flex; align-items:center; justify-content:center;}
+  #seatTop{grid-area:top;}
+  #seatLeft{grid-area:lft;}
+  #seatRight{grid-area:rgt;}
+  #seatYou{grid-area:you; align-items:flex-end; padding-bottom:6px;}
+  #center{grid-area:mid; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; position:relative;}
+
+  /* seat name plates */
+  .plate{
+    position:absolute; background:rgba(0,0,0,.32); border:1px solid rgba(217,182,90,.35);
+    padding:3px 10px; border-radius:20px; font-size:12px; letter-spacing:.5px;
+    display:flex; align-items:center; gap:7px; white-space:nowrap;
+  }
+  .plate .wind{color:var(--gold-soft); font-weight:700;}
+  .plate.active{box-shadow:0 0 0 2px var(--gold), 0 0 16px rgba(217,182,90,.6); background:rgba(60,40,0,.55);}
+  #seatTop .plate{top:-2px;}
+  #seatLeft .plate{top:8px; left:6px; writing-mode:horizontal-tb;}
+  #seatRight .plate{top:8px; right:6px;}
+  #seatYou .plate{top:-2px; left:50%; transform:translateX(-50%);}
+
+  /* opponent face-down hands */
+  .oppHand{display:flex; gap:2px;}
+  .oppHand.vert{flex-direction:column;}
+  .miniback{
+    width:20px;height:28px;border-radius:3px;
+    background:linear-gradient(160deg,var(--back1),var(--back2));
+    border:1px solid rgba(0,0,0,.4); box-shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+  .oppHand.vert .miniback{width:28px;height:20px;}
+  /* floating count pills retired â€” the tile count now lives in the seat plate so nothing sits on the tiles */
+  .countPill{display:none;}
+  .plate .ct{color:var(--gold-soft); font-weight:700; margin-left:2px;}
+  #seatTop .countPill{bottom:-2px; left:50%; transform:translateX(-50%);}
+  #seatLeft .countPill{bottom:8px; left:50%; transform:translateX(-50%);}
+  #seatRight .countPill{bottom:8px; left:50%; transform:translateX(-50%);}
+
+  /* exposures (melds shown face up) */
+  .exposeRow{position:absolute; display:flex; gap:3px; flex-wrap:wrap; max-width:160px;}
+  #seatTop .exposeRow{top:42px; left:50%; transform:translateX(-50%);}
+  #seatLeft .exposeRow{top:54px; left:8px;}
+  #seatRight .exposeRow{top:54px; right:8px;}
+
+  /* ---------- Tiles ---------- */
+  .tile{
+    width:var(--tileW); height:var(--tileH); border-radius:8px;
+    background:linear-gradient(160deg,#fffef9,#e9e2cf);
+    box-shadow: var(--shadow), inset 0 -3px 0 rgba(0,0,0,.12), inset 0 2px 0 rgba(255,255,255,.9);
+    border:1px solid #cdbf96; position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+  }
+  .tile img{width:100%;height:100%;object-fit:contain; pointer-events:none; padding:3px;}
+  .tile.small{--tileW:34px;--tileH:46px;border-radius:5px;}
+  .tile.tiny{width:26px;height:34px;border-radius:4px;}
+  .tile.back{background:linear-gradient(160deg,var(--back1),var(--back2)); border-color:#5a2114;}
+  .tile.back::after{content:"";position:absolute;inset:6px;border:1px solid rgba(255,255,255,.18);border-radius:4px;}
+
+  /* your rack â€” two rows of free-placement slots (drag tiles into groupings, leave gaps) */
+  #rack{
+    display:grid; grid-template-columns:repeat(14, var(--rackTileW)); grid-auto-rows:var(--rackTileH);
+    gap:6px 4px; padding:9px 12px; justify-content:center;
+    background:linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.32));
+    border-radius:14px; border:1px solid rgba(217,182,90,.3);
+    box-shadow: inset 0 3px 8px rgba(0,0,0,.4); max-width:97vw; overflow-x:auto;
+  }
+  .slot{ width:var(--rackTileW); height:var(--rackTileH); border-radius:8px;
+    display:flex; align-items:center; justify-content:center; }
+  .slot.drop{ box-shadow:inset 0 0 0 2px rgba(217,182,90,.55); background:rgba(217,182,90,.10); }
+  #rack .tile{ --tileW:var(--rackTileW); --tileH:var(--rackTileH); cursor:grab; transition:transform .12s ease, box-shadow .12s ease; }
+  #rack .tile:hover{transform:translateY(-6px); box-shadow:0 12px 16px rgba(0,0,0,.45);}
+  #rack .tile.dragging{opacity:.25;}
+  #rack .tile.picked{transform:translateY(-12px); box-shadow:0 0 0 3px var(--gold), 0 14px 18px rgba(0,0,0,.5);}
+  #rack .tile.justdrawn{box-shadow:0 0 0 3px #6fd08c, var(--shadow);}
+  #rack .tile.recv{box-shadow:0 0 0 3px #6fd08c, 0 0 12px #6fd08c, var(--shadow);}  /* the tiles just passed to you */
+  .floatTile{position:fixed; z-index:9999; pointer-events:none; transform:translate(-50%,-50%) rotate(-3deg) scale(1.06);}
+
+  /* center pieces */
+  #dice{display:flex; gap:14px;}
+  .die{
+    width:46px;height:46px;border-radius:10px;background:#f7f3e7;color:#1b2a22;
+    display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+    padding:6px; box-shadow:var(--shadow);
+  }
+  .die .pip{width:8px;height:8px;border-radius:50%;background:#1b2a22;align-self:center;justify-self:center;}
+  .die.rolling{animation:shake .12s linear infinite;}
+  @keyframes shake{0%{transform:translateY(0) rotate(0)}25%{transform:translateY(-4px) rotate(-8deg)}75%{transform:translateY(4px) rotate(8deg)}100%{transform:translateY(0) rotate(0)}}
+
+  #dice{position:relative; z-index:42;}
+
+  /* ---------- Authentic four walls (stay up all game, in front of each rack) ---------- */
+  #wallLayer{position:absolute; inset:0; z-index:30; pointer-events:none;}
+  .wallRow{position:absolute; display:flex;}
+  /* the four walls form a SQUARE at the center of the table, so it reads as THE wall */
+  .wallRow.h{flex-direction:row; align-items:center; justify-content:center; left:27%; right:27%;}
+  .wallRow.v{flex-direction:column; align-items:center; justify-content:center; top:27%; bottom:31%;}
+  .wallRow.bottom{bottom:30%;}
+  .wallRow.top{top:24%;}
+  .wallRow.left{left:24%;}
+  .wallRow.right{right:24%;}
+  /* the ACTIVE (pushed-out) wall anchors its near end, so it only shortens from the far end */
+  .wallRow.activeWall{justify-content:flex-start;}
+  /* East's counted-off stacks hold their original spot until they're pushed out last */
+  #wall_bottom .wallReserved{position:absolute; right:0; bottom:0;}
+  .wallReserved.pushed{transform:rotate(-45deg); transform-origin:0% 100%; transition:transform .6s cubic-bezier(.2,.8,.25,1);}
+  .wallInner, .wallReserved{display:flex; gap:2px;}
+  .wallInner{transition:transform .6s cubic-bezier(.2,.8,.25,1);}
+  .wallRow.h .wallInner, .wallRow.h .wallReserved{flex-direction:row;}
+  .wallRow.v .wallInner, .wallRow.v .wallReserved{flex-direction:column;}
+  /* a stack = top tile of a 2-high wall (shadow implies the tile beneath) */
+  .wstack{position:relative; border-radius:3px; flex:0 0 auto;
+    background:linear-gradient(160deg,var(--back1),var(--back2));
+    border:1px solid rgba(0,0,0,.5);
+    box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 4px 5px rgba(0,0,0,.4);}
+  .wstack::after{content:""; position:absolute; left:2px; right:2px; top:2px; height:3px; border-radius:2px; background:rgba(255,255,255,.14);}
+  /* tiles stand up: portrait rectangles, not flat squares */
+  .wallRow.h .wstack{width:23px; height:34px;}
+  .wallRow.v .wstack{width:34px; height:23px;}
+  .wstack.counted{background:linear-gradient(160deg,var(--gold-soft),var(--gold)); box-shadow:0 0 7px var(--gold);}
+  /* the active wall is pushed out toward center, angled (the curtsy) */
+  /* only the ACTIVE wall is pushed out â€” angled 45Â° toward center, near (left) end staying put */
+  .wallRow.bottom .wallInner.pushed{transform:rotate(-45deg); transform-origin:0% 100%;}
+  .wallRow.left   .wallInner.pushed{transform:rotate(-45deg); transform-origin:0% 0%;}
+  .wallRow.top    .wallInner.pushed{transform:rotate(-45deg); transform-origin:100% 0%;}
+  .wallRow.right  .wallInner.pushed{transform:rotate(-45deg); transform-origin:100% 100%;}
+  /* the end tile you draw from on your turn */
+  .wstack.drawend{pointer-events:auto; cursor:pointer; box-shadow:0 0 0 2px var(--gold), 0 0 10px var(--gold);
+    animation:drawpulse 1.1s ease-in-out infinite;}
+  @keyframes drawpulse{0%,100%{box-shadow:0 0 0 2px var(--gold),0 0 8px var(--gold);}50%{box-shadow:0 0 0 3px var(--gold-soft),0 0 18px var(--gold);}}
+
+  /* rack trays in front of each seat (so every player visibly has a rack) */
+  .oppHand{background:linear-gradient(180deg,#3a2b1c,#221810); padding:5px; border-radius:7px;
+    border:1px solid rgba(0,0,0,.55); box-shadow:inset 0 2px 5px rgba(0,0,0,.55), 0 2px 4px rgba(0,0,0,.4); min-width:24px; min-height:24px;}
+
+  /* tile-back color picker */
+  #backRow{display:flex; align-items:center; gap:9px; justify-content:center; margin-top:16px; flex-wrap:wrap;}
+  #backSwatches{display:flex; gap:6px;}
+  .sw{width:24px; height:30px; border-radius:5px; border:2px solid rgba(255,255,255,.22); cursor:pointer; padding:0;}
+  .sw.on{border-color:var(--gold); box-shadow:0 0 0 2px var(--gold);}
+  #backPicker{width:34px; height:30px; border:none; background:none; cursor:pointer; padding:0;}
+  .backlbl{font-size:12px; color:#9fb3a7;}
+
+  #discardCenter{display:flex;flex-direction:column;align-items:center;gap:6px;}
+  #lastDiscardLabel{font-size:12px;color:var(--gold-soft);letter-spacing:.5px;}
+  #flyLayer{position:absolute;inset:0;pointer-events:none;z-index:50;}
+  .flyer{position:absolute;}
+
+  #narr{
+    position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
+    background:rgba(0,0,0,.45); padding:5px 16px; border-radius:20px; font-size:13px;
+    color:var(--gold-soft); border:1px solid rgba(217,182,90,.3); white-space:nowrap; max-width:90%;
+    overflow:hidden; text-overflow:ellipsis;
+  }
+
+  /* ---------- Discard side panel ---------- */
+  #discardPanel{
+    width:0; background:linear-gradient(180deg,#1a261f,#10180f);
+    border-left:2px solid rgba(217,182,90,.3); overflow:hidden; transition:width .25s ease;
+    display:flex; flex-direction:column;
+  }
+  #discardPanel.open{width:248px;}
+  #discardPanel h3{margin:0;padding:12px 14px;font-size:14px;letter-spacing:1px;color:var(--gold-soft);border-bottom:1px solid rgba(217,182,90,.2);display:flex;justify-content:space-between;align-items:center;}
+  #discardList{flex:1; overflow-y:auto; padding:10px; display:flex; flex-wrap:wrap; gap:5px; align-content:flex-start;}
+  #discardList .tile{--tileW:30px;--tileH:40px;border-radius:5px;}
+  #discardPanel .meta{padding:8px 14px;font-size:11px;color:#8aa595;border-top:1px solid rgba(217,182,90,.15);}
+  .who-tag{position:absolute;top:-5px;right:-5px;font-size:8px;background:#000;border-radius:6px;padding:0 3px;color:var(--gold-soft);}
+
+  /* ---------- HUD / buttons ---------- */
+  #hud{position:absolute; top:10px; left:10px; display:flex; gap:8px; align-items:center; z-index:60;}
+  #hudRight{position:absolute; top:10px; right:10px; display:flex; gap:8px; z-index:60;}
+  .btn{
+    background:linear-gradient(180deg,#e7c869,#c9a23e); color:#3a2a06; border:none;
+    padding:9px 16px; border-radius:11px; font-weight:700; font-size:13px; cursor:pointer;
+    box-shadow: 0 4px 0 #8f6f1f, 0 6px 10px rgba(0,0,0,.35); letter-spacing:.4px;
+    transition:transform .06s ease, box-shadow .06s ease;
+  }
+  .btn:active{transform:translateY(4px); box-shadow:0 0 0 #8f6f1f, 0 2px 6px rgba(0,0,0,.35);}
+  .btn:disabled{opacity:.4; cursor:default; box-shadow:0 2px 0 #8f6f1f;}
+  .btn.ghost{background:rgba(0,0,0,.35); color:var(--gold-soft); border:1px solid rgba(217,182,90,.4); box-shadow:0 3px 0 rgba(0,0,0,.4);}
+  .btn.small{padding:6px 11px;font-size:12px;}
+  .badge{background:rgba(0,0,0,.4);padding:6px 12px;border-radius:20px;font-size:12px;color:var(--gold-soft);border:1px solid rgba(217,182,90,.3);}
+
+  /* ---------- Overlays ---------- */
+  .overlay{position:fixed; inset:0; background:rgba(8,14,10,.82); display:flex; align-items:center; justify-content:center; z-index:200; backdrop-filter:blur(3px);}
+  .card{
+    background:linear-gradient(180deg,#21302810,#16221c); background-color:#16221c;
+    border:2px solid rgba(217,182,90,.5); border-radius:18px; padding:30px 34px; max-width:520px; text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.6);
+  }
+  .card h1{margin:0 0 6px; font-size:30px; color:var(--gold-soft); letter-spacing:1px;}
+  .card h2{margin:0 0 14px; font-size:20px; color:var(--gold-soft);}
+  .card p{color:#c9d6cd; line-height:1.55; font-size:14px; margin:8px 0;}
+  .card .row{display:flex; gap:12px; justify-content:center; margin-top:20px; flex-wrap:wrap;}
+  .tag{display:inline-block;background:rgba(217,182,90,.15);border:1px solid rgba(217,182,90,.4);border-radius:8px;padding:2px 9px;font-size:12px;color:var(--gold-soft);margin:2px;}
+  .hidden{display:none !important;}
+
+  /* Charleston banner */
+  #charlestonBar{
+    position:absolute; top:54px; left:50%; transform:translateX(-50%); z-index:60;
+    background:rgba(0,0,0,.5); border:1px solid rgba(217,182,90,.4); border-radius:14px;
+    padding:8px 16px; display:flex; gap:14px; align-items:center; font-size:13px;
+  }
+  #charlestonBar .step{opacity:.4;}
+  #charlestonBar .step.on{opacity:1;color:var(--gold-soft);font-weight:700;}
+  #charlestonBar .arrow{font-size:18px;}
+
+  /* Call-for-exposure bar */
+  #callBar{
+    position:absolute; top:54px; left:50%; transform:translateX(-50%); z-index:70;
+    background:rgba(20,10,0,.82); border:2px solid var(--gold); border-radius:14px;
+    padding:9px 16px; display:flex; gap:10px; align-items:center; font-size:13px;
+    box-shadow:0 0 24px rgba(217,182,90,.5);
+  }
+  #callBar #callPrompt{color:var(--gold-soft); font-weight:600;}
+  #callBar .callclock{color:#f3d27a; font-variant-numeric:tabular-nums; min-width:18px; text-align:center;}
+  .exposeMeld{display:flex; gap:2px; background:rgba(0,0,0,.25); padding:2px; border-radius:5px;}
+  .exposeMeld .tile.swappable{box-shadow:0 0 0 2px var(--gold), 0 0 9px var(--gold); animation:drawpulse 1.2s ease-in-out infinite;}
+
+  /* ---------- small screens / phones ---------- */
+  @media (max-width:900px){
+    :root{--tileW:46px;--tileH:62px; --rackTileW:clamp(24px,6.2vw,40px); --rackTileH:calc(var(--rackTileW)*1.35);}
+    .wallRow.h .wstack{width:18px; height:27px;}
+    .wallRow.v .wstack{width:27px; height:18px;}
+    #rack{gap:4px 3px; padding:7px 8px;}
+    #discardPanel.open{width:200px;}
+  }
+  @media (max-width:600px){
+    :root{--tileW:34px;--tileH:46px; --rackTileW:clamp(16px,5.6vw,30px);}
+    #table{inset:6px; grid-template-rows:56px 1fr 148px; grid-template-columns:40px 1fr 40px; border-radius:14px;}
+    #seatYou{grid-area:auto; grid-row:3; grid-column:1/-1;}   /* your rack gets the full width */
+    #seatYou .plate{top:-4px;}
+    .plate{font-size:10px; padding:2px 7px; gap:4px;}
+    .miniback{width:13px;height:18px;} .oppHand.vert .miniback{width:18px;height:13px;}
+    .oppHand{padding:3px;}
+    .wallRow.h .wstack{width:12px; height:18px;}
+    .wallRow.v .wstack{width:18px; height:12px;}
+    .wallRow.h{left:22%; right:22%;}
+    .wallRow.v{top:27%; bottom:33%;}
+    #expose0{bottom:152px !important;}
+    .die{width:34px;height:34px;padding:4px;} .die .pip{width:6px;height:6px;}
+    #rack{gap:3px 2px; padding:5px 5px; border-radius:9px;}
+    #hud{top:6px;left:6px;gap:4px;} #hudRight{top:6px;right:6px;gap:4px;}
+    .badge{padding:4px 8px;font-size:10px;} .btn.small{padding:5px 8px;font-size:10px;}
+    #charlestonBar{top:64px; padding:6px 10px; gap:8px; font-size:11px; flex-wrap:wrap; justify-content:center; max-width:94vw;}
+    #callBar{top:64px; padding:7px 10px; gap:7px; font-size:11px; flex-wrap:wrap; justify-content:center; max-width:94vw;}
+    #narr{font-size:11px; padding:4px 10px; max-width:96%;}
+    #discardPanel.open{position:fixed; right:0; top:0; bottom:0; width:62vw; z-index:400; box-shadow:-8px 0 24px rgba(0,0,0,.5);}
+    .card{padding:20px 16px; max-width:92vw;}
+    .card h1{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="tableWrap">
+    <div id="table">
+      <!-- corners empty -->
+      <div class="seat" id="seatTop">
+        <div class="plate" data-seat="2"><span class="wind">W</span><span>West</span><span class="ct" id="ct2"></span></div>
+        <div class="oppHand" id="hand2"></div>
+        <div class="countPill" id="count2">0</div>
+        <div class="exposeRow" id="expose2"></div>
+      </div>
+      <div class="seat" id="seatLeft">
+        <div class="plate" data-seat="3"><span class="wind">N</span><span>North</span><span class="ct" id="ct3"></span></div>
+        <div class="oppHand vert" id="hand3"></div>
+        <div class="countPill" id="count3">0</div>
+        <div class="exposeRow" id="expose3"></div>
+      </div>
+      <div class="seat" id="seatRight">
+        <div class="plate" data-seat="1"><span class="wind">S</span><span>South</span><span class="ct" id="ct1"></span></div>
+        <div class="oppHand vert" id="hand1"></div>
+        <div class="countPill" id="count1">0</div>
+        <div class="exposeRow" id="expose1"></div>
+      </div>
+
+      <div id="center">
+        <div id="dice" class="hidden"><div class="die" id="die1"></div><div class="die" id="die2"></div></div>
+        <div id="discardCenter">
+          <div id="lastDiscardLabel"></div>
+          <div id="lastDiscardTile"></div>
+        </div>
+        <div id="narr"></div>
+      </div>
+
+      <div class="seat" id="seatYou">
+        <div class="plate active" data-seat="0"><span class="wind">E</span><span>You â€¢ East (Dealer)</span></div>
+        <div class="exposeRow" id="expose0" style="position:absolute;bottom:206px;left:50%;transform:translateX(-50%);"></div>
+        <div id="rack"></div>
+      </div>
+
+      <!-- Authentic four walls â€” stay up all game, in front of each rack -->
+      <div id="wallLayer" class="hidden">
+        <div class="wallRow h bottom" id="wall_bottom"><div class="wallInner" id="wallInner_bottom"></div><div class="wallReserved" id="wallReserved_bottom"></div></div>
+        <div class="wallRow h top" id="wall_top"><div class="wallInner" id="wallInner_top"></div></div>
+        <div class="wallRow v left" id="wall_left"><div class="wallInner" id="wallInner_left"></div></div>
+        <div class="wallRow v right" id="wall_right"><div class="wallInner" id="wallInner_right"></div></div>
+      </div>
+
+      <div id="flyLayer"></div>
+
+      <!-- HUD -->
+      <div id="hud">
+        <span class="badge" id="wallCount">Wall: 152</span>
+        <span class="badge" id="phaseBadge">Setup</span>
+      </div>
+      <div id="hudRight">
+        <button class="btn small ghost" id="restartBtn">â†» Restart</button>
+        <button class="btn small ghost" id="sortBtn">Sort</button>
+        <button class="btn small ghost hidden" id="mahjongBtn">ðŸ€„ Declare Mahjong</button>
+        <button class="btn small" id="discardToggle">Discards â–¸</button>
+      </div>
+
+      <!-- Charleston bar -->
+      <div id="charlestonBar" class="hidden">
+        <span class="step" data-c="0">1 â–¶ Right</span>
+        <span class="step" data-c="1">2 âœš Across</span>
+        <span class="step" data-c="2">3 â—€ Left</span>
+        <span class="arrow" id="charlestonHint"></span>
+        <button class="btn small" id="passBtn" disabled>Pass 0/3</button>
+      </div>
+
+      <!-- Call-for-exposure bar -->
+      <div id="callBar" class="hidden">
+        <span id="callPrompt"></span>
+        <span id="callExposeBtns" style="display:flex;gap:6px;"></span>
+        <button class="btn small" id="callMahjongBtn">Call Mahjong</button>
+        <button class="btn small ghost" id="callPassBtn">Pass</button>
+        <span id="callTimer" class="callclock"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Discard panel -->
+  <div id="discardPanel">
+    <h3>Discard Pile <button class="btn small ghost" id="discardClose">âœ•</button></h3>
+    <div id="discardList"></div>
+    <div class="meta" id="discardMeta">0 tiles discarded</div>
+  </div>
+</div>
+
+<!-- Start overlay -->
+<div class="overlay" id="startOverlay">
+  <div class="card">
+    <h1>The Table</h1>
+    <p>American Mahjong (NMJL) â€” you against three computer players. You sit <b>East</b>, the dealer.</p>
+    <p style="font-size:13px;color:#9fb3a7;">
+      Four walls of <b>19 stacks</b> go up around the table. Roll the dice, count from the right of your wall,
+      and push the live wall out to the center â€” then watch it deal <b>4&nbsp;Â·&nbsp;4&nbsp;Â·&nbsp;4</b> and the dealer's hop.
+      Drag tiles in your rack to sort them.
+    </p>
+    <div id="backRow">
+      <span class="backlbl">Your tile back:</span>
+      <div id="backSwatches"></div>
+      <input type="color" id="backPicker" title="Pick a custom color">
+    </div>
+    <div class="row">
+      <button class="btn" id="startRollBtn">ðŸŽ² Roll &amp; Deal</button>
+      <button class="btn ghost" id="startSkipBtn">â­ Skip to Charleston</button>
+    </div>
+    <p style="font-size:11px;color:#6f857a;margin-top:18px;">Tile art from the Order of the Tile set. No card patterns shown.</p>
+  </div>
+</div>
+
+<!-- End overlay -->
+<div class="overlay hidden" id="endOverlay">
+  <div class="card">
+    <h1 id="endTitle">Mahjong!</h1>
+    <p id="endText"></p>
+    <div class="row"><button class="btn" onclick="location.reload()">Deal a New Hand</button></div>
+  </div>
+</div>
+
+<script src="../_data/hands2026.js"></script>
+<script src="../_data/card2026.js?v=20260612"></script>
+<script>
+/* =========================================================================
+   THE TABLE â€” American Mahjong vs. computer
+   Single-file build. Tile images live in ../tile-matching/assets/tiles/
+   Rules per Business/Products/Reference/Rules-Layer Canon (C1-C13).
+   Wins validate against the real 2026 card via _data/hands2026.js
+   (1,077 concrete hands; no card-pattern strings shown on screen).
+   ========================================================================= */
+
+const ART_DIR = "../tile-matching/assets/tiles/";
+const ART = {
+  bam1:"1Bam_peacock_v1.png", bam2:"2Bam_v3.png", bam3:"3Bam_v2.png", bam4:"4Bam_v2.png",
+  bam5:"5Bam_v1.png", bam6:"6Bam_v1.png", bam7:"7Bam_v2.png", bam8:"8Bam_v2.png", bam9:"9Bam_v2.png",
+  crak1:"1Crack_v2.png", crak2:"2Crack_v2.png", crak3:"3Crack_v2.png", crak4:"4Crack_v2.png",
+  crak5:"5Crack_v2.png", crak6:"6Crack_v2.png", crak7:"7Crack_v2.png", crak8:"8Crack_v2.png", crak9:"9Crack_v2.png",
+  dot1:"1Dot_v2.png", dot2:"2Dot_v2.png", dot3:"3Dot_v2.png", dot4:"4Dot_v2.png",
+  dot5:"5Dot_v2.png", dot6:"6Dot_v2.png", dot7:"7Dot_v2.png", dot8:"8Dot_v2.png", dot9:"9Dot_v2.png",
+  wind_E:"Wind_East.png", wind_S:"Wind_South.png", wind_W:"Wind_West.png", wind_N:"Wind_North.png",
+  dragon_red:"Dragon_Red.png", dragon_green:"Dragon_Green.png", dragon_soap:"Dragon_White.png",
+  flower1:"Flower_Plum.png", flower2:"Flower_Orchid.png", flower3:"Flower_Chrysanthemum.png",
+  flower4:"Flower_Lotus.png", flower5:"Flower_Peony.png", flower6:"Flower_Rose.png",
+  flower7:"Flower_Lily.png", flower8:"Flower_Tulip.png",
+  joker:"Joker.png"
+};
+
+/* ---- Build the 152-tile deck ---- */
+let UID = 0;
+function mk(key, sortRank){ return {id:++UID, key, art:ART[key], rank:sortRank}; }
+function buildDeck(){
+  const d = [];
+  const suits=["dot","bam","crak"];
+  suits.forEach((s,si)=>{ for(let n=1;n<=9;n++){ for(let c=0;c<4;c++) d.push(mk(s+n, si*100+n)); } });
+  // winds N E S W Ã—4
+  [["wind_E","E"],["wind_S","S"],["wind_W","W"],["wind_N","N"]].forEach((w,i)=>{
+    for(let c=0;c<4;c++) d.push(mk(w[0], 300+i));
+  });
+  // dragons Ã—4
+  [["dragon_red",0],["dragon_green",1],["dragon_soap",2]].forEach(dr=>{
+    for(let c=0;c<4;c++) d.push(mk(dr[0], 320+dr[1]));
+  });
+  // 8 flowers (one art each â€” 8 total tiles)
+  for(let f=1;f<=8;f++) d.push(mk("flower"+f, 340));
+  // 8 jokers
+  for(let j=0;j<8;j++) d.push(mk("joker", 999));
+  return d; // 152
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---- Friendly names for narration / discards ---- */
+const SUIT_NAME={dot:"Dot",bam:"Bam",crak:"Crak"};
+function tileName(t){
+  const k=t.key;
+  if(/^(dot|bam|crak)\d$/.test(k)) return k.slice(-1)+" "+SUIT_NAME[k.slice(0,-1)];
+  if(k.startsWith("wind_")) return ({E:"East",S:"South",W:"West",N:"North"})[k.slice(5)]+" Wind";
+  if(k==="dragon_red") return "Red Dragon";
+  if(k==="dragon_green") return "Green Dragon";
+  if(k==="dragon_soap") return "Soap (White Dragon)";
+  if(k.startsWith("flower")) return "Flower";
+  if(k==="joker") return "Joker";
+  return k;
+}
+
+/* ---- State ---- */
+const SEAT_NAMES=["You (East)","South","West","North"]; // index 0..3, counterclockwise
+const SEAT_SHORT=["You","South","West","North"];
+const PLAY_ORDER=[0,1,2,3]; // East, South, West, North -> to your right
+let state = {
+  deck:[], wall:[], hands:[[],[],[],[]], exposures:[[],[],[],[]],
+  discards:[], phase:"setup", current:0, dice:[1,1], skip:false, awaitingDiscard:false, awaitingDraw:false,
+  slots:new Array(28).fill(null)
+};
+
+/* ---- DOM helpers ---- */
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
+const sleep=ms=>new Promise(r=>setTimeout(r, state.skip?0:ms));
+function setNarr(t){ $("#narr").textContent=t; }
+function setPhase(p){ $("#phaseBadge").textContent=p; }
+
+function tileEl(t, cls=""){
+  const d=document.createElement("div");
+  d.className="tile "+cls; d.dataset.id=t.id;
+  const img=document.createElement("img"); img.src=ART_DIR+t.art; img.alt=tileName(t);
+  img.onerror=()=>{ d.innerHTML="<span style='font-size:10px;color:#333;text-align:center'>"+tileName(t)+"</span>"; };
+  d.appendChild(img);
+  return d;
+}
+function backEl(cls=""){ const d=document.createElement("div"); d.className="tile back "+cls; return d; }
+
+/* ===================== SETUP: dice, wall, deal ===================== */
+function pips(n){
+  const map={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+  let html=""; for(let i=0;i<9;i++) html+= map[n].includes(i)?"<div class='pip'></div>":"<div></div>";
+  return html;
+}
+function renderDice(){ $("#die1").innerHTML=pips(state.dice[0]); $("#die2").innerHTML=pips(state.dice[1]); }
+
+async function rollDice(){
+  $("#dice").classList.remove("hidden");
+  $("#die1").classList.add("rolling"); $("#die2").classList.add("rolling");
+  setNarr("Rolling the diceâ€¦");
+  for(let i=0;i<(state.skip?1:12);i++){
+    state.dice=[1+Math.floor(Math.random()*6),1+Math.floor(Math.random()*6)];
+    renderDice(); await sleep(70);
+  }
+  $("#die1").classList.remove("rolling"); $("#die2").classList.remove("rolling");
+  const sum=state.dice[0]+state.dice[1];
+  setNarr("Dice show "+state.dice[0]+" + "+state.dice[1]+" = "+sum+". Counting to break the wallâ€¦");
+  await sleep(state.skip?0:900);
+  return sum;
+}
+
+/* ---- tile-back color picker (plain colors + custom; saved) ---- */
+const BACK_KEY="oott_table_back";
+const BACK_PRESETS=["#b8472f","#2f6b8b","#3e7d52","#6e4a8c","#11705a","#8a5a24","#3c4350","#9a2f4f"];
+function darken(hex,f){ f=(f==null?0.62:f); const n=parseInt(hex.slice(1),16); let r=(n>>16)&255,g=(n>>8)&255,b=n&255; r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f); return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
+function applyBack(hex){
+  document.documentElement.style.setProperty('--back1',hex);
+  document.documentElement.style.setProperty('--back2',darken(hex));
+  try{ localStorage.setItem(BACK_KEY,hex); }catch(_){}
+  $$("#backSwatches .sw").forEach(s=>s.classList.toggle("on", s.dataset.c.toLowerCase()===hex.toLowerCase()));
+  const p=$("#backPicker"); if(p) p.value=hex;
+}
+function initBack(){
+  let hex=null; try{ hex=localStorage.getItem(BACK_KEY); }catch(_){}
+  if(!hex) hex=BACK_PRESETS[0];
+  const host=$("#backSwatches");
+  if(host){ host.innerHTML=""; BACK_PRESETS.forEach(c=>{ const b=document.createElement("button"); b.className="sw"; b.dataset.c=c; b.style.background=c; b.title="Use this tile back"; b.onclick=()=>applyBack(c); host.appendChild(b); }); }
+  const p=$("#backPicker"); if(p) p.oninput=()=>applyBack(p.value);
+  applyBack(hex);
+}
+
+/* ---- authentic four walls: build, count-from-right, push-out, draw, cascade ----
+   The four walls stay up all game in front of each rack. The active wall is pushed
+   out (angled) and tiles come off its end; when it empties, the next wall (to the
+   left) is pushed out. WALL_ORDER is the consumption order around the table.        */
+/* consumption order around the table; East's counted-off reserve comes out LAST */
+const WALL_ORDER=["bottom","left","top","right","reserve"];
+let activeWallI=0, drawTick=0;
+function wInner(pos){ return pos==="reserve" ? $("#wallReserved_bottom") : $("#wallInner_"+pos); }
+function activeInner(){ return wInner(WALL_ORDER[activeWallI]); }
+
+function buildWalls(){
+  ["bottom","left","top","right"].forEach(pos=>{
+    const inner=wInner(pos); inner.innerHTML=""; inner.classList.remove("pushed");
+    $("#wall_"+pos).classList.remove("activeWall");
+    for(let i=0;i<19;i++){ const s=document.createElement("div"); s.className="wstack"; inner.appendChild(s); }
+  });
+  const res=$("#wallReserved_bottom"); res.innerHTML=""; res.classList.remove("pushed"); res.style.left=""; res.style.right="";
+  activeWallI=0; drawTick=0;
+  $("#wallLayer").classList.remove("hidden");
+}
+
+async function countAndBreak(sum){
+  setPhase("Break");
+  setNarr("You count "+sum+" from the right of your wallâ€¦");
+  const inner=wInner("bottom"); const stacks=[...inner.children]; // 0=left â€¦ last=right
+  for(let k=0;k<sum && k<stacks.length;k++){ stacks[stacks.length-1-k].classList.add("counted"); await sleep(state.skip?0:230); }
+  // the counted-off stacks STAY in front of East â€” move them into the reserved part (right side)
+  const res=$("#wallReserved_bottom");
+  for(let k=0;k<sum && inner.children.length>0;k++){ const last=inner.lastElementChild; last.classList.remove("counted"); res.insertBefore(last, res.firstChild); }
+  setNarr("Those stay in front of you. Pushing the live wall outâ€¦");
+  await sleep(state.skip?0:450);
+}
+
+async function pushOutWall(pos){
+  $$(".wallRow.activeWall").forEach(w=>w.classList.remove("activeWall"));
+  $("#wall_"+(pos==="reserve"?"bottom":pos)).classList.add("activeWall");  // anchor the near end; deplete far end only
+  const el=wInner(pos);
+  if(pos==="reserve"){ el.style.left=el.offsetLeft+"px"; el.style.right="auto"; }  // pin the near end before the push
+  el.classList.add("pushed");
+  await sleep(state.skip?0:600);
+}
+
+// when the active wall is spent, advance to the next wall (left) and push it out â€” visibly
+async function ensureLiveWall(){
+  while(activeInner().children.length===0 && activeWallI<WALL_ORDER.length-1){
+    activeWallI++;
+    const next=WALL_ORDER[activeWallI];
+    setNarr(next==="reserve" ? "Down to the last of it â€” your counted-off stacks come out now."
+                             : "That wall's spent â€” the next one gets pushed out.");
+    await pushOutWall(next);
+  }
+}
+
+// take `n` tiles off the END of the live wall and fly a face-down tile to `seat`'s rack
+async function wallDraw(seat, n){
+  await ensureLiveWall();
+  const end=activeInner().lastElementChild;
+  if(!state.skip && end){
+    const layer=$("#flyLayer"), wrap=$("#tableWrap").getBoundingClientRect();
+    const er=end.getBoundingClientRect();
+    const targets={0:"#seatYou",1:"#seatRight",2:"#seatTop",3:"#seatLeft"};
+    const tgt=$(targets[seat]).getBoundingClientRect();
+    const sx=er.left+er.width/2-wrap.left, sy=er.top+er.height/2-wrap.top;
+    const tx=tgt.left+tgt.width/2-wrap.left, ty=tgt.top+tgt.height/2-wrap.top;
+    const f=backEl(); f.classList.add("flyer"); f.style.left=sx+"px"; f.style.top=sy+"px";
+    f.style.transition="left .28s ease, top .28s ease, opacity .28s"; layer.appendChild(f);
+    requestAnimationFrame(()=>{ f.style.left=tx+"px"; f.style.top=ty+"px"; });
+    await sleep(260); f.style.opacity="0"; await sleep(70); f.remove();
+  }
+  // a stack is 2 tiles â€” deplete ~1 stack per 2 tiles, cascading to the next wall as needed
+  drawTick+=n; let rm=Math.floor(drawTick/2); drawTick-=rm*2;
+  while(rm>0){ await ensureLiveWall(); const innr=activeInner(); if(!innr.lastElementChild) break; innr.removeChild(innr.lastElementChild); rm--; }
+}
+
+// remove stacks instantly (no animation) â€” used by the skip-deal so the walls still look spent
+function depleteWallsSync(tiles){
+  let rm=Math.floor(tiles/2);
+  while(rm>0){
+    while(activeInner().children.length===0 && activeWallI<WALL_ORDER.length-1){
+      activeWallI++; const np=WALL_ORDER[activeWallI];
+      const el=wInner(np);
+      if(np==="reserve"){ el.style.left=el.offsetLeft+"px"; el.style.right="auto"; }  // pin the near end
+      el.classList.add("pushed");
+      $$(".wallRow.activeWall").forEach(w=>w.classList.remove("activeWall"));
+      $("#wall_"+(np==="reserve"?"bottom":np)).classList.add("activeWall");
+    }
+    const innr=activeInner(); if(!innr.lastElementChild) break;
+    innr.removeChild(innr.lastElementChild); rm--;
+  }
+}
+// the clickable end tile of the live wall (your draw on your turn)
+function setDrawEnd(on){
+  $$(".wstack.drawend").forEach(s=>{ s.classList.remove("drawend"); s.onclick=null; });
+  if(!on) return;
+  const end=activeInner() && activeInner().lastElementChild;
+  if(end){ end.classList.add("drawend"); end.onclick=onPlayerDrawClick; }
+}
+
+function take(n){ const out=[]; for(let i=0;i<n;i++) out.push(state.wall.shift()); return out; }
+
+async function dealTiles(){
+  setPhase("Dealing");
+  if(state.skip){
+    // instant deal â€” no animation, no awaits (avoids long timer chains)
+    for(let round=0; round<3; round++) for(const seat of PLAY_ORDER) state.hands[seat].push(...take(4));
+    state.hands[0].push(...take(2));
+    for(const seat of [1,2,3]) state.hands[seat].push(...take(1));
+    depleteWallsSync(53);     // 53 tiles dealt â€” show the walls spent accordingly
+    updateCounts();
+    return;
+  }
+  // 3 rounds of 4 to each seat in play order â€” each block comes off the live wall
+  for(let round=0; round<3; round++){
+    for(const seat of PLAY_ORDER){
+      state.hands[seat].push(...take(4)); updateCounts();
+      setNarr((seat===0?"You take":SEAT_SHORT[seat]+" takes")+" 4  Â·  "+(round*4+4)+" tiles");
+      await wallDraw(seat,4);
+      await sleep(state.skip?0:110);
+    }
+  }
+  // the dealer's hop: East takes 2 (1st & 3rd), others take 1
+  setNarr("Now the singles â€” and the dealer hops for an extra tile.");
+  await sleep(state.skip?0:450);
+  state.hands[0].push(...take(2)); updateCounts(); await wallDraw(0,2);
+  for(const seat of [1,2,3]){ state.hands[seat].push(...take(1)); updateCounts(); await wallDraw(seat,1); await sleep(state.skip?0:100); }
+  setNarr("Dealt! You hold 14, everyone else 13.");
+  await sleep(state.skip?0:600);
+}
+
+function updateCounts(){
+  for(let s=1;s<4;s++){
+    const ct=$("#ct"+s); if(ct) ct.textContent="Â· "+state.hands[s].length;
+    const hand=$("#hand"+s); hand.innerHTML="";
+    for(let i=0;i<Math.min(state.hands[s].length,13);i++){ const b=document.createElement("div"); b.className="miniback"; hand.appendChild(b); }
+  }
+  $("#wallCount").textContent="Wall: "+state.wall.length;
+}
+
+/* ===================== YOUR RACK â€” two rows of free-placement slots ===================== */
+const RACK_COLS=14, RACK_ROWS=2, RACK_SLOTS=RACK_COLS*RACK_ROWS;
+function sortKey(t){ return t.rank; }
+function ensureSlots(){ if(!state.slots || state.slots.length!==RACK_SLOTS) state.slots=new Array(RACK_SLOTS).fill(null); }
+function firstEmptySlot(){ for(let i=0;i<RACK_SLOTS;i++) if(state.slots[i]==null) return i; return -1; }
+// keep the layout in step with the hand WITHOUT disturbing the player's groupings:
+// drop slots whose tile left the hand, and drop any new tile into the first open slot.
+function syncSlots(){
+  ensureSlots();
+  const handIds=new Set(state.hands[0].map(t=>t.id));
+  for(let i=0;i<RACK_SLOTS;i++) if(state.slots[i]!=null && !handIds.has(state.slots[i])) state.slots[i]=null;
+  const placed=new Set(state.slots.filter(x=>x!=null));
+  state.hands[0].forEach(t=>{ if(!placed.has(t.id)){ const e=firstEmptySlot(); if(e>=0){ state.slots[e]=t.id; placed.add(t.id); } } });
+}
+// explicit tidy (Sort button / fresh deal): sort and pack onto the top row, clearing groupings
+function relayoutSorted(){
+  state.slots=new Array(RACK_SLOTS).fill(null);
+  state.hands[0].forEach((t,i)=>{ if(i<RACK_SLOTS) state.slots[i]=t.id; });
+}
+function sortHand(){ state.hands[0].sort((a,b)=>sortKey(a)-sortKey(b)); relayoutSorted(); renderRack(); }
+
+let drawnId=null;
+function renderRack(){
+  syncSlots();
+  const rack=$("#rack"); rack.innerHTML="";
+  for(let i=0;i<RACK_SLOTS;i++){
+    const cell=document.createElement("div"); cell.className="slot"; cell.dataset.slot=i;
+    const id=state.slots[i];
+    if(id!=null){
+      const t=state.hands[0].find(x=>x.id===id);
+      if(t){
+        let cls=""; if(t.id===drawnId) cls="justdrawn"; if(charlestonPicks.includes(t.id)) cls+=(cls?" ":"")+"picked";
+        if(recvIds.has(t.id) && state.phase==="charleston") cls+=(cls?" ":"")+"recv";
+        const el=tileEl(t, cls); el.dataset.id=t.id; cell.appendChild(el); cell.classList.add("filled");
+      }
+    }
+    rack.appendChild(cell);
+  }
+  attachDrag();
+}
+function attachDrag(){ $("#rack").querySelectorAll(".tile").forEach(el=>el.addEventListener("pointerdown", onPointerDown)); }
+function tileIndexFromId(id){ return state.hands[0].findIndex(t=>t.id===id); }
+
+function onPointerDown(e){
+  if(e.button!==undefined && e.button!==0) return;
+  const el=e.currentTarget; const id=+el.dataset.id;
+  const startX=e.clientX, startY=e.clientY;
+  let moved=false, floater=null;
+  function move(ev){
+    const dx=ev.clientX-startX, dy=ev.clientY-startY;
+    if(!moved && Math.hypot(dx,dy)>6){
+      moved=true; el.classList.add("dragging");
+      floater=el.cloneNode(true); floater.classList.add("floatTile"); floater.classList.remove("dragging");
+      document.body.appendChild(floater);
+    }
+    if(moved && floater){
+      floater.style.left=ev.clientX+"px"; floater.style.top=ev.clientY+"px";
+      highlightSlotUnder(ev.clientX, ev.clientY);
+    }
+  }
+  function up(ev){
+    document.removeEventListener("pointermove",move);
+    document.removeEventListener("pointerup",up);
+    if(floater) floater.remove();
+    clearSlotHighlight(); el.classList.remove("dragging");
+    if(!moved){ onTileClick(id); }
+    else { const slot=slotIndexUnder(ev.clientX, ev.clientY); if(slot>=0) placeTileInSlot(id, slot); renderRack(); }
+  }
+  document.addEventListener("pointermove",move);
+  document.addEventListener("pointerup",up);
+}
+function slotIndexUnder(x,y){
+  const els=document.elementsFromPoint(x,y);
+  for(const e of els){ const s=e.closest?e.closest(".slot"):null; if(s && $("#rack").contains(s)) return +s.dataset.slot; }
+  return -1;
+}
+function highlightSlotUnder(x,y){ clearSlotHighlight(); const i=slotIndexUnder(x,y); if(i>=0){ const c=$('#rack .slot[data-slot="'+i+'"]'); if(c) c.classList.add("drop"); } }
+function clearSlotHighlight(){ $$("#rack .slot.drop").forEach(c=>c.classList.remove("drop")); }
+// drop a tile into a slot: empty target -> move there (leaving a gap); occupied -> swap
+function placeTileInSlot(id, slot){
+  const from=state.slots.indexOf(id);
+  if(from===slot) return;
+  const occ=state.slots[slot];
+  state.slots[slot]=id;
+  if(from>=0) state.slots[from]=(occ!=null?occ:null);
+}
+
+/* click a tile: in Charleston -> select to pass; in play -> discard */
+function onTileClick(id){
+  if(state.phase==="charleston"){ toggleCharlestonPick(id); }
+  else if(state.phase==="play" && state.current===0){ humanDiscard(id); }
+}
+
+/* ===================== CHARLESTON (full, per Canon C7/C8/C9) =====================
+   First Charleston (required): right, across, left â€” LEFT may be blind.
+   Second Charleston (only if all agree): left, across, right â€” RIGHT may be blind.
+   Courtesy pass (by agreement): 0-3 tiles across (the lower of the two offers).
+   Jokers are never passed; the computers also hold their flowers (C9).            */
+let charlestonQueue=[], charlestonStep=0, charlestonRound=1, charlestonPicks=[];
+
+const FIRST_PASSES=[
+  {dir:"right",  label:"Pass 3 to your RIGHT (South)", hint:"â–¶", count:3},
+  {dir:"across", label:"Pass 3 ACROSS (West)",         hint:"âœš", count:3},
+  {dir:"left",   label:"Pass 3 to your LEFT (North) â€” you may pass blind", hint:"â—€", count:3, blindOK:true}
+];
+const SECOND_PASSES=[
+  {dir:"left",   label:"Second Charleston â€” pass 3 LEFT (North)", hint:"â—€", count:3},
+  {dir:"across", label:"Second Charleston â€” pass 3 ACROSS (West)", hint:"âœš", count:3},
+  {dir:"right",  label:"Second Charleston â€” pass 3 RIGHT (South) â€” you may pass blind", hint:"â–¶", count:3, blindOK:true}
+];
+const STEP_LABELS={1:["1 â–¶ Right","2 âœš Across","3 â—€ Left"], 2:["1 â—€ Left","2 âœš Across","3 â–¶ Right"]};
+
+function startCharleston(){
+  state.phase="charleston"; setPhase("Charleston"); state.skip=false;
+  $("#dice").classList.add("hidden");   // walls stay up â€” they're part of the table now
+  $("#charlestonBar").classList.remove("hidden");
+  sortHand();
+  charlestonRound=1; charlestonQueue=FIRST_PASSES.slice(); charlestonStep=0;
+  runCharlestonStep();
+}
+function curPass(){ return charlestonQueue[charlestonStep]; }
+function runCharlestonStep(){
+  charlestonPicks=[];
+  const p=curPass();
+  $$("#charlestonBar .step").forEach((s,i)=>{ s.textContent=STEP_LABELS[charlestonRound][i]||s.textContent; s.classList.toggle("on", i===charlestonStep); });
+  $("#charlestonHint").textContent=p.hint;
+  setNarr(p.label+". Tap "+(p.blindOK?"up to ":"")+p.count+" tiles, then Pass. (Jokers can't be passed.)");
+  updatePassBtn();
+  renderRack();
+}
+function toggleCharlestonPick(id){
+  const t=state.hands[0].find(x=>x.id===id);
+  if(t.key==="joker"){ flash("Jokers are never passed in the Charleston."); return; }
+  const p=curPass();
+  const i=charlestonPicks.indexOf(id);
+  if(i>=0) charlestonPicks.splice(i,1);
+  else { if(charlestonPicks.length>=p.count){ flash("Only "+p.count+" tiles this pass."); return; } charlestonPicks.push(id); }
+  paintPicks(); updatePassBtn();
+}
+function paintPicks(){
+  $$("#rack .tile").forEach(el=>{
+    el.classList.toggle("picked", charlestonPicks.includes(+el.dataset.id));
+  });
+}
+function updatePassBtn(){
+  const p=curPass(); if(!p) return;
+  const b=$("#passBtn"); const n=charlestonPicks.length;
+  if(p.blindOK){ b.textContent = n===p.count ? "Pass "+n+"/"+p.count : "Pass "+n+" + blind "+(p.count-n); b.disabled=false; }
+  else { b.textContent="Pass "+n+"/"+p.count; b.disabled = n!==p.count; }
+}
+function flash(msg){ setNarr(msg); }
+
+/* CPU pass picks: spare tiles its card targets don't want; never jokers,
+   and it holds its flowers (Canon C9). */
+function aiPick(seat, count){
+  count=count==null?3:count;
+  const hand=state.hands[seat];
+  const wanted=cpuWantedIds(seat, cpuTargets(seat,3));
+  const rank=t=>{
+    if(t.key==="joker") return 1000;                     // never passed (rule)
+    if(t.key.startsWith("flower")) return 500;           // held, not passed (C9)
+    return (wanted.has(t.id)?100:0) + Math.random();
+  };
+  return hand.filter(t=>t.key!=="joker").sort((a,b)=>rank(a)-rank(b)).slice(0,count).map(t=>t.id);
+}
+function cpuCourtesyOffer(seat){
+  const wanted=cpuWantedIds(seat, cpuTargets(seat,3));
+  const spare=state.hands[seat].filter(t=>!wanted.has(t.id) && t.key!=="joker" && !t.key.startsWith("flower"));
+  return Math.min(3, spare.length);
+}
+
+/* ---- the pass plays out on the table: everyone's tiles go FACE DOWN between
+   passer and receiver, sit a beat, then travel â€” and your three new tiles glow ---- */
+let recvIds=new Set(), passing=false;
+function seatAnchor(seat){
+  const sels={0:"#seatYou",1:"#seatRight",2:"#seatTop",3:"#seatLeft"};
+  const wrap=$("#tableWrap").getBoundingClientRect();
+  const r=$(sels[seat]).getBoundingClientRect();
+  return {x:r.left+r.width/2-wrap.left, y:r.top+r.height/2-wrap.top};
+}
+async function animatePassTrios(out, shift){
+  if(state.skip) return;
+  const layer=$("#flyLayer"); const trios=[];
+  for(let s=0;s<4;s++){
+    if(!out[s].length) continue;
+    const a=seatAnchor(s), b=seatAnchor((s+shift)%4);
+    const sx=a.x+(b.x-a.x)*0.30, sy=a.y+(b.y-a.y)*0.30;   // face down on the table in front of the passer
+    const tx=a.x+(b.x-a.x)*0.80, ty=a.y+(b.y-a.y)*0.80;   // ...then slid over to the receiver
+    const d=document.createElement("div");
+    d.style.cssText="position:absolute;display:flex;gap:3px;z-index:60;transform:translate(-50%,-50%);transition:left .6s ease,top .6s ease,opacity .35s;";
+    d.style.left=sx+"px"; d.style.top=sy+"px";
+    for(let i=0;i<out[s].length;i++) d.appendChild(backEl("tiny"));
+    layer.appendChild(d); trios.push({d,tx,ty});
+  }
+  await sleep(700);                                        // everyone's pass sits face down
+  trios.forEach(({d,tx,ty})=>{ d.style.left=tx+"px"; d.style.top=ty+"px"; });
+  await sleep(650);
+  trios.forEach(({d})=>{ d.style.opacity="0"; });
+  await sleep(220);
+  trios.forEach(({d})=>d.remove());
+}
+async function doCharlestonPass(){
+  if(passing) return; passing=true;
+  try{
+    const p=curPass();
+    recvIds=new Set();
+    const out=[[],[],[],[]];
+    for(const seat of [1,2,3]){
+      out[seat]=aiPick(seat, p.count).map(id=>{ const i=state.hands[seat].findIndex(t=>t.id===id); return state.hands[seat].splice(i,1)[0]; });
+    }
+    out[0]=charlestonPicks.map(id=>{ const i=tileIndexFromId(id); return state.hands[0].splice(i,1)[0]; });
+    charlestonPicks=[]; renderRack();
+    const shift={right:1,across:2,left:3}[p.dir];
+    // blind portion: the short tiles pass through, unseen, from the pass coming to you
+    // (incoming passes can never hold jokers, so a blind pass-through is always legal)
+    const blindN = p.blindOK ? p.count-out[0].length : 0;
+    if(blindN>0){
+      const src=(4-shift)%4;                       // the seat whose pass comes to you
+      out[0].push(...out[src].splice(0, blindN));
+      setNarr("You passed "+(p.count-blindN)+" of your own and sent "+blindN+" through blind.");
+    } else {
+      setNarr("Passes are down on the tableâ€¦");
+    }
+    await animatePassTrios(out, shift);
+    const src=(4-shift)%4;
+    recvIds=new Set(out[src].map(t=>t.id));        // your incoming three â€” they'll glow
+    for(let seat=0;seat<4;seat++){
+      const dest=(seat+shift)%4;
+      state.hands[dest].push(...out[seat]);
+    }
+    sortHand(); updateCounts();
+    charlestonStep++;
+    if(charlestonStep<charlestonQueue.length){ runCharlestonStep(); }
+    else if(charlestonRound===1){ askSecondCharleston(); }
+    else { startCourtesyPass(); }
+  } finally { passing=false; }
+}
+
+/* in-table yes/no + choices prompt (reuses the call bar) */
+function askTable(text, options){
+  return new Promise(resolve=>{
+    const bar=$("#callBar"); bar.classList.remove("hidden");
+    $("#callPrompt").textContent=text;
+    $("#callMahjongBtn").classList.add("hidden"); $("#callPassBtn").classList.add("hidden");
+    $("#callTimer").textContent="";
+    const host=$("#callExposeBtns"); host.innerHTML="";
+    options.forEach(o=>{ const b=document.createElement("button"); b.className="btn small"+(o.ghost?" ghost":"");
+      b.textContent=o.label; b.onclick=()=>{ bar.classList.add("hidden"); host.innerHTML=""; $("#callPassBtn").classList.remove("hidden"); resolve(o.value); };
+      host.appendChild(b); });
+  });
+}
+
+async function askSecondCharleston(){
+  $("#charlestonBar").classList.add("hidden");
+  // C7: the second Charleston happens only if ALL players agree. The computers are willing; you decide.
+  const yes=await askTable("First Charleston complete. Continue to the Second Charleston?",
+    [{label:"Yes â€” second Charleston", value:true},{label:"No â€” stop here", value:false, ghost:true}]);
+  if(yes){
+    charlestonRound=2; charlestonQueue=SECOND_PASSES.slice(); charlestonStep=0;
+    $("#charlestonBar").classList.remove("hidden");
+    runCharlestonStep();
+  } else {
+    startCourtesyPass();
+  }
+}
+
+async function startCourtesyPass(){
+  $("#charlestonBar").classList.add("hidden");
+  // C7: courtesy pass â€” 0 to 3 tiles across, by agreement (the lower offer rules)
+  const mine=await askTable("Courtesy pass with West (across): how many tiles do you offer?",
+    [0,1,2,3].map(n=>({label:String(n), value:n})));
+  const westN=cpuCourtesyOffer(2);
+  const n=Math.min(mine, westN);
+  // South and North settle their own courtesy at the same time
+  const sideN=Math.min(cpuCourtesyOffer(1), cpuCourtesyOffer(3));
+  if(sideN>0){
+    const s1=aiPick(1,sideN).map(id=>{const i=state.hands[1].findIndex(t=>t.id===id);return state.hands[1].splice(i,1)[0];});
+    const s3=aiPick(3,sideN).map(id=>{const i=state.hands[3].findIndex(t=>t.id===id);return state.hands[3].splice(i,1)[0];});
+    state.hands[3].push(...s1); state.hands[1].push(...s3);
+  }
+  if(n===0){
+    setNarr(mine>0 ? "West offered "+westN+" â€” the lower offer rules, so no courtesy tiles change hands." : "No courtesy pass. Time to play.");
+    updateCounts();
+    setTimeout(startPlay, 800);
+    return;
+  }
+  // select your n tiles using the normal pick flow
+  charlestonRound=3;
+  charlestonQueue=[{dir:"across", label:"Courtesy pass â€” give "+n+" ACROSS (West agreed on "+n+")", hint:"âœš", count:n}];
+  charlestonStep=0; charlestonPicks=[];
+  $("#charlestonBar").classList.remove("hidden");
+  $$("#charlestonBar .step").forEach((s,i)=>{ s.textContent=i===0?"Courtesy âœš Across":""; s.classList.toggle("on", i===0); });
+  $("#charlestonHint").textContent="âœš";
+  // override the pass handler path: doCharlestonPass would route wrong; use a one-off
+  state.courtesyN=n;
+  setNarr("Courtesy pass: tap "+n+" tile"+(n>1?"s":"")+" for West, then Pass.");
+  updatePassBtn(); renderRack();
+}
+async function doCourtesyExchange(){
+  if(passing) return; passing=true;
+  try{
+    const n=state.courtesyN;
+    const mineOut=charlestonPicks.map(id=>{ const i=tileIndexFromId(id); return state.hands[0].splice(i,1)[0]; });
+    const westOut=aiPick(2,n).map(id=>{ const i=state.hands[2].findIndex(t=>t.id===id); return state.hands[2].splice(i,1)[0]; });
+    charlestonPicks=[]; renderRack();
+    await animatePassTrios([mineOut,[],westOut,[]], 2);    // both courtesy trios cross the table face down
+    state.hands[2].push(...mineOut); state.hands[0].push(...westOut);
+    recvIds=new Set(westOut.map(t=>t.id));
+    state.courtesyN=0;
+    sortHand(); updateCounts();
+    $("#charlestonBar").classList.add("hidden");
+    setNarr("Courtesy done. East discards to open play.");
+    setTimeout(startPlay, 700);
+  } finally { passing=false; }
+}
+
+/* ===================== PLAY LOOP ===================== */
+function startPlay(){
+  recvIds=new Set();
+  state.phase="play"; setPhase("Your move"); state.current=0; state.awaitingDiscard=true;
+  $("#mahjongBtn").classList.remove("hidden");
+  sortHand(); renderExposures(); highlightSeat(0);
+  setNarr("Your turn â€” you hold 14. Discard a tile, sort your rack, or declare Mahjong.");
+}
+function highlightSeat(seat){
+  $$(".plate").forEach(p=>p.classList.toggle("active", +p.dataset.seat===seat));
+}
+
+function humanDiscard(id){
+  if(!state.awaitingDiscard || state.current!==0){ flash("It isn't your turn to discard."); return; }
+  const i=tileIndexFromId(id); if(i<0) return;
+  const t=state.hands[0].splice(i,1)[0];
+  drawnId=null; state.awaitingDiscard=false;
+  pushDiscard(t,0); renderRack(); updateCounts();
+  afterDiscard(0, t);
+}
+
+function pushDiscard(tile, seat){
+  const rec={tile, seat, node:null};
+  state.discards.push(rec);
+  // center "last discard"
+  const c=$("#lastDiscardTile"); c.innerHTML="";
+  c.appendChild(tileEl(tile,"small"));
+  $("#lastDiscardLabel").textContent=SEAT_SHORT[seat]+" discarded "+tileName(tile);
+  // side panel
+  const list=$("#discardList");
+  const wrap=document.createElement("div"); wrap.style.position="relative";
+  wrap.appendChild(tileEl(tile));
+  const tag=document.createElement("div"); tag.className="who-tag"; tag.textContent=SEAT_SHORT[seat][0];
+  wrap.appendChild(tag); list.appendChild(wrap);
+  rec.node=wrap; list.scrollTop=list.scrollHeight;
+  $("#discardMeta").textContent=state.discards.length+" tiles discarded Â· Wall: "+state.wall.length;
+}
+function removeLastDiscard(){
+  const rec=state.discards.pop();
+  if(rec && rec.node) rec.node.remove();
+  $("#lastDiscardTile").innerHTML="";
+  $("#lastDiscardLabel").textContent="";
+  $("#discardMeta").textContent=state.discards.length+" tiles discarded Â· Wall: "+state.wall.length;
+}
+
+/* ---- after any discard: see if anyone calls it ---- */
+async function afterDiscard(d, tile){
+  // a flower / joker is never called off the discard floor
+  const callable = !(tile.key==="joker" || tile.key.startsWith("flower"));
+  const humanExp = callable && d!==0 && canExpose(0, tile);
+  const humanMah = d!==0 && canMahjongOnTile(0, tile);
+
+  let cpuMahSeat=-1, cpuExpSeat=-1, cpuExpSize=0;
+  for(let k=1;k<4;k++){ const s=(d+k)%4; if(s===0) continue;
+    if(canMahjongOnTile(s,tile)){ cpuMahSeat=s; break; } }
+  if(callable) for(let k=1;k<4;k++){ const s=(d+k)%4; if(s===0) continue;
+    const want=cpuWantsExpose(s,tile); if(want){ cpuExpSeat=s; cpuExpSize=want.size; break; } }
+
+  if(d!==0){   // you get a say on EVERY discard, even when you can't call this one
+    const choice=await promptHumanCall(d, tile, humanExp, humanMah, callable);
+    if(choice==="mahjong"){
+      const all=state.hands[0].concat(state.exposures[0].flat(),[tile]);
+      const h=findWinningHand(all, state.exposures[0]);
+      return endGame(true, "You called "+SEAT_SHORT[d]+"'s "+tileName(tile)+" for Mahjong on "+handName(h)+". "+handRuleText(h));
+    }
+    if(choice && choice.expose){
+      if(cpuMahSeat>=0) return cpuWin(cpuMahSeat, tile, true);   // Mahjong call outranks an exposure call
+      return doHumanExposure(tile, choice.expose);
+    }
+    // passed -> fall through to CPUs
+  }
+  if(cpuMahSeat>=0) return cpuWin(cpuMahSeat, tile, true);
+  if(cpuExpSeat>=0) return doCpuExposure(cpuExpSeat, tile, cpuExpSize);
+  advanceFrom(d);
+}
+
+function advanceFrom(seat){
+  if(state.wall.length===0){ return endGame(false,"Wall exhausted â€” the hand is a wash. Deal again."); }
+  const ns=(seat+1)%4; state.current=ns; highlightSeat(ns);
+  if(ns===0) humanDraw(); else cpuTurn(ns);
+}
+
+// your turn: light up the end of the live wall and wait for you to click it to draw
+function humanDraw(){
+  setPhase("Your move");
+  state.awaitingDiscard=false; state.awaitingDraw=true;
+  setDrawEnd(true);
+  setNarr("Your turn â€” click the lit tile on the end of the wall to draw.");
+}
+async function onPlayerDrawClick(){
+  if(!(state.phase==="play" && state.current===0 && state.awaitingDraw)) return;
+  state.awaitingDraw=false; setDrawEnd(false);
+  if(state.wall.length===0) return endGame(false,"Wall exhausted â€” the hand is a wash. Deal again.");
+  const t=state.wall.shift(); state.hands[0].push(t); drawnId=t.id;
+  await wallDraw(0,1);                                   // tile comes off the wall end into your rack
+  state.awaitingDiscard=true; renderRack(); updateCounts();
+  renderExposures();                                     // light up any exposed jokers you can redeem
+  setNarr("You drew "+tileName(t)+". Discard, redeem an exposed Joker, or declare Mahjong.");
+}
+
+async function cpuTurn(seat){
+  setPhase(SEAT_SHORT[seat]+" thinkingâ€¦");
+  await sleep(500);
+  if(state.wall.length===0){ return endGame(false,"Wall exhausted â€” the hand is a wash."); }
+  const t=state.wall.shift(); state.hands[seat].push(t);
+  await wallDraw(seat,1);                                // computers draw off the wall too â€” you see it
+  updateCounts();
+  cpuJokerExchanges(seat);                               // redeem exposed jokers it holds naturals for
+  const all=state.hands[seat].concat(state.exposures[seat].flat());
+  if(all.length===14 && findWinningHand(all, state.exposures[seat])) return cpuWin(seat, t, false);
+  await sleep(250);
+  const did=aiDiscard(seat);
+  const di=state.hands[seat].findIndex(x=>x.id===did);
+  const dt=state.hands[seat].splice(di,1)[0]; updateCounts();
+  pushDiscard(dt, seat);
+  await sleep(400);
+  afterDiscard(seat, dt);
+}
+
+/* ===================== JOKER EXCHANGE =====================
+   On your turn you may swap the matching natural tile for a joker sitting in
+   ANY player's exposure (a joker in the rack is strictly more flexible).      */
+function exchangeJoker(takerSeat, ownerSeat, meldIdx, jokerTile, naturalTile){
+  const meld=state.exposures[ownerSeat][meldIdx];
+  const j=meld.indexOf(jokerTile); if(j<0) return false;
+  const hand=state.hands[takerSeat];
+  const n=hand.indexOf(naturalTile); if(n<0) return false;
+  meld[j]=naturalTile; hand.splice(n,1); hand.push(jokerTile);
+  renderExposures(); updateCounts();
+  return true;
+}
+function cpuJokerExchanges(seat){
+  let swapped=true;
+  while(swapped){
+    swapped=false;
+    for(let owner=0; owner<4 && !swapped; owner++){
+      state.exposures[owner].forEach((meld,mi)=>{
+        if(swapped) return;
+        const nat=meld.find(t=>tileMatchCode(t)!=="JOKER"); if(!nat) return;
+        const code=tileMatchCode(nat);
+        const joker=meld.find(t=>t.key==="joker"); if(!joker) return;
+        // only give up a SPARE natural (never strip a pair/single a target needs â€” jokers can't fill those)
+        const wanted=cpuWantedIds(seat, cpuTargets(seat,3));
+        const mine=state.hands[seat].find(t=>tileMatchCode(t)===code && !wanted.has(t.id));
+        if(mine && exchangeJoker(seat, owner, mi, joker, mine)){
+          setNarr(SEAT_SHORT[seat]+" exchanged a "+tileName(mine)+" for an exposed Joker.");
+          swapped=true;
+        }
+      });
+    }
+  }
+}
+/* human: while it's your discard, exposed jokers you can redeem glow â€” click to swap */
+function humanTryJokerExchange(ownerSeat, meldIdx, jokerTile){
+  if(!(state.phase==="play" && state.current===0 && state.awaitingDiscard)){ flash("Joker exchange happens on your turn, after you draw."); return; }
+  const meld=state.exposures[ownerSeat][meldIdx];
+  const nat=meld.find(t=>tileMatchCode(t)!=="JOKER"); if(!nat) return;
+  const code=tileMatchCode(nat);
+  const mine=state.hands[0].find(t=>tileMatchCode(t)===code);
+  if(!mine){ flash("You need the matching natural tile ("+tileName(nat)+") to redeem that Joker."); return; }
+  if(exchangeJoker(0, ownerSeat, meldIdx, jokerTile, mine)){
+    renderRack();
+    setNarr("You exchanged your "+tileName(mine)+" for the exposed Joker. Now discard.");
+  }
+}
+
+/* ===================== CPU BRAIN â€” plays real 2026 card lines =====================
+   Each computer evaluates its rack against every legal hand, targets the closest
+   lines, and keeps/discards toward them. Canon C6: the rack stays flexible until
+   the first exposure; after exposing, only exposure-compatible lines remain.      */
+function exposureCompatible(h, exposures){
+  if(!exposures.length) return true;
+  if(h.c) return false;                                   // concealed lines never expose
+  const groups=h.g.map(([n,code])=>({n,code,used:false}));
+  for(const meld of exposures){
+    const nat=meld.find(t=>tileMatchCode(t)!=="JOKER");
+    const code=nat?tileMatchCode(nat):null;
+    const g=groups.find(g=>!g.used && g.n===meld.length && g.n>=3 && (code===null||g.code===code));
+    if(!g) return false; g.used=true;
+  }
+  return true;
+}
+/* how close is this rack to hand h? returns tiles creditable toward the 14 */
+function scoreHandFit(h, codeCounts, jokers, exposures){
+  let credit=exposures.reduce((a,m)=>a+m.length,0);
+  const rem={...codeCounts}; let jok=jokers, flexDeficit=0;
+  const groups=h.g.map(([n,code])=>({n,code,used:false}));
+  for(const meld of exposures){                            // skip groups locked by exposures
+    const nat=meld.find(t=>tileMatchCode(t)!=="JOKER");
+    const code=nat?tileMatchCode(nat):null;
+    const g=groups.find(g=>!g.used && g.n===meld.length && g.n>=3 && (code===null||g.code===code));
+    if(g) g.used=true;
+  }
+  for(const g of groups){ if(g.used) continue;
+    const have=Math.min(rem[g.code]||0, g.n);
+    credit+=have; if(rem[g.code]) rem[g.code]-=have;
+    if(g.n>=3) flexDeficit+=g.n-have;
+  }
+  credit+=Math.min(jok, flexDeficit);                      // jokers only fill 3+ groups (C2)
+  return credit;
+}
+function cpuTargets(seat, topN){
+  const exps=state.exposures[seat];
+  const {c,jokers}=countCodes(state.hands[seat]);
+  const scored=[];
+  for(const h of HANDS){
+    if(!exposureCompatible(h, exps)) continue;
+    scored.push({h, score:scoreHandFit(h, c, jokers, exps)});
+  }
+  scored.sort((a,b)=>b.score-a.score);
+  return scored.slice(0, topN||3);
+}
+/* which concealed tiles do the top targets want? */
+function cpuWantedIds(seat, targets){
+  const wanted=new Set();
+  for(const {h} of targets){
+    const groups=h.g.map(([n,code])=>({n,code}));
+    const taken={};
+    for(const t of state.hands[seat]){
+      const code=tileMatchCode(t);
+      if(code==="JOKER"){ wanted.add(t.id); continue; }   // jokers always kept
+      const cap=groups.filter(g=>g.code===code).reduce((a,g)=>a+g.n,0);
+      taken[code]=(taken[code]||0)+1;
+      if(taken[code]<=cap) wanted.add(t.id);
+    }
+  }
+  return wanted;
+}
+function aiDiscard(seat){
+  const targets=cpuTargets(seat,3);
+  const wanted=cpuWantedIds(seat,targets);
+  const hand=state.hands[seat];
+  const spare=hand.filter(t=>!wanted.has(t.id) && t.key!=="joker");
+  if(spare.length) return spare[Math.floor(Math.random()*spare.length)].id;
+  // everything fits a target â€” let go of the least-loaded non-joker
+  const nonJ=hand.filter(t=>t.key!=="joker");
+  return (nonJ.length?nonJ:hand)[Math.floor(Math.random()*(nonJ.length||hand.length))].id;
+}
+
+/* ---- calling a discard for an exposure ---- */
+function canExpose(seat, tile){
+  const hand=state.hands[seat];
+  const nat=hand.filter(t=>tileMatchCode(t)===tileMatchCode(tile)).length;
+  const jok=hand.filter(t=>t.key==="joker").length;
+  return nat+jok>=2;                       // enough to complete at least a pung with the discard
+}
+function exposeSizesAvailable(seat, tile){
+  const hand=state.hands[seat];
+  const nat=hand.filter(t=>tileMatchCode(t)===tileMatchCode(tile)).length;
+  const jok=hand.filter(t=>t.key==="joker").length;
+  const out=[];
+  [3,4,5].forEach(sz=>{ if(nat+jok>=sz-1) out.push(sz); });
+  return out;
+}
+/* a CPU calls only when the discard completes a 3+ group in one of its real
+   targets, the line allows exposure, and the line is already well underway */
+function cpuWantsExpose(seat, tile){
+  const code=tileMatchCode(tile);
+  if(code==="JOKER") return null;
+  const exps=state.exposures[seat];
+  const {c,jokers}=countCodes(state.hands[seat]);
+  for(const {h,score} of cpuTargets(seat,3)){
+    if(h.c) continue;                                      // concealed line: never expose early
+    if(score<8) continue;                                  // not far enough along to commit
+    const groups=h.g.map(([n,cd])=>({n,cd,used:false}));
+    for(const meld of exps){                               // ignore groups already exposed
+      const nat=meld.find(t=>tileMatchCode(t)!=="JOKER");
+      const cd=nat?tileMatchCode(nat):null;
+      const g=groups.find(g=>!g.used && g.n===meld.length && g.n>=3 && (cd===null||g.cd===cd));
+      if(g) g.used=true;
+    }
+    for(const g of groups){
+      if(g.used || g.n<3 || g.cd!==code) continue;
+      const natHeld=c[code]||0;
+      if(natHeld + jokers >= g.n-1 && natHeld>=1){         // can complete it (with at least one natural held)
+        return {size:g.n};
+      }
+    }
+  }
+  return null;
+}
+function canMahjongOnTile(seat, tile){
+  // would this discard complete a real 2026 card line for `seat`?
+  // (Canon C1: works for concealed lines too â€” the call itself is the win.)
+  const all=state.hands[seat].concat(state.exposures[seat].flat(), [tile]);
+  return !!findWinningHand(all, state.exposures[seat]);
+}
+/* pull (size-1) tiles from `seat`'s hand to join the called discard: naturals
+   of the same face first, jokers to fill (jokers only in groups of 3+ â€” C2) */
+function pullExposureTiles(seat, tile, size){
+  const code=tileMatchCode(tile);
+  const hand=state.hands[seat]; const out=[]; const need=size-1;
+  for(let i=hand.length-1;i>=0 && out.length<need;i--) if(tileMatchCode(hand[i])===code) out.push(hand.splice(i,1)[0]);
+  for(let i=hand.length-1;i>=0 && out.length<need;i--) if(hand[i].key==="joker") out.push(hand.splice(i,1)[0]);
+  return out;
+}
+const SIZE_NAME={3:"pung",4:"kong",5:"quint"};
+function doHumanExposure(tile, size){
+  removeLastDiscard();
+  const got=pullExposureTiles(0, tile, size);
+  state.exposures[0].push([tile, ...got]);
+  state.current=0; state.awaitingDiscard=true; highlightSeat(0); setPhase("Your move");
+  renderRack(); renderExposures(); updateCounts();   // exposed tiles leave gaps; keep the rest as arranged
+  setNarr("You called "+tileName(tile)+" and exposed a "+SIZE_NAME[size]+". Now discard a tile.");
+}
+async function doCpuExposure(seat, tile, size){
+  removeLastDiscard();
+  const got=pullExposureTiles(seat, tile, size);
+  state.exposures[seat].push([tile, ...got]);
+  state.current=seat; highlightSeat(seat);
+  renderExposures(); updateCounts();
+  setNarr(SEAT_SHORT[seat]+" called "+tileName(tile)+" and exposed a "+SIZE_NAME[size]+".");
+  await sleep(800);
+  const all=state.hands[seat].concat(state.exposures[seat].flat());
+  if(all.length===14 && findWinningHand(all, state.exposures[seat])) return cpuWin(seat, tile, false);
+  const did=aiDiscard(seat);
+  const di=state.hands[seat].findIndex(x=>x.id===did);
+  const dt=state.hands[seat].splice(di,1)[0]; updateCounts();
+  pushDiscard(dt, seat);
+  await sleep(450);
+  afterDiscard(seat, dt);
+}
+
+function promptHumanCall(d, tile, canExp, canMah, callable){
+  return new Promise(resolve=>{
+    const bar=$("#callBar"); bar.classList.remove("hidden");
+    let note="";
+    if(callable===false) note=tile.key==="joker" ? " (a discarded Joker is dead â€” it can't be called)" : " (Flowers can't be called from the discard)";
+    else if(!canExp && !canMah) note=" â€” nothing in your rack can call it";
+    $("#callPrompt").textContent=SEAT_SHORT[d]+" discarded "+tileName(tile)+note;
+    const host=$("#callExposeBtns"); host.innerHTML="";
+    if(canExp){
+      exposeSizesAvailable(0, tile).forEach(sz=>{
+        const b=document.createElement("button"); b.className="btn small";
+        b.textContent="Expose "+SIZE_NAME[sz].charAt(0).toUpperCase()+SIZE_NAME[sz].slice(1);
+        b.onclick=()=>done({expose:sz}); host.appendChild(b);
+      });
+    }
+    $("#callMahjongBtn").classList.toggle("hidden", !canMah);
+    let left=7; const clock=$("#callTimer"); clock.textContent=left;
+    const timer=setInterval(()=>{ left--; clock.textContent=left>0?left:""; if(left<=0) done("pass"); },1000);
+    function done(choice){ clearInterval(timer); bar.classList.add("hidden");
+      host.innerHTML=""; $("#callMahjongBtn").onclick=$("#callPassBtn").onclick=null; resolve(choice); }
+    $("#callMahjongBtn").onclick=()=>done("mahjong");
+    $("#callPassBtn").onclick=()=>done("pass");
+  });
+}
+
+/* ---- exposures render (exposed jokers you can redeem are clickable) ---- */
+function renderExposures(){
+  const myTurn = state.phase==="play" && state.current===0 && state.awaitingDiscard;
+  for(let s=0;s<4;s++){
+    const row=$("#expose"+s); if(!row) continue; row.innerHTML="";
+    state.exposures[s].forEach((meld,mi)=>{
+      const m=document.createElement("div"); m.className="exposeMeld";
+      const nat=meld.find(t=>tileMatchCode(t)!=="JOKER");
+      const code=nat?tileMatchCode(nat):null;
+      const canRedeem = myTurn && code && state.hands[0].some(t=>tileMatchCode(t)===code);
+      meld.forEach(t=>{
+        const el=tileEl(t,"tiny");
+        if(t.key==="joker" && canRedeem){
+          el.classList.add("swappable"); el.title="Click to exchange your "+tileName(nat)+" for this Joker";
+          el.style.cursor="pointer";
+          el.addEventListener("click",()=>humanTryJokerExchange(s, mi, t));
+        }
+        m.appendChild(el);
+      });
+      row.appendChild(m);
+    });
+  }
+}
+
+/* ===================== REAL 2026-CARD WIN VALIDATION =====================
+   Hands validate against OOTT_HANDS2026 (every legal concrete hand on the
+   2026 card, group structure preserved). Canon rules enforced:
+   C2 â€” jokers only in groups of 3+, never singles/pairs (group data does this)
+   C1 â€” concealed hands may win on a called discard (they just never expose early)
+   C12 â€” Soap == White Dragon (both map to code WD)
+   On-screen we only ever name Section + Line + plain-English rule, never the
+   card's printed pattern (copyright rule).                                    */
+const HANDS = window.OOTT_HANDS2026 || [];
+function tileMatchCode(t){
+  const k=t.key;
+  if(/^(dot|bam|crak)\d$/.test(k)) return k.slice(-1) + ({dot:"D",bam:"B",crak:"C"})[k.slice(0,-1)];
+  if(k.startsWith("wind_")) return k.slice(5);          // E S W N
+  if(k==="dragon_red") return "RD";
+  if(k==="dragon_green") return "GD";
+  if(k==="dragon_soap") return "WD";
+  if(k.startsWith("flower")) return "F";                // all 8 flowers interchangeable
+  return "JOKER";
+}
+function countCodes(tiles){
+  const c={}; let jokers=0;
+  tiles.forEach(t=>{ const m=tileMatchCode(t); if(m==="JOKER") jokers++; else c[m]=(c[m]||0)+1; });
+  return {c, jokers};
+}
+/* Can `tiles` (14, incl. jokers) + the player's exposures form `hand`?
+   exposures: array of melds; each meld = array of tile objects (one group, all
+   one tile code + jokers). Each exposure must consume a distinct 3+ group of
+   the hand with the same code and exact size.                                  */
+function matchesHand(tiles, exposures, hand){
+  if(tiles.length!==14) return false;
+  if(exposures.length && hand.c) return false;          // concealed lines allow no exposures
+  const groups=hand.g.map(([n,code])=>({n, code, used:false}));
+  // 1) pin every exposure to a matching unused group
+  //    (natural-coded melds pin first so an all-joker meld can't steal their group)
+  const melds=exposures.map(m=>{ const nat=m.find(t=>tileMatchCode(t)!=="JOKER");
+    return {m, code:nat?tileMatchCode(nat):null}; }).sort((a,b)=>(a.code?0:1)-(b.code?0:1));
+  for(const {m,code} of melds){
+    const g=groups.find(g=>!g.used && g.n===m.length && g.n>=3 && (code===null || g.code===code));
+    if(!g) return false;
+    g.used=true;
+  }
+  // 2) the remaining (concealed) tiles must fill the remaining groups
+  const concealed=tiles.filter(t=>!exposures.some(m=>m.includes(t)));
+  const {c,jokers}=countCodes(concealed);
+  const need={}, flexCap={}; let flexTotal=0, fixedTotal=0;
+  for(const g of groups){ if(g.used) continue;
+    if(g.n<=2){ need[g.code]=(need[g.code]||0)+g.n; fixedTotal+=g.n; }
+    else { flexCap[g.code]=(flexCap[g.code]||0)+g.n; flexTotal+=g.n; }
+  }
+  // exact naturals for singles/pairs (jokers forbidden there â€” C2)
+  for(const code in need) if((c[code]||0) < need[code]) return false;
+  // leftovers must fit inside 3+ groups of the same tile; jokers fill the rest
+  let leftoverTotal=0;
+  for(const code in c){
+    const left=c[code]-(need[code]||0);
+    if(left<0) return false;
+    if(left>0){ if((flexCap[code]||0) < left) return false; leftoverTotal+=left; }
+  }
+  return fixedTotal + leftoverTotal + jokers === 14 - exposures.reduce((a,m)=>a+m.length,0)
+      && jokers === flexTotal - leftoverTotal;
+}
+/* find the first card line this 14-tile hand completes (null if none) */
+function findWinningHand(tiles, exposures){
+  if(tiles.length!==14) return null;
+  for(const h of HANDS) if(matchesHand(tiles, exposures, h)) return h;
+  return null;
+}
+function handRuleText(h){
+  const e=(window.OOTT_CARD2026||[]).find(x=>x.sec===h.s && x.line===h.l);
+  return e ? e.rule : "";
+}
+function handName(h){ return "Section "+h.s+", Line "+h.l+" ("+h.v+")"; }
+
+function declareMahjong(){
+  if(state.phase!=="play"){ return; }
+  const all=state.hands[0].concat(state.exposures[0].flat());
+  if(all.length!==14){ flash("Mahjong needs a complete 14-tile hand â€” wait for your draw or call the winning tile."); return; }
+  const h=findWinningHand(all, state.exposures[0]);
+  if(h){ return endGame(true, "Mahjong on "+handName(h)+". "+handRuleText(h)); }
+  flash("That rack doesn't complete a 2026 card line yet. Check your card and keep building.");
+}
+
+function cpuWin(seat, tile, onDiscard){
+  const msg = onDiscard
+    ? SEAT_SHORT[seat]+" called Mahjong on the discarded "+tileName(tile)+"."
+    : SEAT_SHORT[seat]+" drew its winning tile and declared Mahjong.";
+  endGame(false, msg);
+}
+
+function endGame(youWin, msg){
+  state.phase="end";
+  $("#callBar").classList.add("hidden");
+  $("#endTitle").textContent=youWin?"Mahjong! ðŸ€„":"Hand Over";
+  $("#endText").textContent=msg;
+  $("#endOverlay").classList.remove("hidden");
+}
+
+/* ===================== WIRING ===================== */
+async function beginDeal(skip){
+  if(state.dealing) return;            // guard against double-start
+  state.dealing=true; state.skip=skip;
+  $("#startOverlay").classList.add("hidden");
+  state.deck=buildDeck(); state.wall=shuffle(state.deck.slice());
+  state.hands=[[],[],[],[]]; updateCounts();
+  buildWalls();                              // four 19-stack walls around the table
+  if(!skip){
+    setPhase("Roll");
+    const sum=await rollDice();
+    await countAndBreak(sum);                 // count from the right of your wall
+    $("#dice").classList.add("hidden");
+    await pushOutWall("bottom");              // push your live wall out toward center, angled
+  } else {
+    wInner("bottom").classList.add("pushed"); $("#wall_bottom").classList.add("activeWall"); // skip: show the active wall pushed out
+  }
+  await dealTiles();                          // deal off the live wall (cascades to the next wall as it empties)
+  state.skip=false;
+  $("#dice").classList.add("hidden");
+  $("#lastDiscardLabel").textContent="";     // walls stay up â€” they're part of the table now
+  startCharleston();
+}
+
+$("#startRollBtn").onclick=()=>beginDeal(false);
+$("#startSkipBtn").onclick=()=>beginDeal(true);
+$("#sortBtn").onclick=()=>{ if(state.phase!=="setup") sortHand(); };
+$("#restartBtn").onclick=()=>{ location.reload(); };   // restart: back to the start screen (tile-back choice is saved)
+$("#mahjongBtn").onclick=declareMahjong;
+$("#passBtn").onclick=()=>{
+  if(state.phase!=="charleston") return;
+  if(state.courtesyN){ if(charlestonPicks.length===state.courtesyN) doCourtesyExchange(); else flash("Pick "+state.courtesyN+" tile"+(state.courtesyN>1?"s":"")+" for the courtesy pass."); return; }
+  const p=curPass(); if(!p) return;
+  if(charlestonPicks.length===p.count || p.blindOK) doCharlestonPass();
+};
+$("#discardToggle").onclick=()=>{
+  const p=$("#discardPanel"); p.classList.toggle("open");
+  $("#discardToggle").textContent=p.classList.contains("open")?"Discards â—‚":"Discards â–¸";
+};
+$("#discardClose").onclick=()=>{ $("#discardPanel").classList.remove("open"); $("#discardToggle").textContent="Discards â–¸"; };
+
+// init opponent backs + tile-back picker
+initBack();
+updateCounts();
+setNarr("Press Roll & Deal to begin.");
+</script>
+</body>
+</html>
