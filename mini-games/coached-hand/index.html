@@ -102,6 +102,7 @@
   </div>
   <h1>Coached Hand</h1>
   <p class="sub">Play one full hand with Prim at your shoulder — she'll talk you through every choice.</p>
+  <div id="cardsel" style="margin:2px 0 14px;"></div>
 
   <div id="stage"></div>
 
@@ -110,17 +111,18 @@
 </div>
 
 <script src="../_data/card2026.js"></script>
+<script src="../_engine/cardselect.js"></script>
 <script src="../_engine/scenario.js"></script>
 <script src="../_engine/tiles.js"></script>
 <script>
 "use strict";
-const BUILD="v1.4 · 2026-06-12";
+const BUILD="v1.5 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_coach_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_coach_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
 document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('buildStamp'); if(s)s.textContent='build '+BUILD;});
 
-const CARD=window.OOTT_CARD2026||[];
+let CARD=(window.OOTTCARD && OOTTCARD.active().length) ? OOTTCARD.active() : (window.OOTT_CARD2026||[]);
 const Kit=window.OOTTKit;
 const $=s=>document.querySelector(s), ce=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
 const rnd=Math.random, ri=n=>Math.floor(rnd()*n), pick=a=>a[ri(a.length)];
@@ -546,6 +548,7 @@ function primClosing(){
 /* boot */
 function boot(){
   if(!CARD.length||!Kit){ showErr('Data or engine failed to load (card2026.js / scenario.js).'); return; }
+  if(window.OOTTCARD) OOTTCARD.mount($('#cardsel'), ()=>{ CARD=OOTTCARD.active(); startScreen(); });
   startScreen();
 }
 boot();
