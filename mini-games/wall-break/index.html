@@ -174,7 +174,7 @@
 </div>
 
 <script>
-const BUILD="v3 · 2026-06-11";
+const BUILD="v4 · 2026-06-11";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -205,13 +205,23 @@ const MANNERS=[
   {q:"Tiles are dealt four at a time, in what order?",opts:["East, then South (right), West (across), North (left)","Clockwise from the winner","North, West, South, East","All at once"],a:0,why:"Four at a time: East -> South -> West -> North, three times around."},
   {q:"After three rounds everyone has 12. How does East reach 14?",opts:["East takes two more; South, West, North each take one more","East takes four more","Everyone takes two more","East trades with South"],a:0,why:"East takes two (the 1st & 3rd), and South, West, and North each take one — East 14, the rest 13."},
   {q:"When a game ends, who becomes East next?",opts:["The player to East's right (South)","East again","The winner","The player across"],a:0,why:"East passes to the right; the dice go with it."},
+  {q:"Away from home, how is the first East decided?",opts:["Roll the dice — highest total is East","Youngest player is East","The host is always East","The last game's winner"],a:0,why:"A pair of dice is rolled; the highest total becomes East. (At home, the host often just starts as East.)"},
+  {q:"How is each player's wall stacked?",opts:["Two tiles high — a double-tiered row","One tile high in a single row","Three tiles high","Face-up in a fan"],a:0,why:"Each wall is double-tiered — a top row and a bottom row of tiles."},
+  {q:"How many tiles are in a standard American Mah Jongg set?",opts:["152","144","136","108"],a:0,why:"152: 108 suits, 16 winds, 12 dragons, 8 flowers, and 8 jokers."},
+  {q:"The tiles counted off at the break are used for what?",opts:["Set aside and reserved for the end of the game","Discarded right away","Given to East as a bonus","Shuffled back into the wall"],a:0,why:"The break reserves those tiles against the right of the rack, held for the end of the game."},
+  {q:"A wall runs out while tiles are still being dealt. What happens?",opts:["The next wall to the left is pushed out and dealing continues","East rebuilds the wall","Dealing stops there","Everyone reshuffles"],a:0,why:"When a wall is exhausted, the player to the left pushes out their wall so dealing keeps going."},
+  {q:"When East goes from 12 tiles up to 14, which two are taken?",opts:["The 1st and 3rd tiles","The 1st and 2nd tiles","The last two tiles","Two from the bottom row"],a:0,why:"East takes the 1st and 3rd tiles; South, West, and North each take one — East 14, the rest 13."},
+  {q:"A hand ends with no winner (a Wall Game). What happens next?",opts:["Reshuffle, rebuild the walls, and the player on East's right becomes East","East deals the same hand again","The player with the most tiles wins","Play continues from the dead wall"],a:0,why:"A Wall Game has no winner — tiles are reshuffled, walls rebuilt, and East passes to the right."},
+  {q:"After the game, the dice pass to whom?",opts:["The player to East's right (the new East)","The winner","The player across","They stay with East"],a:0,why:"The dice travel with East — handed to the player on East's right, who becomes the next East."},
+  {q:"Where does South sit relative to East?",opts:["To East's right","Across from East","To East's left","Behind East"],a:0,why:"Dealing runs East -> South (your right) -> West (across) -> North (your left)."},
+  {q:"How many tiles does each non-East player hold at the start?",opts:["13","14","12","16"],a:0,why:"East starts with 14; South, West, and North each start with 13."},
 ];
 
 const LEVELS=[{n:1,title:"Level 1 — With Guides",hints:true},{n:2,title:"Level 2 — No Guides",hints:false},{n:3,title:"Level 3 — Clean & Quick",hints:false}];
 const LS="oott_wallbreak_v2";
 function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
 function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
-let prog=loadProg(); prog.unlocked=prog.unlocked||{break:1,deal:1,manners:1}; prog.best=prog.best||{break:{},deal:{}}; prog.tutDone=prog.tutDone||false;
+let prog=loadProg(); prog.unlocked=prog.unlocked||{break:1,deal:1,manners:1}; prog.best=prog.best||{break:{},deal:{}}; prog.seen=prog.seen||{break:[],deal:[],manners:[]}; prog.tutDone=prog.tutDone||false;
 let mode="break", cur=LEVELS[0], round=null, timerId=null, tutorial=null, playing=false;
 const K=6;
 const $=s=>document.querySelector(s);
@@ -219,10 +229,15 @@ const el=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e
 const timed=()=>mode!=="manners";
 
 /* ---------- scenario generation (no repeats within a round) ---------- */
-function makeBreak(used){ let tot; let g=0; do{ tot=(1+rnd(6))+(1+rnd(6)); g++; }while(used.has("b"+tot)&&g<40); used.add("b"+tot); const d1=1+rnd(6); const d2=tot-d1>=1&&tot-d1<=6?tot-d1:Math.min(6,tot-1); return {kind:"break",d1,d2:tot-d1>=1&&tot-d1<=6?tot-d1:d2,tot,stop:STACKS-tot}; }
-function makeDeal(used){ let groupN,who,key,g=0; do{ groupN=1+rnd(cur.n>=2?12:8); who=(groupN-1)%4; key="d"+groupN; g++; }while(used.has(key)&&g<40); used.add(key); return {kind:"deal",groupN,who}; }
-function makeManners(used){ let i,g=0; do{ i=rnd(MANNERS.length); g++; }while(used.has("m"+i)&&g<40); used.add("m"+i); const base=MANNERS[i]; const idx=base.opts.map((_,k)=>k); for(let k=idx.length-1;k>0;k--){const j=rnd(k+1);[idx[k],idx[j]]=[idx[j],idx[k]];} return {kind:"manners",q:base.q,opts:idx.map(k=>base.opts[k]),a:idx.indexOf(base.a),why:base.why}; }
+function makeBreak(used){ let tot; let g=0; do{ tot=(1+rnd(6))+(1+rnd(6)); g++; }while(used.has("b"+tot)&&g<40); used.add("b"+tot); const d1=1+rnd(6); const d2=tot-d1>=1&&tot-d1<=6?tot-d1:Math.min(6,tot-1); return {kind:"break",d1,d2:tot-d1>=1&&tot-d1<=6?tot-d1:d2,tot,stop:STACKS-tot,key:"b"+tot}; }
+function makeDeal(used){ const pool=cur.n>=2?12:8; const avail=[]; for(let n=1;n<=pool;n++) if(!used.has("d"+n)) avail.push(n); const groupN=avail.length?avail[rnd(avail.length)]:1+rnd(pool); used.add("d"+groupN); return {kind:"deal",groupN,who:(groupN-1)%4,key:"d"+groupN}; }
+function makeManners(used){ const avail=[]; for(let n=0;n<MANNERS.length;n++) if(!used.has("m"+n)) avail.push(n); const i=avail.length?avail[rnd(avail.length)]:rnd(MANNERS.length); used.add("m"+i); const base=MANNERS[i]; const idx=base.opts.map((_,k)=>k); for(let k=idx.length-1;k>0;k--){const j=rnd(k+1);[idx[k],idx[j]]=[idx[j],idx[k]];} return {kind:"manners",q:base.q,opts:idx.map(k=>base.opts[k]),a:idx.indexOf(base.a),why:base.why,key:"m"+i}; }
 function makeOne(used){ return mode==="break"?makeBreak(used):mode==="deal"?makeDeal(used):makeManners(used); }
+/* cross-session no-repeat: remember the most recent (pool - K) scenarios per mode so a
+   fresh round avoids them; the pool only recycles once it's genuinely exhausted. */
+function poolSize(m){ return m==="break"?11 : m==="deal"?(cur.n>=2?12:8) : MANNERS.length; }
+function preseedSeen(used){ const keep=Math.max(0,poolSize(mode)-K); ((prog.seen&&prog.seen[mode])||[]).slice(-keep).forEach(k=>used.add(k)); }
+function recordSeen(seq){ const keep=Math.max(0,poolSize(mode)-K); prog.seen=prog.seen||{}; const prev=prog.seen[mode]||[]; prog.seen[mode]=[...prev,...seq.map(s=>s.key).filter(Boolean)].slice(-keep); saveProg(); }
 
 /* ---------- dice ---------- */
 function dieHTML(v){let cells=""; for(let i=0;i<9;i++)cells+=`<span ${PIPS[v].includes(i)?'class="pip"':''}></span>`; return `<div class="die">${cells}</div>`;}
@@ -348,7 +363,7 @@ const MODE_BLURB={break:"Roll the dice, count from the right, and tap where the 
 
 function startRound(){
   stopTimer();
-  const used=new Set(); const seq=[]; for(let i=0;i<K;i++)seq.push(makeOne(used));
+  const used=new Set(); preseedSeen(used); const seq=[]; for(let i=0;i<K;i++)seq.push(makeOne(used)); recordSeen(seq);
   round={seq,idx:0,K,firstRight:0,attempted:0,started:false,t0:null,_show:null};
   setPlaying(true);
   $("#hudTime").textContent=timed()?"0.0s":"—";
@@ -407,7 +422,7 @@ $("#cardAgain").onclick=()=>{ $("#scrim").classList.remove("show"); startRound()
 $("#cardNext").onclick=()=>{ $("#scrim").classList.remove("show"); if(cur.n<LEVELS.length){cur=LEVELS[cur.n]; startRound();} };
 $("#cardChoose").onclick=()=>{ $("#scrim").classList.remove("show"); startTutorial(); };
 $("#cardDone").onclick=()=>closeModalToStart();
-$("#resetAll").onclick=()=>{ if(confirm("Reset all progress and best times?")){ localStorage.removeItem(LS); prog=loadProg(); prog.unlocked={break:1,deal:1,manners:1}; prog.best={break:{},deal:{}}; prog.tutDone=false; saveProg(); mode="break"; document.querySelectorAll(".modepill").forEach(x=>x.classList.toggle("on",x.dataset.mode==="break")); cur=LEVELS[0]; startTutorial(); } };
+$("#resetAll").onclick=()=>{ if(confirm("Reset all progress and best times?")){ localStorage.removeItem(LS); prog=loadProg(); prog.unlocked={break:1,deal:1,manners:1}; prog.best={break:{},deal:{}}; prog.seen={break:[],deal:[],manners:[]}; prog.tutDone=false; saveProg(); mode="break"; document.querySelectorAll(".modepill").forEach(x=>x.classList.toggle("on",x.dataset.mode==="break")); cur=LEVELS[0]; startTutorial(); } };
 
 /* first load */
 if(prog.tutDone) showStart(); else startTutorial();
