@@ -169,7 +169,7 @@
 </script>
 <script src="../_engine/scenario.js"></script>
 <script>
-const BUILD="v1 · 2026-06-11";
+const BUILD="v2 · 2026-06-11";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_pi_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_pi_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -356,23 +356,36 @@ const LEVELS=[
 const LS="oott_penalty_v1";
 function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
 function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
-let prog=loadProg(); prog.unlocked=prog.unlocked||1; prog.best=prog.best||{}; prog.kinds=prog.kinds||{}; prog.tutDone=prog.tutDone||false; prog.fullDone=prog.fullDone||false;
+let prog=loadProg(); prog.unlocked=prog.unlocked||1; prog.best=prog.best||{}; prog.kinds=prog.kinds||{}; prog.bags=prog.bags||{}; prog.tutDone=prog.tutDone||false; prog.fullDone=prog.fullDone||false;
 let cur=LEVELS[0], round=null, timerId=null, tutorial=null;
 const QPR=6; // questions per round
 
-/* ---------- pick K scenarios for a level (roughly balanced legal/violation) ---------- */
+/* ---------- pick QPR scenarios for a level, balanced legal/violation ----------
+   Cross-session no-repeat: each level keeps a "legal" and a "violation" deck (bag).
+   We draw without replacement and only reshuffle a deck once it's exhausted, so the
+   player cycles through every scenario before any one repeats. The 3-legal / 3-viol
+   balance and game feel are unchanged — only the order/no-repeat behaviour differs. */
+function drawCat(level,isLegal,n,chosen){
+  const allIdx=BANK.map((b,i)=>i).filter(i=>BANK[i].level===level && !!BANK[i].legal===isLegal);
+  prog.bags=prog.bags||{}; prog.bags[level]=prog.bags[level]||{};
+  const bk=isLegal?'L':'V';
+  let bag=(prog.bags[level][bk]&&prog.bags[level][bk].length)?prog.bags[level][bk].slice():K.shuffle(allIdx.slice());
+  const out=[]; let guard=0;
+  while(out.length<n && guard++<200){
+    if(!bag.length) bag=K.shuffle(allIdx.slice());
+    const idx=bag.pop();
+    if(idx!=null && !chosen.has(idx)){ out.push(idx); chosen.add(idx); }
+  }
+  prog.bags[level][bk]=bag;
+  return out;
+}
 function dealBank(level){
-  const pool=BANK.filter(b=>b.level===level);
-  const legal=K.shuffle(pool.filter(b=>b.legal).slice());
-  const viol =K.shuffle(pool.filter(b=>!b.legal).slice());
-  const want=QPR, half=Math.floor(want/2);
-  const seq=[];
-  for(let i=0;i<half;i++){ if(legal.length)seq.push(legal[i%legal.length]); }
-  for(let i=0;i<want-half;i++){ if(viol.length)seq.push(viol[i%viol.length]); }
-  // if a category was short, top up from the whole pool
-  const all=K.shuffle(pool.slice());
-  let ai=0; while(seq.length<want && all.length){ seq.push(all[ai%all.length]); ai++; }
-  return K.shuffle(seq).slice(0,want);
+  const chosen=new Set(), half=Math.floor(QPR/2);
+  const seq=drawCat(level,true,half,chosen).concat(drawCat(level,false,QPR-half,chosen));
+  // robust top-up if a category somehow couldn't fill, so a round always holds QPR
+  if(seq.length<QPR){ const extra=K.shuffle(BANK.map((b,i)=>i).filter(i=>BANK[i].level===level && !chosen.has(i))); while(seq.length<QPR && extra.length){ const i=extra.pop(); chosen.add(i); seq.push(i); } }
+  saveProg();
+  return K.shuffle(seq).slice(0,QPR).map(i=>BANK[i]);
 }
 
 /* ---------- render one scenario (used by tutorial + game) ---------- */
@@ -575,7 +588,7 @@ $("#cardAgain").onclick=()=>{$("#scrim").classList.remove("show"); deal();};
 $("#cardNext").onclick=()=>{$("#scrim").classList.remove("show"); if(cur.n<LEVELS.length)gotoLevel(cur.n+1);};
 $("#cardChoose").onclick=()=>{$("#scrim").classList.remove("show"); startTutorial(); window.scrollTo({top:0,behavior:'smooth'});};
 $("#cardDone").onclick=()=>{$("#scrim").classList.remove("show"); showSummary();};
-$("#resetAll").onclick=()=>{if(confirm("Reset all progress and best times?")){localStorage.removeItem(LS); prog=loadProg(); prog.unlocked=1; prog.best={}; prog.kinds={}; prog.tutDone=false; prog.fullDone=false; saveProg(); cur=LEVELS[0]; startTutorial();}};
+$("#resetAll").onclick=()=>{if(confirm("Reset all progress and best times?")){localStorage.removeItem(LS); prog=loadProg(); prog.unlocked=1; prog.best={}; prog.kinds={}; prog.bags={}; prog.tutDone=false; prog.fullDone=false; saveProg(); cur=LEVELS[0]; startTutorial();}};
 $("#stopBtn").onclick=()=>{
   clearInterval(timerId);
   const secs=(round&&round.t0)?(performance.now()-round.t0)/1000:0, acc=(round&&round.attempted)?Math.round(round.firstRight/round.attempted*100):0;
