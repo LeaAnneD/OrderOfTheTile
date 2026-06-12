@@ -114,7 +114,7 @@
 <script src="../_engine/tiles.js"></script>
 <script>
 "use strict";
-const BUILD="v1.3 · 2026-06-11";
+const BUILD="v1.4 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_coach_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_coach_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -213,7 +213,7 @@ function newGame(){
   const line=chooseLine();
   const seedHand=parseHand(pick(line.hands));
   const rack=sortRack(dealLeaning(seedHand));
-  G={ line, seedHand, rack, draws:0, discards:0, phase:'intro', pendingId:null, byAdvice:false, drawnId:null, charlestonDone:false, charlestonSel:null };
+  G={ line, seedHand, rack, draws:0, discards:0, phase:'intro', pendingId:null, byAdvice:false, drawnId:null, lastDrawnFace:null, charlestonDone:false, charlestonSel:null };
 }
 function sortRack(arr){ return arr.slice().sort((a,b)=>{ const x=faceOrder(a.c),y=faceOrder(b.c); return x[0]-y[0]||x[1]-y[1]; }); }
 
@@ -246,8 +246,14 @@ function leastUsefulId(){
 function neededFace(){
   const {target}=bestTargetHand(rackFaces(), G.line.hands);
   const rc=countMap(rackFaces().filter(f=>f!=='JK'));
-  const wants=[]; for(const f in target){ const short=target[f]-(rc[f]||0); for(let k=0;k<short;k++) wants.push(f); }
-  return wants.length?pick(wants):pick(ALLNAT);
+  // DISTINCT faces still short — no shortage-weighting, so a kong (needs 4 of one tile)
+  // doesn't flood every draw with that same tile. Spread the help across what's needed.
+  const wants=[]; for(const f in target){ if(target[f]-(rc[f]||0)>0) wants.push(f); }
+  if(!wants.length) return pick(ALLNAT);
+  let f=pick(wants);
+  // don't hand the same face two draws running when there's another useful option
+  if(G&&G.lastDrawnFace&&f===G.lastDrawnFace&&wants.length>1) f=pick(wants.filter(x=>x!==G.lastDrawnFace));
+  return f;
 }
 /* ---------- is discarding THIS tile a good idea? (good = dead weight) ---------- */
 function discardVerdict(id){
@@ -431,6 +437,7 @@ function drawTile(){
     const canJoker = targetJokerNeed() > rackFaces().filter(x=>x==='JK').length;
     f = (rnd()<0.10 && canJoker) ? 'JK' : pick(ALLNAT);
   }
+  G.lastDrawnFace=f;
   const t=mkTile(f); G.rack.push(t); G.draws++;
   G.rack=sortRack(G.rack);
   G.drawnId=t.id; G.pendingId=null; G.byAdvice=false;
