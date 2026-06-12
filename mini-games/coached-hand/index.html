@@ -103,6 +103,7 @@
   <h1>Coached Hand</h1>
   <p class="sub">Play one full hand with Prim at your shoulder — she'll talk you through every choice.</p>
   <div id="cardsel" style="margin:2px 0 14px;"></div>
+  <div id="silonote"></div>
 
   <div id="stage"></div>
 
@@ -112,11 +113,12 @@
 
 <script src="../_data/card2026.js"></script>
 <script src="../_engine/cardselect.js"></script>
+<script src="../_engine/siloednote.js"></script>
 <script src="../_engine/scenario.js"></script>
 <script src="../_engine/tiles.js"></script>
 <script>
 "use strict";
-const BUILD="v1.5 · 2026-06-12";
+const BUILD="v1.6 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_coach_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_coach_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -349,9 +351,16 @@ function onTapTile(id){
 /* FLOW                                                                  */
 /* ===================================================================== */
 function startScreen(){
-  $('#stage').innerHTML=`<div class="panel">
+  // "siloed view" framing: fuller Prim beat the first time, quiet one-liner after.
+  const firstTime = window.OOTTSILO && !OOTTSILO.seen('coached');
+  const beat = firstTime ? OOTTSILO.beatHTML() : '';
+  if(window.OOTTSILO){
+    if(firstTime){ OOTTSILO.ensureCSS(); OOTTSILO.mark('coached'); if($('#silonote'))$('#silonote').innerHTML=''; }
+    else { OOTTSILO.mountNote($('#silonote')); }
+  }
+  $('#stage').innerHTML=`<div class="panel">${beat}
     <h2>One hand, start to finish</h2>
-    <p>Prim deals you thirteen tiles and reads the table for you — which line on the 2026 card your rack is reaching for. Then you play it out together: draw, study, discard, and declare when the hand is whole.</p>
+    <p>Prim deals you thirteen tiles and reads the table for you — which line on the card your rack is reaching for. Then you play it out together: draw, study, discard, and declare when the hand is whole.</p>
     <p>She'll tell you what each draw means and nudge the tile she'd let go — but the choice is always yours. This is a <b>teaching</b> hand, so the draws lean your way.</p>
     <div class="startbtns"><button class="btn" id="dealBtn">Deal me in</button></div>
   </div>`;
