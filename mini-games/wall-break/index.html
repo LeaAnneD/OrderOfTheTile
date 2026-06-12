@@ -174,7 +174,7 @@
 </div>
 
 <script>
-const BUILD="v2 · 2026-06-10";
+const BUILD="v3 · 2026-06-11";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -292,10 +292,12 @@ function doSubmit(sc,opts){
     const stacks=[...$("#game").querySelectorAll('.stack')]; stacks.forEach(s=>{s.onclick=null;});
     correct=sel.stack===sc.stop;
     stacks[sel.stack].classList.add(correct?'right':'wrong'); if(!correct)stacks[sc.stop].classList.add('right');
-    for(let k=sc.stop+1;k<STACKS;k++) stacks[k].classList.add('counted');   // the tiles counted off, to the right
+    for(let k=sc.stop+1;k<STACKS;k++) stacks[k].classList.add('counted');   // the extra tiles counted off, to the right of the break stack
+    const others=sc.tot-1;
+    const rightPhrase=others===1?"the one stack to its right":`the ${others} stacks to its right`;
     $("#feed").innerHTML=correct
-      ? `Right — count ${sc.tot} from the right and the wall opens there. Those ${sc.tot} stacks (gold) are set aside; East deals from the tiles to the left.`
-      : `Not quite. Counting ${sc.tot} from the right lands on the green stack; the ${sc.tot} stacks to its right are set aside.`;
+      ? `Right — count ${sc.tot} from the right and the count stops there. That stack and ${rightPhrase} (${sc.tot} in all) are pushed back for the end of the game; East deals from the next stack to the left.`
+      : `Not quite — counting ${sc.tot} from the right stops on the green stack. That stack and ${rightPhrase} (${sc.tot} in all) are set aside; East deals from the next stack to the left.`;
   } else if(sc.kind==="deal"){
     if(sel.seat==null)return; sel.locked=true; enableSubmit(false);
     const seats=[...$("#game").querySelectorAll('.seat')]; seats.forEach(s=>s.onclick=null);
