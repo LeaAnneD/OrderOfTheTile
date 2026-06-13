@@ -174,7 +174,7 @@
 </div>
 
 <script>
-const BUILD="v4 · 2026-06-11";
+const BUILD="v5 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -229,7 +229,7 @@ const el=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e
 const timed=()=>mode!=="manners";
 
 /* ---------- scenario generation (no repeats within a round) ---------- */
-function makeBreak(used){ let tot; let g=0; do{ tot=(1+rnd(6))+(1+rnd(6)); g++; }while(used.has("b"+tot)&&g<40); used.add("b"+tot); const d1=1+rnd(6); const d2=tot-d1>=1&&tot-d1<=6?tot-d1:Math.min(6,tot-1); return {kind:"break",d1,d2:tot-d1>=1&&tot-d1<=6?tot-d1:d2,tot,stop:STACKS-tot,key:"b"+tot}; }
+function makeBreak(used){ let tot; let g=0; do{ tot=(1+rnd(6))+(1+rnd(6)); g++; }while(used.has("b"+tot)&&g<40); used.add("b"+tot); const lo=Math.max(1,tot-6), hi=Math.min(6,tot-1); const d1=lo+rnd(hi-lo+1); const d2=tot-d1; return {kind:"break",d1,d2,tot,stop:STACKS-tot,key:"b"+tot}; }
 function makeDeal(used){ const pool=cur.n>=2?12:8; const avail=[]; for(let n=1;n<=pool;n++) if(!used.has("d"+n)) avail.push(n); const groupN=avail.length?avail[rnd(avail.length)]:1+rnd(pool); used.add("d"+groupN); return {kind:"deal",groupN,who:(groupN-1)%4,key:"d"+groupN}; }
 function makeManners(used){ const avail=[]; for(let n=0;n<MANNERS.length;n++) if(!used.has("m"+n)) avail.push(n); const i=avail.length?avail[rnd(avail.length)]:rnd(MANNERS.length); used.add("m"+i); const base=MANNERS[i]; const idx=base.opts.map((_,k)=>k); for(let k=idx.length-1;k>0;k--){const j=rnd(k+1);[idx[k],idx[j]]=[idx[j],idx[k]];} return {kind:"manners",q:base.q,opts:idx.map(k=>base.opts[k]),a:idx.indexOf(base.a),why:base.why,key:"m"+i}; }
 function makeOne(used){ return mode==="break"?makeBreak(used):mode==="deal"?makeDeal(used):makeManners(used); }
