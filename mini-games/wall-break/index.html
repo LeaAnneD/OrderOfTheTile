@@ -174,7 +174,7 @@
 </div>
 
 <script>
-const BUILD="v6 · 2026-06-12";
+const BUILD="v7 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -201,7 +201,7 @@ const MANNERS=[
   {q:"Why is the wall broken by a roll of the dice?",opts:["To randomize where it opens and prevent cheating","To decide the hand to build","To choose a trump suit","To set the timer"],a:0,why:"The dice randomize the break so no one can stack the wall."},
   {q:"East counts to find the break starting from which end of the wall?",opts:["The far RIGHT, moving left","The far left, moving right","The middle","Wherever they like"],a:0,why:"Count the dice total from the far RIGHT of East's own wall."},
   {q:"After counting off the break, East deals from which tiles?",opts:["The tiles just to the LEFT of the counted-off group","The counted-off tiles on the right","The bottom row only","A fresh wall"],a:0,why:"The counted-off tiles are set aside; dealing starts from the next tiles to the left."},
-  {q:"In casual play, who picks up each player's four tiles?",opts:["Each player takes their own — many don't want others touching their tiles","One person hands them all out, always","The winner of the last game","East deals every tile"],a:0,why:"Take your own four. Some house rules let one person deal them out, but informally, hands off other people's tiles."},
+  {q:"In casual play, who picks up each player's four tiles?",opts:["Each player takes their own — many don't want others touching their tiles","One person hands them all out, always","The winner of the last game","East deals every tile"],a:0,why:"Most casual tables have each player take their own four — but set it before play, since some tables let East deal them out. Agreeing up front avoids any reaching across the table."},
   {q:"Tiles are dealt four at a time, in what order?",opts:["East, then South (right), West (across), North (left)","Clockwise from the winner","North, West, South, East","All at once"],a:0,why:"Four at a time: East -> South -> West -> North, three times around."},
   {q:"After three rounds everyone has 12. How does East reach 14?",opts:["East takes two more; South, West, North each take one more","East takes four more","Everyone takes two more","East trades with South"],a:0,why:"East takes two (the 1st & 3rd), and South, West, and North each take one — East 14, the rest 13."},
   {q:"When a game ends, who becomes East next?",opts:["The player to East's right (South)","East again","The winner","The player across"],a:0,why:"East passes to the right; the dice go with it."},
@@ -335,7 +335,7 @@ function doSubmit(sc,opts){
 function tutData(){
   return [
     {sc:{kind:"break",d1:2,d2:3,tot:5,stop:STACKS-5}, text:"<b>Break the wall.</b> East throws the dice and counts that total from the <b>right</b> end of their own wall. Wherever the count stops, that's where the wall opens — the counted tiles get set aside for the end of the game. East rolled 5 here. Tap the stack 5 from the right, then Submit."},
-    {sc:{kind:"deal",groupN:2,who:1}, text:"<b>Deal four at a time.</b> Starting at the break, tiles go four at a time: East, then South (your right), West (across), North (your left), around three times until everyone has 12. This is the one-time opening deal — East stays East all game; the seat only passes right when the next game begins. Take your own four — in casual play, don't touch other people's tiles. Who takes the 2nd group of four?"},
+    {sc:{kind:"deal",groupN:2,who:1}, text:"<b>Deal four at a time.</b> Starting at the break, tiles go four at a time: East, then South (your right), West (across), North (your left), around three times until everyone has 12. This is the one-time opening deal — East stays East all game; the seat only passes right when the next game begins. Take your own four — but settle one house rule first: does everyone take their own tiles, or does East deal them out? Agreeing before you start keeps the open friction-free. Who takes the 2nd group of four?"},
     {sc:{kind:"manners",q:"After everyone has 12, how does East end up with 14?",opts:["East takes two more; South, West & North each take one more","East takes four more","Everyone draws two"],a:0,why:"East takes two (the 1st & 3rd) and the other three take one each — East 14, the rest 13. Then play begins."}},
   ];
 }
