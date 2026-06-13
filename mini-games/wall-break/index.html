@@ -31,6 +31,7 @@
   .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px 14px; box-shadow:var(--shadow); min-width:100px;}
   .stat .k{font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft);}
   .stat .v{font-family:"Playfair Display",serif; font-weight:700; font-size:1.3rem; line-height:1.1;}
+  .eye{cursor:pointer; border:none; background:none; font-size:.72rem; color:var(--ink-soft); text-decoration:underline; padding:0; margin-top:2px;} .eye:hover{color:var(--rose-deep);}
   .banner{background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:14px; text-align:center;}
   .banner .lead{font-size:.76rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft);}
   .banner .ask{font-family:"Playfair Display",serif; font-weight:700; font-size:1.28rem; margin-top:2px; line-height:1.25;}
@@ -137,7 +138,7 @@
 
   <div class="hud">
     <div class="stat"><div class="k">Accuracy</div><div class="v" id="hudAcc">—</div></div>
-    <div class="stat"><div class="k">Time</div><div class="v" id="hudTime">—</div></div>
+    <div class="stat"><div class="k">Time</div><div class="v" id="hudTime">—</div><button class="eye" id="eyeBtn">hide</button></div>
     <div class="stat"><div class="k">Answered</div><div class="v" id="hudProg">0 / 0</div></div>
     <div class="stat"><div class="k">Best</div><div class="v" id="hudBest">—</div></div>
   </div>
@@ -174,7 +175,7 @@
 </div>
 
 <script>
-const BUILD="v7 · 2026-06-12";
+const BUILD="v8 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -223,6 +224,7 @@ const LS="oott_wallbreak_v2";
 function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
 function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
 let prog=loadProg(); prog.unlocked=prog.unlocked||{break:1,deal:1,manners:1}; prog.best=prog.best||{break:{},deal:{}}; prog.seen=prog.seen||{break:[],deal:[],manners:[]}; prog.tutDone=prog.tutDone||false;
+let timerHidden=localStorage.getItem('ott_timer_hidden')==='1';   // shared show/hide-clock pref across OOTT games
 let mode="break", cur=LEVELS[0], round=null, timerId=null, tutorial=null, playing=false;
 const K=6;
 const $=s=>document.querySelector(s);
@@ -356,7 +358,7 @@ function showStart(){
     <button id="tutBig" class="btn ghost" style="margin-left:10px;">How to play</button></div>`;
   $("#playBig").onclick=()=>startRound();
   $("#tutBig").onclick=()=>startTutorial();
-  $("#hudTime").textContent=timed()?"0.0s":"—"; $("#hudAcc").textContent="—"; $("#hudProg").textContent="0 / 0";
+  $("#hudTime").textContent=timed()?(timerHidden?"hidden":"0.0s"):"—"; $("#hudAcc").textContent="—"; $("#hudProg").textContent="0 / 0";
   updateBest();
 }
 const MODES_LABEL={break:"Break the Wall",deal:"Deal Order",manners:"Table Manners"};
@@ -367,7 +369,7 @@ function startRound(){
   const used=new Set(); preseedSeen(used); const seq=[]; for(let i=0;i<K;i++)seq.push(makeOne(used)); recordSeen(seq);
   round={seq,idx:0,K,firstRight:0,attempted:0,started:false,t0:null,_show:null};
   setPlaying(true);
-  $("#hudTime").textContent=timed()?"0.0s":"—";
+  $("#hudTime").textContent=timed()?(timerHidden?"hidden":"0.0s"):"—";
   nextScenario();
 }
 function nextScenario(){ const sc=round.seq[round.idx]; round._show=performance.now(); if(timed())startClock(); renderScenario(sc,{}); updateHud(); }
@@ -377,7 +379,7 @@ function gameAfter(correct){
   go.onclick=()=>{ round.idx++; if(round.idx>=round.K)finishRound(); else nextScenario(); };
   const sb=$("#game").querySelector('.submitbar'); if(sb){ sb.innerHTML=''; sb.appendChild(go); } else { const w=el("div","submitbar"); w.appendChild(go); $("#game").appendChild(w); }
 }
-function startClock(){ if(!round.started){round.started=true; round.t0=performance.now(); timerId=setInterval(()=>{if(round.t0)$("#hudTime").textContent=((performance.now()-round.t0)/1000).toFixed(1)+"s";},100);} }
+function startClock(){ if(!round.started){round.started=true; round.t0=performance.now(); timerId=setInterval(()=>{if(round.t0)$("#hudTime").textContent=timerHidden?"hidden":((performance.now()-round.t0)/1000).toFixed(1)+"s";},100);} }
 function stopTimer(){ clearInterval(timerId); timerId=null; }
 function updateHud(){
   const acc=round&&round.attempted?Math.round(round.firstRight/round.attempted*100):null;
@@ -417,6 +419,8 @@ function closeModalToStart(){ $("#scrim").classList.remove("show"); showStart();
 /* ---------- wiring ---------- */
 document.querySelectorAll(".modepill").forEach(p=>p.addEventListener("click",()=>{ mode=p.dataset.mode; document.querySelectorAll(".modepill").forEach(x=>x.classList.toggle("on",x===p)); cur=LEVELS[Math.min(prog.unlocked[mode]||1,1)-1]||LEVELS[0]; cur=LEVELS[0]; showStart(); }));
 $("#toggleBtn").onclick=()=>{ if(playing)stopRound(); else startRound(); };
+$("#eyeBtn").textContent=timerHidden?"show":"hide";
+$("#eyeBtn").onclick=()=>{ timerHidden=!timerHidden; localStorage.setItem('ott_timer_hidden', timerHidden?'1':'0'); $("#eyeBtn").textContent=timerHidden?"show":"hide"; if(timed()) $("#hudTime").textContent = timerHidden ? "hidden" : (round&&round.t0 ? ((performance.now()-round.t0)/1000).toFixed(1)+"s" : "0.0s"); };
 $("#tutBtn").onclick=()=>startTutorial();
 $("#nextLevel").onclick=()=>{ if(prog.unlocked[mode]>cur.n){ cur=LEVELS[cur.n]; showStart(); } };
 $("#cardAgain").onclick=()=>{ $("#scrim").classList.remove("show"); startRound(); };
