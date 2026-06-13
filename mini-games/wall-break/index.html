@@ -174,7 +174,7 @@
 </div>
 
 <script>
-const BUILD="v5 · 2026-06-12";
+const BUILD="v6 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -215,6 +215,7 @@ const MANNERS=[
   {q:"After the game, the dice pass to whom?",opts:["The player to East's right (the new East)","The winner","The player across","They stay with East"],a:0,why:"The dice travel with East — handed to the player on East's right, who becomes the next East."},
   {q:"Where does South sit relative to East?",opts:["To East's right","Across from East","To East's left","Behind East"],a:0,why:"Dealing runs East -> South (your right) -> West (across) -> North (your left)."},
   {q:"How many tiles does each non-East player hold at the start?",opts:["13","14","12","16"],a:0,why:"East starts with 14; South, West, and North each start with 13."},
+  {q:"Once a game is underway, does the East seat change?",opts:["No — East stays East all game; it only passes one seat right when the next game starts","Yes, it rotates after each round of the deal","Yes, it passes right after the Charleston","Yes, whoever wins a tile becomes East"],a:0,why:"East is fixed for the entire game. Only after Mah Jongg is declared (or a Wall Game) does East pass one seat to the right — and that's a brand-new, separate game. The only thing that carries over is who's East."},
 ];
 
 const LEVELS=[{n:1,title:"Level 1 — With Guides",hints:true},{n:2,title:"Level 2 — No Guides",hints:false},{n:3,title:"Level 3 — Clean & Quick",hints:false}];
@@ -318,7 +319,7 @@ function doSubmit(sc,opts){
     const seats=[...$("#game").querySelectorAll('.seat')]; seats.forEach(s=>s.onclick=null);
     correct=sel.seat===sc.who;
     seats[sel.seat].classList.add(correct?'right':'wrong'); if(!correct)seats[sc.who].classList.add('right');
-    $("#feed").innerHTML=correct?`Right — the ${ordinal(sc.groupN)} four go to <b>${DEAL[sc.who].replace(" (You)","")}</b>.`:`Not quite — the ${ordinal(sc.groupN)} four go to <b>${DEAL[sc.who].replace(" (You)","")}</b>. The order East &rarr; South &rarr; West &rarr; North just repeats.`;
+    $("#feed").innerHTML=correct?`Right — the ${ordinal(sc.groupN)} four go to <b>${DEAL[sc.who].replace(" (You)","")}</b>.`:`Not quite — the ${ordinal(sc.groupN)} four go to <b>${DEAL[sc.who].replace(" (You)","")}</b>. That East &rarr; South &rarr; West &rarr; North pickup order just repeats through the opening deal.`;
   } else {
     sel.locked=true;
     const btns=[...$("#game").querySelectorAll('.choice')]; btns.forEach(b=>{b.onclick=null; b.classList.add('dim');});
@@ -334,7 +335,7 @@ function doSubmit(sc,opts){
 function tutData(){
   return [
     {sc:{kind:"break",d1:2,d2:3,tot:5,stop:STACKS-5}, text:"<b>Break the wall.</b> East throws the dice and counts that total from the <b>right</b> end of their own wall. Wherever the count stops, that's where the wall opens — the counted tiles get set aside for the end of the game. East rolled 5 here. Tap the stack 5 from the right, then Submit."},
-    {sc:{kind:"deal",groupN:2,who:1}, text:"<b>Deal four at a time.</b> Starting at the break, tiles go four at a time: East, then South (your right), West (across), North (your left), around three times until everyone has 12. Take your own four — in casual play, don't touch other people's tiles. Who takes the 2nd group of four?"},
+    {sc:{kind:"deal",groupN:2,who:1}, text:"<b>Deal four at a time.</b> Starting at the break, tiles go four at a time: East, then South (your right), West (across), North (your left), around three times until everyone has 12. This is the one-time opening deal — East stays East all game; the seat only passes right when the next game begins. Take your own four — in casual play, don't touch other people's tiles. Who takes the 2nd group of four?"},
     {sc:{kind:"manners",q:"After everyone has 12, how does East end up with 14?",opts:["East takes two more; South, West & North each take one more","East takes four more","Everyone draws two"],a:0,why:"East takes two (the 1st & 3rd) and the other three take one each — East 14, the rest 13. Then play begins."}},
   ];
 }
