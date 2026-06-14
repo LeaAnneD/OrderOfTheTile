@@ -195,7 +195,7 @@
 </div>
 
 <script>
-const BUILD="v18 · 2026-06-12";
+const BUILD="v19 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -254,12 +254,23 @@ const timed=()=>mode!=="manners";
 
 /* ---------- scenario generation (no repeats within a round) ---------- */
 function makeBreak(used){ let tot; let g=0; do{ tot=(1+rnd(6))+(1+rnd(6)); g++; }while(used.has("b"+tot)&&g<40); used.add("b"+tot); const lo=Math.max(1,tot-6), hi=Math.min(6,tot-1); const d1=lo+rnd(hi-lo+1); const d2=tot-d1; return {kind:"break",d1,d2,tot,stop:STACKS-tot,key:"b"+tot}; }
-function makeDeal(used){ const pool=cur.n>=2?12:8; const avail=[]; for(let n=1;n<=pool;n++) if(!used.has("d"+n)) avail.push(n); const groupN=avail.length?avail[rnd(avail.length)]:1+rnd(pool); used.add("d"+groupN); return {kind:"deal",groupN,who:(groupN-1)%4,key:"d"+groupN}; }
+function dealPool(){
+  const nm=i=>DEAL[i].replace(" (You)","");
+  const P=[];
+  for(let n=1;n<=4;n++) P.push({key:"g"+n, who:(n-1)%4, ask:`Who takes the <b>${ordinal(n)}</b> group of four tiles?`, why:`Tiles deal four at a time — East &rarr; South &rarr; West &rarr; North, repeating. The ${ordinal(n)} group goes to ${nm((n-1)%4)}.`});
+  P.push({key:"sup", who:0, ask:`Three rounds are done and everyone has 12. Who takes two more tiles, reaching 14?`, why:`East takes the 1st and 3rd tiles off the top to reach 14; South, West, and North each take one more to reach 13.`});
+  P.push({key:"seatR", who:1, ask:`On the table, which seat is <b>to your right</b>?`, why:`From East (you), South sits to your right — where the deal and play head first.`});
+  P.push({key:"seatA", who:2, ask:`Which seat sits <b>across</b> from you?`, why:`West sits across from East (you).`});
+  P.push({key:"seatL", who:3, ask:`Which seat is <b>to your left</b>?`, why:`North sits to your left — last to take each round.`});
+  for(let s=0;s<4;s++) P.push({key:"nx"+s, who:(s+1)%4, ask:`<b>${nm(s)}</b> just took a group. Who's next?`, why:`The deal moves to the right — after ${nm(s)} comes ${nm((s+1)%4)}.`});
+  return P;
+}
+function makeDeal(used){ const pool=dealPool(); const avail=pool.filter(q=>!used.has(q.key)); const list=avail.length?avail:pool; const q=list[rnd(list.length)]; used.add(q.key); return Object.assign({kind:"deal"}, q); }
 function makeManners(used){ const avail=[]; for(let n=0;n<MANNERS.length;n++) if(!used.has("m"+n)) avail.push(n); const i=avail.length?avail[rnd(avail.length)]:rnd(MANNERS.length); used.add("m"+i); const base=MANNERS[i]; const idx=base.opts.map((_,k)=>k); for(let k=idx.length-1;k>0;k--){const j=rnd(k+1);[idx[k],idx[j]]=[idx[j],idx[k]];} return {kind:"manners",q:base.q,opts:idx.map(k=>base.opts[k]),a:idx.indexOf(base.a),why:base.why,key:"m"+i}; }
 function makeOne(used){ return mode==="break"?makeBreak(used):mode==="deal"?makeDeal(used):makeManners(used); }
 /* cross-session no-repeat: remember the most recent (pool - K) scenarios per mode so a
    fresh round avoids them; the pool only recycles once it's genuinely exhausted. */
-function poolSize(m){ return m==="break"?11 : m==="deal"?(cur.n>=2?12:8) : MANNERS.length; }
+function poolSize(m){ return m==="break"?11 : m==="deal"?dealPool().length : MANNERS.length; }
 function preseedSeen(used){ const keep=Math.max(0,poolSize(mode)-K); ((prog.seen&&prog.seen[mode])||[]).slice(-keep).forEach(k=>used.add(k)); }
 function recordSeen(seq){ const keep=Math.max(0,poolSize(mode)-K); prog.seen=prog.seen||{}; const prev=prog.seen[mode]||[]; prog.seen[mode]=[...prev,...seq.map(s=>s.key).filter(Boolean)].slice(-keep); saveProg(); }
 
@@ -307,8 +318,8 @@ function pickStack(sc,i,wall){ if(sel.locked)return; sel.stack=i; [...wall.query
 
 function renderDeal(g,sc,hints,opts){
   g.appendChild(bannerEl("Dealing — four tiles at a time",
-    `Who takes the <b>${ordinal(sc.groupN)}</b> group of four tiles?`,
-    "Guide: order repeats — East &rarr; South (your right) &rarr; West (across) &rarr; North (your left).",opts));
+    sc.ask || `Who takes the <b>${ordinal(sc.groupN)}</b> group of four tiles?`,
+    "Guide: the deal goes East &rarr; South (right) &rarr; West (across) &rarr; North (left), and East ends with 14.",opts));
   g.appendChild(tableGuide());
   const row=el("div","seatsrow");
   DEAL.forEach((nm,k)=>{ const s=el("div","seat"); s.dataset.k=k; s.innerHTML=`<div class="nm">${nm.replace(" (You)","")}</div><div class="ro">${["East","South","West","North"][k]}${k===0?" · you":""}</div>`; s.onclick=()=>pickSeat(sc,k,row); row.appendChild(s); });
@@ -357,7 +368,7 @@ function doSubmit(sc,opts){
     const seats=[...$("#game").querySelectorAll('.seat')]; seats.forEach(s=>s.onclick=null);
     correct=sel.seat===sc.who;
     seats[sel.seat].classList.add(correct?'right':'wrong'); if(!correct)seats[sc.who].classList.add('right');
-    $("#feed").innerHTML=correct?`Right — the ${ordinal(sc.groupN)} four go to <b>${DEAL[sc.who].replace(" (You)","")}</b>.`:`Not quite — the ${ordinal(sc.groupN)} four go to <b>${DEAL[sc.who].replace(" (You)","")}</b>. That East &rarr; South &rarr; West &rarr; North pickup order just repeats through the opening deal.`;
+    $("#feed").innerHTML=(correct?`Right — <b>${DEAL[sc.who].replace(" (You)","")}</b>. `:`Not quite — it's <b>${DEAL[sc.who].replace(" (You)","")}</b>. `)+(sc.why||"The deal goes East &rarr; South &rarr; West &rarr; North, repeating.");
   } else {
     sel.locked=true;
     const btns=[...$("#game").querySelectorAll('.choice')]; btns.forEach(b=>{b.onclick=null; b.classList.add('dim');});
