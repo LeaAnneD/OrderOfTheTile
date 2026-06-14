@@ -94,6 +94,22 @@
   .tg-seat.b{left:50%; bottom:0; transform:translateX(-50%);} .tg-seat.t{left:50%; top:0; transform:translateX(-50%);}
   .tg-seat.l{left:0; top:50%; transform:translateY(-50%);} .tg-seat.r{right:0; top:50%; transform:translateY(-50%);}
   .tg-seat.me{border-color:var(--rose-deep); background:#FBEFE9;}
+  /* deal animation — the jump to 14 */
+  .anim-stage{display:flex; flex-direction:column; align-items:center; gap:16px; margin:10px 0;}
+  .aw{display:inline-flex; flex-direction:column; gap:5px; padding:12px 14px; border-radius:12px; background:var(--paper-2); border:1px solid var(--line);}
+  .aw .awr{display:flex; gap:5px; justify-content:center;}
+  .awt{width:30px; height:40px; border-radius:5px; background:linear-gradient(180deg,#F3E9D6,#DcCcae); border:1px solid #C8B791; display:flex; align-items:center; justify-content:center; font-size:.7rem; color:#8a7a55; transition:box-shadow .2s, opacity .3s;}
+  .awt.lit{box-shadow:0 0 0 3px var(--gold);}
+  .awt.taken{opacity:.28;}
+  .aw .awlbl{font-size:.66rem; color:var(--ink-soft); text-align:center; font-style:italic; margin-top:2px;}
+  .anim-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+  .anim-seat{width:88px; padding:8px 6px; border-radius:12px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); text-align:center; transition:box-shadow .2s, background .2s;}
+  .anim-seat .nm{font-family:"Playfair Display",serif; font-weight:600; font-size:.95rem;}
+  .anim-seat .cnt{font-family:"Playfair Display",serif; font-weight:700; font-size:1.5rem; color:var(--rose-deep); line-height:1.15;}
+  .anim-seat.me{border-color:var(--rose-deep); background:#FBEFE9;}
+  .anim-seat.flash{box-shadow:0 0 0 3px var(--gold), var(--shadow); background:#FBEFD4;}
+  .anim-cap{font-style:italic; color:var(--ink-soft); text-align:center; min-height:2.8em; max-width:540px; margin:4px auto 0; line-height:1.4; font-size:.96rem;}
+  .anim-cap b{font-style:normal; color:var(--ink);}
   .submitbar{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin:14px 0 2px;}
   .feedline{text-align:center; font-style:italic; color:var(--ink-soft); min-height:1.4em; margin-top:8px; font-size:.96rem;}
   .feedline b{font-style:normal; color:var(--ink);}
@@ -195,7 +211,7 @@
 </div>
 
 <script>
-const BUILD="v19 · 2026-06-12";
+const BUILD="v20 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -341,6 +357,46 @@ function tableGuide(){
   </div>`;
   return d;
 }
+/* ---------- deal animation: how East ends with 14 (Mahjong Made Easy supplement) ---------- */
+let animTimers=[];
+function clearAnim(){ animTimers.forEach(t=>clearTimeout(t)); animTimers=[]; }
+function playDealAnim(){
+  stopTimer(); setPlaying(false); clearAnim();
+  const names=["East","South","West","North"], counts=[12,12,12,12];
+  const g=$("#game");
+  g.innerHTML=
+    `<div class="banner flash"><div class="lead">The jump to 14</div><div class="ask" style="font-size:1.12rem;">How East ends with 14 — everyone else 13</div></div>`+
+    `<div class="anim-stage"><div class="aw">`+
+      `<div class="awr">`+['T1','T2','T3'].map(k=>`<div class="awt" id="aw_${k}">${k[1]}</div>`).join('')+`</div>`+
+      `<div class="awr">`+['B1','B2'].map(k=>`<div class="awt" id="aw_${k}">${k[1]}</div>`).join('')+`</div>`+
+      `<div class="awlbl">the next wall tiles — top row &amp; bottom row</div></div>`+
+      `<div class="anim-row">`+names.map((n,i)=>`<div class="anim-seat${i===0?' me':''}" id="as_${i}"><div class="nm">${n}</div><div class="cnt" id="cnt_${i}">12</div></div>`).join('')+`</div></div>`+
+    `<div class="anim-cap" id="animCap">After three rounds everyone holds 12. Watch how East gets to 14.</div>`+
+    `<div class="submitbar"><button class="btn" id="animReplay">Replay &#9654;</button><button class="btn ghost" id="animBack">Back</button></div>`;
+  $("#animReplay").onclick=()=>playDealAnim();
+  $("#animBack").onclick=()=>{ clearAnim(); showStart(); };
+  const steps=[
+    {tile:'T1',seat:0,cap:"<b>East</b> takes the 1st tile on the top row &rarr; 13."},
+    {tile:'T3',seat:0,cap:"<b>East</b> skips the middle and takes the 3rd top tile too — the jump. East now has <b>14</b>."},
+    {tile:'B1',seat:1,cap:"<b>South</b> takes the 1st tile on the bottom row &rarr; 13."},
+    {tile:'T2',seat:2,cap:"<b>West</b> takes the middle top tile East skipped &rarr; 13."},
+    {tile:'B2',seat:3,cap:"<b>North</b> takes the last bottom tile &rarr; 13."}
+  ];
+  let prev=null;
+  steps.forEach((st,idx)=>{
+    animTimers.push(setTimeout(()=>{
+      if(prev){ const p=document.getElementById('aw_'+prev); if(p){p.classList.remove('lit'); p.classList.add('taken');} }
+      const t=document.getElementById('aw_'+st.tile); if(t)t.classList.add('lit'); prev=st.tile;
+      counts[st.seat]++; const c=document.getElementById('cnt_'+st.seat); if(c)c.textContent=counts[st.seat];
+      const se=document.getElementById('as_'+st.seat); if(se){ se.classList.add('flash'); animTimers.push(setTimeout(()=>se.classList.remove('flash'),750)); }
+      const cap=document.getElementById('animCap'); if(cap)cap.innerHTML=st.cap;
+    }, 850 + idx*1350));
+  });
+  animTimers.push(setTimeout(()=>{
+    if(prev){ const p=document.getElementById('aw_'+prev); if(p){p.classList.remove('lit'); p.classList.add('taken');} }
+    const cap=document.getElementById('animCap'); if(cap)cap.innerHTML="<b>East 14, the others 13.</b> East discards first to begin play.";
+  }, 850 + steps.length*1350));
+}
 function renderManners(g,sc,opts){
   g.appendChild(bannerEl("Table manners",sc.q,"",opts));
   g.appendChild(tableGuide());
@@ -388,23 +444,25 @@ function tutData(){
     {sc:{kind:"manners",q:"After everyone has 12, how does East end up with 14?",opts:["East takes two more; South, West & North each take one more","East takes four more","Everyone draws two"],a:0,why:"East takes two (the 1st & 3rd) and the other three take one each — East 14, the rest 13. Then play begins."}},
   ];
 }
-function startTutorial(){ stopTimer(); setPlaying(false); $("#hudTime").textContent="—"; $("#hudAcc").textContent="—"; $("#hudProg").textContent="0 / 0"; tutorial={step:0,list:tutData()}; renderTut(); }
+function startTutorial(){ stopTimer(); setPlaying(false); clearAnim(); $("#hudTime").textContent="—"; $("#hudAcc").textContent="—"; $("#hudProg").textContent="0 / 0"; tutorial={step:0,list:tutData()}; renderTut(); }
 function renderTut(){ const t=tutorial.list[tutorial.step]; renderScenario(t.sc,{tut:true,hints:true,tutText:t.text,step:(tutorial.step+1)+" of "+tutorial.list.length}); }
 function tutAfter(){ const last=tutorial.step>=tutorial.list.length-1; const sb=$("#game").querySelector('.submitbar')||$("#game"); const nxt=el("button","btn"); nxt.textContent=last?"Got it — let me play ▶":"Next ▶"; nxt.onclick=()=>{ if(last){ prog.tutDone=true; saveProg(); showStart(); } else { tutorial.step++; renderTut(); } }; const bar=$("#game").querySelector('.submitbar'); if(bar){bar.innerHTML="";bar.appendChild(nxt);} else {const w=el("div","submitbar"); w.appendChild(nxt); $("#game").appendChild(w);} }
 
 /* ---------- START / PLAY / STOP ---------- */
 function setPlaying(on){ playing=on; const t=$("#toggleBtn"); if(t){ t.innerHTML=on?"Stop &#9632;":"Play &#9654;"; t.classList.toggle("ghost",false); } }
 function showStart(){
-  stopTimer(); setPlaying(false);
+  stopTimer(); setPlaying(false); clearAnim();
   const g=$("#game");
   const timeNote = timed()?"The clock starts when you press Play.":"Table Manners isn't timed — just answer each one.";
+  const watchBtn = mode==="deal"?`<button id="watchDeal" class="btn ghost" style="margin-left:10px;">Watch East reach 14 ▶</button>`:"";
   g.innerHTML=`<div class="banner flash"><div class="lead">Ready to play — ${MODES_LABEL[mode]}</div>
     <div class="ask" style="font-size:1.1rem;">${MODE_BLURB[mode]}</div>
     <div class="why">${timeNote}</div></div>
     <div class="startwrap"><button id="playBig" class="btn big">Play ▶</button>
-    <button id="tutBig" class="btn ghost" style="margin-left:10px;">How to play</button></div>`;
+    <button id="tutBig" class="btn ghost" style="margin-left:10px;">How to play</button>${watchBtn}</div>`;
   $("#playBig").onclick=()=>startRound();
   $("#tutBig").onclick=()=>startTutorial();
+  const wd=$("#watchDeal"); if(wd) wd.onclick=()=>playDealAnim();
   $("#hudTime").textContent=timed()?(timerHidden?"hidden":"0.0s"):"—"; $("#hudAcc").textContent="—"; $("#hudProg").textContent="0 / 0";
   updateBest();
 }
@@ -412,7 +470,7 @@ const MODES_LABEL={break:"Break the Wall",deal:"Deal Order",manners:"Table Manne
 const MODE_BLURB={break:"Roll the dice, count from the right, and tap where the wall breaks.",deal:"Four tiles at a time — say who takes each group, East to South to West to North.",manners:"A few questions on how the open of the game is handled, and where tables differ."};
 
 function startRound(){
-  stopTimer();
+  stopTimer(); clearAnim();
   const used=new Set(); preseedSeen(used); const seq=[]; for(let i=0;i<K;i++)seq.push(makeOne(used)); recordSeen(seq);
   round={seq,idx:0,K,firstRight:0,attempted:0,started:false,t0:null,_show:null};
   setPlaying(true);
