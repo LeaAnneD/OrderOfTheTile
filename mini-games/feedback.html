@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Tester Feedback — Order of the Tile</title>
+<link rel="icon" type="image/png" href="/images/seal.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#FBF6EE;--ink:#2B2622;--ink-soft:#6B5F54;--rose:#B76E79;--rose-deep:#9A5662;--line:#E2D6C4;--good:#5E7D5A;--bad:#B5524C;--amber:#B5832A;--shadow:0 2px 6px rgba(43,38,34,.12),0 8px 24px rgba(43,38,34,.08);}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Crimson Text",Georgia,serif;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 18px 80px;}
+  h1{font-family:"Playfair Display",serif;font-weight:700;font-size:1.7rem;margin:.1em 0;}
+  .sub{color:var(--ink-soft);font-style:italic;margin:0 0 18px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+  button{font-family:"Crimson Text",serif;font-size:1rem;border-radius:11px;padding:9px 16px;border:1px solid var(--rose-deep);background:var(--rose);color:#fff;cursor:pointer;box-shadow:var(--shadow);}
+  button.ghost{background:#fff;color:var(--ink);border-color:var(--line);box-shadow:none;}
+  button.mini{font-size:.84rem;padding:5px 11px;}
+  input,select,textarea{font-family:inherit;font-size:1rem;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;}
+  .login{max-width:360px;display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow);}
+  .tabs{display:flex;gap:8px;margin:6px 0 16px;flex-wrap:wrap;}
+  .tab{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:none;}
+  .tab.on{background:var(--rose);color:#fff;border-color:var(--rose-deep);}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+  .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 16px;box-shadow:var(--shadow);min-width:110px;}
+  .kpi .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-soft);}
+  .kpi .v{font-family:"Playfair Display",serif;font-weight:700;font-size:1.4rem;}
+  .item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:14px;}
+  .item.new{border-left:4px solid var(--amber);}
+  .item.confirmed{border-left:4px solid var(--bad);}
+  .item.not_a_bug{border-left:4px solid var(--ink-soft);}
+  .item.fixed{border-left:4px solid var(--good);}
+  .ihead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline;}
+  .badge{display:inline-block;font-size:.74rem;padding:2px 9px;border-radius:20px;border:1px solid var(--line);margin-right:6px;}
+  .b-bug{background:#F6E2E0;color:#7a2f2b;border-color:#e3b7b2;}
+  .b-confusing{background:#F1EAD8;color:#6b5212;border-color:#ddd0a8;}
+  .b-idea{background:#E5EDF0;color:#234a57;border-color:#bcd2da;}
+  .b-praise{background:#E5EFE3;color:#2f4d2b;border-color:#bdd6b6;}
+  .ibody{margin:8px 0;white-space:pre-wrap;font-size:1.02rem;}
+  .meta{font-size:.8rem;color:var(--ink-soft);display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;}
+  .shot{margin:10px 0;}
+  .shot img{max-width:320px;max-height:240px;border:1px solid var(--line);border-radius:10px;cursor:zoom-in;}
+  details.err summary{cursor:pointer;color:var(--bad);font-size:.85rem;}
+  details.err pre{background:#2B2622;color:#f0e8dc;padding:10px;border-radius:8px;overflow:auto;font-size:.78rem;}
+  .triage{margin-top:12px;border-top:1px dashed var(--line);padding-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+  .triage label{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);margin-bottom:3px;}
+  .thread{margin-top:10px;}
+  .note{background:#F7F1E7;border:1px solid var(--line);border-radius:9px;padding:7px 10px;margin:6px 0;font-size:.94rem;}
+  .note .who{font-size:.72rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;}
+  .msg{color:var(--bad);min-height:1.1em;font-size:.9rem;}
+  .muted{color:var(--ink-soft);font-style:italic;}
+  table.tl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+  table.tl th,table.tl td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:.95rem;}
+  table.tl th{background:#F3EADc;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div><h1>Tester Feedback</h1><p class="sub">Everything testers sent — yours alone. Set a verdict before anything gets fixed.</p></div>
+    <button id="logout" class="ghost" style="display:none;">Log out</button>
+  </div>
+  <div id="view"></div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb = createClient("https://avltolzpzxcdmgrjnsfa.supabase.co","sb_publishable_zI6klteA7Kz4wbBoMCfOng_sb1Dz-pK");
+const view=document.getElementById('view'), logoutBtn=document.getElementById('logout');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dt=s=>s?new Date(s).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'—';
+const STATUSES=['new','reviewing','need_info','confirmed','not_a_bug','fixed','wont_fix'];
+const STATUS_LABEL={new:'New',reviewing:'Reviewing',need_info:'Need info',confirmed:'Confirmed bug',not_a_bug:'Not a bug',fixed:'Fixed',wont_fix:"Won't fix"};
+
+logoutBtn.onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
+
+function showLogin(note){
+  logoutBtn.style.display='none';
+  view.innerHTML=`<div class="login">
+    <h2 style="font-family:'Playfair Display',serif;margin:.1em 0;">Admin sign in</h2>
+    <p class="muted" style="margin:.2em 0 .6em;">${note||'Sign in with your Order of the Tile admin account.'}</p>
+    <input id="e" type="email" placeholder="Email" autocomplete="email">
+    <input id="p" type="password" placeholder="Password" autocomplete="current-password">
+    <div class="msg" id="m"></div>
+    <button id="go">Sign in</button>
+  </div>`;
+  view.querySelector('#go').onclick=async()=>{
+    const m=view.querySelector('#m'); m.textContent='Working…';
+    const {error}=await sb.auth.signInWithPassword({email:view.querySelector('#e').value.trim(),password:view.querySelector('#p').value});
+    if(error){m.textContent=error.message;return;}
+    boot();
+  };
+}
+
+let TAB='feedback', FG='all', FS='open', ITEMS=[];
+async function loadFeedback(){
+  logoutBtn.style.display='';
+  view.innerHTML='<p class="muted">Loading feedback…</p>';
+  const { data, error }=await sb.from('feedback').select('*').order('created_at',{ascending:false});
+  if(error){ view.innerHTML='<p class="msg">'+esc(error.message)+'</p>'; return; }
+  ITEMS=data||[];
+  render();
+}
+function render(){
+  const games=[...new Set(ITEMS.map(i=>i.game))].sort();
+  let list=ITEMS.slice();
+  if(FG!=='all') list=list.filter(i=>i.game===FG);
+  if(FS==='open') list=list.filter(i=>!['fixed','not_a_bug','wont_fix'].includes(i.status));
+  else if(FS!=='all') list=list.filter(i=>i.status===FS);
+  const nNew=ITEMS.filter(i=>i.status==='new').length;
+  view.innerHTML=`
+    <div class="tabs">
+      <button class="tab ${TAB==='feedback'?'on':''}" data-tab="feedback">Reports</button>
+      <button class="tab ${TAB==='testers'?'on':''}" data-tab="testers">Tester list</button>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="k">Total reports</div><div class="v">${ITEMS.length}</div></div>
+      <div class="kpi"><div class="k">New (untriaged)</div><div class="v">${nNew}</div></div>
+      <div class="kpi"><div class="k">Confirmed bugs</div><div class="v">${ITEMS.filter(i=>i.status==='confirmed').length}</div></div>
+    </div>
+    <div class="filters">
+      <span class="muted">Game:</span>
+      <select id="fg"><option value="all">All games</option>${games.map(g=>`<option value="${esc(g)}" ${g===FG?'selected':''}>${esc(g)}</option>`).join('')}</select>
+      <span class="muted">Status:</span>
+      <select id="fs">
+        <option value="open" ${FS==='open'?'selected':''}>Open (not closed)</option>
+        <option value="all" ${FS==='all'?'selected':''}>All</option>
+        ${STATUSES.map(s=>`<option value="${s}" ${FS===s?'selected':''}>${STATUS_LABEL[s]}</option>`).join('')}
+      </select>
+      <button class="mini ghost" id="refresh">↻ Refresh</button>
+    </div>
+    <div id="list">${list.map(rowHTML).join('')||'<p class="muted">No reports match.</p>'}</div>`;
+  view.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{TAB=t.dataset.tab; TAB==='testers'?loadTesters():render();});
+  view.querySelector('#fg').onchange=e=>{FG=e.target.value;render();};
+  view.querySelector('#fs').onchange=e=>{FS=e.target.value;render();};
+  view.querySelector('#refresh').onclick=loadFeedback;
+  list.forEach(it=>wireItem(it.id));
+}
+function rowHTML(i){
+  return `<div class="item ${esc(i.status)}" id="it-${i.id}">
+    <div class="ihead">
+      <div><span class="badge b-${esc(i.kind)}">${esc(i.kind)}</span>
+        <b>${esc(i.game_name||i.game)}</b> ${i.severity?`<span class="muted">· ${esc(i.severity)}</span>`:''}</div>
+      <div class="muted">${dt(i.created_at)}</div>
+    </div>
+    <div class="ibody">${esc(i.body)}</div>
+    <div class="shot" data-shot="${esc(i.shot_path||'')}">${i.shot_path?'<span class="muted">loading screenshot…</span>':''}</div>
+    <div class="meta">
+      <span>${i.reporter_name?esc(i.reporter_name):'(no name)'}${i.reporter_email?' · '+esc(i.reporter_email):' · guest'}</span>
+      <span>build ${esc(i.build_stamp||'—')}</span>
+      <span>${esc(i.viewport||'')}</span>
+      ${i.page_url?`<a href="${esc(i.page_url)}" target="_blank" rel="noopener">open page ↗</a>`:''}
+    </div>
+    ${(i.error_log&&i.error_log.length)?`<details class="err"><summary>⚠ ${i.error_log.length} captured error(s)</summary><pre>${esc(JSON.stringify(i.error_log,null,2))}</pre></details>`:''}
+    <div class="triage">
+      <div><label>Status</label><select class="t-status">${STATUSES.map(s=>`<option value="${s}" ${i.status===s?'selected':''}>${STATUS_LABEL[s]}</option>`).join('')}</select></div>
+      <div style="flex:1;min-width:220px;"><label>Your verdict (Prim reads this before touching anything)</label>
+        <input class="t-verdict" style="width:100%;" value="${esc(i.admin_verdict||'')}" placeholder="e.g. 'Real bug — tile art missing on mobile' or 'Not broken — that's intended'"></div>
+      <button class="mini t-save">Save verdict</button>
+    </div>
+    <div class="thread"><div class="t-notes muted">…</div>
+      <div style="display:flex;gap:8px;margin-top:6px;"><input class="t-reply" style="flex:1;" placeholder="Add a triage note…"><button class="mini ghost t-addnote">Add note</button></div>
+    </div>
+  </div>`;
+}
+async function wireItem(id){
+  const root=document.getElementById('it-'+id); if(!root) return;
+  const it=ITEMS.find(x=>x.id===id);
+  // screenshot signed url
+  const sw=root.querySelector('.shot'); const path=sw.dataset.shot;
+  if(path){ try{ const { data }=await sb.storage.from('feedback-shots').createSignedUrl(path,3600);
+    sw.innerHTML=data?.signedUrl?`<a href="${data.signedUrl}" target="_blank"><img src="${data.signedUrl}" alt="screenshot"></a>`:'<span class="muted">screenshot unavailable</span>'; }
+    catch(_){ sw.innerHTML='<span class="muted">screenshot unavailable</span>'; } }
+  // save status + verdict
+  root.querySelector('.t-save').onclick=async(e)=>{ const b=e.target; b.textContent='Saving…'; b.disabled=true;
+    const status=root.querySelector('.t-status').value, admin_verdict=root.querySelector('.t-verdict').value.trim()||null;
+    const { error }=await sb.from('feedback').update({status,admin_verdict}).eq('id',id);
+    b.textContent=error?'Error':'Saved ✓'; if(!error){ it.status=status; it.admin_verdict=admin_verdict; root.className='item '+status; }
+    setTimeout(()=>{b.textContent='Save verdict';b.disabled=false;},1200); };
+  // notes
+  const notesBox=root.querySelector('.t-notes');
+  async function loadNotes(){ const { data }=await sb.from('feedback_notes').select('*').eq('feedback_id',id).order('created_at');
+    notesBox.innerHTML=(data&&data.length)?data.map(n=>`<div class="note"><div class="who">${esc(n.author)} · ${dt(n.created_at)}</div>${esc(n.body)}</div>`).join(''):'<span class="muted">No triage notes yet.</span>'; }
+  loadNotes();
+  root.querySelector('.t-addnote').onclick=async()=>{ const inp=root.querySelector('.t-reply'); const body=inp.value.trim(); if(!body)return;
+    inp.disabled=true; const { error }=await sb.from('feedback_notes').insert({feedback_id:id,author:'lea-anne',body});
+    inp.disabled=false; if(!error){ inp.value=''; loadNotes(); } };
+}
+
+async function loadTesters(){
+  view.innerHTML=`<div class="tabs">
+      <button class="tab" data-tab="feedback">Reports</button>
+      <button class="tab on" data-tab="testers">Tester list</button>
+    </div><p class="muted">Loading testers…</p>`;
+  view.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{TAB=t.dataset.tab; TAB==='feedback'?loadFeedback():loadTesters();});
+  const [{data:emails},{data:profs}]=await Promise.all([
+    sb.from('tester_emails').select('*').order('created_at',{ascending:false}),
+    sb.from('profiles').select('display_name,email,is_tester,wants_release_email,created_at')
+  ]);
+  const map={};
+  (profs||[]).forEach(p=>{ if(p.email) map[p.email.toLowerCase()]={email:p.email,name:p.display_name,source:'account',wants:p.wants_release_email,created:p.created_at}; });
+  (emails||[]).forEach(e=>{ const k=(e.email||'').toLowerCase(); if(k&&!map[k]) map[k]={email:e.email,name:e.name,source:e.source,wants:e.wants_email,created:e.created_at}; });
+  const rows=Object.values(map).filter(r=>r.wants!==false);
+  const body=view;
+  body.insertAdjacentHTML('beforeend',`
+    <div class="kpis"><div class="kpi"><div class="k">Emailable testers</div><div class="v">${rows.length}</div></div></div>
+    <div class="filters"><button class="mini" id="copy">⧉ Copy all emails</button><span class="muted" id="copied"></span></div>
+    <table class="tl"><thead><tr><th>Name</th><th>Email</th><th>Source</th><th>Added</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr><td>${esc(r.name||'—')}</td><td>${esc(r.email)}</td><td>${esc(r.source)}</td><td>${dt(r.created)}</td></tr>`).join('')||'<tr><td colspan="4" class="muted">No testers yet.</td></tr>'}</tbody></table>`);
+  view.querySelector('.muted')&&null;
+  const copyBtn=view.querySelector('#copy');
+  if(copyBtn) copyBtn.onclick=()=>{ const txt=rows.map(r=>r.email).join(', '); navigator.clipboard.writeText(txt).then(()=>{view.querySelector('#copied').textContent=rows.length+' emails copied.';}); };
+}
+
+async function boot(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){ showLogin(); return; }
+  const {data:prof,error}=await sb.from('profiles').select('is_admin').eq('id',session.user.id).single();
+  if(error){ showLogin('Could not verify your account. Try again.'); return; }
+  if(!prof||!prof.is_admin){ logoutBtn.style.display=''; view.innerHTML='<p class="msg">This account is not an admin. Log out and use your admin account.</p>'; return; }
+  loadFeedback();
+}
+boot();
+</script>
+</body>
+</html>
