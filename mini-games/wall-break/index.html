@@ -76,19 +76,19 @@
   .choice.wrong{border-color:var(--bad); background:var(--bad-bg);}
   .choice.dim{opacity:.5;}
   /* table guide (same felt-table look as Four-Player Charleston; namespaced .tg-* to avoid clashing with deal-mode .seat) */
-  .tableguide{display:flex; justify-content:center; margin:2px 0 14px;}
-  .tg-table{position:relative; width:240px; height:240px; max-width:82vw; max-height:82vw;}
-  .tg-ring{position:absolute; inset:46px; border:2px dashed var(--gold); border-radius:50%;}
-  .tg-ring .tg-arrow{position:absolute; right:-12px; top:50%; transform:translateY(-50%); color:var(--gold); font-weight:700; font-size:1.3rem;}
-  .tg-felt{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:96px; height:96px; border-radius:12px; background:radial-gradient(circle at 50% 40%, var(--felt) 0%, var(--felt-2) 100%); box-shadow:inset 0 2px 10px rgba(0,0,0,.25), var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:#fff; text-align:center; padding:6px;}
-  .tg-felt .fhint{font-size:.58rem; letter-spacing:.07em; text-transform:uppercase; opacity:.9;}
-  .tg-felt .fdir{font-family:"Playfair Display",serif; font-weight:700; font-size:1.4rem; line-height:1;}
-  .tg-felt .fsmall{font-size:.58rem; opacity:.85; font-style:italic;}
-  .tg-seat{position:absolute; width:74px; height:58px; padding:4px; border-radius:11px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; text-align:center;}
-  .tg-seat .nm{font-family:"Playfair Display",serif; font-weight:600; font-size:.9rem; line-height:1.05;}
-  .tg-seat .tg-you{font-size:.56rem; color:var(--rose-deep); font-weight:600; text-transform:uppercase; letter-spacing:.06em;}
-  .tg-seat .tg-wind{font-size:.56rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
-  .tg-seat .tg-rack{display:flex; gap:2px; margin-top:1px;} .tg-seat .tg-rack i{width:10px; height:14px; border-radius:3px; background:linear-gradient(180deg,#EAF0E8,#Cdd8C9); border:1px solid #B9c6b6; display:block;}
+  .tableguide{display:flex; justify-content:center; margin:6px 0 16px;}
+  .tg-table{position:relative; width:360px; height:360px; max-width:88vw; max-height:88vw;}
+  .tg-ring{position:absolute; inset:64px; border:2px dashed var(--gold); border-radius:50%;}
+  .tg-ring .tg-arrow{position:absolute; right:-13px; top:50%; transform:translateY(-50%); color:var(--gold); font-weight:700; font-size:1.2rem;}
+  .tg-felt{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:128px; height:128px; border-radius:14px; background:radial-gradient(circle at 50% 40%, var(--felt) 0%, var(--felt-2) 100%); box-shadow:inset 0 2px 10px rgba(0,0,0,.25), var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:#fff; text-align:center; padding:8px;}
+  .tg-felt .fhint{font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; opacity:.9;}
+  .tg-felt .fdir{font-family:"Playfair Display",serif; font-weight:700; font-size:1.5rem; line-height:1;}
+  .tg-felt .fsmall{font-size:.66rem; opacity:.85; font-style:italic;}
+  .tg-seat{position:absolute; width:96px; height:96px; padding:6px; border-radius:13px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center;}
+  .tg-seat .nm{font-family:"Playfair Display",serif; font-weight:600; font-size:.95rem; line-height:1.05;}
+  .tg-seat .tg-you{font-size:.64rem; color:var(--rose-deep); font-weight:600; text-transform:uppercase; letter-spacing:.06em;}
+  .tg-seat .tg-wind{font-size:.6rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.08em;}
+  .tg-seat .tg-rack{display:flex; gap:2px; margin-top:1px;} .tg-seat .tg-rack i{width:11px; height:16px; border-radius:3px; background:linear-gradient(180deg,#EAF0E8,#Cdd8C9); border:1px solid #B9c6b6; display:block;}
   .tg-seat.b{left:50%; bottom:0; transform:translateX(-50%);} .tg-seat.t{left:50%; top:0; transform:translateX(-50%);}
   .tg-seat.l{left:0; top:50%; transform:translateY(-50%);} .tg-seat.r{right:0; top:50%; transform:translateY(-50%);}
   .tg-seat.me{border-color:var(--rose-deep); background:#FBEFE9;}
@@ -128,7 +128,7 @@
   .lbtable td,.lbtable th{padding:6px 8px; border-bottom:1px solid var(--line); text-align:left;}
   .lbtable th{font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
   .footer-note{margin-top:30px; color:var(--ink-soft); font-size:.84rem; text-align:center;}
-  @media(max-width:560px){ h1{font-size:1.34rem;} .banner .ask{font-size:1.1rem;} .leveltag{margin-left:0; width:100%;} .stack .t{height:26px;} }
+  @media(max-width:560px){ h1{font-size:1.34rem;} .banner .ask{font-size:1.1rem;} .leveltag{margin-left:0; width:100%;} .stack .t{height:26px;} .tg-table{width:300px; height:300px;} .tg-felt{width:108px; height:108px;} .tg-felt .fdir{font-size:1.25rem;} .tg-seat{width:78px; height:78px;} .tg-seat .nm{font-size:.82rem;} }
   .gamehdr{display:flex;align-items:center;gap:12px;padding:6px 0 9px;border-bottom:1px solid var(--line);margin-bottom:10px;}
   .gamehdr .backlink{font-family:"Playfair Display",serif;font-weight:600;color:var(--rose-deep);text-decoration:none;font-size:.95rem;}
   .backlink:hover{text-decoration:underline;} .gamehdr .brandmark{margin-left:auto;font-family:"Playfair Display",serif;font-weight:700;color:var(--ink);font-size:.92rem;}
@@ -193,7 +193,7 @@
 </div>
 
 <script>
-const BUILD="v15 · 2026-06-12";
+const BUILD="v16 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
