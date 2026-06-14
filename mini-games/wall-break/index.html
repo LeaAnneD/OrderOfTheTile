@@ -192,7 +192,7 @@
 </div>
 
 <script>
-const BUILD="v12 · 2026-06-12";
+const BUILD="v13 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -290,9 +290,9 @@ function enableSubmit(on){const s=$("#submitBtn"); if(s)s.disabled=!on;}
 
 function renderBreak(g,sc,hints,opts){
   g.appendChild(bannerEl("East rolls to break the wall",
-    `East rolled <b>${sc.tot}</b>. Count <b>${sc.tot}</b> from the <b>right</b> and tap the stack where the wall breaks.`,
+    hints?`East rolled <b>${sc.tot}</b>. Count <b>${sc.tot}</b> from the <b>right</b> and tap the stack where the wall breaks.`:`East rolled the dice. <b>Add them up</b>, count that many from the <b>right</b>, and tap the stack where the wall breaks.`,
     hints?"Guide: the numbers count from the right — tap the stack that matches your roll.":"",opts));
-  const dr=el("div","dicerow"); dr.innerHTML=`${dieHTML(sc.d1)}${dieHTML(sc.d2)}<span class="dietotal">= ${sc.tot}</span>`; g.appendChild(dr);
+  const dr=el("div","dicerow"); dr.innerHTML=`${dieHTML(sc.d1)}${dieHTML(sc.d2)}`+(hints?`<span class="dietotal">= ${sc.tot}</span>`:""); g.appendChild(dr);
   setTimeout(()=>dr.querySelectorAll('.die').forEach(d=>d.classList.add('roll')),20);
   const head=el("div","wallhead"); head.innerHTML="start counting here &rarr;"; g.appendChild(head);
   const wall=el("div","wall");
