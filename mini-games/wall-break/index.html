@@ -88,6 +88,7 @@
   .tg-seat .nm{font-family:"Playfair Display",serif; font-weight:600; font-size:.9rem; line-height:1.05;}
   .tg-seat .tg-you{font-size:.56rem; color:var(--rose-deep); font-weight:600; text-transform:uppercase; letter-spacing:.06em;}
   .tg-seat .tg-wind{font-size:.56rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+  .tg-seat .tg-rack{display:flex; gap:2px; margin-top:1px;} .tg-seat .tg-rack i{width:10px; height:14px; border-radius:3px; background:linear-gradient(180deg,#EAF0E8,#Cdd8C9); border:1px solid #B9c6b6; display:block;}
   .tg-seat.b{left:50%; bottom:0; transform:translateX(-50%);} .tg-seat.t{left:50%; top:0; transform:translateX(-50%);}
   .tg-seat.l{left:0; top:50%; transform:translateY(-50%);} .tg-seat.r{right:0; top:50%; transform:translateY(-50%);}
   .tg-seat.me{border-color:var(--rose-deep); background:#FBEFE9;}
@@ -192,7 +193,7 @@
 </div>
 
 <script>
-const BUILD="v13 · 2026-06-12";
+const BUILD="v14 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -315,13 +316,14 @@ function pickSeat(sc,k,row){ if(sel.locked)return; sel.seat=k; [...row.querySele
 
 function tableGuide(){
   const d=el("div","tableguide");
+  const rack=`<div class="tg-rack"><i></i><i></i><i></i></div>`;
   d.innerHTML=`<div class="tg-table">
     <div class="tg-ring"><span class="tg-arrow">&#8635;</span></div>
     <div class="tg-felt"><div class="fhint">play &amp; deal</div><div class="fdir">&rarr;</div><div class="fsmall">to the right</div></div>
-    <div class="tg-seat b me"><div class="nm">East</div><div class="tg-you">You</div></div>
-    <div class="tg-seat r"><div class="nm">South</div><div class="tg-wind">your right</div></div>
-    <div class="tg-seat t"><div class="nm">West</div><div class="tg-wind">across</div></div>
-    <div class="tg-seat l"><div class="nm">North</div><div class="tg-wind">your left</div></div>
+    <div class="tg-seat b me"><div class="nm">East</div><div class="tg-you">You</div>${rack}</div>
+    <div class="tg-seat r"><div class="nm">South</div>${rack}</div>
+    <div class="tg-seat t"><div class="nm">West</div>${rack}</div>
+    <div class="tg-seat l"><div class="nm">North</div>${rack}</div>
   </div>`;
   return d;
 }
