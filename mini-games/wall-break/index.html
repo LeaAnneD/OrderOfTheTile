@@ -14,7 +14,7 @@
   :root{
     --paper:#FBF6EE; --paper-2:#F3EADc; --ink:#2B2622; --ink-soft:#6B5F54;
     --rose:#B76E79; --rose-deep:#9A5662; --sage:#7E8A6F; --line:#E2D6C4;
-    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A;
+    --good:#5E7D5A; --good-bg:#E4EFE0; --bad:#B5524C; --bad-bg:#F6E2E0; --gold:#C9A24A; --felt:#5C7A66; --felt-2:#4E6A58;
     --shadow:0 2px 6px rgba(43,38,34,.12), 0 8px 24px rgba(43,38,34,.08);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -75,6 +75,22 @@
   .choice.right{border-color:var(--good); background:var(--good-bg);}
   .choice.wrong{border-color:var(--bad); background:var(--bad-bg);}
   .choice.dim{opacity:.5;}
+  /* table guide (same felt-table look as Four-Player Charleston; namespaced .tg-* to avoid clashing with deal-mode .seat) */
+  .tableguide{display:flex; justify-content:center; margin:2px 0 14px;}
+  .tg-table{position:relative; width:240px; height:240px; max-width:82vw; max-height:82vw;}
+  .tg-ring{position:absolute; inset:46px; border:2px dashed var(--gold); border-radius:50%;}
+  .tg-ring .tg-arrow{position:absolute; right:-12px; top:50%; transform:translateY(-50%); color:var(--gold); font-weight:700; font-size:1.3rem;}
+  .tg-felt{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:96px; height:96px; border-radius:12px; background:radial-gradient(circle at 50% 40%, var(--felt) 0%, var(--felt-2) 100%); box-shadow:inset 0 2px 10px rgba(0,0,0,.25), var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:#fff; text-align:center; padding:6px;}
+  .tg-felt .fhint{font-size:.58rem; letter-spacing:.07em; text-transform:uppercase; opacity:.9;}
+  .tg-felt .fdir{font-family:"Playfair Display",serif; font-weight:700; font-size:1.4rem; line-height:1;}
+  .tg-felt .fsmall{font-size:.58rem; opacity:.85; font-style:italic;}
+  .tg-seat{position:absolute; width:74px; height:58px; padding:4px; border-radius:11px; background:#fff; border:1px solid var(--line); box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; text-align:center;}
+  .tg-seat .nm{font-family:"Playfair Display",serif; font-weight:600; font-size:.9rem; line-height:1.05;}
+  .tg-seat .tg-you{font-size:.56rem; color:var(--rose-deep); font-weight:600; text-transform:uppercase; letter-spacing:.06em;}
+  .tg-seat .tg-wind{font-size:.56rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+  .tg-seat.b{left:50%; bottom:0; transform:translateX(-50%);} .tg-seat.t{left:50%; top:0; transform:translateX(-50%);}
+  .tg-seat.l{left:0; top:50%; transform:translateY(-50%);} .tg-seat.r{right:0; top:50%; transform:translateY(-50%);}
+  .tg-seat.me{border-color:var(--rose-deep); background:#FBEFE9;}
   .submitbar{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center; margin:14px 0 2px;}
   .feedline{text-align:center; font-style:italic; color:var(--ink-soft); min-height:1.4em; margin-top:8px; font-size:.96rem;}
   .feedline b{font-style:normal; color:var(--ink);}
@@ -176,7 +192,7 @@
 </div>
 
 <script>
-const BUILD="v11 · 2026-06-12";
+const BUILD="v12 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -297,8 +313,22 @@ function renderDeal(g,sc,hints,opts){
 }
 function pickSeat(sc,k,row){ if(sel.locked)return; sel.seat=k; [...row.querySelectorAll('.seat')].forEach((s,j)=>s.classList.toggle('sel',j===k)); enableSubmit(true); }
 
+function tableGuide(){
+  const d=el("div","tableguide");
+  d.innerHTML=`<div class="tg-table">
+    <div class="tg-ring"><span class="tg-arrow">&#8635;</span></div>
+    <div class="tg-felt"><div class="fhint">play &amp; deal</div><div class="fdir">&rarr;</div><div class="fsmall">to the right</div></div>
+    <div class="tg-seat b me"><div class="nm">East</div><div class="tg-you">You</div></div>
+    <div class="tg-seat r"><div class="nm">South</div><div class="tg-wind">your right</div></div>
+    <div class="tg-seat t"><div class="nm">West</div><div class="tg-wind">across</div></div>
+    <div class="tg-seat l"><div class="nm">North</div><div class="tg-wind">your left</div></div>
+  </div>`;
+  return d;
+}
 function renderManners(g,sc,opts){
   g.appendChild(bannerEl("Table manners",sc.q,"",opts));
+  const showGuide = opts.hints!=null?opts.hints:guidesOn;
+  if(showGuide) g.appendChild(tableGuide());
   const box=el("div","choices");
   sc.opts.forEach((o,k)=>{ const b=el("button","choice"); b.textContent=o; b.onclick=()=>{ if(sel.locked)return; sel.choice=k; doSubmit(sc,opts); }; box.appendChild(b); });
   g.appendChild(box);
