@@ -75,6 +75,8 @@
   .choice.right{border-color:var(--good); background:var(--good-bg);}
   .choice.wrong{border-color:var(--bad); background:var(--bad-bg);}
   .choice.dim{opacity:.5;}
+  /* guide elements (.g-on shown only with guides on; .g-off shown only with guides off) toggle instantly via #game.guides-off */
+  #game.guides-off .g-on{display:none !important;} #game:not(.guides-off) .g-off{display:none !important;}
   /* table guide (same felt-table look as Four-Player Charleston; namespaced .tg-* to avoid clashing with deal-mode .seat) */
   .tableguide{display:flex; justify-content:center; margin:6px 0 16px;}
   .tg-table{position:relative; width:360px; height:360px; max-width:88vw; max-height:88vw;}
@@ -193,7 +195,7 @@
 </div>
 
 <script>
-const BUILD="v17 · 2026-06-12";
+const BUILD="v18 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -269,7 +271,7 @@ let sel={stack:null,seat:null,locked:false};
 function renderScenario(sc,opts){
   opts=opts||{}; sel={stack:null,seat:null,locked:false};
   const hints=opts.hints!=null?opts.hints:guidesOn;
-  const g=$("#game"); g.innerHTML="";
+  const g=$("#game"); g.innerHTML=""; g.classList.toggle('guides-off', !hints);
   if(sc.kind==="break")   renderBreak(g,sc,hints,opts);
   else if(sc.kind==="deal") renderDeal(g,sc,hints,opts);
   else renderManners(g,sc,opts);
@@ -279,7 +281,7 @@ function bannerEl(lead,ask,why,opts){
   const b=el("div","banner flash");
   b.innerHTML=(opts&&opts.tut?`<span class="tuttag">Tutorial${opts.step?" · "+opts.step:""}</span>`:"")+
     (opts&&opts.tutText?`<div class="why" style="margin:0 0 8px; font-style:normal; color:var(--ink);">${opts.tutText}</div>`:"")+
-    `<div class="lead">${lead}</div><div class="ask">${ask}</div>`+(why?`<div class="why">${why}</div>`:"");
+    `<div class="lead">${lead}</div><div class="ask">${ask}</div>`+(why?`<div class="why g-on">${why}</div>`:"");
   return b;
 }
 function submitBar(sc,opts){
@@ -291,13 +293,13 @@ function enableSubmit(on){const s=$("#submitBtn"); if(s)s.disabled=!on;}
 
 function renderBreak(g,sc,hints,opts){
   g.appendChild(bannerEl("East rolls to break the wall",
-    hints?`East rolled <b>${sc.tot}</b>. Count <b>${sc.tot}</b> from the <b>right</b> and tap the stack where the wall breaks.`:`East rolled the dice. <b>Add them up</b>, count that many from the <b>right</b>, and tap the stack where the wall breaks.`,
-    hints?"Guide: the numbers count from the right — tap the stack that matches your roll.":"",opts));
-  const dr=el("div","dicerow"); dr.innerHTML=`${dieHTML(sc.d1)}${dieHTML(sc.d2)}`+(hints?`<span class="dietotal">= ${sc.tot}</span>`:""); g.appendChild(dr);
+    `<span class="g-on">East rolled <b>${sc.tot}</b>. Count <b>${sc.tot}</b> from the <b>right</b> and tap the stack where the wall breaks.</span><span class="g-off">East rolled the dice. <b>Add them up</b>, count that many from the <b>right</b>, and tap the stack where the wall breaks.</span>`,
+    "Guide: the numbers count from the right — tap the stack that matches your roll.",opts));
+  const dr=el("div","dicerow"); dr.innerHTML=`${dieHTML(sc.d1)}${dieHTML(sc.d2)}<span class="dietotal g-on">= ${sc.tot}</span>`; g.appendChild(dr);
   setTimeout(()=>dr.querySelectorAll('.die').forEach(d=>d.classList.add('roll')),20);
   const head=el("div","wallhead"); head.innerHTML="start counting here &rarr;"; g.appendChild(head);
   const wall=el("div","wall");
-  for(let i=0;i<STACKS;i++){ const s=el("div","stack"); s.dataset.i=i; s.innerHTML=`<div class="t"></div><div class="t"></div>`+(hints?`<div class="snum">${STACKS-i}</div>`:""); s.onclick=()=>pickStack(sc,i,wall); wall.appendChild(s); }
+  for(let i=0;i<STACKS;i++){ const s=el("div","stack"); s.dataset.i=i; s.innerHTML=`<div class="t"></div><div class="t"></div><div class="snum g-on">${STACKS-i}</div>`; s.onclick=()=>pickStack(sc,i,wall); wall.appendChild(s); }
   g.appendChild(wall);
   g.appendChild(submitBar(sc,opts));
 }
@@ -306,8 +308,8 @@ function pickStack(sc,i,wall){ if(sel.locked)return; sel.stack=i; [...wall.query
 function renderDeal(g,sc,hints,opts){
   g.appendChild(bannerEl("Dealing — four tiles at a time",
     `Who takes the <b>${ordinal(sc.groupN)}</b> group of four tiles?`,
-    hints?"Guide: order repeats — East &rarr; South (your right) &rarr; West (across) &rarr; North (your left).":"",opts));
-  if(hints) g.appendChild(tableGuide());
+    "Guide: order repeats — East &rarr; South (your right) &rarr; West (across) &rarr; North (your left).",opts));
+  g.appendChild(tableGuide());
   const row=el("div","seatsrow");
   DEAL.forEach((nm,k)=>{ const s=el("div","seat"); s.dataset.k=k; s.innerHTML=`<div class="nm">${nm.replace(" (You)","")}</div><div class="ro">${["East","South","West","North"][k]}${k===0?" · you":""}</div>`; s.onclick=()=>pickSeat(sc,k,row); row.appendChild(s); });
   g.appendChild(row);
@@ -316,7 +318,7 @@ function renderDeal(g,sc,hints,opts){
 function pickSeat(sc,k,row){ if(sel.locked)return; sel.seat=k; [...row.querySelectorAll('.seat')].forEach((s,j)=>s.classList.toggle('sel',j===k)); enableSubmit(true); }
 
 function tableGuide(){
-  const d=el("div","tableguide");
+  const d=el("div","tableguide g-on");
   const rack=`<div class="tg-rack"><i></i><i></i><i></i></div>`;
   d.innerHTML=`<div class="tg-table">
     <div class="tg-ring"><span class="tg-arrow">&#8634;</span></div>
@@ -330,8 +332,7 @@ function tableGuide(){
 }
 function renderManners(g,sc,opts){
   g.appendChild(bannerEl("Table manners",sc.q,"",opts));
-  const showGuide = opts.hints!=null?opts.hints:guidesOn;
-  if(showGuide) g.appendChild(tableGuide());
+  g.appendChild(tableGuide());
   const box=el("div","choices");
   sc.opts.forEach((o,k)=>{ const b=el("button","choice"); b.textContent=o; b.onclick=()=>{ if(sel.locked)return; sel.choice=k; doSubmit(sc,opts); }; box.appendChild(b); });
   g.appendChild(box);
@@ -454,7 +455,7 @@ function closeModalToStart(){ $("#scrim").classList.remove("show"); showStart();
 /* ---------- wiring ---------- */
 document.querySelectorAll(".modepill").forEach(p=>p.addEventListener("click",()=>{ mode=p.dataset.mode; document.querySelectorAll(".modepill").forEach(x=>x.classList.toggle("on",x===p)); cur=LEVELS[Math.min(prog.unlocked[mode]||1,1)-1]||LEVELS[0]; cur=LEVELS[0]; showStart(); }));
 $("#toggleBtn").onclick=()=>{ if(playing)stopRound(); else startRound(); };
-$("#levelTag").onclick=()=>{ guidesOn=!guidesOn; localStorage.setItem('ott_wb_guides', guidesOn?'1':'0'); $("#levelTag").textContent="Guides: "+(guidesOn?"On":"Off"); if(playing && round && round.seq[round.idx] && !sel.locked) renderScenario(round.seq[round.idx], {}); };
+$("#levelTag").onclick=()=>{ guidesOn=!guidesOn; localStorage.setItem('ott_wb_guides', guidesOn?'1':'0'); $("#levelTag").textContent="Guides: "+(guidesOn?"On":"Off"); $("#game").classList.toggle('guides-off', !guidesOn); };
 $("#eyeBtn").textContent=timerHidden?"show":"hide";
 $("#eyeBtn").onclick=()=>{ timerHidden=!timerHidden; localStorage.setItem('ott_timer_hidden', timerHidden?'1':'0'); $("#eyeBtn").textContent=timerHidden?"show":"hide"; if(timed()) $("#hudTime").textContent = timerHidden ? "hidden" : (round&&round.t0 ? ((performance.now()-round.t0)/1000).toFixed(1)+"s" : "0.0s"); };
 $("#tutBtn").onclick=()=>startTutorial();
