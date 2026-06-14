@@ -155,13 +155,17 @@
   .wallRow.h .wstack{width:var(--wsLen,22px); height:var(--wsCross,30px);}
   .wallRow.v .wstack{width:var(--wsCross,30px); height:var(--wsLen,22px);}
   .wstack.counted{background:linear-gradient(160deg,var(--gold-soft),var(--gold)); box-shadow:0 0 7px var(--gold);}
-  /* the active/reserve wall is pushed STRAIGHT toward the center of the table (no rotation,
-     so the tiles stay a clean line and never overlap) — like a real pushed-out wall */
-  .wallRow.bottom .wallInner.pushed{transform:translateY(calc(var(--wsCross,30px) * -2.6));}
-  .wallRow.top    .wallInner.pushed{transform:translateY(calc(var(--wsCross,30px) *  2.6));}
-  .wallRow.left   .wallInner.pushed{transform:translateX(calc(var(--wsCross,30px) *  2.6));}
-  .wallRow.right  .wallInner.pushed{transform:translateX(calc(var(--wsCross,30px) * -2.6));}
-  .wallReserved.pushed{transform:translateY(calc(var(--wsCross,30px) * -2.6));}
+  /* the active (pushed-out) wall pivots from its NEAR end and angles toward the center.
+     Its tiles slim down + gap out so the rotated row never overlaps itself. */
+  .wallRow.activeWall .wallInner{gap:calc(var(--wsLen,22px) * 0.18);}
+  .wallRow.activeWall.h .wstack{width:calc(var(--wsLen,22px) * 0.74); height:calc(var(--wsCross,30px) * 0.84);}
+  .wallRow.activeWall.v .wstack{height:calc(var(--wsLen,22px) * 0.74); width:calc(var(--wsCross,30px) * 0.84);}
+  .wallRow.activeWall .wstack{filter:brightness(1.25) saturate(1.15);}
+  .wallRow.bottom .wallInner.pushed{transform:rotate(-34deg); transform-origin:0% 50%;}
+  .wallRow.top    .wallInner.pushed{transform:rotate(-34deg); transform-origin:100% 50%;}
+  .wallRow.left   .wallInner.pushed{transform:rotate(34deg);  transform-origin:50% 0%;}
+  .wallRow.right  .wallInner.pushed{transform:rotate(34deg);  transform-origin:50% 100%;}
+  .wallReserved.pushed{transform:rotate(-34deg); transform-origin:0% 50%;}
   /* the end tile you draw from glows (visual cue; the Draw prompt below is the reliable control) */
   .wstack.drawend{pointer-events:auto; cursor:pointer; box-shadow:0 0 0 2px var(--gold), 0 0 10px var(--gold); animation:drawpulse 1.1s ease-in-out infinite;}
   @keyframes drawpulse{0%,100%{box-shadow:0 0 0 2px var(--gold),0 0 8px var(--gold);}50%{box-shadow:0 0 0 3px var(--gold-soft),0 0 18px var(--gold);}}
