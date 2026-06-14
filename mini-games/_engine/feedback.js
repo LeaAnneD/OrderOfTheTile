@@ -114,7 +114,7 @@ function openForm(){
   const scrim=document.createElement('div'); scrim.className='ottfb-scrim';
   const loggedIn=!!CURRENT_USER;
   scrim.innerHTML=`<div class="ottfb-card" role="dialog" aria-modal="true">
-    <h2>Tell Lea Anne what happened</h2>
+    <h2>Tell Prim what happened</h2>
     <p class="ottfb-sub">You're testing <b>${esc(GAME_NAME)}</b>. Good or bad — it all helps.</p>
     <div class="ottfb-row" id="ottfb-kinds">
       <button class="ottfb-chip" data-k="bug"       aria-pressed="true">🐞 Something broke</button>
@@ -149,9 +149,9 @@ function openForm(){
     <div class="ottfb-msg" id="ottfb-msg"></div>
     <div class="ottfb-actions">
       <button class="ottfb-ghost" id="ottfb-cancel" type="button">Cancel</button>
-      <button class="ottfb-go" id="ottfb-send" type="button">Send to Lea Anne</button>
+      <button class="ottfb-go" id="ottfb-send" type="button">Send to Prim</button>
     </div>
-    <div class="ottfb-meta">Sends: game = ${esc(GAME)} · build = ${esc(buildStamp())} · screen ${window.innerWidth}×${window.innerHeight} · plus any error log. Only Lea Anne can read this.</div>
+    <div class="ottfb-meta">Sends: game = ${esc(GAME)} · build = ${esc(buildStamp())} · screen ${window.innerWidth}×${window.innerHeight} · plus any error log. Only Prim can read this.</div>
   </div>`;
   document.body.appendChild(scrim);
   const $=s=>scrim.querySelector(s);
@@ -206,7 +206,7 @@ function openForm(){
       });
       if(error) throw error;
       if(email){ try{ await sb.from('tester_emails').upsert({email, name, source:'feedback'},{onConflict:'email',ignoreDuplicates:true}); }catch(_){} }
-      msg.className='ottfb-msg ok'; msg.textContent='Sent — thank you. Lea Anne will take it from here.';
+      msg.className='ottfb-msg ok'; msg.textContent='Sent — thank you. Prim will take it from here.';
       $('#ottfb-send').textContent='Sent ✓';
       setTimeout(()=>scrim.remove(),1300);
     }catch(err){ msg.className='ottfb-msg err'; msg.textContent=(err&&err.message)||'Could not send — try again.'; send.disabled=false; }
@@ -224,7 +224,7 @@ function mountButton(){
   injectCSS();
   const b=document.createElement('button'); b.id='ottfb-btn'; b.type='button';
   b.innerHTML='<span class="dot"></span> Report / Feedback';
-  b.title='Testing mode — tell Lea Anne what you found';
+  b.title='Testing mode — tell Prim what you found';
   b.onclick=openForm; document.body.appendChild(b);
 }
 
