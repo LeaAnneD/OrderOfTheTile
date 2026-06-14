@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -41,17 +41,19 @@
       "lft mid rgt"
       "bl  you  br";
   }
-  .seat{position:relative; display:flex; align-items:center; justify-content:center;}
+  /* min-width/height:0 lets the grid tracks shrink below content min-content, so the
+     rack can never push the side seats off the table on narrow screens */
+  .seat{position:relative; display:flex; align-items:center; justify-content:center; min-width:0; min-height:0;}
   #seatTop{grid-area:top;}
   #seatLeft{grid-area:lft;}
   #seatRight{grid-area:rgt;}
-  #seatYou{grid-area:you; align-items:flex-end; padding-bottom:6px;}
-  #center{grid-area:mid; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; position:relative;}
+  #seatYou{grid-area:you; flex-direction:column; justify-content:flex-end; align-items:center; padding-bottom:6px;}
+  #center{grid-area:mid; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; position:relative; min-width:0; min-height:0; z-index:36;}
 
   /* seat name plates */
   .plate{
-    position:absolute; background:rgba(0,0,0,.32); border:1px solid rgba(217,182,90,.35);
-    padding:3px 10px; border-radius:20px; font-size:12px; letter-spacing:.5px;
+    position:absolute; background:rgba(0,0,0,.55); border:1px solid rgba(217,182,90,.35);
+    padding:3px 10px; border-radius:20px; font-size:12px; letter-spacing:.5px; z-index:36;
     display:flex; align-items:center; gap:7px; white-space:nowrap;
   }
   .plate .wind{color:var(--gold-soft); font-weight:700;}
@@ -103,7 +105,7 @@
     gap:6px 4px; padding:9px 12px; justify-content:center;
     background:linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.32));
     border-radius:14px; border:1px solid rgba(217,182,90,.3);
-    box-shadow: inset 0 3px 8px rgba(0,0,0,.4); max-width:97vw; overflow-x:auto;
+    box-shadow: inset 0 3px 8px rgba(0,0,0,.4); max-width:100%; overflow-x:auto;
   }
   .slot{ width:var(--rackTileW); height:var(--rackTileH); border-radius:8px;
     display:flex; align-items:center; justify-content:center; }
@@ -129,45 +131,55 @@
 
   #dice{position:relative; z-index:42;}
 
-  /* ---------- Authentic four walls (stay up all game, in front of each rack) ---------- */
+  /* ---------- Authentic four walls â€” a centered square, sized in JS (layoutWalls) ---------- */
   #wallLayer{position:absolute; inset:0; z-index:30; pointer-events:none;}
-  .wallRow{position:absolute; display:flex;}
-  /* the four walls form a SQUARE at the center of the table, so it reads as THE wall */
-  .wallRow.h{flex-direction:row; align-items:center; justify-content:center; left:27%; right:27%;}
-  .wallRow.v{flex-direction:column; align-items:center; justify-content:center; top:27%; bottom:31%;}
-  .wallRow.bottom{bottom:30%;}
-  .wallRow.top{top:24%;}
-  .wallRow.left{left:24%;}
-  .wallRow.right{right:24%;}
-  /* the ACTIVE (pushed-out) wall anchors its near end, so it only shortens from the far end */
-  .wallRow.activeWall{justify-content:flex-start;}
+  .wallRow{position:absolute; display:flex;}            /* exact left/top/width/height set by layoutWalls() */
+  .wallRow.h{flex-direction:row; align-items:center; justify-content:center;}
+  .wallRow.v{flex-direction:column; align-items:center; justify-content:center;}
+  /* the ACTIVE (live) wall anchors its near end, so it only shortens from the far end */
+  .wallRow.activeWall.h{justify-content:flex-start;}
+  .wallRow.activeWall.v{justify-content:flex-start;}
+  .wallRow.activeWall .wstack{filter:brightness(1.2) saturate(1.15);}  /* the live wall stands out */
   /* East's counted-off stacks hold their original spot until they're pushed out last */
   #wall_bottom .wallReserved{position:absolute; right:0; bottom:0;}
-  .wallReserved.pushed{transform:rotate(-45deg); transform-origin:0% 100%; transition:transform .6s cubic-bezier(.2,.8,.25,1);}
-  .wallInner, .wallReserved{display:flex; gap:2px;}
-  .wallInner{transition:transform .6s cubic-bezier(.2,.8,.25,1);}
+  .wallInner, .wallReserved{display:flex; gap:2px; transition:transform .5s cubic-bezier(.2,.8,.25,1);}
   .wallRow.h .wallInner, .wallRow.h .wallReserved{flex-direction:row;}
   .wallRow.v .wallInner, .wallRow.v .wallReserved{flex-direction:column;}
   /* a stack = top tile of a 2-high wall (shadow implies the tile beneath) */
   .wstack{position:relative; border-radius:3px; flex:0 0 auto;
     background:linear-gradient(160deg,var(--back1),var(--back2));
     border:1px solid rgba(0,0,0,.5);
-    box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 4px 5px rgba(0,0,0,.4);}
+    box-shadow:0 1.5px 0 rgba(0,0,0,.55), 0 3px 4px rgba(0,0,0,.4);}
   .wstack::after{content:""; position:absolute; left:2px; right:2px; top:2px; height:3px; border-radius:2px; background:rgba(255,255,255,.14);}
-  /* tiles stand up: portrait rectangles, not flat squares */
-  .wallRow.h .wstack{width:23px; height:34px;}
-  .wallRow.v .wstack{width:34px; height:23px;}
+  /* stacks stand up as portrait rectangles; size scales with the table (set in JS) */
+  .wallRow.h .wstack{width:var(--wsLen,22px); height:var(--wsCross,30px);}
+  .wallRow.v .wstack{width:var(--wsCross,30px); height:var(--wsLen,22px);}
   .wstack.counted{background:linear-gradient(160deg,var(--gold-soft),var(--gold)); box-shadow:0 0 7px var(--gold);}
-  /* the active wall is pushed out toward center, angled (the curtsy) */
-  /* only the ACTIVE wall is pushed out â€” angled 45Â° toward center, near (left) end staying put */
-  .wallRow.bottom .wallInner.pushed{transform:rotate(-45deg); transform-origin:0% 100%;}
-  .wallRow.left   .wallInner.pushed{transform:rotate(-45deg); transform-origin:0% 0%;}
-  .wallRow.top    .wallInner.pushed{transform:rotate(-45deg); transform-origin:100% 0%;}
-  .wallRow.right  .wallInner.pushed{transform:rotate(-45deg); transform-origin:100% 100%;}
-  /* the end tile you draw from on your turn */
-  .wstack.drawend{pointer-events:auto; cursor:pointer; box-shadow:0 0 0 2px var(--gold), 0 0 10px var(--gold);
-    animation:drawpulse 1.1s ease-in-out infinite;}
+  /* the active/reserve wall is nudged toward center with a gentle tilt (decorative "in play" cue) */
+  .wallRow.bottom .wallInner.pushed{transform:translateY(calc(var(--wsCross,30px) * -1.3)) rotate(-7deg); transform-origin:0% 100%;}
+  .wallRow.top    .wallInner.pushed{transform:translateY(calc(var(--wsCross,30px) *  1.3)) rotate(-7deg); transform-origin:100% 0%;}
+  .wallRow.left   .wallInner.pushed{transform:translateX(calc(var(--wsCross,30px) *  1.3)) rotate(7deg);  transform-origin:0% 0%;}
+  .wallRow.right  .wallInner.pushed{transform:translateX(calc(var(--wsCross,30px) * -1.3)) rotate(7deg);  transform-origin:100% 100%;}
+  .wallReserved.pushed{transform:translateY(calc(var(--wsCross,30px) * -1.3)) rotate(-7deg); transform-origin:0% 100%;}
+  /* the end tile you draw from glows (visual cue; the Draw prompt below is the reliable control) */
+  .wstack.drawend{pointer-events:auto; cursor:pointer; box-shadow:0 0 0 2px var(--gold), 0 0 10px var(--gold); animation:drawpulse 1.1s ease-in-out infinite;}
   @keyframes drawpulse{0%,100%{box-shadow:0 0 0 2px var(--gold),0 0 8px var(--gold);}50%{box-shadow:0 0 0 3px var(--gold-soft),0 0 18px var(--gold);}}
+
+  /* ---------- the reliable Draw control (always hittable, unlike the rotated wall tile) ---------- */
+  #drawPrompt{
+    position:absolute; left:50%; top:52%; transform:translate(-50%,-50%);
+    z-index:80; display:none; flex-direction:column; align-items:center; gap:5px;
+    background:linear-gradient(180deg, rgba(22,13,0,.94), rgba(8,5,0,.94));
+    border:2px solid var(--gold); border-radius:16px; padding:12px 22px; cursor:pointer;
+    box-shadow:0 0 0 4px rgba(217,182,90,.18), 0 8px 26px rgba(0,0,0,.55);
+    animation:promptpulse 1.3s ease-in-out infinite; user-select:none; white-space:nowrap; text-align:center;
+  }
+  #drawPrompt.show{display:flex;}
+  #drawPrompt .dtileicon{width:30px;height:42px;border-radius:6px;background:linear-gradient(160deg,var(--back1),var(--back2));border:1px solid rgba(0,0,0,.5);box-shadow:0 2px 5px rgba(0,0,0,.4);}
+  #drawPrompt .dlabel{font-weight:800;color:var(--gold-soft);font-size:15px;letter-spacing:.4px;}
+  #drawPrompt .dsub{font-size:11px;color:#cdbb88;}
+  #drawPrompt:active{transform:translate(-50%,-50%) scale(.96);}
+  @keyframes promptpulse{0%,100%{box-shadow:0 0 0 4px rgba(217,182,90,.16),0 8px 26px rgba(0,0,0,.55);}50%{box-shadow:0 0 0 8px rgba(217,182,90,.34),0 8px 30px rgba(0,0,0,.6);}}
 
   /* rack trays in front of each seat (so every player visibly has a rack) */
   .oppHand{background:linear-gradient(180deg,#3a2b1c,#221810); padding:5px; border-radius:7px;
@@ -257,35 +269,37 @@
   .exposeMeld{display:flex; gap:2px; background:rgba(0,0,0,.25); padding:2px; border-radius:5px;}
   .exposeMeld .tile.swappable{box-shadow:0 0 0 2px var(--gold), 0 0 9px var(--gold); animation:drawpulse 1.2s ease-in-out infinite;}
 
-  /* ---------- small screens / phones ---------- */
+  /* ---------- small screens / phones (wall stacks are sized in JS by layoutWalls) ---------- */
   @media (max-width:900px){
-    :root{--tileW:46px;--tileH:62px; --rackTileW:clamp(24px,6.2vw,40px); --rackTileH:calc(var(--rackTileW)*1.35);}
-    .wallRow.h .wstack{width:18px; height:27px;}
-    .wallRow.v .wstack{width:27px; height:18px;}
+    :root{--rackTileW:clamp(24px,6.2vw,40px); --rackTileH:calc(var(--rackTileW)*1.35);}
+    #seatYou{grid-row:3; grid-column:1/-1;}     /* your rack gets the full table width */
+    /* keep side opponents' exposed melds inside their column (off the wall/center) */
+    #seatLeft .exposeRow, #seatRight .exposeRow{flex-direction:column; max-width:90px;}
+    #seatLeft .exposeMeld{transform:scale(.72); transform-origin:left top;}
+    #seatRight .exposeMeld{transform:scale(.72); transform-origin:right top;}
     #rack{gap:4px 3px; padding:7px 8px;}
     #discardPanel.open{width:200px;}
+    #drawPrompt{padding:10px 16px;} #drawPrompt .dtileicon{width:26px;height:36px;} #drawPrompt .dlabel{font-size:14px;}
   }
   @media (max-width:600px){
-    :root{--tileW:34px;--tileH:46px; --rackTileW:clamp(16px,5.6vw,30px);}
-    #table{inset:6px; grid-template-rows:56px 1fr 148px; grid-template-columns:40px 1fr 40px; border-radius:14px;}
+    :root{--rackTileW:clamp(16px,5.4vw,30px);}
+    #table{inset:6px; grid-template-rows:52px 1fr 142px; grid-template-columns:34px 1fr 34px; border-radius:14px;}
     #seatYou{grid-area:auto; grid-row:3; grid-column:1/-1;}   /* your rack gets the full width */
     #seatYou .plate{top:-4px;}
     .plate{font-size:10px; padding:2px 7px; gap:4px;}
-    .miniback{width:13px;height:18px;} .oppHand.vert .miniback{width:18px;height:13px;}
-    .oppHand{padding:3px;}
-    .wallRow.h .wstack{width:12px; height:18px;}
-    .wallRow.v .wstack{width:18px; height:12px;}
-    .wallRow.h{left:22%; right:22%;}
-    .wallRow.v{top:27%; bottom:33%;}
-    #expose0{bottom:152px !important;}
+    .miniback{width:12px;height:17px;} .oppHand.vert .miniback{width:17px;height:12px;}
+    .oppHand{padding:2px; gap:1px;}
+    #seatLeft .exposeRow, #seatRight .exposeRow{max-width:34px; top:46px;}
+    #seatLeft .exposeMeld{transform:scale(.4);} #seatRight .exposeMeld{transform:scale(.4);}
     .die{width:34px;height:34px;padding:4px;} .die .pip{width:6px;height:6px;}
     #rack{gap:3px 2px; padding:5px 5px; border-radius:9px;}
-    #hud{top:6px;left:6px;gap:4px;} #hudRight{top:6px;right:6px;gap:4px;}
+    #hud{top:6px;left:6px;gap:4px;} #hudRight{top:6px;right:6px;gap:4px; flex-wrap:wrap; justify-content:flex-end; max-width:50vw;}
     .badge{padding:4px 8px;font-size:10px;} .btn.small{padding:5px 8px;font-size:10px;}
-    #charlestonBar{top:64px; padding:6px 10px; gap:8px; font-size:11px; flex-wrap:wrap; justify-content:center; max-width:94vw;}
-    #callBar{top:64px; padding:7px 10px; gap:7px; font-size:11px; flex-wrap:wrap; justify-content:center; max-width:94vw;}
-    #narr{font-size:11px; padding:4px 10px; max-width:96%;}
-    #discardPanel.open{position:fixed; right:0; top:0; bottom:0; width:62vw; z-index:400; box-shadow:-8px 0 24px rgba(0,0,0,.5);}
+    #charlestonBar{top:60px; padding:6px 10px; gap:8px; font-size:11px; flex-wrap:wrap; justify-content:center; max-width:94vw;}
+    #callBar{top:60px; padding:7px 10px; gap:7px; font-size:11px; flex-wrap:wrap; justify-content:center; max-width:94vw;}
+    #narr{font-size:11px; padding:4px 10px; max-width:94%;}
+    #discardPanel.open{position:fixed; right:0; top:0; bottom:0; width:64vw; z-index:400; box-shadow:-8px 0 24px rgba(0,0,0,.5);}
+    #drawPrompt{padding:9px 14px;} #drawPrompt .dtileicon{width:22px;height:31px;} #drawPrompt .dlabel{font-size:13px;} #drawPrompt .dsub{font-size:10px;}
     .card{padding:20px 16px; max-width:92vw;}
     .card h1{font-size:24px;}
   }
@@ -326,7 +340,7 @@
 
       <div class="seat" id="seatYou">
         <div class="plate active" data-seat="0"><span class="wind">E</span><span>You â€¢ East (Dealer)</span></div>
-        <div class="exposeRow" id="expose0" style="position:absolute;bottom:206px;left:50%;transform:translateX(-50%);"></div>
+        <div class="exposeRow" id="expose0" style="position:static;transform:none;margin:0 auto 6px;justify-content:center;max-width:96%;"></div>
         <div id="rack"></div>
       </div>
 
@@ -339,6 +353,9 @@
       </div>
 
       <div id="flyLayer"></div>
+
+      <!-- reliable Draw control (your turn to pull a tile from the wall) -->
+      <div id="drawPrompt"><div class="dtileicon"></div><div class="dlabel">Draw a tile</div><div class="dsub">tap here, or the glowing wall tile</div></div>
 
       <!-- HUD -->
       <div id="hud">
@@ -496,6 +513,7 @@ function setPhase(p){ $("#phaseBadge").textContent=p; }
 function tileEl(t, cls=""){
   const d=document.createElement("div");
   d.className="tile "+cls; d.dataset.id=t.id;
+  d.title=tileName(t);                       // hover to see the tile's name
   const img=document.createElement("img"); img.src=ART_DIR+t.art; img.alt=tileName(t);
   img.onerror=()=>{ d.innerHTML="<span style='font-size:10px;color:#333;text-align:center'>"+tileName(t)+"</span>"; };
   d.appendChild(img);
@@ -556,6 +574,34 @@ let activeWallI=0, drawTick=0;
 function wInner(pos){ return pos==="reserve" ? $("#wallReserved_bottom") : $("#wallInner_"+pos); }
 function activeInner(){ return wInner(WALL_ORDER[activeWallI]); }
 
+/* size + position the four walls as a square centered in the FREE BAND between the
+   across-seats (top) and your rack (bottom), scaling with the table */
+function layoutWalls(){
+  const t=$("#table"); if(!t) return;
+  const W=t.clientWidth, H=t.clientHeight; if(!W||!H) return;
+  const tr=t.getBoundingClientRect();
+  let bandTop=H*0.13, bandBot=H*0.74;                        // fallback band
+  try{
+    const top=$("#seatTop").getBoundingClientRect(), you=$("#seatYou").getBoundingClientRect();
+    if(top.height) bandTop=(top.bottom-tr.top)+6;
+    if(you.height) bandBot=(you.top-tr.top)-6;
+  }catch(_){}
+  const bandH=Math.max(120, bandBot-bandTop);
+  const side=Math.max(150, Math.min(W*0.58, bandH*0.98, 560));  // fit width AND the free band
+  const gap=2;
+  const len=(side-(19-1)*gap)/19;                            // along-wall size per stack
+  const cross=Math.min(34, Math.max(10, len*1.32));          // wall thickness
+  document.documentElement.style.setProperty('--wsLen', len.toFixed(2)+'px');
+  document.documentElement.style.setProperty('--wsCross', cross.toFixed(2)+'px');
+  const cx=W/2, cy=(bandTop+bandBot)/2, half=side/2;
+  const place=(id,css)=>{ const el=$("#"+id); if(el) Object.assign(el.style, css); };
+  const C=cross.toFixed(2)+'px', S=side.toFixed(2)+'px';
+  place("wall_top",    {left:(cx-half).toFixed(2)+'px', top:(cy-half).toFixed(2)+'px',       width:S, height:C, right:'auto', bottom:'auto'});
+  place("wall_bottom", {left:(cx-half).toFixed(2)+'px', top:(cy+half-cross).toFixed(2)+'px', width:S, height:C, right:'auto', bottom:'auto'});
+  place("wall_left",   {left:(cx-half).toFixed(2)+'px', top:(cy-half).toFixed(2)+'px',       width:C, height:S, right:'auto', bottom:'auto'});
+  place("wall_right",  {left:(cx+half-cross).toFixed(2)+'px', top:(cy-half).toFixed(2)+'px', width:C, height:S, right:'auto', bottom:'auto'});
+}
+
 function buildWalls(){
   ["bottom","left","top","right"].forEach(pos=>{
     const inner=wInner(pos); inner.innerHTML=""; inner.classList.remove("pushed");
@@ -565,6 +611,20 @@ function buildWalls(){
   const res=$("#wallReserved_bottom"); res.innerHTML=""; res.classList.remove("pushed"); res.style.left=""; res.style.right="";
   activeWallI=0; drawTick=0;
   $("#wallLayer").classList.remove("hidden");
+  layoutWalls();
+}
+
+/* advance the active wall synchronously (no animation) â€” used so the draw control
+   is never stuck on an empty wall */
+function ensureLiveWallSync(){
+  while(activeInner() && activeInner().children.length===0 && activeWallI<WALL_ORDER.length-1){
+    activeWallI++; const np=WALL_ORDER[activeWallI];
+    const el=wInner(np);
+    if(np==="reserve"){ el.style.left=el.offsetLeft+"px"; el.style.right="auto"; }
+    el.classList.add("pushed");
+    $$(".wallRow.activeWall").forEach(w=>w.classList.remove("activeWall"));
+    $("#wall_"+(np==="reserve"?"bottom":np)).classList.add("activeWall");
+  }
 }
 
 async function countAndBreak(sum){
@@ -636,13 +696,19 @@ function depleteWallsSync(tiles){
     innr.removeChild(innr.lastElementChild); rm--;
   }
 }
-// the clickable end tile of the live wall (your draw on your turn)
+// the clickable end tile of the live wall (your draw on your turn) â€” always resolves to a real tile
 function setDrawEnd(on){
   $$(".wstack.drawend").forEach(s=>{ s.classList.remove("drawend"); s.onclick=null; });
   if(!on) return;
-  const end=activeInner() && activeInner().lastElementChild;
+  ensureLiveWallSync();                                  // never point at an empty wall
+  let end=activeInner() && activeInner().lastElementChild;
+  if(!end && state.wall.length>0){
+    // visual stacks drained but tiles remain in data â€” synthesize one on the bottom wall so the cue exists
+    const inner=wInner("bottom"); const s=document.createElement("div"); s.className="wstack"; inner.appendChild(s); end=s;
+  }
   if(end){ end.classList.add("drawend"); end.onclick=onPlayerDrawClick; }
 }
+function showDrawPrompt(on){ const p=$("#drawPrompt"); if(p) p.classList.toggle("show", !!on); }
 
 function take(n){ const out=[]; for(let i=0;i<n;i++) out.push(state.wall.shift()); return out; }
 
@@ -1002,7 +1068,7 @@ async function doCourtesyExchange(){
 
 /* ===================== PLAY LOOP ===================== */
 function startPlay(){
-  recvIds=new Set();
+  recvIds=new Set(); showDrawPrompt(false);
   state.phase="play"; setPhase("Your move"); state.current=0; state.awaitingDiscard=true;
   $("#mahjongBtn").classList.remove("hidden");
   sortHand(); renderExposures(); highlightSeat(0);
@@ -1013,7 +1079,8 @@ function highlightSeat(seat){
 }
 
 function humanDiscard(id){
-  if(!state.awaitingDiscard || state.current!==0){ flash("It isn't your turn to discard."); return; }
+  if(state.current===0 && state.awaitingDraw){ flash("Draw a tile first â€” tap the glowing Draw prompt."); showDrawPrompt(true); return; }
+  if(!state.awaitingDiscard || state.current!==0){ flash("It isn't your turn yet."); return; }
   const i=tileIndexFromId(id); if(i<0) return;
   const t=state.hands[0].splice(i,1)[0];
   drawnId=null; state.awaitingDiscard=false;
@@ -1047,26 +1114,30 @@ function removeLastDiscard(){
 
 /* ---- after any discard: see if anyone calls it ---- */
 async function afterDiscard(d, tile){
-  // a flower / joker is never called off the discard floor
+  // a flower / joker is dead on the floor â€” it can never be called for anything
   const callable = !(tile.key==="joker" || tile.key.startsWith("flower"));
-  const humanExp = callable && d!==0 && canExpose(0, tile);
-  const humanMah = d!==0 && canMahjongOnTile(0, tile);
+  // only offer exposures that complete a real 3+ group in a card line you can still make
+  const humanExpSizes = (callable && d!==0) ? humanExposeSizes(tile) : [];
+  const humanExp = humanExpSizes.length>0;
+  const humanMah = callable && d!==0 && canMahjongOnTile(0, tile);
 
   let cpuMahSeat=-1, cpuExpSeat=-1, cpuExpSize=0;
-  for(let k=1;k<4;k++){ const s=(d+k)%4; if(s===0) continue;
+  if(callable) for(let k=1;k<4;k++){ const s=(d+k)%4; if(s===0) continue;
     if(canMahjongOnTile(s,tile)){ cpuMahSeat=s; break; } }
   if(callable) for(let k=1;k<4;k++){ const s=(d+k)%4; if(s===0) continue;
     const want=cpuWantsExpose(s,tile); if(want){ cpuExpSeat=s; cpuExpSize=want.size; break; } }
 
   if(d!==0){   // you get a say on EVERY discard, even when you can't call this one
-    const choice=await promptHumanCall(d, tile, humanExp, humanMah, callable);
+    const choice=await promptHumanCall(d, tile, humanExpSizes, humanMah, callable);
     if(choice==="mahjong"){
       const all=state.hands[0].concat(state.exposures[0].flat(),[tile]);
       const h=findWinningHand(all, state.exposures[0]);
       return endGame(true, "You called "+SEAT_SHORT[d]+"'s "+tileName(tile)+" for Mahjong on "+handName(h)+". "+handRuleText(h));
     }
     if(choice && choice.expose){
-      if(cpuMahSeat>=0) return cpuWin(cpuMahSeat, tile, true);   // Mahjong call outranks an exposure call
+      if(cpuMahSeat>=0) return cpuWin(cpuMahSeat, tile, true);   // a Mahjong call outranks an exposure call
+      // a CPU sitting NEARER to the discarder than you has exposure priority (NMJL proximity)
+      if(cpuExpSeat>=0 && ((cpuExpSeat-d+4)%4) < ((0-d+4)%4)) return doCpuExposure(cpuExpSeat, tile, cpuExpSize);
       return doHumanExposure(tile, choice.expose);
     }
     // passed -> fall through to CPUs
@@ -1082,16 +1153,22 @@ function advanceFrom(seat){
   if(ns===0) humanDraw(); else cpuTurn(ns);
 }
 
-// your turn: light up the end of the live wall and wait for you to click it to draw
+// your turn: light up the wall end AND show the reliable Draw prompt
 function humanDraw(){
   setPhase("Your move");
   state.awaitingDiscard=false; state.awaitingDraw=true;
+  if(state.wall.length===0) return endGame(false,"Wall exhausted â€” the hand is a wash. Deal again.");
   setDrawEnd(true);
-  setNarr("Your turn â€” click the lit tile on the end of the wall to draw.");
+  showDrawPrompt(true);
+  // on phones the open discard panel covers the centered Draw control â€” close it so you can draw
+  if(window.matchMedia && window.matchMedia("(max-width:600px)").matches && $("#discardPanel").classList.contains("open")){
+    $("#discardPanel").classList.remove("open"); $("#discardToggle").textContent="Discards â–¸";
+  }
+  setNarr("Your turn â€” tap Draw to take a tile from the wall.");
 }
 async function onPlayerDrawClick(){
   if(!(state.phase==="play" && state.current===0 && state.awaitingDraw)) return;
-  state.awaitingDraw=false; setDrawEnd(false);
+  state.awaitingDraw=false; setDrawEnd(false); showDrawPrompt(false);
   if(state.wall.length===0) return endGame(false,"Wall exhausted â€” the hand is a wash. Deal again.");
   const t=state.wall.shift(); state.hands[0].push(t); drawnId=t.id;
   await wallDraw(0,1);                                   // tile comes off the wall end into your rack
@@ -1254,6 +1331,34 @@ function exposeSizesAvailable(seat, tile){
   [3,4,5].forEach(sz=>{ if(nat+jok>=sz-1) out.push(sz); });
   return out;
 }
+/* the group sizes you may legally expose the discard into: only 3+ groups of this
+   exact code that a REAL, still-makeable card line needs (â‰¥1 natural held, jokers
+   may fill the rest). Stops the game offering dead exposures that strand your hand. */
+function humanExposeSizes(tile){
+  const code=tileMatchCode(tile);
+  if(code==="JOKER") return [];
+  const exps=state.exposures[0];
+  const {c,jokers}=countCodes(state.hands[0]);
+  const natHeld=c[code]||0;
+  if(natHeld<1) return [];                                  // a meld needs at least one natural of the face
+  const sizes=new Set();
+  for(const h of HANDS){
+    if(h.c) continue;                                       // can't expose toward a concealed line
+    if(!exposureCompatible(h, exps)) continue;
+    const groups=h.g.map(([n,cd])=>({n,cd,used:false}));
+    for(const meld of exps){                                // skip groups already exposed
+      const nat=meld.find(t=>tileMatchCode(t)!=="JOKER");
+      const cd=nat?tileMatchCode(nat):null;
+      const g=groups.find(g=>!g.used && g.n===meld.length && g.n>=3 && (cd===null||g.cd===cd));
+      if(g) g.used=true;
+    }
+    for(const g of groups){
+      if(g.used || g.n<3 || g.cd!==code) continue;
+      if(natHeld + jokers >= g.n-1) sizes.add(g.n);         // can complete this group
+    }
+  }
+  return [...sizes].sort((a,b)=>a-b);
+}
 /* a CPU calls only when the discard completes a 3+ group in one of its real
    targets, the line allows exposure, and the line is already well underway */
 function cpuWantsExpose(seat, tile){
@@ -1323,16 +1428,17 @@ async function doCpuExposure(seat, tile, size){
   afterDiscard(seat, dt);
 }
 
-function promptHumanCall(d, tile, canExp, canMah, callable){
+function promptHumanCall(d, tile, expSizes, canMah, callable){
   return new Promise(resolve=>{
     const bar=$("#callBar"); bar.classList.remove("hidden");
+    const canExp = expSizes && expSizes.length>0;
     let note="";
     if(callable===false) note=tile.key==="joker" ? " (a discarded Joker is dead â€” it can't be called)" : " (Flowers can't be called from the discard)";
     else if(!canExp && !canMah) note=" â€” nothing in your rack can call it";
     $("#callPrompt").textContent=SEAT_SHORT[d]+" discarded "+tileName(tile)+note;
     const host=$("#callExposeBtns"); host.innerHTML="";
     if(canExp){
-      exposeSizesAvailable(0, tile).forEach(sz=>{
+      expSizes.forEach(sz=>{
         const b=document.createElement("button"); b.className="btn small";
         b.textContent="Expose "+SIZE_NAME[sz].charAt(0).toUpperCase()+SIZE_NAME[sz].slice(1);
         b.onclick=()=>done({expose:sz}); host.appendChild(b);
@@ -1464,6 +1570,7 @@ function cpuWin(seat, tile, onDiscard){
 function endGame(youWin, msg){
   state.phase="end";
   $("#callBar").classList.add("hidden");
+  showDrawPrompt(false); setDrawEnd(false); state.awaitingDraw=false;
   $("#endTitle").textContent=youWin?"Mahjong! ðŸ€„":"Hand Over";
   $("#endText").textContent=msg;
   $("#endOverlay").classList.remove("hidden");
@@ -1509,6 +1616,16 @@ $("#discardToggle").onclick=()=>{
   $("#discardToggle").textContent=p.classList.contains("open")?"Discards â—‚":"Discards â–¸";
 };
 $("#discardClose").onclick=()=>{ $("#discardPanel").classList.remove("open"); $("#discardToggle").textContent="Discards â–¸"; };
+$("#drawPrompt").onclick=onPlayerDrawClick;   // the reliable way to draw on your turn
+
+// keep the wall square sized to the table whenever the table's size changes
+// (initial layout, window resize, orientation, side-panel open/close) â€” robust to
+// environments that don't fire window 'resize'
+let _layoutT=null;
+function scheduleLayout(){ clearTimeout(_layoutT); _layoutT=setTimeout(()=>{ if(!$("#wallLayer").classList.contains("hidden")) layoutWalls(); }, 60); }
+if(window.ResizeObserver){ try{ new ResizeObserver(scheduleLayout).observe($("#table")); }catch(_){} }
+window.addEventListener("resize", scheduleLayout);
+window.addEventListener("orientationchange", scheduleLayout);
 
 // init opponent backs + tile-back picker
 initBack();

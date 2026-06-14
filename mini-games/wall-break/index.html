@@ -211,7 +211,7 @@
 </div>
 
 <script>
-const BUILD="v20 · 2026-06-12";
+const BUILD="v21 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -362,40 +362,45 @@ let animTimers=[];
 function clearAnim(){ animTimers.forEach(t=>clearTimeout(t)); animTimers=[]; }
 function playDealAnim(){
   stopTimer(); setPlaying(false); clearAnim();
-  const names=["East","South","West","North"], counts=[12,12,12,12];
+  const names=["East","South","West","North"], counts=[0,0,0,0];
   const g=$("#game");
   g.innerHTML=
-    `<div class="banner flash"><div class="lead">The jump to 14</div><div class="ask" style="font-size:1.12rem;">How East ends with 14 — everyone else 13</div></div>`+
-    `<div class="anim-stage"><div class="aw">`+
-      `<div class="awr">`+['T1','T2','T3'].map(k=>`<div class="awt" id="aw_${k}">${k[1]}</div>`).join('')+`</div>`+
-      `<div class="awr">`+['B1','B2'].map(k=>`<div class="awt" id="aw_${k}">${k[1]}</div>`).join('')+`</div>`+
-      `<div class="awlbl">the next wall tiles — top row &amp; bottom row</div></div>`+
-      `<div class="anim-row">`+names.map((n,i)=>`<div class="anim-seat${i===0?' me':''}" id="as_${i}"><div class="nm">${n}</div><div class="cnt" id="cnt_${i}">12</div></div>`).join('')+`</div></div>`+
-    `<div class="anim-cap" id="animCap">After three rounds everyone holds 12. Watch how East gets to 14.</div>`+
+    `<div class="banner flash"><div class="lead">Watch the deal</div><div class="ask" style="font-size:1.12rem;">Four at a time, three rounds — then East's jump to 14</div></div>`+
+    `<div class="anim-stage">`+
+      `<div class="anim-row">`+names.map((n,i)=>`<div class="anim-seat${i===0?' me':''}" id="as_${i}"><div class="nm">${n}</div><div class="cnt" id="cnt_${i}">0</div></div>`).join('')+`</div>`+
+      `<div class="aw" id="animWall" style="display:none;">`+
+        `<div class="awr">`+['T1','T2','T3'].map(k=>`<div class="awt" id="aw_${k}">${k[1]}</div>`).join('')+`</div>`+
+        `<div class="awr">`+['B1','B2'].map(k=>`<div class="awt" id="aw_${k}">${k[1]}</div>`).join('')+`</div>`+
+        `<div class="awlbl">the next wall tiles — top &amp; bottom rows</div></div>`+
+    `</div>`+
+    `<div class="anim-cap" id="animCap">The deal goes four tiles at a time, East &rarr; South &rarr; West &rarr; North.</div>`+
     `<div class="submitbar"><button class="btn" id="animReplay">Replay &#9654;</button><button class="btn ghost" id="animBack">Back</button></div>`;
   $("#animReplay").onclick=()=>playDealAnim();
   $("#animBack").onclick=()=>{ clearAnim(); showStart(); };
-  const steps=[
-    {tile:'T1',seat:0,cap:"<b>East</b> takes the 1st tile on the top row &rarr; 13."},
-    {tile:'T3',seat:0,cap:"<b>East</b> skips the middle and takes the 3rd top tile too — the jump. East now has <b>14</b>."},
-    {tile:'B1',seat:1,cap:"<b>South</b> takes the 1st tile on the bottom row &rarr; 13."},
-    {tile:'T2',seat:2,cap:"<b>West</b> takes the middle top tile East skipped &rarr; 13."},
-    {tile:'B2',seat:3,cap:"<b>North</b> takes the last bottom tile &rarr; 13."}
-  ];
-  let prev=null;
-  steps.forEach((st,idx)=>{
+  const steps=[];
+  for(let r=1;r<=3;r++) for(let s=0;s<4;s++) steps.push({seat:s, add:4, cap:`Round ${r}: four tiles to <b>${names[s]}</b> &rarr; ${r*4}.`});
+  steps.push({reveal:true, cap:`Everyone now holds <b>12</b>. Now the jump that gives East 14:`});
+  [['T1',0,"<b>East</b> takes the 1st top tile."],
+   ['T3',0,"<b>East</b> skips the middle and takes the 3rd top tile too — the jump. East has <b>14</b>."],
+   ['B1',1,"<b>South</b> takes the 1st bottom tile &rarr; 13."],
+   ['T2',2,"<b>West</b> takes the middle top tile East skipped &rarr; 13."],
+   ['B2',3,"<b>North</b> takes the last bottom tile &rarr; 13."]
+  ].forEach(x=>steps.push({tile:x[0], seat:x[1], add:1, cap:x[2], supp:true}));
+  let prevTile=null, t=600;
+  steps.forEach((st)=>{
     animTimers.push(setTimeout(()=>{
-      if(prev){ const p=document.getElementById('aw_'+prev); if(p){p.classList.remove('lit'); p.classList.add('taken');} }
-      const t=document.getElementById('aw_'+st.tile); if(t)t.classList.add('lit'); prev=st.tile;
-      counts[st.seat]++; const c=document.getElementById('cnt_'+st.seat); if(c)c.textContent=counts[st.seat];
-      const se=document.getElementById('as_'+st.seat); if(se){ se.classList.add('flash'); animTimers.push(setTimeout(()=>se.classList.remove('flash'),750)); }
       const cap=document.getElementById('animCap'); if(cap)cap.innerHTML=st.cap;
-    }, 850 + idx*1350));
+      if(st.reveal){ const w=document.getElementById('animWall'); if(w)w.style.display=''; return; }
+      if(st.supp){ if(prevTile){ const p=document.getElementById('aw_'+prevTile); if(p){p.classList.remove('lit'); p.classList.add('taken');} } const tl=document.getElementById('aw_'+st.tile); if(tl)tl.classList.add('lit'); prevTile=st.tile; }
+      counts[st.seat]+=st.add; const c=document.getElementById('cnt_'+st.seat); if(c)c.textContent=counts[st.seat];
+      const se=document.getElementById('as_'+st.seat); if(se){ se.classList.add('flash'); animTimers.push(setTimeout(()=>se.classList.remove('flash'),600)); }
+    }, t));
+    t += st.supp?1250 : st.reveal?1100 : 460;
   });
   animTimers.push(setTimeout(()=>{
-    if(prev){ const p=document.getElementById('aw_'+prev); if(p){p.classList.remove('lit'); p.classList.add('taken');} }
+    if(prevTile){ const p=document.getElementById('aw_'+prevTile); if(p){p.classList.remove('lit'); p.classList.add('taken');} }
     const cap=document.getElementById('animCap'); if(cap)cap.innerHTML="<b>East 14, the others 13.</b> East discards first to begin play.";
-  }, 850 + steps.length*1350));
+  }, t+200));
 }
 function renderManners(g,sc,opts){
   g.appendChild(bannerEl("Table manners",sc.q,"",opts));
@@ -454,7 +459,7 @@ function showStart(){
   stopTimer(); setPlaying(false); clearAnim();
   const g=$("#game");
   const timeNote = timed()?"The clock starts when you press Play.":"Table Manners isn't timed — just answer each one.";
-  const watchBtn = mode==="deal"?`<button id="watchDeal" class="btn ghost" style="margin-left:10px;">Watch East reach 14 ▶</button>`:"";
+  const watchBtn = mode==="deal"?`<button id="watchDeal" class="btn ghost" style="margin-left:10px;">Watch the deal ▶</button>`:"";
   g.innerHTML=`<div class="banner flash"><div class="lead">Ready to play — ${MODES_LABEL[mode]}</div>
     <div class="ask" style="font-size:1.1rem;">${MODE_BLURB[mode]}</div>
     <div class="why">${timeNote}</div></div>
