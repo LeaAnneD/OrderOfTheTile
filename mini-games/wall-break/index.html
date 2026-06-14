@@ -51,6 +51,7 @@
   .wall{display:flex; gap:4px; width:100%; align-items:flex-end;}
   .stack{flex:1 1 0; min-width:0; cursor:pointer; display:flex; flex-direction:column; gap:3px; padding:4px 0; border-radius:7px;}
   .stack .t{width:100%; height:30px; border-radius:5px; background:linear-gradient(180deg,#F3E9D6,#DcCcae); border:1px solid #C8B791; box-shadow:0 1px 2px rgba(0,0,0,.15);}
+  .stack .snum{font-family:"Playfair Display",serif; font-size:.6rem; text-align:center; color:var(--ink-soft); margin-top:2px; line-height:1;}
   .stack.sel{background:#F6E9E6; box-shadow:0 0 0 2px var(--rose) inset;}
   .stack.counted .t{background:linear-gradient(180deg,#FBEFD4,#EAD089); border-color:var(--gold);}
   .stack.right .t{background:linear-gradient(180deg,#E4EFE0,#BcD8B6); border-color:var(--good);}
@@ -175,7 +176,7 @@
 </div>
 
 <script>
-const BUILD="v10 · 2026-06-12";
+const BUILD="v11 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -274,12 +275,12 @@ function enableSubmit(on){const s=$("#submitBtn"); if(s)s.disabled=!on;}
 function renderBreak(g,sc,hints,opts){
   g.appendChild(bannerEl("East rolls to break the wall",
     `East rolled <b>${sc.tot}</b>. Count <b>${sc.tot}</b> from the <b>right</b> and tap the stack where the wall breaks.`,
-    hints?"Guide: East counts the dice total from the far right of their own wall.":"",opts));
+    hints?"Guide: the numbers count from the right — tap the stack that matches your roll.":"",opts));
   const dr=el("div","dicerow"); dr.innerHTML=`${dieHTML(sc.d1)}${dieHTML(sc.d2)}<span class="dietotal">= ${sc.tot}</span>`; g.appendChild(dr);
   setTimeout(()=>dr.querySelectorAll('.die').forEach(d=>d.classList.add('roll')),20);
   const head=el("div","wallhead"); head.innerHTML="start counting here &rarr;"; g.appendChild(head);
   const wall=el("div","wall");
-  for(let i=0;i<STACKS;i++){ const s=el("div","stack"); s.dataset.i=i; s.innerHTML=`<div class="t"></div><div class="t"></div>`; s.onclick=()=>pickStack(sc,i,wall); wall.appendChild(s); }
+  for(let i=0;i<STACKS;i++){ const s=el("div","stack"); s.dataset.i=i; s.innerHTML=`<div class="t"></div><div class="t"></div>`+(hints?`<div class="snum">${STACKS-i}</div>`:""); s.onclick=()=>pickStack(sc,i,wall); wall.appendChild(s); }
   g.appendChild(wall);
   g.appendChild(submitBar(sc,opts));
 }
