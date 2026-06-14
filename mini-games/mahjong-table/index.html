@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Table â€” Play American Mahjong vs. the Computer</title>
+<title>The Table — Play American Mahjong vs. the Computer</title>
 <style>
   :root{
     --felt:#1f6b4a; --felt-dark:#164e36; --felt-edge:#0d3322;
@@ -72,7 +72,7 @@
     border:1px solid rgba(0,0,0,.4); box-shadow:0 1px 2px rgba(0,0,0,.4);
   }
   .oppHand.vert .miniback{width:28px;height:20px;}
-  /* floating count pills retired â€” the tile count now lives in the seat plate so nothing sits on the tiles */
+  /* floating count pills retired — the tile count now lives in the seat plate so nothing sits on the tiles */
   .countPill{display:none;}
   .plate .ct{color:var(--gold-soft); font-weight:700; margin-left:2px;}
   #seatTop .countPill{bottom:-2px; left:50%; transform:translateX(-50%);}
@@ -99,7 +99,7 @@
   .tile.back{background:linear-gradient(160deg,var(--back1),var(--back2)); border-color:#5a2114;}
   .tile.back::after{content:"";position:absolute;inset:6px;border:1px solid rgba(255,255,255,.18);border-radius:4px;}
 
-  /* your rack â€” two rows of free-placement slots (drag tiles into groupings, leave gaps) */
+  /* your rack — two rows of free-placement slots (drag tiles into groupings, leave gaps) */
   #rack{
     display:grid; grid-template-columns:repeat(14, var(--rackTileW)); grid-auto-rows:var(--rackTileH);
     gap:6px 4px; padding:9px 12px; justify-content:center;
@@ -131,7 +131,7 @@
 
   #dice{position:relative; z-index:42;}
 
-  /* ---------- Authentic four walls â€” a centered square, sized in JS (layoutWalls) ---------- */
+  /* ---------- Authentic four walls — a centered square, sized in JS (layoutWalls) ---------- */
   #wallLayer{position:absolute; inset:0; z-index:30; pointer-events:none;}
   .wallRow{position:absolute; display:flex;}            /* exact left/top/width/height set by layoutWalls() */
   .wallRow.h{flex-direction:row; align-items:center; justify-content:center;}
@@ -155,12 +155,13 @@
   .wallRow.h .wstack{width:var(--wsLen,22px); height:var(--wsCross,30px);}
   .wallRow.v .wstack{width:var(--wsCross,30px); height:var(--wsLen,22px);}
   .wstack.counted{background:linear-gradient(160deg,var(--gold-soft),var(--gold)); box-shadow:0 0 7px var(--gold);}
-  /* the active/reserve wall is nudged toward center with a gentle tilt (decorative "in play" cue) */
-  .wallRow.bottom .wallInner.pushed{transform:translateY(calc(var(--wsCross,30px) * -1.3)) rotate(-7deg); transform-origin:0% 100%;}
-  .wallRow.top    .wallInner.pushed{transform:translateY(calc(var(--wsCross,30px) *  1.3)) rotate(-7deg); transform-origin:100% 0%;}
-  .wallRow.left   .wallInner.pushed{transform:translateX(calc(var(--wsCross,30px) *  1.3)) rotate(7deg);  transform-origin:0% 0%;}
-  .wallRow.right  .wallInner.pushed{transform:translateX(calc(var(--wsCross,30px) * -1.3)) rotate(7deg);  transform-origin:100% 100%;}
-  .wallReserved.pushed{transform:translateY(calc(var(--wsCross,30px) * -1.3)) rotate(-7deg); transform-origin:0% 100%;}
+  /* the active/reserve wall is pushed STRAIGHT toward the center of the table (no rotation,
+     so the tiles stay a clean line and never overlap) — like a real pushed-out wall */
+  .wallRow.bottom .wallInner.pushed{transform:translateY(calc(var(--wsCross,30px) * -2.6));}
+  .wallRow.top    .wallInner.pushed{transform:translateY(calc(var(--wsCross,30px) *  2.6));}
+  .wallRow.left   .wallInner.pushed{transform:translateX(calc(var(--wsCross,30px) *  2.6));}
+  .wallRow.right  .wallInner.pushed{transform:translateX(calc(var(--wsCross,30px) * -2.6));}
+  .wallReserved.pushed{transform:translateY(calc(var(--wsCross,30px) * -2.6));}
   /* the end tile you draw from glows (visual cue; the Draw prompt below is the reliable control) */
   .wstack.drawend{pointer-events:auto; cursor:pointer; box-shadow:0 0 0 2px var(--gold), 0 0 10px var(--gold); animation:drawpulse 1.1s ease-in-out infinite;}
   @keyframes drawpulse{0%,100%{box-shadow:0 0 0 2px var(--gold),0 0 8px var(--gold);}50%{box-shadow:0 0 0 3px var(--gold-soft),0 0 18px var(--gold);}}
@@ -339,12 +340,12 @@
       </div>
 
       <div class="seat" id="seatYou">
-        <div class="plate active" data-seat="0"><span class="wind">E</span><span>You â€¢ East (Dealer)</span></div>
+        <div class="plate active" data-seat="0"><span class="wind">E</span><span>You • East (Dealer)</span></div>
         <div class="exposeRow" id="expose0" style="position:static;transform:none;margin:0 auto 6px;justify-content:center;max-width:96%;"></div>
         <div id="rack"></div>
       </div>
 
-      <!-- Authentic four walls â€” stay up all game, in front of each rack -->
+      <!-- Authentic four walls — stay up all game, in front of each rack -->
       <div id="wallLayer" class="hidden">
         <div class="wallRow h bottom" id="wall_bottom"><div class="wallInner" id="wallInner_bottom"></div><div class="wallReserved" id="wallReserved_bottom"></div></div>
         <div class="wallRow h top" id="wall_top"><div class="wallInner" id="wallInner_top"></div></div>
@@ -363,17 +364,17 @@
         <span class="badge" id="phaseBadge">Setup</span>
       </div>
       <div id="hudRight">
-        <button class="btn small ghost" id="restartBtn">â†» Restart</button>
+        <button class="btn small ghost" id="restartBtn">↻ Restart</button>
         <button class="btn small ghost" id="sortBtn">Sort</button>
-        <button class="btn small ghost hidden" id="mahjongBtn">ðŸ€„ Declare Mahjong</button>
-        <button class="btn small" id="discardToggle">Discards â–¸</button>
+        <button class="btn small ghost hidden" id="mahjongBtn">🀄 Declare Mahjong</button>
+        <button class="btn small" id="discardToggle">Discards ▸</button>
       </div>
 
       <!-- Charleston bar -->
       <div id="charlestonBar" class="hidden">
-        <span class="step" data-c="0">1 â–¶ Right</span>
-        <span class="step" data-c="1">2 âœš Across</span>
-        <span class="step" data-c="2">3 â—€ Left</span>
+        <span class="step" data-c="0">1 ▶ Right</span>
+        <span class="step" data-c="1">2 ✚ Across</span>
+        <span class="step" data-c="2">3 ◀ Left</span>
         <span class="arrow" id="charlestonHint"></span>
         <button class="btn small" id="passBtn" disabled>Pass 0/3</button>
       </div>
@@ -391,7 +392,7 @@
 
   <!-- Discard panel -->
   <div id="discardPanel">
-    <h3>Discard Pile <button class="btn small ghost" id="discardClose">âœ•</button></h3>
+    <h3>Discard Pile <button class="btn small ghost" id="discardClose">✕</button></h3>
     <div id="discardList"></div>
     <div class="meta" id="discardMeta">0 tiles discarded</div>
   </div>
@@ -401,10 +402,10 @@
 <div class="overlay" id="startOverlay">
   <div class="card">
     <h1>The Table</h1>
-    <p>American Mahjong (NMJL) â€” you against three computer players. You sit <b>East</b>, the dealer.</p>
+    <p>American Mahjong (NMJL) — you against three computer players. You sit <b>East</b>, the dealer.</p>
     <p style="font-size:13px;color:#9fb3a7;">
       Four walls of <b>19 stacks</b> go up around the table. Roll the dice, count from the right of your wall,
-      and push the live wall out to the center â€” then watch it deal <b>4&nbsp;Â·&nbsp;4&nbsp;Â·&nbsp;4</b> and the dealer's hop.
+      and push the live wall out to the center — then watch it deal <b>4&nbsp;·&nbsp;4&nbsp;·&nbsp;4</b> and the dealer's hop.
       Drag tiles in your rack to sort them.
     </p>
     <div id="backRow">
@@ -413,8 +414,8 @@
       <input type="color" id="backPicker" title="Pick a custom color">
     </div>
     <div class="row">
-      <button class="btn" id="startRollBtn">ðŸŽ² Roll &amp; Deal</button>
-      <button class="btn ghost" id="startSkipBtn">â­ Skip to Charleston</button>
+      <button class="btn" id="startRollBtn">🎲 Roll &amp; Deal</button>
+      <button class="btn ghost" id="startSkipBtn">⏭ Skip to Charleston</button>
     </div>
     <p style="font-size:11px;color:#6f857a;margin-top:18px;">Tile art from the Order of the Tile set. No card patterns shown.</p>
   </div>
@@ -433,7 +434,7 @@
 <script src="../_data/card2026.js?v=20260612"></script>
 <script>
 /* =========================================================================
-   THE TABLE â€” American Mahjong vs. computer
+   THE TABLE — American Mahjong vs. computer
    Single-file build. Tile images live in ../tile-matching/assets/tiles/
    Rules per Business/Products/Reference/Rules-Layer Canon (C1-C13).
    Wins validate against the real 2026 card via _data/hands2026.js
@@ -463,15 +464,15 @@ function buildDeck(){
   const d = [];
   const suits=["dot","bam","crak"];
   suits.forEach((s,si)=>{ for(let n=1;n<=9;n++){ for(let c=0;c<4;c++) d.push(mk(s+n, si*100+n)); } });
-  // winds N E S W Ã—4
+  // winds N E S W ×4
   [["wind_E","E"],["wind_S","S"],["wind_W","W"],["wind_N","N"]].forEach((w,i)=>{
     for(let c=0;c<4;c++) d.push(mk(w[0], 300+i));
   });
-  // dragons Ã—4
+  // dragons ×4
   [["dragon_red",0],["dragon_green",1],["dragon_soap",2]].forEach(dr=>{
     for(let c=0;c<4;c++) d.push(mk(dr[0], 320+dr[1]));
   });
-  // 8 flowers (one art each â€” 8 total tiles)
+  // 8 flowers (one art each — 8 total tiles)
   for(let f=1;f<=8;f++) d.push(mk("flower"+f, 340));
   // 8 jokers
   for(let j=0;j<8;j++) d.push(mk("joker", 999));
@@ -532,14 +533,14 @@ function renderDice(){ $("#die1").innerHTML=pips(state.dice[0]); $("#die2").inne
 async function rollDice(){
   $("#dice").classList.remove("hidden");
   $("#die1").classList.add("rolling"); $("#die2").classList.add("rolling");
-  setNarr("Rolling the diceâ€¦");
+  setNarr("Rolling the dice…");
   for(let i=0;i<(state.skip?1:12);i++){
     state.dice=[1+Math.floor(Math.random()*6),1+Math.floor(Math.random()*6)];
     renderDice(); await sleep(70);
   }
   $("#die1").classList.remove("rolling"); $("#die2").classList.remove("rolling");
   const sum=state.dice[0]+state.dice[1];
-  setNarr("Dice show "+state.dice[0]+" + "+state.dice[1]+" = "+sum+". Counting to break the wallâ€¦");
+  setNarr("Dice show "+state.dice[0]+" + "+state.dice[1]+" = "+sum+". Counting to break the wall…");
   await sleep(state.skip?0:900);
   return sum;
 }
@@ -614,7 +615,7 @@ function buildWalls(){
   layoutWalls();
 }
 
-/* advance the active wall synchronously (no animation) â€” used so the draw control
+/* advance the active wall synchronously (no animation) — used so the draw control
    is never stuck on an empty wall */
 function ensureLiveWallSync(){
   while(activeInner() && activeInner().children.length===0 && activeWallI<WALL_ORDER.length-1){
@@ -629,13 +630,13 @@ function ensureLiveWallSync(){
 
 async function countAndBreak(sum){
   setPhase("Break");
-  setNarr("You count "+sum+" from the right of your wallâ€¦");
-  const inner=wInner("bottom"); const stacks=[...inner.children]; // 0=left â€¦ last=right
+  setNarr("You count "+sum+" from the right of your wall…");
+  const inner=wInner("bottom"); const stacks=[...inner.children]; // 0=left … last=right
   for(let k=0;k<sum && k<stacks.length;k++){ stacks[stacks.length-1-k].classList.add("counted"); await sleep(state.skip?0:230); }
-  // the counted-off stacks STAY in front of East â€” move them into the reserved part (right side)
+  // the counted-off stacks STAY in front of East — move them into the reserved part (right side)
   const res=$("#wallReserved_bottom");
   for(let k=0;k<sum && inner.children.length>0;k++){ const last=inner.lastElementChild; last.classList.remove("counted"); res.insertBefore(last, res.firstChild); }
-  setNarr("Those stay in front of you. Pushing the live wall outâ€¦");
+  setNarr("Those stay in front of you. Pushing the live wall out…");
   await sleep(state.skip?0:450);
 }
 
@@ -648,13 +649,13 @@ async function pushOutWall(pos){
   await sleep(state.skip?0:600);
 }
 
-// when the active wall is spent, advance to the next wall (left) and push it out â€” visibly
+// when the active wall is spent, advance to the next wall (left) and push it out — visibly
 async function ensureLiveWall(){
   while(activeInner().children.length===0 && activeWallI<WALL_ORDER.length-1){
     activeWallI++;
     const next=WALL_ORDER[activeWallI];
-    setNarr(next==="reserve" ? "Down to the last of it â€” your counted-off stacks come out now."
-                             : "That wall's spent â€” the next one gets pushed out.");
+    setNarr(next==="reserve" ? "Down to the last of it — your counted-off stacks come out now."
+                             : "That wall's spent — the next one gets pushed out.");
     await pushOutWall(next);
   }
 }
@@ -675,12 +676,12 @@ async function wallDraw(seat, n){
     requestAnimationFrame(()=>{ f.style.left=tx+"px"; f.style.top=ty+"px"; });
     await sleep(260); f.style.opacity="0"; await sleep(70); f.remove();
   }
-  // a stack is 2 tiles â€” deplete ~1 stack per 2 tiles, cascading to the next wall as needed
+  // a stack is 2 tiles — deplete ~1 stack per 2 tiles, cascading to the next wall as needed
   drawTick+=n; let rm=Math.floor(drawTick/2); drawTick-=rm*2;
   while(rm>0){ await ensureLiveWall(); const innr=activeInner(); if(!innr.lastElementChild) break; innr.removeChild(innr.lastElementChild); rm--; }
 }
 
-// remove stacks instantly (no animation) â€” used by the skip-deal so the walls still look spent
+// remove stacks instantly (no animation) — used by the skip-deal so the walls still look spent
 function depleteWallsSync(tiles){
   let rm=Math.floor(tiles/2);
   while(rm>0){
@@ -696,14 +697,14 @@ function depleteWallsSync(tiles){
     innr.removeChild(innr.lastElementChild); rm--;
   }
 }
-// the clickable end tile of the live wall (your draw on your turn) â€” always resolves to a real tile
+// the clickable end tile of the live wall (your draw on your turn) — always resolves to a real tile
 function setDrawEnd(on){
   $$(".wstack.drawend").forEach(s=>{ s.classList.remove("drawend"); s.onclick=null; });
   if(!on) return;
   ensureLiveWallSync();                                  // never point at an empty wall
   let end=activeInner() && activeInner().lastElementChild;
   if(!end && state.wall.length>0){
-    // visual stacks drained but tiles remain in data â€” synthesize one on the bottom wall so the cue exists
+    // visual stacks drained but tiles remain in data — synthesize one on the bottom wall so the cue exists
     const inner=wInner("bottom"); const s=document.createElement("div"); s.className="wstack"; inner.appendChild(s); end=s;
   }
   if(end){ end.classList.add("drawend"); end.onclick=onPlayerDrawClick; }
@@ -715,25 +716,25 @@ function take(n){ const out=[]; for(let i=0;i<n;i++) out.push(state.wall.shift()
 async function dealTiles(){
   setPhase("Dealing");
   if(state.skip){
-    // instant deal â€” no animation, no awaits (avoids long timer chains)
+    // instant deal — no animation, no awaits (avoids long timer chains)
     for(let round=0; round<3; round++) for(const seat of PLAY_ORDER) state.hands[seat].push(...take(4));
     state.hands[0].push(...take(2));
     for(const seat of [1,2,3]) state.hands[seat].push(...take(1));
-    depleteWallsSync(53);     // 53 tiles dealt â€” show the walls spent accordingly
+    depleteWallsSync(53);     // 53 tiles dealt — show the walls spent accordingly
     updateCounts();
     return;
   }
-  // 3 rounds of 4 to each seat in play order â€” each block comes off the live wall
+  // 3 rounds of 4 to each seat in play order — each block comes off the live wall
   for(let round=0; round<3; round++){
     for(const seat of PLAY_ORDER){
       state.hands[seat].push(...take(4)); updateCounts();
-      setNarr((seat===0?"You take":SEAT_SHORT[seat]+" takes")+" 4  Â·  "+(round*4+4)+" tiles");
+      setNarr((seat===0?"You take":SEAT_SHORT[seat]+" takes")+" 4  ·  "+(round*4+4)+" tiles");
       await wallDraw(seat,4);
       await sleep(state.skip?0:110);
     }
   }
   // the dealer's hop: East takes 2 (1st & 3rd), others take 1
-  setNarr("Now the singles â€” and the dealer hops for an extra tile.");
+  setNarr("Now the singles — and the dealer hops for an extra tile.");
   await sleep(state.skip?0:450);
   state.hands[0].push(...take(2)); updateCounts(); await wallDraw(0,2);
   for(const seat of [1,2,3]){ state.hands[seat].push(...take(1)); updateCounts(); await wallDraw(seat,1); await sleep(state.skip?0:100); }
@@ -743,14 +744,14 @@ async function dealTiles(){
 
 function updateCounts(){
   for(let s=1;s<4;s++){
-    const ct=$("#ct"+s); if(ct) ct.textContent="Â· "+state.hands[s].length;
+    const ct=$("#ct"+s); if(ct) ct.textContent="· "+state.hands[s].length;
     const hand=$("#hand"+s); hand.innerHTML="";
     for(let i=0;i<Math.min(state.hands[s].length,13);i++){ const b=document.createElement("div"); b.className="miniback"; hand.appendChild(b); }
   }
   $("#wallCount").textContent="Wall: "+state.wall.length;
 }
 
-/* ===================== YOUR RACK â€” two rows of free-placement slots ===================== */
+/* ===================== YOUR RACK — two rows of free-placement slots ===================== */
 const RACK_COLS=14, RACK_ROWS=2, RACK_SLOTS=RACK_COLS*RACK_ROWS;
 function sortKey(t){ return t.rank; }
 function ensureSlots(){ if(!state.slots || state.slots.length!==RACK_SLOTS) state.slots=new Array(RACK_SLOTS).fill(null); }
@@ -844,27 +845,27 @@ function onTileClick(id){
 }
 
 /* ===================== CHARLESTON (full, per Canon C7/C8/C9) =====================
-   First Charleston (required): right, across, left â€” LEFT may be blind.
-   Second Charleston (only if all agree): left, across, right â€” RIGHT may be blind.
+   First Charleston (required): right, across, left — LEFT may be blind.
+   Second Charleston (only if all agree): left, across, right — RIGHT may be blind.
    Courtesy pass (by agreement): 0-3 tiles across (the lower of the two offers).
    Jokers are never passed; the computers also hold their flowers (C9).            */
 let charlestonQueue=[], charlestonStep=0, charlestonRound=1, charlestonPicks=[];
 
 const FIRST_PASSES=[
-  {dir:"right",  label:"Pass 3 to your RIGHT (South)", hint:"â–¶", count:3},
-  {dir:"across", label:"Pass 3 ACROSS (West)",         hint:"âœš", count:3},
-  {dir:"left",   label:"Pass 3 to your LEFT (North) â€” you may pass blind", hint:"â—€", count:3, blindOK:true}
+  {dir:"right",  label:"Pass 3 to your RIGHT (South)", hint:"▶", count:3},
+  {dir:"across", label:"Pass 3 ACROSS (West)",         hint:"✚", count:3},
+  {dir:"left",   label:"Pass 3 to your LEFT (North) — you may pass blind", hint:"◀", count:3, blindOK:true}
 ];
 const SECOND_PASSES=[
-  {dir:"left",   label:"Second Charleston â€” pass 3 LEFT (North)", hint:"â—€", count:3},
-  {dir:"across", label:"Second Charleston â€” pass 3 ACROSS (West)", hint:"âœš", count:3},
-  {dir:"right",  label:"Second Charleston â€” pass 3 RIGHT (South) â€” you may pass blind", hint:"â–¶", count:3, blindOK:true}
+  {dir:"left",   label:"Second Charleston — pass 3 LEFT (North)", hint:"◀", count:3},
+  {dir:"across", label:"Second Charleston — pass 3 ACROSS (West)", hint:"✚", count:3},
+  {dir:"right",  label:"Second Charleston — pass 3 RIGHT (South) — you may pass blind", hint:"▶", count:3, blindOK:true}
 ];
-const STEP_LABELS={1:["1 â–¶ Right","2 âœš Across","3 â—€ Left"], 2:["1 â—€ Left","2 âœš Across","3 â–¶ Right"]};
+const STEP_LABELS={1:["1 ▶ Right","2 ✚ Across","3 ◀ Left"], 2:["1 ◀ Left","2 ✚ Across","3 ▶ Right"]};
 
 function startCharleston(){
   state.phase="charleston"; setPhase("Charleston"); state.skip=false;
-  $("#dice").classList.add("hidden");   // walls stay up â€” they're part of the table now
+  $("#dice").classList.add("hidden");   // walls stay up — they're part of the table now
   $("#charlestonBar").classList.remove("hidden");
   sortHand();
   charlestonRound=1; charlestonQueue=FIRST_PASSES.slice(); charlestonStep=0;
@@ -922,7 +923,7 @@ function cpuCourtesyOffer(seat){
 }
 
 /* ---- the pass plays out on the table: everyone's tiles go FACE DOWN between
-   passer and receiver, sit a beat, then travel â€” and your three new tiles glow ---- */
+   passer and receiver, sit a beat, then travel — and your three new tiles glow ---- */
 let recvIds=new Set(), passing=false;
 function seatAnchor(seat){
   const sels={0:"#seatYou",1:"#seatRight",2:"#seatTop",3:"#seatLeft"};
@@ -971,11 +972,11 @@ async function doCharlestonPass(){
       out[0].push(...out[src].splice(0, blindN));
       setNarr("You passed "+(p.count-blindN)+" of your own and sent "+blindN+" through blind.");
     } else {
-      setNarr("Passes are down on the tableâ€¦");
+      setNarr("Passes are down on the table…");
     }
     await animatePassTrios(out, shift);
     const src=(4-shift)%4;
-    recvIds=new Set(out[src].map(t=>t.id));        // your incoming three â€” they'll glow
+    recvIds=new Set(out[src].map(t=>t.id));        // your incoming three — they'll glow
     for(let seat=0;seat<4;seat++){
       const dest=(seat+shift)%4;
       state.hands[dest].push(...out[seat]);
@@ -1006,7 +1007,7 @@ async function askSecondCharleston(){
   $("#charlestonBar").classList.add("hidden");
   // C7: the second Charleston happens only if ALL players agree. The computers are willing; you decide.
   const yes=await askTable("First Charleston complete. Continue to the Second Charleston?",
-    [{label:"Yes â€” second Charleston", value:true},{label:"No â€” stop here", value:false, ghost:true}]);
+    [{label:"Yes — second Charleston", value:true},{label:"No — stop here", value:false, ghost:true}]);
   if(yes){
     charlestonRound=2; charlestonQueue=SECOND_PASSES.slice(); charlestonStep=0;
     $("#charlestonBar").classList.remove("hidden");
@@ -1018,7 +1019,7 @@ async function askSecondCharleston(){
 
 async function startCourtesyPass(){
   $("#charlestonBar").classList.add("hidden");
-  // C7: courtesy pass â€” 0 to 3 tiles across, by agreement (the lower offer rules)
+  // C7: courtesy pass — 0 to 3 tiles across, by agreement (the lower offer rules)
   const mine=await askTable("Courtesy pass with West (across): how many tiles do you offer?",
     [0,1,2,3].map(n=>({label:String(n), value:n})));
   const westN=cpuCourtesyOffer(2);
@@ -1031,18 +1032,18 @@ async function startCourtesyPass(){
     state.hands[3].push(...s1); state.hands[1].push(...s3);
   }
   if(n===0){
-    setNarr(mine>0 ? "West offered "+westN+" â€” the lower offer rules, so no courtesy tiles change hands." : "No courtesy pass. Time to play.");
+    setNarr(mine>0 ? "West offered "+westN+" — the lower offer rules, so no courtesy tiles change hands." : "No courtesy pass. Time to play.");
     updateCounts();
     setTimeout(startPlay, 800);
     return;
   }
   // select your n tiles using the normal pick flow
   charlestonRound=3;
-  charlestonQueue=[{dir:"across", label:"Courtesy pass â€” give "+n+" ACROSS (West agreed on "+n+")", hint:"âœš", count:n}];
+  charlestonQueue=[{dir:"across", label:"Courtesy pass — give "+n+" ACROSS (West agreed on "+n+")", hint:"✚", count:n}];
   charlestonStep=0; charlestonPicks=[];
   $("#charlestonBar").classList.remove("hidden");
-  $$("#charlestonBar .step").forEach((s,i)=>{ s.textContent=i===0?"Courtesy âœš Across":""; s.classList.toggle("on", i===0); });
-  $("#charlestonHint").textContent="âœš";
+  $$("#charlestonBar .step").forEach((s,i)=>{ s.textContent=i===0?"Courtesy ✚ Across":""; s.classList.toggle("on", i===0); });
+  $("#charlestonHint").textContent="✚";
   // override the pass handler path: doCharlestonPass would route wrong; use a one-off
   state.courtesyN=n;
   setNarr("Courtesy pass: tap "+n+" tile"+(n>1?"s":"")+" for West, then Pass.");
@@ -1072,14 +1073,14 @@ function startPlay(){
   state.phase="play"; setPhase("Your move"); state.current=0; state.awaitingDiscard=true;
   $("#mahjongBtn").classList.remove("hidden");
   sortHand(); renderExposures(); highlightSeat(0);
-  setNarr("Your turn â€” you hold 14. Discard a tile, sort your rack, or declare Mahjong.");
+  setNarr("Your turn — you hold 14. Discard a tile, sort your rack, or declare Mahjong.");
 }
 function highlightSeat(seat){
   $$(".plate").forEach(p=>p.classList.toggle("active", +p.dataset.seat===seat));
 }
 
 function humanDiscard(id){
-  if(state.current===0 && state.awaitingDraw){ flash("Draw a tile first â€” tap the glowing Draw prompt."); showDrawPrompt(true); return; }
+  if(state.current===0 && state.awaitingDraw){ flash("Draw a tile first — tap the glowing Draw prompt."); showDrawPrompt(true); return; }
   if(!state.awaitingDiscard || state.current!==0){ flash("It isn't your turn yet."); return; }
   const i=tileIndexFromId(id); if(i<0) return;
   const t=state.hands[0].splice(i,1)[0];
@@ -1102,19 +1103,19 @@ function pushDiscard(tile, seat){
   const tag=document.createElement("div"); tag.className="who-tag"; tag.textContent=SEAT_SHORT[seat][0];
   wrap.appendChild(tag); list.appendChild(wrap);
   rec.node=wrap; list.scrollTop=list.scrollHeight;
-  $("#discardMeta").textContent=state.discards.length+" tiles discarded Â· Wall: "+state.wall.length;
+  $("#discardMeta").textContent=state.discards.length+" tiles discarded · Wall: "+state.wall.length;
 }
 function removeLastDiscard(){
   const rec=state.discards.pop();
   if(rec && rec.node) rec.node.remove();
   $("#lastDiscardTile").innerHTML="";
   $("#lastDiscardLabel").textContent="";
-  $("#discardMeta").textContent=state.discards.length+" tiles discarded Â· Wall: "+state.wall.length;
+  $("#discardMeta").textContent=state.discards.length+" tiles discarded · Wall: "+state.wall.length;
 }
 
 /* ---- after any discard: see if anyone calls it ---- */
 async function afterDiscard(d, tile){
-  // a flower / joker is dead on the floor â€” it can never be called for anything
+  // a flower / joker is dead on the floor — it can never be called for anything
   const callable = !(tile.key==="joker" || tile.key.startsWith("flower"));
   // only offer exposures that complete a real 3+ group in a card line you can still make
   const humanExpSizes = (callable && d!==0) ? humanExposeSizes(tile) : [];
@@ -1148,7 +1149,7 @@ async function afterDiscard(d, tile){
 }
 
 function advanceFrom(seat){
-  if(state.wall.length===0){ return endGame(false,"Wall exhausted â€” the hand is a wash. Deal again."); }
+  if(state.wall.length===0){ return endGame(false,"Wall exhausted — the hand is a wash. Deal again."); }
   const ns=(seat+1)%4; state.current=ns; highlightSeat(ns);
   if(ns===0) humanDraw(); else cpuTurn(ns);
 }
@@ -1157,19 +1158,19 @@ function advanceFrom(seat){
 function humanDraw(){
   setPhase("Your move");
   state.awaitingDiscard=false; state.awaitingDraw=true;
-  if(state.wall.length===0) return endGame(false,"Wall exhausted â€” the hand is a wash. Deal again.");
+  if(state.wall.length===0) return endGame(false,"Wall exhausted — the hand is a wash. Deal again.");
   setDrawEnd(true);
   showDrawPrompt(true);
-  // on phones the open discard panel covers the centered Draw control â€” close it so you can draw
+  // on phones the open discard panel covers the centered Draw control — close it so you can draw
   if(window.matchMedia && window.matchMedia("(max-width:600px)").matches && $("#discardPanel").classList.contains("open")){
-    $("#discardPanel").classList.remove("open"); $("#discardToggle").textContent="Discards â–¸";
+    $("#discardPanel").classList.remove("open"); $("#discardToggle").textContent="Discards ▸";
   }
-  setNarr("Your turn â€” tap Draw to take a tile from the wall.");
+  setNarr("Your turn — tap Draw to take a tile from the wall.");
 }
 async function onPlayerDrawClick(){
   if(!(state.phase==="play" && state.current===0 && state.awaitingDraw)) return;
   state.awaitingDraw=false; setDrawEnd(false); showDrawPrompt(false);
-  if(state.wall.length===0) return endGame(false,"Wall exhausted â€” the hand is a wash. Deal again.");
+  if(state.wall.length===0) return endGame(false,"Wall exhausted — the hand is a wash. Deal again.");
   const t=state.wall.shift(); state.hands[0].push(t); drawnId=t.id;
   await wallDraw(0,1);                                   // tile comes off the wall end into your rack
   state.awaitingDiscard=true; renderRack(); updateCounts();
@@ -1178,11 +1179,11 @@ async function onPlayerDrawClick(){
 }
 
 async function cpuTurn(seat){
-  setPhase(SEAT_SHORT[seat]+" thinkingâ€¦");
+  setPhase(SEAT_SHORT[seat]+" thinking…");
   await sleep(500);
-  if(state.wall.length===0){ return endGame(false,"Wall exhausted â€” the hand is a wash."); }
+  if(state.wall.length===0){ return endGame(false,"Wall exhausted — the hand is a wash."); }
   const t=state.wall.shift(); state.hands[seat].push(t);
-  await wallDraw(seat,1);                                // computers draw off the wall too â€” you see it
+  await wallDraw(seat,1);                                // computers draw off the wall too — you see it
   updateCounts();
   cpuJokerExchanges(seat);                               // redeem exposed jokers it holds naturals for
   const all=state.hands[seat].concat(state.exposures[seat].flat());
@@ -1218,7 +1219,7 @@ function cpuJokerExchanges(seat){
         const nat=meld.find(t=>tileMatchCode(t)!=="JOKER"); if(!nat) return;
         const code=tileMatchCode(nat);
         const joker=meld.find(t=>t.key==="joker"); if(!joker) return;
-        // only give up a SPARE natural (never strip a pair/single a target needs â€” jokers can't fill those)
+        // only give up a SPARE natural (never strip a pair/single a target needs — jokers can't fill those)
         const wanted=cpuWantedIds(seat, cpuTargets(seat,3));
         const mine=state.hands[seat].find(t=>tileMatchCode(t)===code && !wanted.has(t.id));
         if(mine && exchangeJoker(seat, owner, mi, joker, mine)){
@@ -1229,7 +1230,7 @@ function cpuJokerExchanges(seat){
     }
   }
 }
-/* human: while it's your discard, exposed jokers you can redeem glow â€” click to swap */
+/* human: while it's your discard, exposed jokers you can redeem glow — click to swap */
 function humanTryJokerExchange(ownerSeat, meldIdx, jokerTile){
   if(!(state.phase==="play" && state.current===0 && state.awaitingDiscard)){ flash("Joker exchange happens on your turn, after you draw."); return; }
   const meld=state.exposures[ownerSeat][meldIdx];
@@ -1243,7 +1244,7 @@ function humanTryJokerExchange(ownerSeat, meldIdx, jokerTile){
   }
 }
 
-/* ===================== CPU BRAIN â€” plays real 2026 card lines =====================
+/* ===================== CPU BRAIN — plays real 2026 card lines =====================
    Each computer evaluates its rack against every legal hand, targets the closest
    lines, and keeps/discards toward them. Canon C6: the rack stays flexible until
    the first exposure; after exposing, only exposure-compatible lines remain.      */
@@ -1311,7 +1312,7 @@ function aiDiscard(seat){
   const hand=state.hands[seat];
   const spare=hand.filter(t=>!wanted.has(t.id) && t.key!=="joker");
   if(spare.length) return spare[Math.floor(Math.random()*spare.length)].id;
-  // everything fits a target â€” let go of the least-loaded non-joker
+  // everything fits a target — let go of the least-loaded non-joker
   const nonJ=hand.filter(t=>t.key!=="joker");
   return (nonJ.length?nonJ:hand)[Math.floor(Math.random()*(nonJ.length||hand.length))].id;
 }
@@ -1332,7 +1333,7 @@ function exposeSizesAvailable(seat, tile){
   return out;
 }
 /* the group sizes you may legally expose the discard into: only 3+ groups of this
-   exact code that a REAL, still-makeable card line needs (â‰¥1 natural held, jokers
+   exact code that a REAL, still-makeable card line needs (≥1 natural held, jokers
    may fill the rest). Stops the game offering dead exposures that strand your hand. */
 function humanExposeSizes(tile){
   const code=tileMatchCode(tile);
@@ -1388,12 +1389,12 @@ function cpuWantsExpose(seat, tile){
 }
 function canMahjongOnTile(seat, tile){
   // would this discard complete a real 2026 card line for `seat`?
-  // (Canon C1: works for concealed lines too â€” the call itself is the win.)
+  // (Canon C1: works for concealed lines too — the call itself is the win.)
   const all=state.hands[seat].concat(state.exposures[seat].flat(), [tile]);
   return !!findWinningHand(all, state.exposures[seat]);
 }
 /* pull (size-1) tiles from `seat`'s hand to join the called discard: naturals
-   of the same face first, jokers to fill (jokers only in groups of 3+ â€” C2) */
+   of the same face first, jokers to fill (jokers only in groups of 3+ — C2) */
 function pullExposureTiles(seat, tile, size){
   const code=tileMatchCode(tile);
   const hand=state.hands[seat]; const out=[]; const need=size-1;
@@ -1433,8 +1434,8 @@ function promptHumanCall(d, tile, expSizes, canMah, callable){
     const bar=$("#callBar"); bar.classList.remove("hidden");
     const canExp = expSizes && expSizes.length>0;
     let note="";
-    if(callable===false) note=tile.key==="joker" ? " (a discarded Joker is dead â€” it can't be called)" : " (Flowers can't be called from the discard)";
-    else if(!canExp && !canMah) note=" â€” nothing in your rack can call it";
+    if(callable===false) note=tile.key==="joker" ? " (a discarded Joker is dead — it can't be called)" : " (Flowers can't be called from the discard)";
+    else if(!canExp && !canMah) note=" — nothing in your rack can call it";
     $("#callPrompt").textContent=SEAT_SHORT[d]+" discarded "+tileName(tile)+note;
     const host=$("#callExposeBtns"); host.innerHTML="";
     if(canExp){
@@ -1481,9 +1482,9 @@ function renderExposures(){
 /* ===================== REAL 2026-CARD WIN VALIDATION =====================
    Hands validate against OOTT_HANDS2026 (every legal concrete hand on the
    2026 card, group structure preserved). Canon rules enforced:
-   C2 â€” jokers only in groups of 3+, never singles/pairs (group data does this)
-   C1 â€” concealed hands may win on a called discard (they just never expose early)
-   C12 â€” Soap == White Dragon (both map to code WD)
+   C2 — jokers only in groups of 3+, never singles/pairs (group data does this)
+   C1 — concealed hands may win on a called discard (they just never expose early)
+   C12 — Soap == White Dragon (both map to code WD)
    On-screen we only ever name Section + Line + plain-English rule, never the
    card's printed pattern (copyright rule).                                    */
 const HANDS = window.OOTT_HANDS2026 || [];
@@ -1527,7 +1528,7 @@ function matchesHand(tiles, exposures, hand){
     if(g.n<=2){ need[g.code]=(need[g.code]||0)+g.n; fixedTotal+=g.n; }
     else { flexCap[g.code]=(flexCap[g.code]||0)+g.n; flexTotal+=g.n; }
   }
-  // exact naturals for singles/pairs (jokers forbidden there â€” C2)
+  // exact naturals for singles/pairs (jokers forbidden there — C2)
   for(const code in need) if((c[code]||0) < need[code]) return false;
   // leftovers must fit inside 3+ groups of the same tile; jokers fill the rest
   let leftoverTotal=0;
@@ -1554,7 +1555,7 @@ function handName(h){ return "Section "+h.s+", Line "+h.l+" ("+h.v+")"; }
 function declareMahjong(){
   if(state.phase!=="play"){ return; }
   const all=state.hands[0].concat(state.exposures[0].flat());
-  if(all.length!==14){ flash("Mahjong needs a complete 14-tile hand â€” wait for your draw or call the winning tile."); return; }
+  if(all.length!==14){ flash("Mahjong needs a complete 14-tile hand — wait for your draw or call the winning tile."); return; }
   const h=findWinningHand(all, state.exposures[0]);
   if(h){ return endGame(true, "Mahjong on "+handName(h)+". "+handRuleText(h)); }
   flash("That rack doesn't complete a 2026 card line yet. Check your card and keep building.");
@@ -1571,7 +1572,7 @@ function endGame(youWin, msg){
   state.phase="end";
   $("#callBar").classList.add("hidden");
   showDrawPrompt(false); setDrawEnd(false); state.awaitingDraw=false;
-  $("#endTitle").textContent=youWin?"Mahjong! ðŸ€„":"Hand Over";
+  $("#endTitle").textContent=youWin?"Mahjong! 🀄":"Hand Over";
   $("#endText").textContent=msg;
   $("#endOverlay").classList.remove("hidden");
 }
@@ -1596,7 +1597,7 @@ async function beginDeal(skip){
   await dealTiles();                          // deal off the live wall (cascades to the next wall as it empties)
   state.skip=false;
   $("#dice").classList.add("hidden");
-  $("#lastDiscardLabel").textContent="";     // walls stay up â€” they're part of the table now
+  $("#lastDiscardLabel").textContent="";     // walls stay up — they're part of the table now
   startCharleston();
 }
 
@@ -1613,13 +1614,13 @@ $("#passBtn").onclick=()=>{
 };
 $("#discardToggle").onclick=()=>{
   const p=$("#discardPanel"); p.classList.toggle("open");
-  $("#discardToggle").textContent=p.classList.contains("open")?"Discards â—‚":"Discards â–¸";
+  $("#discardToggle").textContent=p.classList.contains("open")?"Discards ◂":"Discards ▸";
 };
-$("#discardClose").onclick=()=>{ $("#discardPanel").classList.remove("open"); $("#discardToggle").textContent="Discards â–¸"; };
+$("#discardClose").onclick=()=>{ $("#discardPanel").classList.remove("open"); $("#discardToggle").textContent="Discards ▸"; };
 $("#drawPrompt").onclick=onPlayerDrawClick;   // the reliable way to draw on your turn
 
 // keep the wall square sized to the table whenever the table's size changes
-// (initial layout, window resize, orientation, side-panel open/close) â€” robust to
+// (initial layout, window resize, orientation, side-panel open/close) — robust to
 // environments that don't fire window 'resize'
 let _layoutT=null;
 function scheduleLayout(){ clearTimeout(_layoutT); _layoutT=setTimeout(()=>{ if(!$("#wallLayer").classList.contains("hidden")) layoutWalls(); }, 60); }
