@@ -133,7 +133,7 @@
     <div class="modepill on" data-mode="break">Break the Wall<small>roll &rarr; count from the right</small></div>
     <div class="modepill" data-mode="deal">Deal Order<small>who takes tiles, in what order</small></div>
     <div class="modepill" data-mode="manners">Table Manners<small>procedure &amp; house rules</small></div>
-    <div class="leveltag" id="levelTag">Level 1</div>
+    <span class="leveltag" id="levelTag" style="cursor:pointer; text-decoration:underline;" title="Show or hide the hint line">Guides: On</span>
   </div>
 
   <div class="hud">
@@ -147,7 +147,7 @@
 
   <div class="controls">
     <button id="toggleBtn" class="btn">Play &#9654;</button>
-    <button id="nextLevel" class="btn ghost" disabled>Next level</button>
+    <button id="nextLevel" class="btn ghost" disabled style="display:none;">Next level</button>
     <button id="tutBtn" class="btn ghost">How to play</button>
     <span class="hint" id="hint">Press Play to start — the clock only runs while you play.</span>
     <button id="resetAll" class="btn ghost" style="margin-left:auto; font-size:.85rem; padding:6px 12px;">Reset progress</button>
@@ -167,7 +167,7 @@
     </div>
     <div class="modal-actions">
       <button id="cardAgain" class="btn ghost">Play again</button>
-      <button id="cardNext" class="btn" disabled>Next level</button>
+      <button id="cardNext" class="btn" disabled style="display:none;">Next level</button>
       <button id="cardChoose" class="btn ghost">How to play</button>
       <button id="cardDone" class="btn ghost">Finished</button>
     </div>
@@ -175,7 +175,7 @@
 </div>
 
 <script>
-const BUILD="v8 · 2026-06-12";
+const BUILD="v9 · 2026-06-12";
 function showErr(msg){try{const b=document.getElementById('errbar'); if(b){b.style.display='block'; b.textContent='⚠ Something broke — screenshot this for Lea Anne:\n'+msg;} const log=JSON.parse(localStorage.getItem('oott_wb_err')||'[]'); log.push({t:new Date().toISOString(),build:BUILD,msg:String(msg)}); localStorage.setItem('oott_wb_err',JSON.stringify(log.slice(-12)));}catch(_){}}
 window.addEventListener('error',e=>showErr((e.error&&e.error.stack)||e.message||'unknown error'));
 window.addEventListener('unhandledrejection',e=>showErr('promise: '+((e.reason&&(e.reason.stack||e.reason.message))||e.reason)));
@@ -219,12 +219,13 @@ const MANNERS=[
   {q:"Once a game is underway, does the East seat change?",opts:["No — East stays East all game; it only passes one seat right when the next game starts","Yes, it rotates after each round of the deal","Yes, it passes right after the Charleston","Yes, whoever wins a tile becomes East"],a:0,why:"East is fixed for the entire game. Only after Mah Jongg is declared (or a Wall Game) does East pass one seat to the right — and that's a brand-new, separate game. The only thing that carries over is who's East."},
 ];
 
-const LEVELS=[{n:1,title:"Level 1 — With Guides",hints:true},{n:2,title:"Level 2 — No Guides",hints:false},{n:3,title:"Level 3 — Clean & Quick",hints:false}];
+const LEVELS=[{n:1,title:"",hints:true}];   // single drill — difficulty is just the Guides toggle below
 const LS="oott_wallbreak_v2";
 function loadProg(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
 function saveProg(){localStorage.setItem(LS,JSON.stringify(prog));}
 let prog=loadProg(); prog.unlocked=prog.unlocked||{break:1,deal:1,manners:1}; prog.best=prog.best||{break:{},deal:{}}; prog.seen=prog.seen||{break:[],deal:[],manners:[]}; prog.tutDone=prog.tutDone||false;
 let timerHidden=localStorage.getItem('ott_timer_hidden')==='1';   // shared show/hide-clock pref across OOTT games
+let guidesOn=localStorage.getItem('ott_wb_guides')!=='0';   // show the hint line; default on
 let mode="break", cur=LEVELS[0], round=null, timerId=null, tutorial=null, playing=false;
 const K=6;
 const $=s=>document.querySelector(s);
@@ -249,7 +250,7 @@ function dieHTML(v){let cells=""; for(let i=0;i<9;i++)cells+=`<span ${PIPS[v].in
 let sel={stack:null,seat:null,locked:false};
 function renderScenario(sc,opts){
   opts=opts||{}; sel={stack:null,seat:null,locked:false};
-  const hints=opts.hints!=null?opts.hints:cur.hints;
+  const hints=opts.hints!=null?opts.hints:guidesOn;
   const g=$("#game"); g.innerHTML="";
   if(sc.kind==="break")   renderBreak(g,sc,hints,opts);
   else if(sc.kind==="deal") renderDeal(g,sc,hints,opts);
@@ -388,7 +389,7 @@ function updateHud(){
   updateBest();
 }
 function updateBest(){
-  $("#levelTag").textContent=cur.title; $("#nextLevel").disabled=!(prog.unlocked[mode]>cur.n);
+  $("#levelTag").textContent="Guides: "+(guidesOn?"On":"Off"); $("#nextLevel").disabled=true;
   if(timed()){ const b=prog.best[mode]&&prog.best[mode][cur.n]; $("#hudBest").textContent=b?b.toFixed(1)+"s":"—"; }
   else $("#hudBest").textContent = prog.unlocked.manners>1?"✓ cleared":"—";
 }
@@ -419,6 +420,7 @@ function closeModalToStart(){ $("#scrim").classList.remove("show"); showStart();
 /* ---------- wiring ---------- */
 document.querySelectorAll(".modepill").forEach(p=>p.addEventListener("click",()=>{ mode=p.dataset.mode; document.querySelectorAll(".modepill").forEach(x=>x.classList.toggle("on",x===p)); cur=LEVELS[Math.min(prog.unlocked[mode]||1,1)-1]||LEVELS[0]; cur=LEVELS[0]; showStart(); }));
 $("#toggleBtn").onclick=()=>{ if(playing)stopRound(); else startRound(); };
+$("#levelTag").onclick=()=>{ guidesOn=!guidesOn; localStorage.setItem('ott_wb_guides', guidesOn?'1':'0'); $("#levelTag").textContent="Guides: "+(guidesOn?"On":"Off"); };
 $("#eyeBtn").textContent=timerHidden?"show":"hide";
 $("#eyeBtn").onclick=()=>{ timerHidden=!timerHidden; localStorage.setItem('ott_timer_hidden', timerHidden?'1':'0'); $("#eyeBtn").textContent=timerHidden?"show":"hide"; if(timed()) $("#hudTime").textContent = timerHidden ? "hidden" : (round&&round.t0 ? ((performance.now()-round.t0)/1000).toFixed(1)+"s" : "0.0s"); };
 $("#tutBtn").onclick=()=>startTutorial();
